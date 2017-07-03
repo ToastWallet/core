@@ -91,22 +91,22 @@ content: "hover to view";
 </div>
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display: block;">
-    
-    <ul class="verticalform">
-    <li>
-    <label for="secret">Ripple Secret</label>
-    
-    <input class="form-control form-control-lg" type="text" placeholder="Enter your secret key here"  style="width:100% !important" id="txtsecret">
-        </li><li>
-    <label for="secret">Decryption Phrase (if applicable)</label>
-    
-    <input class="form-control form-control-lg" type="text" placeholder="If your secret starts with 's' leave this blank" style="width:100% !important" id="txtsecretphrase">
-        </li><li><center><button type="button" class="btn btn-primary btn-lg" id="btnimport">Import Account</button></center></li><li class="hr">or
+
+<ul class="verticalform">
+<li>
+<label for="secret">Ripple Secret</label>
+
+<input class="form-control form-control-lg" type="text" placeholder="Enter your secret key here"  style="width:100% !important" id="txtsecret">
+</li><li>
+<label for="secret">Decryption Phrase (if applicable)</label>
+
+<input class="form-control form-control-lg" type="text" placeholder="If your secret starts with 's' leave this blank" style="width:100% !important" id="txtsecretphrase">
+</li><li><center><button type="button" class="btn btn-primary btn-lg" id="btnimport">Import Account</button></center></li><li class="hr">or
 </li>
 
-    <li><center><button id="btnscanqr" type="button" class="btn btn-primary btn-lg"><i class="fa fa-camera" aria-hidden="true"></i><br>
+<li><center><button id="btnscanqr" type="button" class="btn btn-primary btn-lg"><i class="fa fa-camera" aria-hidden="true"></i><br>
 Read QR Code
-   </button></center></li>
+</button></center></li>
 </ul>
 
 </div>
@@ -273,22 +273,30 @@ Read QR Code
 var scanner;
 function scanQR() {
 
-      scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
-      scanner.addListener('scan', function (content) {
-	$("#txtsecret").val(content);
-	
-	showTab(-1);
-      });
-      Instascan.Camera.getCameras().then(function (cameras) {
-        if (cameras.length > 0) {
-          scanner.start(cameras[0]);
-        } else {
-          $("#qrerror").innerText = 'Error: No cameras found.';
-        }
-      }).catch(function (e) {
+	scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
+	scanner.addListener('scan', function (content) {
+			$("#txtsecret").val(content);
 
-        console.error(e);
-      });
+			showTab(-1);
+			});
+	Instascan.Camera.getCameras().then(function (cameras) {
+			if (cameras.length > 0) {
+			scanner.start(cameras[0]);
+			} else {
+			$("#qrerror").innerText = 'Error: No cameras found.';
+			}
+			}).catch(function (e) {
+
+				console.error(e);
+				});
+}
+
+function selectAccount(accselected) {
+        var acc = $(".accountitem");
+        for (var i = 0; i < acc.length; i++) {	
+		acc.removeClass("active");
+	}
+	$("#ra" + accselected).addClass("active");
 }
 
 function refreshAccounts() {
@@ -299,15 +307,32 @@ function refreshAccounts() {
 	}
 
 	var acc = localStorage.getItem("ripple-accounts");
-	if (acc == undefined) return;
+	if (acc == undefined || acc == "") return;
 
-	for (var i = 0; i < acc.length; i++) {
-		$("#accountslist").prepend('<li class="list-group-item accountitem">'+acc[i]+'</li>');
+	acc = JSON.parse(acc);
+	var first = true;
+	for (var i in acc) {
+		$("#accountslist").prepend('<li class="list-group-item accountitem '+(first?'active':'')+'" id="ra'+i+'"><a href="#" onclick="selectAccount(\''+i+'\');""<span class="address">'+i+'</span></a><div class="amount"></div></li>');
+		if (first) {
+			first=false;
+			activeaccount = i;	
+		}
+		remote.requestAccountInfo({
+		account: i,
+		ledger: "validated"
+		}, function(err, res) {
+			if (err) {
+				//accountInfoError(err, table);
+			} else {
+				$("#ra" + i+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+			}
+		});
 	}
 
 }
 var currenttab = "";
 var previoustabs = [];
+var activeaccount = "";
 function showTab(tab) {
 
 	if (tab == currenttab) return;
@@ -369,7 +394,6 @@ $("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
 
 $("#btnscanqr").click(function() { showTab("#tabqrscan"); scanQR(); });
 $("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
-showTab("#tabaccounts");
 
 
 
@@ -402,6 +426,7 @@ function showSpinner() {
 
 function hideSpinner() {
 	$("#loading").hide();
+	showTab("#tabaccounts");
 }
 
 var rotation = function (){
@@ -663,58 +688,62 @@ function redefineSigningToAlwaysUseSecret(secret) {
 // --------------------------------
 
 function importAddress(secret, phrase) {
-		$("#tabimportstatus .alert-danger").hide();
-		$("#tabimportstatus .alert-success").hide();
+	$("#tabimportstatus .alert-danger").hide();
+	$("#tabimportstatus .alert-success").hide();
 
-		var address = "";
-                if (secret.charAt(0) === "s" ) {
-                        // pass
-                } else if (secret.charAt(0) === "3" ) {
-                        // pass 
-			if (secret.length < 2) {
-				return false;
-			}
-			var b = ripple.Base.decode_check(VER_REKEYED, secret);
-			if (isNaN(b)) {
-				return false;
-			}
-			var y = ripple.sjcl.codec.bytes.fromBits(b.toBits());
-			if (y.length !== 32) {
-				return false;
-			}
-			var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
-			var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
-			address = generateAddress(ms).address;
- 
-                } else if (secret.charAt(0) === "h" && phrase == "") {
-                        $("#tabimportstatus .alert-danger")[0].innerText = 'You must enter a decryption phrase.';
-                        $("#tabimportstatus .alert-success")[0].innerText = '';
-                        $("#tabimportstatus .alert-danger").show();
-			return;
-                } 
-
-		if (!validate.secret(secret) || (secret.charAt(0) === "h" && !validate.encryptedSecret(secret)) ) {
-                        $("#tabimportstatus .alert-danger")[0].innerText = '"' + secret+'" is not a valid Ripple secret.';
-                        $("#tabimportstatus .alert-success")[0].innerText = '';
-			$("#tabimportstatus .alert-danger").show();
-
-			return;
-                }
-
-		if (secret.charAt(0) === "h") {
-			secret = decryptSecret(phrase, secret);
+	var address = "";
+	if (secret.charAt(0) === "s" ) {
+		// pass
+	} else if (secret.charAt(0) === "3" ) {
+		// pass 
+		if (secret.length < 2) {
+			return false;
 		}
-
-		if (typeof(Storage) !== "undefined") {
-			var secrets = localStorage.getItem("ripple-accounts");
-			if (secrets == undefined) secrets = [];
-			var result = generateAddress(secret);
-			secrets[(address != "" ? address : result.address)] = result.secret;
-			localStorage.setItem("ripple-accounts", secrets);
-			console.log(secrets);
-			$("#tabimportstatus .alert-success")[0].innerText = 'The key was successfully added';
-			$("#tabimportstatus .alert-success").show();
+		var b = ripple.Base.decode_check(VER_REKEYED, secret);
+		if (isNaN(b)) {
+			return false;
 		}
+		var y = ripple.sjcl.codec.bytes.fromBits(b.toBits());
+		if (y.length !== 32) {
+			return false;
+		}
+		var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
+		var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
+		address = generateAddress(ms).address;
+
+	} else if (secret.charAt(0) === "h" && phrase == "") {
+		$("#tabimportstatus .alert-danger")[0].innerText = 'You must enter a decryption phrase.';
+		$("#tabimportstatus .alert-success")[0].innerText = '';
+		$("#tabimportstatus .alert-danger").show();
+		return;
+	} 
+
+	if (!validate.secret(secret) || (secret.charAt(0) === "h" && !validate.encryptedSecret(secret)) ) {
+		$("#tabimportstatus .alert-danger")[0].innerText = '"' + secret+'" is not a valid Ripple secret.';
+		$("#tabimportstatus .alert-success")[0].innerText = '';
+		$("#tabimportstatus .alert-danger").show();
+
+		return;
+	}
+
+	if (secret.charAt(0) === "h") {
+		secret = decryptSecret(phrase, secret);
+	}
+
+	if (typeof(Storage) !== "undefined") {
+		var secrets = localStorage.getItem("ripple-accounts");
+		if (secrets == undefined || secrets == "") {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets);
+		}
+		var result = generateAddress(secret);
+		secrets[(address != "" ? address : result.address)] = result.secret;
+		localStorage.setItem("ripple-accounts", JSON.stringify(secrets));
+		console.log(secrets);
+		$("#tabimportstatus .alert-success")[0].innerText = 'The key was successfully added';
+		$("#tabimportstatus .alert-success").show();
+	}
 
 }
 

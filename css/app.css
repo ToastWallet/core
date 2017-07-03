@@ -4,8 +4,17 @@ body {
 	margin-right: 5px;
 	margin-bottom: 60px;
 }
-a:hover {
-    text-decoration: none;
+a:hover, a:visited, a:active, a:focus {
+    text-decoration: none !important;
+}
+#btnaddaccount {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.active a {
+    color: white !important;
 }
 #navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover {
     color: white !important;
@@ -55,6 +64,12 @@ video#qrpreview {
     width: 100%;
     padding: 0px 0px 0px 0px;
 }
+div.amount {
+    float: right;
+}
+#accountslist > li {
+    min-height: 60px;
+}
 .verticalform {
     width: calc(100% - 20px);
     height: auto;
@@ -67,11 +82,9 @@ video#qrpreview {
 }
 
 .verticalform label {
-    font-size: 25px;
 }
 
 .verticalform input[type="text"] {
-    font-size: 20px;
     padding: 5px;
 }
 .largebuttongrid {
