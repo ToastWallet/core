@@ -102,7 +102,7 @@ button:not(.offline) {
 <input id="nameurl" type="text" value="id.ripple.com/v1/authinfo?username=" /><br/>
 <label><input id="useripplenames" type="checkbox"/> resolve ripple names with ~ button</label>
 
-
+<div id="tabaccounts" class="screentab">
 <h2>account details</h2>
 
 <button class="offline" onclick="useCurrentIdentity()">use current identity</button>
@@ -122,9 +122,10 @@ button:not(.offline) {
 
 <button onclick="pressFlags()">view/edit flags</button><br/>
 <table border="1" id="flagstable"></table>
+</div>
 
 
-
+<div id="tabpayments" class="screentab">
 <h2>send payment</h2>
 
 <input type="text" id="sendamount" placeholder="amount" /><br/>
@@ -154,9 +155,10 @@ button:not(.offline) {
 	<button onclick="stopPathfinding()" id="stoppathfindingbutton" disabled="disabled">stop</button><br/>
 	<table border="1" id="pathstable"></table>
 </div>
+</div>
 
 
-
+<div id="tabtrustlines" class="screentab">
 <h2>set trust</h2>
 
 <input id="trustamount" type="text" placeholder="amount" /><br/>
@@ -166,7 +168,10 @@ button:not(.offline) {
 <label><input id="trustnoripple" type="checkbox" / >no ripple</label><br/>
 <button id="trustbutton" onclick="pressTrust()">set trust</button>
 
+</div>
 
+
+<div id="tabtrade" class="screentab">
 
 <h2>trade</h2>
 
@@ -185,7 +190,10 @@ button:not(.offline) {
 <input type="text" class="wide" id="tgcurissuer" placeholder="TakerGets CUR/issuer" /><br/>
 <button onclick="pressOffer()" id="offerbutton">submit offer</button>
 
+</div>
 
+<div id="tabsettings" class="screentab">
+</div>
 
 <h2>disclaimer</h2>
 <p>this product is provided "as is" without warranty of any kind and is not endorsed by ripple labs inc.</p>
@@ -206,9 +214,18 @@ button:not(.offline) {
 
 <script>
 
+function showTab(tab) {
+	var tabs = $(".screentab");
+	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
+	$(tab).show();
+}
 
+$("#navaccounts").click(function() { showTab("#tabaccounts"); });
+$("#navpayments").click(function() { showTab("#tabpayments"); });
+$("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
+$("#navsettings").click(function() { showTab("#tabsettings"); });
 
-
+showTab("#tabaccounts");
 
 
 // Opening setup
