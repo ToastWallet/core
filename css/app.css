@@ -83,7 +83,10 @@ div.amount {
 
 .verticalform label {
 }
-
+li#generatedaddress {
+    font-weight: bold;
+    text-align: center;
+}
 .verticalform input[type="text"] {
     padding: 5px;
 }

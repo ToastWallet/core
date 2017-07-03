@@ -132,57 +132,12 @@ Read QR Code
 </div>
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account">
-
-<span id="myaddress"></span><br/>
-
-<button class="offline" onclick="toggleSecret()">show/hide secret</button>
-<input id="mysecret" type="text" placeholder="secret" /><br/>
-
-<button class="offline" onclick="pressSetIdentity()">set identity</button>
-<button class="offline" onclick="pressClearIdentity()">clear identity</button>
-<button class="offline" onclick="pressGenerateIdentity()">generate identity</button>
-<button id="rekeybutton" onclick="pressRekey()">rekey account</button><br/>
-
-<span class="displaynone" id="encryptshow">
-<button class="offline" onclick="showEncryptor()">encrypt secret</button>
-</span>
-<input class="displaynone" id="passphrase" type="password" placeholder="passphrase" />
-<input class="displaynone" id="confirmpassphrase" type="password" placeholder="confirm passphrase" />
-<span class="displaynone" id="decryptbutton">
-<button class="offline" onclick="pressDecrypt()">decrypt</button>
-</span>
-<span class="displaynone" id="encryptbutton">
-<button class="offline" onclick="pressEncryptSecret()">encrypt</button>
-</span>
-
-<span class="hidden"> <!-- space-filler -->
-<button>_</button><input type="password"/>
-</span>
-
-
-<input id="nameurl" type="text" value="id.ripple.com/v1/authinfo?username=" /><br/>
-<label><input id="useripplenames" type="checkbox"/> resolve ripple names with ~ button</label>
-<h2>account details</h2>
-
-<button class="offline" onclick="useCurrentIdentity()">use current identity</button>
-<button class="offline" onclick="clearAllInfo()">clear all</button><br/>
-<input id="infoaccount" type="text" placeholder="account" />
-<button tabindex="-1" class="tilde" onclick="pressResolve(this,['infoaccount'])">~</button>
-<br/>
-
-<button onclick="pressInfo()">view info</button><br/>
-<table id="infotable" border="1"></table>
-
-<button onclick="pressLines()">view trustlines</button><br/>
-<table id="linestable" border="1"></table>
-
-<button onclick="pressOffers()">view/edit offers</button><br/>
-<table id="offerstable" border="1"></table>
-
-<button onclick="pressFlags()">view/edit flags</button><br/>
-<table border="1" id="flagstable"></table>
+<ul class="verticalform">
+<li id="generatedaddress"></li>
+<li><center><button type="button" class="btn btn-primary btn-lg" onclick="importGeneratedAccount();">Import this Address</button></center></li>
+<li><center><button type="button" class="btn btn-primary btn-lg" onclick='showAndGenAccount();'>Generate Another</button></center></li>
+</ul>
 </div>
-
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Make a Payment">
 <h2>send payment</h2>
@@ -381,20 +336,31 @@ function showTab(tab) {
 	}
 }
 
+var generatedAcount = {};
+function showAndGenAccount() {
+	var result = generateAddress();
+	generatedAccount = result;
+	$("#generatedaddress")[0].innerText = result.address;
+	showTab("#tabgenaccount");	
+}
+
+function importGeneratedAccount() {
+	importAddress(generatedAccount.secret);
+	showTab("#tabaccounts");
+}
+
 $("#navaccounts").click(function() { showTab("#tabaccounts"); });
 $("#navpayments").click(function() { showTab("#tabpayments"); });
 $("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
 $("#navsettings").click(function() { showTab("#tabsettings"); });
 
-
-$("#btngennewaddress").click(function(){ showTab("#tabgenaccount"); });
+$("#btngennewaddress").click(function(){ showAndGenAccount(); });
 $("#btnaddexistingaddress").click(function(){ showTab("#tabaddexistingaccount"); });
 
 $("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
 
 $("#btnscanqr").click(function() { showTab("#tabqrscan"); scanQR(); });
 $("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
-
 
 
 
@@ -412,8 +378,6 @@ servers: [
 });
 document.getElementById("directxrp").checked = false;
 document.getElementById("useoptional").checked = false;
-document.getElementById("mysecret").value = "";
-clearAllInfo();
 
 var VER_REKEYED = 220;
 var VER_ENCRYPTED_ORDINARY = 160;
@@ -1107,19 +1071,9 @@ function disconnectFromRipple() {
 function useCurrentIdentity() {
 	if (MY_ADDRESS && MY_ADDRESS !== "") {
 		document.getElementById("infoaccount").value = MY_ADDRESS;
-		clearAllInfo();
 	}
 }
 
-function clearAllInfo() {
-	document.getElementById("infotable").innerHTML = "";
-	document.getElementById("linestable").innerHTML = "";
-	document.getElementById("offerstable").innerHTML = "";
-	document.getElementById("flagstable").innerHTML = "";
-	var ia = document.getElementById("infoaccount");
-	ia.readOnly = false;
-	ia.disabled = "";
-}
 
 function accountInfoError(err, table) {
 	if (err.remote && err.remote.error === "actNotFound") {
