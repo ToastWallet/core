@@ -9,3 +9,55 @@
     text-align: center;
     background: #fff;
 }
+#navfooter {
+    position: fixed;
+    bottom: 0px;
+    height: 20px;
+    width: 100%;
+    left: 0px;
+    background: hsla(214, 50%, 50%, 1);
+    list-style: none;
+    margin: 0px;
+    padding: 5px;
+    text-align: center;
+    display: table;
+}
+#navheader {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 30px;
+    background: #3f77bf;
+    margin: 0px;
+    padding: 5px;
+    list-style: none;
+}
+
+#navheader > li {
+    vertical-align: middle;
+    text-align: center;
+    margin: 0px;
+    color: white;
+}
+
+li.headerright {position: absolute;top: 50%;right: 20px;transform: translate(0px, -50%); cursor: pointer;}
+
+li.headerleft {position: absolute;left: 20px;top: 50%;transform: translate(0px, -50%); cursor: pointer;}
+
+li.headermiddle {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);font-size: 20px; cursor: pointer;}
+
+#navfooter > li {
+    color: white;
+    display: table-cell;
+    text-align: center;
+    vertical-align: top;
+    position: relative;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+#navfooter > li > div {
+    color: white;
+    font-size: 10px;
+}
