@@ -4,6 +4,105 @@ body {
 	margin-right: 5px;
 	margin-bottom: 60px;
 }
+a:hover {
+    text-decoration: none;
+}
+#navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover {
+    color: white !important;
+}
+ul {
+    list-style: none;
+    padding-left: 0px;
+}
+ul.verticalform > li {
+    margin-bottom: 25px;
+    height: 100%;
+}
+
+.hr:before {
+    width: calc(50% - 20px);
+    height: 1px;
+    display: block;
+    position: absolute;
+    background: #adadad;
+    content: " ";
+    left: 0px;
+    top: 11px;
+    z-index: 10;
+}
+
+.hr {
+    font-size: 15px;
+    text-align: center;
+    z-index: 11;
+    position: relative;
+}
+
+.hr:after {
+    width: calc(50% - 20px);
+    height: 1px;
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 11px;
+    background: #adadad;
+    content: " ";
+    z-index: 10;
+}
+video#qrpreview {
+    max-height: calc(100vh - 150px);
+    margin: 0px 0px 0px 0px;
+    width: 100%;
+    padding: 0px 0px 0px 0px;
+}
+.verticalform {
+    width: calc(100% - 20px);
+    height: auto;
+    margin-left: 50%;
+    transform: translate(-50%, 0px);
+}
+
+.screentab {
+    min-height: calc(100vh - 120px);
+}
+
+.verticalform label {
+    font-size: 25px;
+}
+
+.verticalform input[type="text"] {
+    font-size: 20px;
+    padding: 5px;
+}
+.largebuttongrid {
+    max-width: 515px;
+    padding: 0px;
+    margin: auto;
+    min-height: 200px;
+    text-align: center;
+}
+
+.largebuttongrid > li {
+    min-width: 200px;
+    min-height: 200px;
+    height: 200px;
+    margin: 5px;
+    color: white;
+    display: inline-block;
+    background: hsla(214, 75%, 50%, 1);
+    position: relative;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.largebuttongrid .buttonicon {
+    font-size: 30px;
+}
+.buttoncontent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
 #loading {
     position: fixed;
     top: 0;
