@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="/deps/jquery-ui-bootstrap/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/deps/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.3.custom.css">
-    <link rel="stylesheet" href="/css/custom-theme/jquery-ui-1.10.3.theme.css">
-    <link rel="stylesheet" href="/deps/jquery-ui-bootstrap/assets/css/font-awesome.min.css">
-<script src="/deps/jquery-ui-bootstrap/assets/js/vendor/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="/deps/jquery-ui-bootstrap/assets/js/vendor/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-<script src="/deps/jquery-ui-bootstrap/assets/js/vendor/bootstrap.js" type="text/javascript"></script>
-<script src="/deps/jquery-ui-bootstrap/assets/js/vendor/holder.js" type="text/javascript"></script>
-<script src="/deps/jquery-ui-bootstrap/assets/js/vendor/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
-<script src="/js/ripple-0.12.5-rc2-min.js"></script>
+    <link rel="stylesheet" href="../deps/jquery-ui-bootstrap/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/jquery-ui-1.10.0.custom.css">
+    <link rel="stylesheet" href="../deps/jquery-ui-bootstrap/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/app.css">
+<script src="../deps/jquery-ui-bootstrap/assets/js/jquery-1.9.0.min.js" type="text/javascript"></script>
+<script src="../deps/jquery-ui-bootstrap/assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../deps/jquery-ui-bootstrap/assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
+<script src="../js/jQueryRotate.js"></script>
+<script src="../js/ripple-0.12.5-rc2-min.js"></script>
 <style>
 .hidden { visibility: hidden; }
 .displaynone { display: none !important; }
@@ -99,10 +98,6 @@ button:not(.offline) {
 </span>
 
 
-<h2>connect</h2>
-
-<button onclick="connectToRipple()">connect to ripple</button>
-<button onclick="disconnectFromRipple()">disconnect</button><br/><br/>
 
 <input id="nameurl" type="text" value="id.ripple.com/v1/authinfo?username=" /><br/>
 <label><input id="useripplenames" type="checkbox"/> resolve ripple names with ~ button</label>
@@ -197,9 +192,10 @@ button:not(.offline) {
 
 
 
-
-
-
+<div id="loading" style="">
+      <img class="loader" src="../images/rippleThrobber.png">
+    </div>
+	<div id="loaderror"></div>
 <script>
 
 
@@ -228,8 +224,31 @@ var VER_ENCRYPTED_ORDINARY = 160;
 var VER_ENCRYPTED_REKEYED = 250;
 
 
+function showSpinner() {
+	$("#loading").show();
+}
+
+function hideSpinner() {
+	$("#loading").hide();
+}
+
+var rotation = function (){
+  $(".loader").rotate({
+    angle:0,
+    animateTo:360,
+    callback: rotation
+  });
+}
+$( document ).ready(function() { 
+	rotation();
+	connectToRipple();
+});
+
+
 // Helper functions
 // --------------------------------
+
+
 
 
 // State/input validation
@@ -802,11 +821,13 @@ function reenableRB() {
 
 function connectToRipple() {
 	remote.connect(function(err, res) {
-		res || (res = "success");
-		var outcome = "connected to ripple with " + 
-			(err ? "error" : "result") + ": " + 
-			JSON.stringify(err||res);
-		alert(outcome);
+		if (err) {
+			console.log(err);
+			$("#loaderror").innerText = err;			
+			connectToRipple();
+		} else {
+			hideSpinner();
+		}
 	});
 }
 
