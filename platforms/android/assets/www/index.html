@@ -15,6 +15,7 @@
 <script src="deps/jquery-ui-bootstrap/assets/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="deps/jquery-ui-bootstrap/assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
 <script src="js/ripple-0.12.5-rc2-min.js"></script>
+<script stc="js/instascan.min.js"></script>
 <script type="text/javascript" src="cordova.js"></script>
 
 </head>
@@ -180,24 +181,39 @@ Read QR Code
 <script>
 var scanner;
 function scanQR(intofield, returntab) {
-    showTab("#tabqrscan");
-    cordova.plugins.barcodeScanner.scan(
-        function (result) {
-            if(!result.cancelled)
-            {
-                if(result.format == "QR_CODE")
-                {
-			$(intofield).val(result.text);
-			showtab(returntab);
 
-				
-                }
-            }
-        },
-        function (error) {
-		$("#qrerror").innerText = 'Error: No access to camera.';
-        }
-   );
+    if (device.platform == 'browser') {
+        scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
+        scanner.addListener('scan', function (content) {
+			showTab("#tabqrscan");
+                        $(intofield).val(content);
+                        showTab(returntab);
+                        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+                        if (cameras.length > 0) {
+                        scanner.start(cameras[0]);
+                        } else {
+                        $("#qrerror").innerText = 'Error: No cameras found.';
+                        }
+                        }).catch(function (e) {
+
+                                console.error(e);
+			});
+    } else {
+	    cordova.plugins.barcodeScanner.scan(
+		function (result) {
+		    if(!result.cancelled)
+		    {
+				$(intofield).val(result.text);
+				showtab(returntab);
+		    }
+		},
+		function (error) {
+			showTab("#tabqrscan");
+			$("#qrerror").innerText = 'Error: No access to camera.';
+		}
+	   );
+    }
 }
 
 function selectAccount(accselected) {

@@ -1,5 +1,5 @@
 body {
-	margin-top:45px;
+	margin-top:60px;
 	margin-left: 5px;
 	margin-right: 5px;
 	margin-bottom: 60px;
@@ -8,10 +8,13 @@ a:hover, a:visited, a:active, a:focus {
     text-decoration: none !important;
 }
 #btnaddaccount {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+li.list-group-item {
+    display: table;
+    width: 100%;
 }
 .active a {
     color: white !important;
@@ -59,7 +62,7 @@ ul.verticalform > li {
     z-index: 10;
 }
 video#qrpreview {
-    max-height: calc(100vh - 150px);
+    max-height: 50vh;
     margin: 0px 0px 0px 0px;
     width: 100%;
     padding: 0px 0px 0px 0px;
@@ -96,6 +99,7 @@ li#generatedaddress {
     margin: auto;
     min-height: 200px;
     text-align: center;
+    display: table;
 }
 
 .largebuttongrid > li {
@@ -104,27 +108,24 @@ li#generatedaddress {
     height: 200px;
     margin: 5px;
     color: white;
-    display: inline-block;
+    display: table-cell;
     background: hsla(214, 75%, 50%, 1);
     position: relative;
     border-radius: 5px;
     cursor: pointer;
+    border: 2px solid white;
+    text-align: center;
+    vertical-align: middle;
 }
 .largebuttongrid .buttonicon {
     font-size: 30px;
 }
-.buttoncontent {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
 #loading {
     position: fixed;
     top: 0;
-    right: 0;
-    bottom: 0;
     left: 0;
+    width: 100%;
+    height: 100vh;
     z-index: 10000;
     padding: 20%;
     text-align: center;
@@ -142,32 +143,43 @@ li#generatedaddress {
     padding: 5px;
     text-align: center;
     display: table;
+    padding-bottom: 15px;
 }
 #navheader {
     position: fixed;
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 30px;
+    height: 50px;
     background: #3f77bf;
     margin: 0px;
     padding: 5px;
     list-style: none;
+    display: table;
+
 }
 
 #navheader > li {
     vertical-align: middle;
-    text-align: center;
     margin: 0px;
     color: white;
+    display: table-cell;
 }
 
-li.headerright {position: absolute;top: 50%;right: 20px;transform: translate(0px, -50%); cursor: pointer;}
+.headerleft {
+    width: 25%;
+    text-align: left;
+}
 
-li.headerleft {position: absolute;left: 20px;top: 50%;transform: translate(0px, -50%); cursor: pointer;}
+.headerright {
+    width: 25%;
+    text-align: right;
+}
 
-li.headermiddle {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);font-size: 20px; cursor: pointer;}
-
+.headermiddle {
+    width: 50%;
+    text-align: center;
+}
 #navfooter > li {
     color: white;
     display: table-cell;
