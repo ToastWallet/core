@@ -15,54 +15,15 @@
 <script src="js/jQueryRotate.js"></script>
 <script src="js/ripple-0.12.5-rc2-min.js"></script>
 <script src="js/instascan.min.js"></script>
-<style>
-.hidden { visibility: hidden; }
-.displaynone { display: none !important; }
 
-#mysecret[disabled] { border: none; }
-
-#myaddress:empty:before { content: "(no identity set)"; }
-table:empty { display: none; }
-td.centered { text-align: center; }
-
-input[type="text"] { width: 240px; }
-input[type="text"].wide { width: 280px; }
-input[type="text"].narrow { width: 120px; }
-
-button:not(.offline) {
-	       /* buttons that query the network */
-cursor: pointer;
-	font-weight: bold;
-       }
-.editflagbutton { width: 60px; }
-#sendbutton, .complexsendbutton, .cancelbutton { width: 72px; }
-#trustbutton { width: 84px; }
-#startpathfindingbutton, #rekeybutton { width: 100px; }
-.tilde { width: 30px; }
-.halfoffset {
-position: relative;
-top: 9px;
-}
-
-.pathsJSON div { display: none; }
-.pathsJSON:hover div {
-display: block;
-position: absolute;
-	  word-break: break-all;
-width: 200px;
-border: 1px solid black;
-padding: 8px;
-	 background-color: white;
-}
-.pathsJSON:after {
-content: "hover to view";
-	 font-style: italic;
-}
-.pathsJSON:after:hover { content: ""; }
-</style>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
 
 </head>
 <body>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
 
 <noscript><h2>you need to enable javascript to use this!</h2><hr/></noscript>
 
@@ -267,7 +228,7 @@ function refreshAccounts() {
 	acc = JSON.parse(acc);
 	var first = true;
 	for (var i in acc) {
-		$("#accountslist").prepend('<li class="list-group-item accountitem '+(first?'active':'')+'" id="ra'+i+'"><a href="#" onclick="selectAccount(\''+i+'\');""<span class="address">'+i+'</span></a><div class="amount"></div></li>');
+		$("#accountslist").prepend('<li class="list-group-item accountitem '+(first?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 		if (first) {
 			first=false;
 			activeaccount = i;	
