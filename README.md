@@ -9,4 +9,6 @@ Warning! Releases will be under release branches. The main branch is the develop
 # Play with the dev copy
 This is a development copy subject to change instantly and without notice._ Do not use this as a working wallet._
 https://toastwallet.com/repo/html/index.html
+# Cordova will be used
+For the native bundles we've elected to use Cordova https://cordova.apache.org/. A repository with the cordova fileset will be added shortly.
 
