@@ -7,12 +7,26 @@ body {
 a:hover, a:visited, a:active, a:focus {
     text-decoration: none !important;
 }
-#btnaddaccount {
+
+li.textwithinlinebutton > input {
+    width: 80%;
+    display: table-cell;
+}
+
+li.textwithinlinebutton {
+    width: 100%;
+    display: inline-table;
+}
+.suppressbottommargin, .suppressbottommargin > * {
+	margin-bottom: 0px !important;
+}
+li.textwithinlinebutton > button {display: table-cell;width: calc(20% - 4px);margin-left: 4px;}
+.bottom-list-button {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
 }
-li.list-group-item {
+.list-group-item {
     display: table;
     width: 100%;
 }

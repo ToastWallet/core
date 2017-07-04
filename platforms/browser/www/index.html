@@ -29,7 +29,7 @@
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true">
 <ul class="list-group" id="accountslist">
-<li class="list-group-item"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 </ul>
 </div>
 
@@ -50,11 +50,11 @@
 <li>
 <label for="secret">Ripple Secret</label>
 
-<input class="form-control form-control-lg" type="text" placeholder="Enter your secret key here"  style="width:100% !important" id="txtsecret">
+<input class="form-control form-control-lg" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 </li><li>
 <label for="secret">Decryption Phrase (if applicable)</label>
 
-<input class="form-control form-control-lg" type="text" placeholder="If your secret starts with 's' leave this blank" style="width:100% !important" id="txtsecretphrase">
+<input class="form-control form-control-lg" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
 </li><li><center><button type="button" class="btn btn-primary btn-lg" id="btnimport">Import Account</button></center></li><li class="hr">or
 </li>
 
@@ -88,41 +88,25 @@ Read QR Code
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account">
 <ul class="verticalform">
 <li id="generatedaddress"></li>
-<li><center><button type="button" class="btn btn-primary btn-lg" onclick="importGeneratedAccount();">Import this Address</button></center></li>
-<li><center><button type="button" class="btn btn-primary btn-lg" onclick='showAndGenAccount();'>Generate Another</button></center></li>
+<li><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></li>
+<li><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></li>
 </ul>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Make a Payment">
-<h2>send payment</h2>
-
-<input type="text" id="sendamount" placeholder="amount" /><br/>
-<input type="text" id="sendcurrency" class="narrow" placeholder="currency" />
-<label>
-<input type="checkbox" id="directxrp" onclick="toggleDirectXRP(this)"/>direct xrp&rarr;xrp
-</label><br/>
-<input type="text" id="senddestination" placeholder="destination" />
-<button tabindex="-1" class="tilde" onclick="pressResolve(this,['senddestination'])">~</button>
-<br/>
-
-<label><input id="useoptional" onclick="toggleOptionalFields(this)" type="checkbox"/>use optional fields</label><br/>
-
-<div id="optionalfields" class="displaynone">
-<input type="text" id="destinationtag" placeholder="destination tag (integer)" /><br/>
-<input type="text" id="sourcetag" placeholder="source tag (integer)" /><br/>
-<input type="text" id="invoiceid" placeholder="invoice id (at most 64 hex chars)" /><br/>
-</div>
-
-<div id="directsender" class="displaynone">
-<button id="sendbutton" onclick="pressSend()">send</button>
-<table border="1" class="hidden"></table> <!-- space-filler -->
-</div>
-
-<div id="complexsender">
-<button onclick="pressPathfind()" id="startpathfindingbutton">find paths</button>
-<button onclick="stopPathfinding()" id="stoppathfindingbutton" disabled="disabled">stop</button><br/>
-<table border="1" id="pathstable"></table>
-</div>
+<ul class="verticalform suppressbottommargin">
+<li>
+	<label for="fromaccount">From Account</label>
+	<ul class="list-group" id="fromaccountslist">
+		<li class="list-group-item bottom-list-button"><a href="#" id="btndifferentaccount"><i class="fa fa-book" aria-hidden="true"></i> Choose a different account</a></li>
+	</ul>
+<li class="textwithinlinebutton">
+	<label for="toaccount">To Address</label>
+	<input class="form-control form-control-lg" type="text" placeholder="r..." id="toaddress">
+<button id="btnscanqr2" type="button" class="btn btn-primary"><i class="fa fa-camera" aria-hidden="true"></i><br>
+QR
+</button></li>
+</ul>
 </div>
 
 
@@ -222,6 +206,10 @@ function selectAccount(accselected) {
 		acc.removeClass("active");
 	}
 	$("#ra" + accselected).addClass("active");
+	activeaccount = accselected;
+	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
+	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><div class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</div></li>');
+	
 }
 
 function refreshAccounts() {
@@ -237,11 +225,14 @@ function refreshAccounts() {
 	acc = JSON.parse(acc);
 	var first = true;
 	for (var i in acc) {
-		$("#accountslist").prepend('<li class="list-group-item accountitem '+(first?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 		if (first) {
 			first=false;
+		}
+		if (activeaccount == ""){
 			activeaccount = i;	
 		}
+
+		$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 		remote.requestAccountInfo({
 		account: i,
 		ledger: "validated"
@@ -249,7 +240,8 @@ function refreshAccounts() {
 			if (err) {
 				//accountInfoError(err, table);
 			} else {
-				$("#ra" + i+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+				$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+				accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
 			}
 		});
 	}
@@ -258,6 +250,7 @@ function refreshAccounts() {
 var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
+var accountbalances = {};
 function showTab(tab) {
 
 	if (tab == currenttab) return;
@@ -331,7 +324,7 @@ $("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
 $("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
 $("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
-
+$("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
 
 
 // Opening setup
@@ -341,12 +334,11 @@ var MY_ADDRESS;
 var MASTER_SECRET;
 var remote = new ripple.Remote({
 servers: [
-"wss://s-west.ripple.com:443",
-"wss://s-east.ripple.com:443"
+/*"wss://s-west.ripple.com:443",
+"wss://s-east.ripple.com:443"*/
+"wss://s.altnet.rippletest.net:51233"
 ]
 });
-document.getElementById("directxrp").checked = false;
-document.getElementById("useoptional").checked = false;
 
 var VER_REKEYED = 220;
 var VER_ENCRYPTED_ORDINARY = 160;
@@ -362,13 +354,22 @@ function hideSpinner() {
 	showTab("#tabaccounts");
 }
 
-/*var rotation = function (){
-	$(".loader").rotate({
-angle:0,
-animateTo:360,
-callback: rotation
-});
-}*/
+function tickSpinner() {
+	var x = $("img.loader").attr("style");
+	var angle = 0;
+	if (x != undefined && x != "") {
+		var myregexp = /([0-9]+)deg/m;
+		var match = myregexp.exec(x);
+		if (match != null) {
+			angle = parseInt(match[1]);
+		}
+	}
+	angle += 2;
+	$("img.loader").attr("style", "transform:rotate(" + angle + "deg);");
+	if ($("#loader").css('display') != 'none') setTimeout(tickSpinner, 5);
+}
+
+setTimeout(tickSpinner, 5);
 
 var app = {
     // Application Constructor
