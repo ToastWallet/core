@@ -1,26 +1,17 @@
 body {
-	margin-top:60px;
-	margin-left: 5px;
-	margin-right: 5px;
-	margin-bottom: 60px;
+	margin-top: 3em;
+	margin-left: 1em;
+	margin-right: 1em;
+	margin-bottom: 3em;
 }
 a:hover, a:visited, a:active, a:focus {
     text-decoration: none !important;
 }
 
-li.textwithinlinebutton > input {
-    width: 80%;
-    display: table-cell;
+.suppressbottommargin, .suppressbottommargin > * {
+	margin-bottom: 0 !important;
 }
 
-li.textwithinlinebutton {
-    width: 100%;
-    display: inline-table;
-}
-.suppressbottommargin, .suppressbottommargin > * {
-	margin-bottom: 0px !important;
-}
-li.textwithinlinebutton > button {display: table-cell;width: calc(20% - 4px);margin-left: 4px;}
 .bottom-list-button {
     display: table-cell;
     text-align: center;
@@ -38,64 +29,64 @@ li.textwithinlinebutton > button {display: table-cell;width: calc(20% - 4px);mar
 }
 ul {
     list-style: none;
-    padding-left: 0px;
+    padding-left: 0;
 }
 ul.verticalform > li {
-    margin-bottom: 25px;
+    margin-bottom: 1em;
     height: 100%;
 }
 
 .hr:before {
-    width: calc(50% - 20px);
+    width: calc(50% - 2em);
     height: 1px;
     display: block;
     position: absolute;
     background: #adadad;
     content: " ";
-    left: 0px;
-    top: 11px;
+    left: 0;
+    top: 0.5em;
     z-index: 10;
 }
 
 .hr {
-    font-size: 15px;
+    font-size: 1em;
     text-align: center;
     z-index: 11;
     position: relative;
 }
 
 .hr:after {
-    width: calc(50% - 20px);
+    width: calc(50% - 2em);
     height: 1px;
     display: block;
     position: absolute;
     right: 0px;
-    top: 11px;
+    top: 0.5em;
     background: #adadad;
     content: " ";
     z-index: 10;
 }
 video#qrpreview {
     max-height: 50vh;
-    margin: 0px 0px 0px 0px;
+    margin: 0;
     width: 100%;
-    padding: 0px 0px 0px 0px;
+    padding: 0;
 }
 div.amount {
     float: right;
 }
 #accountslist > li {
-    min-height: 60px;
+    min-height: 3em;
 }
 .verticalform {
-    width: calc(100% - 20px);
+    width: calc(100% - 2em);
     height: auto;
     margin-left: 50%;
-    transform: translate(-50%, 0px);
+    transform: translate(-50%, 0);
 }
 
 .screentab {
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 6em);
 }
 
 .verticalform label {
@@ -105,35 +96,9 @@ li#generatedaddress {
     text-align: center;
 }
 .verticalform input[type="text"] {
-    padding: 5px;
-}
-.largebuttongrid {
-    max-width: 515px;
-    padding: 0px;
-    margin: auto;
-    min-height: 200px;
-    text-align: center;
-    display: table;
+    padding: 0.5em;
 }
 
-.largebuttongrid > li {
-    min-width: 200px;
-    min-height: 200px;
-    height: 200px;
-    margin: 5px;
-    color: white;
-    display: table-cell;
-    background: hsla(214, 75%, 50%, 1);
-    position: relative;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 2px solid white;
-    text-align: center;
-    vertical-align: middle;
-}
-.largebuttongrid .buttonicon {
-    font-size: 30px;
-}
 #loading {
     position: fixed;
     top: 0;
@@ -141,33 +106,32 @@ li#generatedaddress {
     width: 100%;
     height: 100vh;
     z-index: 10000;
-    padding: 20%;
     text-align: center;
+    vertical-align: middle;
     background: #fff;
 }
 #navfooter {
     position: fixed;
-    bottom: 0px;
-    height: 20px;
+    bottom: 0;
+    height: 3em;
     width: 100%;
-    left: 0px;
+    left: 0;
     background: hsla(214, 50%, 50%, 1);
     list-style: none;
-    margin: 0px;
-    padding: 5px;
+    margin: 0;
+    padding: 0.5em;
     text-align: center;
     display: table;
-    padding-bottom: 15px;
 }
 #navheader {
     position: fixed;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 50px;
+    height: 2em;
     background: #3f77bf;
-    margin: 0px;
-    padding: 5px;
+    margin: 0;
+    padding: 0.5em;
     list-style: none;
     display: table;
 
@@ -175,7 +139,7 @@ li#generatedaddress {
 
 #navheader > li {
     vertical-align: middle;
-    margin: 0px;
+    margin: 0;
     color: white;
     display: table-cell;
 }
@@ -200,11 +164,10 @@ li#generatedaddress {
     text-align: center;
     vertical-align: top;
     position: relative;
-    font-size: 25px;
     cursor: pointer;
 }
 
 #navfooter > li > div {
     color: white;
-    font-size: 10px;
+    font-size: 0.5em;
 }
