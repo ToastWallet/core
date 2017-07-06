@@ -542,8 +542,7 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.1.3",
     "cordova-plugin-vibration": "2.1.5",
     "cordova-plugin-whitelist": "1.2.2",
-    "phonegap-plugin-barcodescanner": "6.0.6",
-    "cordova-plugin-crosswalk-webview": "2.3.0"
+    "phonegap-plugin-barcodescanner": "6.0.6"
 };
 // BOTTOM OF METADATA
 });

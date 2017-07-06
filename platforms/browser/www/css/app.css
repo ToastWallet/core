@@ -5,6 +5,7 @@ body {
     font-family: sans-serif;
     font-size: 2em;
     height: 100vh;
+	color:white;
 }
 
 a:hover, a:visited, a:active, a:focus {
@@ -25,6 +26,10 @@ a:hover, a:visited, a:active, a:focus {
 .active a {
     color: white !important;
 }
+
+.accountitem {
+    color: hsla(0, 0%, 35%, 1);
+}
 #navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover {
     color: white !important;
 }
@@ -33,7 +38,6 @@ ul {
     padding-left: 0;
 }
 ul.verticalform > li {
-    margin-bottom: 1em;
     height: 100%;
 }
 
@@ -77,17 +81,27 @@ div.amount {
     float: right;
 }
 #accountslist > li {
-    min-height: 3em;
+    min-height: 3.5em;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .verticalform {
-    width: calc(100% - 2em);
-    height: auto;
-    margin-left: 50%;
-    transform: translate(-50%, 0);
 }
 
 .screentab {
 	padding-top: 1em;
+}
+
+.largebuttongrid {
+	text-align: center;
+}
+
+.largebuttongrid > li {
+	min-width: 15em;
+	background-color: #337ab7;
+	padding: 1em;
+	border-radius: 0.25em;
+	margin: 0.5em;
 }
 
 li#generatedaddress {
@@ -117,7 +131,7 @@ li#generatedaddress {
     background: hsla(214, 50%, 50%, 1);
     list-style: none;
     margin: 0;
-    padding: 1em 1em 1em 1em;
+    padding: 0.5em 0.5em 0.5em 0.5em;
     text-align: center;
 }
 #navheader {
@@ -127,7 +141,7 @@ li#generatedaddress {
     width: 100%;
     background: #3f77bf;
     margin: 0;
-    padding: 1em 1em 1em 1em;
+    padding: 0.5em 0.5em 0.5em 0.5em;
     list-style: none;
 }
 
@@ -139,7 +153,6 @@ body:before {
 #navheader > li {
     vertical-align: middle;
     margin: 0;
-    color: white;
     display: inline-block;
 }
 
@@ -151,6 +164,7 @@ body:before {
 .headerright {
     width: 25%;
     text-align: right;
+    font-size: 0.7em !important;
 }
 
 .headermiddle {
@@ -158,15 +172,13 @@ body:before {
     text-align: center;
 }
 #navfooter > li {
-    color: white;
     text-align: center;
     vertical-align: top;
     position: relative;
     cursor: pointer;
     display: inline-block;
-    margin: 0em 1em 0em 1em;
+    min-width: 4em;
 }
 #navfooter > li > div {
-    color: white;
     font-size: 0.5em;
 }
