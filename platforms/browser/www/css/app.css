@@ -1,7 +1,10 @@
 body {
-	margin: 1em;
 	font-family: sans-serif;
 	font-size: 2em;
+    margin: 0em 1em 0em 1em;
+    font-family: sans-serif;
+    font-size: 2em;
+    height: 100vh;
 }
 
 a:hover, a:visited, a:active, a:focus {
@@ -13,12 +16,10 @@ a:hover, a:visited, a:active, a:focus {
 }
 
 .bottom-list-button {
-    display: table-cell;
     text-align: center;
     vertical-align: middle;
 }
 .list-group-item {
-    display: table;
     width: 100%;
 }
 .active a {
@@ -86,7 +87,7 @@ div.amount {
 }
 
 .screentab {
-	top-padding: 1em;
+	padding-top: 1em;
 }
 
 li#generatedaddress {
@@ -118,8 +119,6 @@ li#generatedaddress {
     margin: 0;
     padding: 1em 1em 1em 1em;
     text-align: center;
-    display: table;
-    min-height: 3em;
 }
 #navheader {
     position: fixed;
@@ -130,21 +129,18 @@ li#generatedaddress {
     margin: 0;
     padding: 1em 1em 1em 1em;
     list-style: none;
-    display: table;
-    min-height: 3em;
 }
 
 body:before {
-	padding: 3em;
-	content: " ";
-	display: table;
+    content: "A";
+    display: inline-block;
+    padding: 1em 1em 1em 1em;
 }
-
 #navheader > li {
     vertical-align: middle;
     margin: 0;
     color: white;
-    display: table-cell;
+    display: inline-block;
 }
 
 .headerleft {
@@ -163,13 +159,13 @@ body:before {
 }
 #navfooter > li {
     color: white;
-    display: table-cell;
     text-align: center;
     vertical-align: top;
     position: relative;
     cursor: pointer;
+    display: inline-block;
+    margin: 0em 1em 0em 1em;
 }
-
 #navfooter > li > div {
     color: white;
     font-size: 0.5em;

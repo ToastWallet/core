@@ -365,6 +365,7 @@ function tickSpinner() {
 		}
 	}
 	angle += 2;
+	angle %= 360;
 	$("img.loader").attr("style", "transform:rotate(" + angle + "deg);");
 	if ($("#loader").css('display') != 'none') setTimeout(tickSpinner, 5);
 }
