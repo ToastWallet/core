@@ -1,11 +1,10 @@
 body {
 	font-family: sans-serif;
-	font-size: 2em;
     margin: 0em 1em 0em 1em;
     font-family: sans-serif;
-    font-size: 2em;
     height: 100vh;
 	color:white;
+	font-size: 1.5em;
 }
 
 a:hover, a:visited, a:active, a:focus {
@@ -71,31 +70,49 @@ ul.verticalform > li {
     content: " ";
     z-index: 10;
 }
+
+.address {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 video#qrpreview {
     max-height: 50vh;
     margin: 0;
     width: 100%;
     padding: 0;
 }
-div.amount {
+
+img.loader {
+    vertical-align: middle;
+    top: calc(50% - 25px);
+    position: absolute;
+    left: calc(50% - 25px);
+}
+.amount {
     float: right;
 }
 #accountslist > li {
-    min-height: 3.5em;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-.verticalform {
+i.fa {
+    font-size: 1.3em !important;
 }
-
+label {
+    color: black;
+}
+#fromaccountslist {
+    margin-bottom: 0 !important;
+}
 .screentab {
-	padding-top: 1em;
 }
 
 .largebuttongrid {
 	text-align: center;
 }
-
+div.input-group>span.input-group-btn>button {
+    min-width: 5em;
+}
 .largebuttongrid > li {
 	min-width: 15em;
 	background-color: #337ab7;
@@ -104,12 +121,16 @@ div.amount {
 	margin: 0.5em;
 }
 
-li#generatedaddress {
+#generatedaddress {
     font-weight: bold;
     text-align: center;
-}
-.verticalform input[type="text"] {
-    padding: 1em;
+    color: black;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border: 1px black solid;
+    padding: 0.25em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #loading {
@@ -118,7 +139,7 @@ li#generatedaddress {
     left: 0;
     width: 100%;
     height: 100vh;
-    z-index: 10000;
+    z-index: 100000;
     text-align: center;
     vertical-align: middle;
     background: #fff;
@@ -133,7 +154,14 @@ li#generatedaddress {
     margin: 0;
     padding: 0.5em 0.5em 0.5em 0.5em;
     text-align: center;
+    z-index: 99999;
 }
+
+#dummyfooter {
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    margin: 0;
+}
+
 #navheader {
     position: fixed;
     top: 0;
@@ -143,6 +171,7 @@ li#generatedaddress {
     margin: 0;
     padding: 0.5em 0.5em 0.5em 0.5em;
     list-style: none;
+    z-index: 99999;
 }
 
 body:before {
@@ -164,21 +193,20 @@ body:before {
 .headerright {
     width: 25%;
     text-align: right;
-    font-size: 0.7em !important;
 }
 
 .headermiddle {
     width: 50%;
     text-align: center;
 }
-#navfooter > li {
+#navfooter > li, #dummyfooter > li {
     text-align: center;
     vertical-align: top;
     position: relative;
     cursor: pointer;
     display: inline-block;
-    min-width: 4em;
+    min-width: 30%;
 }
 #navfooter > li > div {
-    font-size: 0.5em;
+    font-size: 0.8em;
 }
