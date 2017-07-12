@@ -35,7 +35,19 @@
 	</ul>
 </div>
 
-<div id="accountdetails" class="screentab" data-title="Account Details" data-hasback="true">
+<div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true">
+<center>
+<div style="color:red">Your private secret key for</div><br>
+<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
+<center><div id="accsecret" style="color:blue"></div></center><br />
+<div style="color:red">QR code of your secret key</div><br>
+<center><div id="accsecretqr"></div>
+</center>
+
+</center>
+</div>
+
+<div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true">
 <div style="color:grey">Your public Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 <center><div id="accdetailsaddress" ></div></center>
 
@@ -280,12 +292,30 @@ function selectAccount(accselected) {
 	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
 
 
-	$("#accdetailsamount")[0].innerText = accountbalances[accselected] + ' XRP';
+	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
 	$("#accdetailsaddress")[0].innerText = accselected;
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
-	showTab("#accountdetails");	
+	showTab("#tabaccountdetails");	
+}
+
+
+function renderSecret(acctorender) {
+
+	$("#accdetailssecretaddress").empty();
+	$("#accsecret").empty();
+	$("#accsecretqr").empty();
+
+        getAccounts(function(secrets) {
+		if (secrets[acctorender] !== undefined) {
+			$("#accdetailssecretaddress").append(acctorender);
+			$("#accsecret").append(secrets[acctorender]);	
+			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
+			return;
+		}
+	});
+	
 }
 
 function getAccounts(callback) {
@@ -331,6 +361,8 @@ function refreshAccounts() {
 	});
 
 }
+
+
 var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
@@ -360,6 +392,8 @@ function showTab(tab) {
 
 	if (tab == "#tabaccounts") {
 		refreshAccounts();	
+	} else if (tab == "#tabaccountsecret") {
+		renderSecret(activeaccount);
 	}
 
 	var tabs = $(".screentab");
@@ -411,6 +445,8 @@ $("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
 $("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
 $("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
+
+$("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
 
 
 // Opening setup

@@ -177,7 +177,7 @@ div.input-group>span.input-group-btn>button {
     padding-top: 1em;
     padding-bottom: 1em;
 }
-#accdetailsaddress {
+#accdetailsaddress, #accdetailssecretaddress {
 	font-size: 1.5em !important; 
 	color:black; 
 	border:1px solid black; 
