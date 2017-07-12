@@ -78,7 +78,7 @@
 	<div class="input-group">
 		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn">
-			<button class="btn btn-primary" type="button">QR</button>
+			<button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button>
 		</span>
 	</div>
 
@@ -142,10 +142,7 @@
 
 <label for="toaccount">From Account</label>
 	<div>
-		<select id="company" class="form-control">
-			<option>small</option>
-			<option>medium</option>
-			<option>large</option>
+		<select id="payfromaccount" class="form-control">
 		</select>
 	</div>
 <br />
@@ -154,7 +151,7 @@
 	<div class="input-group">
 		<input type="text" id="toaddress" class="form-control" placeholder="">
 		<span class="input-group-btn">
-			<button class="btn btn-info" type="button">QR</button>
+			<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
 		</span>
 	</div>
 <br />
@@ -174,9 +171,9 @@
 
 <label>Amount</label>
 	<div class="input-group">
-		<input type="text" id="toaddress" class="form-control" placeholder="">
+		<input type="text" id="payamount" class="form-control" placeholder="">
 		<span class="input-group-btn">
-			<button class="btn btn-success" type="button">Pay</button>
+			<button class="btn btn-success" id="btnpay" type="button">Pay</button>
 		</span>
 	</div>
 
@@ -353,6 +350,7 @@ function refreshAccounts() {
 		acc[i].remove();
 	}
 
+	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
 		var first = true;
@@ -362,6 +360,9 @@ function refreshAccounts() {
 			}
 
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
+
+			$("#payfromaccount").append('<option'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+
 			remote.requestAccountInfo({
 			account: i,
 			ledger: "validated"
@@ -448,6 +449,38 @@ function importGeneratedAccount() {
 	showTab("#tabaccounts");
 }
 
+function doPay() {
+
+	var payfrom = $("#payfromaccount").find(":selected").text();
+	var payto = $("#toaddress").text();
+	var dest = $("#desttag").text();
+	var invid = $("#invoiceid").text();
+	var amount = $("#payamount").text();
+
+
+
+	if (dest == "") dest = 0;
+	
+	if (payfrom == "") {
+		navigator.notification.alert("You must select an account to pay from", function{}($("#payfromaccount").focus()), "Select a from account", "OK");
+		return;
+	}
+
+
+	if (payto == "") {
+		navigator.notification.alert("You must select an address to pay to", function{}($("#toaddress").focus()), "Select a to address", "OK");
+		return;
+	}
+
+
+	if (amount == "") {
+		navigator.notification.alert("You must select an amount to send", function{}($("#payamount").focus()), "Select a payment amount", "OK");
+		return;
+	}
+
+	
+}
+
 $("#navaccounts").click(function() { showTab("#tabaccounts"); });
 $("#navpayments").click(function() { showTab("#tabpayments"); });
 $("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
@@ -465,6 +498,10 @@ $("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
 
 $("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
 
+
+$("#btnpay").click(function() {
+	doPay();
+});
 
 // Opening setup
 // --------------------------------
@@ -1496,35 +1533,6 @@ function renderAmount(amount) {
 		return amount.value + " " + amount.currency;
 	}
 }
-
-function toggleOptionalFields(cb) {
-	var of = document.getElementById("optionalfields");
-	if (cb.checked) {
-		of.className = "";
-	} else {
-		of.className = "displaynone";
-	}
-}
-
-function toggleDirectXRP(cb) {
-	var sc = document.getElementById("sendcurrency");
-	var cs = document.getElementById("complexsender");
-	var ds = document.getElementById("directsender");
-	if (cb.checked) {
-		sc.value = "XRP";
-		sc.readOnly = true;
-		cs.className = "displaynone";
-		ds.className = "";
-	} else {
-		sc.value = "";
-		sc.readOnly = false;
-		ds.className = "displaynone";
-		cs.className = "";
-	}
-}
-
-
-// Managing optional fields
 
 function applyOptionalFields(transaction, optionalFields) {
 	if (optionalFields.destinationTag) {

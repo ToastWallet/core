@@ -35,7 +35,19 @@
 	</ul>
 </div>
 
-<div id="accountdetails" class="screentab" data-title="Account Details" data-hasback="true">
+<div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true">
+<center>
+<div style="color:red">Your private secret key for</div><br>
+<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
+<center><div id="accsecret" style="color:blue"></div></center><br />
+<div style="color:red">QR code of your secret key</div><br>
+<center><div id="accsecretqr"></div>
+</center>
+
+</center>
+</div>
+
+<div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true">
 <div style="color:grey">Your public Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 <center><div id="accdetailsaddress" ></div></center>
 
@@ -66,7 +78,7 @@
 	<div class="input-group">
 		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn">
-			<button class="btn btn-primary" type="button">QR</button>
+			<button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button>
 		</span>
 	</div>
 
@@ -130,10 +142,7 @@
 
 <label for="toaccount">From Account</label>
 	<div>
-		<select id="company" class="form-control">
-			<option>small</option>
-			<option>medium</option>
-			<option>large</option>
+		<select id="payfromaccount" class="form-control">
 		</select>
 	</div>
 <br />
@@ -142,7 +151,7 @@
 	<div class="input-group">
 		<input type="text" id="toaddress" class="form-control" placeholder="">
 		<span class="input-group-btn">
-			<button class="btn btn-info" type="button">QR</button>
+			<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
 		</span>
 	</div>
 <br />
@@ -164,7 +173,7 @@
 	<div class="input-group">
 		<input type="text" id="toaddress" class="form-control" placeholder="">
 		<span class="input-group-btn">
-			<button class="btn btn-success" type="button">Pay</button>
+			<button class="btn btn-success" id="btnpay" type="button">Pay</button>
 		</span>
 	</div>
 
@@ -280,12 +289,46 @@ function selectAccount(accselected) {
 	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
 
 
-	$("#accdetailsamount")[0].innerText = accountbalances[accselected] + ' XRP';
+	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
 	$("#accdetailsaddress")[0].innerText = accselected;
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
-	showTab("#accountdetails");	
+	$("#btnremoveaddr").off("click");
+	$("#btnremoveaddr").click(function() {
+
+	    navigator.notification.prompt(
+		"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
+		function(result) {
+			if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
+				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
+			}
+		},                  
+		'Confirm you wish to remove Ripple address',
+		['Ok','Cancel!'],              // buttonLabels
+		""
+	    );
+
+	});
+	showTab("#tabaccountdetails");	
+}
+
+
+function renderSecret(acctorender) {
+
+	$("#accdetailssecretaddress").empty();
+	$("#accsecret").empty();
+	$("#accsecretqr").empty();
+
+        getAccounts(function(secrets) {
+		if (secrets[acctorender] !== undefined) {
+			$("#accdetailssecretaddress").append(acctorender);
+			$("#accsecret").append(secrets[acctorender]);	
+			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
+			return;
+		}
+	});
+	
 }
 
 function getAccounts(callback) {
@@ -307,6 +350,7 @@ function refreshAccounts() {
 		acc[i].remove();
 	}
 
+	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
 		var first = true;
@@ -316,6 +360,9 @@ function refreshAccounts() {
 			}
 
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
+
+			$("#payfromaccount").append('<option'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+
 			remote.requestAccountInfo({
 			account: i,
 			ledger: "validated"
@@ -325,12 +372,15 @@ function refreshAccounts() {
 				} else {
 					$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
 					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+
 				}
 			});
 		}
 	});
 
 }
+
+
 var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
@@ -360,6 +410,8 @@ function showTab(tab) {
 
 	if (tab == "#tabaccounts") {
 		refreshAccounts();	
+	} else if (tab == "#tabaccountsecret") {
+		renderSecret(activeaccount);
 	}
 
 	var tabs = $(".screentab");
@@ -411,6 +463,8 @@ $("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
 $("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
 $("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
+
+$("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
 
 
 // Opening setup
@@ -761,6 +815,29 @@ function importAddress(secret, phrase) {
 
 	addSecret(address, secret, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
 
+}
+function removeSecret(address, successfun, failfun) {
+                var f = function(secrets) {
+                        if (secrets.data == undefined) {
+                                secrets = {};
+                        } else {
+                                secrets = JSON.parse(secrets.data);
+                        }
+
+			if (secrets[address] != undefined) delete secrets[address];
+                        db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+                                navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
+                                successfun();
+                        }).catch(function(x){
+                                navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
+                                failfun();
+                        });
+
+                }
+
+                db.get("secrets").then(f).catch(f);
+
+	
 }
 function addSecret(address, secret, successfun, failfun) {
 
