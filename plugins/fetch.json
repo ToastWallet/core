@@ -166,5 +166,30 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-sqlite-2": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-sqlite-2"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-screen-orientation": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-screen-orientation"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "es6-promise-plugin": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vstirbu/PromisesPlugin.git",
+            "subdir": "."
+        },
+        "is_top_level": false,
+        "variables": {}
     }
 }

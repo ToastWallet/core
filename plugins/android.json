@@ -63,6 +63,12 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-sqlite-2": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-screen-orientation": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {
@@ -70,6 +76,9 @@
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "es6-promise-plugin": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     }

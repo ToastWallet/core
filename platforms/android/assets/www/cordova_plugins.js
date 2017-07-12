@@ -517,6 +517,28 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.barcodeScanner"
         ]
+    },
+    {
+        "id": "cordova-plugin-sqlite-2.sqlitePlugin",
+        "file": "plugins/cordova-plugin-sqlite-2/dist/sqlite-plugin.js",
+        "pluginId": "cordova-plugin-sqlite-2",
+        "clobbers": [
+            "sqlitePlugin"
+        ]
+    },
+    {
+        "id": "es6-promise-plugin.Promise",
+        "file": "plugins/es6-promise-plugin/www/promise.js",
+        "pluginId": "es6-promise-plugin",
+        "runs": true
+    },
+    {
+        "id": "cordova-plugin-screen-orientation.screenorientation",
+        "file": "plugins/cordova-plugin-screen-orientation/www/screenorientation.js",
+        "pluginId": "cordova-plugin-screen-orientation",
+        "clobbers": [
+            "cordova.plugins.screenorientation"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -542,7 +564,10 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.1.3",
     "cordova-plugin-vibration": "2.1.5",
     "cordova-plugin-whitelist": "1.2.2",
-    "phonegap-plugin-barcodescanner": "6.0.6"
+    "phonegap-plugin-barcodescanner": "6.0.6",
+    "cordova-plugin-sqlite-2": "1.0.4",
+    "es6-promise-plugin": "4.1.0",
+    "cordova-plugin-screen-orientation": "2.0.1"
 };
 // BOTTOM OF METADATA
 });

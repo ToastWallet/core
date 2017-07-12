@@ -1,0 +1,18 @@
+#!/bin/bash
+
+rm -rf .tmp
+mkdir .tmp
+browserify index.js > .tmp/bundle.js
+uglifyjs .tmp/bundle.js -c -m > .tmp/bundle.min.js
+cat > www/promise.js << EOL
+/*!
+ * @overview es6-promise - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ * @version   4.1.0
+ */
+
+`cat .tmp/bundle.min.js`
+
+EOL

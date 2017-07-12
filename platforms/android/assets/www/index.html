@@ -16,8 +16,9 @@
 <script src="deps/jquery-ui-bootstrap/assets/js/jquery-ui-1.10.0.custom.min.js" type="text/javascript"></script>
 <script src="js/ripple-0.12.5-rc2-min.js"></script>
 <script src="js/instascan.min.js"></script>
+<script type="text/javascript" src="js/pouchdb.min.js"></script>
 <script type="text/javascript" src="cordova.js"></script>
-
+<script type='application/javascript' src='js/fastclick.js'></script>
 </head>
 <body>
 
@@ -26,11 +27,23 @@
 
 
 
-
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true">
-<ul class="list-group" id="accountslist">
-<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
-</ul>
+	<ul class="list-group" id="accountslist">
+		<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	</ul>
+</div>
+
+<div id="accountdetails" class="screentab" data-title="Account Details" data-hasback="true">
+<div style="color:grey">Your public Ripple address<span class="amount" style="color:black;">yyyyy XRP</span></div><br>
+<center><div style="font-size: 1.5em !important; color:black; border:1px solid black; overflow-wrap:break-word; padding:0.2em; display:inline-block; max-width:100%; width:auto;">reg09wriefdnvdkxc49rfw0pjsdc</div></center>
+
+<center><img style="width:auto; height:auto max-width: 100%; " src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Qr-2.png">
+</center>
+
+<center><button type="button" class="btn btn-info">Backup Secret Key</button></center><br>
+<center>
+<button type="button" class="btn btn-danger">Remove this address</button>
+</center>
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account">
@@ -46,67 +59,113 @@
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display: block;">
 
-<ul class="verticalform">
-<li>
-<label for="secret">Ripple Secret</label>
 
-<input class="form-control form-control-lg" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-</li><li>
-<label for="secret">Decryption Phrase (if applicable)</label>
+	<label for="secret">Ripple Secret</label>
+	<div class="input-group">
+		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<span class="input-group-btn">
+			<button class="btn btn-primary" type="button">QR</button>
+		</span>
+	</div>
 
-<input class="form-control form-control-lg" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
-</li><li><center><button type="button" class="btn btn-primary btn-lg" id="btnimport">Import Account</button></center></li><li class="hr">or
-</li>
+	<br />
 
-<li><center><button id="btnscanqr" type="button" class="btn btn-primary btn-lg"><i class="fa fa-camera" aria-hidden="true"></i><br>
-Read QR Code
-</button></center></li>
-</ul>
+	<label for="secret">Decryption Phrase (if applicable)</label>
+	<div>
+		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+	</div>
+
+	<br />
+
+	<center>
+	<div>
+			<button type="button" class="btn btn-primary" id="btnimport">Import Account</button>
+	</div>
+	</center>
 
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key">
-<ul class="verticalform" >
-<li><video id="qrpreview"></video></li>
-<li><div id="qrerror"></div></li>
-<li><center><button type="button" class="btn btn-primary btn-lg" onclick="showTab(-1);">Cancel</button></center></li>
-</ul>
+	<div class="input-group"><video id="qrpreview"></video></div>
+	<br />
+	<div id="qrerror" class="input-group"></div>
+	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
 </div>
 
-<div id="tabimportstatus" class="screentab" data-hasback="true" data-title="Import Status">
-<ul class="verticalform">
-<li>
-<div class="alert alert-success fade in alert-dismissable">
+
+
+<div id="tabalert" class="screentab" data-hasback="false" data-title="">
+	<div id="alertmsg"></div>
+	<br />
+	<center id="alertbtns">
+	</center>
 </div>
-<div class="alert alert-danger fade in alert-dismissable">
-</div>
-</li>
-<li><center><button type="button" class="btn btn-primary btn-lg" onclick="showTab('#tabaccounts');">Return to Accounts</button></center></li>
-</ul>
-</div>
+
+<script>
+	function showAlert(alertclass, buttons) {
+		$("#alertmsg").removeClass();
+		if (alertclass == undefined || alertclass == "") alertclass = "alert-info";
+		if (buttons == undefined || buttons == "") buttons = [
+			'<button type="button" class="btn btn-primary" onclick="showTab(-1);"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>'
+		 ];
+
+		$("#alertbtns").empty();
+		for (var i = 0; i < buttons.length; i++)
+			$("#alertbtns").append(buttons[i]);
+		showTab("#tabalert");
+	}
+</script>
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account">
-<ul class="verticalform">
-<li id="generatedaddress"></li>
-<li><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></li>
-<li><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></li>
-</ul>
+	<div id="generatedaddress"></div>
+	<br />
+	<div><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></div>
+	<br />
+	<div><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></div>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Make a Payment">
-<ul class="verticalform suppressbottommargin">
-<li>
-	<label for="fromaccount">From Account</label>
-	<ul class="list-group" id="fromaccountslist">
-		<li class="list-group-item bottom-list-button"><a href="#" id="btndifferentaccount"><i class="fa fa-book" aria-hidden="true"></i> Choose a different account</a></li>
-	</ul>
-	<li><label for="toaccount">To Address</label></li>
-<li class="textwithinlinebutton">
-	<input class="form-control form-control-lg" type="text" placeholder="r..." id="toaddress">
-<button id="btnscanqr2" type="button" class="btn btn-primary"><i class="fa fa-camera" aria-hidden="true"></i><br>
-QR
-</button></li>
-</ul>
+
+<label for="toaccount">From Account</label>
+	<div>
+		<select id="company" class="form-control">
+			<option>small</option>
+			<option>medium</option>
+			<option>large</option>
+		</select>
+	</div>
+<br />
+
+<label for="toaccount">To Address</label>
+	<div class="input-group">
+		<input type="text" id="toaddress" class="form-control" placeholder="">
+		<span class="input-group-btn">
+			<button class="btn btn-info" type="button">QR</button>
+		</span>
+	</div>
+<br />
+
+
+<label>Destination Tag (optional)</label>
+	<div>
+	      <input type="text" id="desttag" class="form-control" placeholder="">
+	</div>
+<br />
+
+<label>Invoice ID (optional)</label>
+	<div>
+	      <input type="text" id="invoiceid" class="form-control" placeholder="">
+	</div>
+<br />
+
+<label>Amount</label>
+	<div class="input-group">
+		<input type="text" id="toaddress" class="form-control" placeholder="">
+		<span class="input-group-btn">
+			<button class="btn btn-success" type="button">Pay</button>
+		</span>
+	</div>
+
 </div>
 
 
@@ -151,15 +210,23 @@ QR
 
 
 <div id="loading" style="">
-<img class="loader" src="images/rippleThrobber.png">
+<img class="loader" src="images/rippleThrobber.gif">
 <div id="loaderror"></div>
 </div>
 
 <ul id="navheader"><li class="headerleft"></li><li class="headermiddle">Accounts</li><li class="headerright">Logout</li></ul>
-<ul id="navfooter"><li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>PAYMENTS</div></li>
-<li id="navtrustlines"><i class="fa fa-exchange" aria-hidden="true"></i></i><div>TRUSTLINES</div></li>
-<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li></ul>
+<ul id="navfooter">
+	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>PAYMENTS</div></li>
+	<!--li id="navtrustlines"><i class="fa fa-exchange" aria-hidden="true"></i></i><div>TRUSTLINES</div></li-->
+	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
+</ul>
+
+<ul id="dummyfooter">
+<li><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+<li><i class="fa fa-home" aria-hidden="true"></i><div>PAYMENTS</div></li>
+<li><i class="fa fa-home" aria-hidden="true"></i><div>SETTINGS</div></li>
+</ul>
 
 
 <script>
@@ -208,8 +275,9 @@ function selectAccount(accselected) {
 	$("#ra" + accselected).addClass("active");
 	activeaccount = accselected;
 	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
-	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><div class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</div></li>');
-	
+	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
+
+	showTab("#accountdetails");	
 }
 
 function refreshAccounts() {
@@ -353,25 +421,7 @@ function hideSpinner() {
 	$("#loading").hide();
 	showTab("#tabaccounts");
 }
-
-function tickSpinner() {
-	var x = $("img.loader").attr("style");
-	var angle = 0;
-	if (x != undefined && x != "") {
-		var myregexp = /([0-9]+)deg/m;
-		var match = myregexp.exec(x);
-		if (match != null) {
-			angle = parseInt(match[1]);
-		}
-	}
-	angle += 2;
-	angle %= 360;
-	$("img.loader").attr("style", "transform:rotate(" + angle + "deg);");
-	if ($("#loader").css('display') != 'none') setTimeout(tickSpinner, 5);
-}
-
-setTimeout(tickSpinner, 5);
-
+var db;
 var app = {
     // Application Constructor
     initialize: function() {
@@ -389,6 +439,8 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
+		FastClick.attach(document.body);
+		db = new PouchDB('toastwallet');
                 connectToRipple();
     },
     // Update DOM on a Received Event

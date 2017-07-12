@@ -173,6 +173,20 @@ div.input-group>span.input-group-btn>button {
     list-style: none;
     z-index: 99999;
 }
+#accdetailsqr {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+#accdetailsaddress {
+	font-size: 1.5em !important; 
+	color:black; 
+	border:1px solid black; 
+	overflow-wrap:break-word; 
+	padding:0.2em; 
+	display:inline-block; 
+	max-width:100%; 
+	width:auto;
+}
 
 body:before {
     content: "A";

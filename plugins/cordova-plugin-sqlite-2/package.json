@@ -1,0 +1,83 @@
+{
+  "name": "cordova-plugin-sqlite-2",
+  "version": "1.0.4",
+  "description": "Cordova SQLite Plugin 2",
+  "scripts": {
+    "build": "rimraf dist && mkdirp dist && browserify -t rollupify -s sqlitePlugin src/javascript/index.js > dist/sqlite-plugin.js",
+    "build-test": "bash ./bin/build-test.sh",
+    "lint": "eslint src test/*js",
+    "test": "npm run test-device",
+    "test-local": "zuul --ui mocha-bdd --local 9000 --no-coverage test/test.js",
+    "test-phantom": "npm run build && zuul --ui mocha-bdd --phantom --no-coverage test/test.js",
+    "test-android": "PLATFORM=android npm run test-device",
+    "test-ios": "PLATFORM=ios npm run test-device",
+    "test-device": "npm run build && RUN=0 npm run build-test && bash ./bin/run-and-test-appium.sh",
+    "test-perf": "bash ./bin/test-perf.sh",
+    "prepublish": "npm run build"
+  },
+  "cordova": {
+    "id": "cordova-plugin-sqlite-2",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "repository": "https://github.com/nolanlawson/cordova-plugin-sqlite-2.git",
+  "keywords": [
+    "cordova",
+    "sqlite",
+    "sqlite3",
+    "websql",
+    "database",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "Nolan Lawson <nolan@nolanlawson.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nolanlawson/cordova-plugin-sqlite-2/issues"
+  },
+  "homepage": "https://github.com/nolanlawson/cordova-plugin-sqlite-2#readme",
+  "devDependencies": {
+    "appium": "1.5.1",
+    "bluebird": "3.3.4",
+    "browserify": "13.0.0",
+    "bundle-collapser": "1.2.1",
+    "chai": "3.5.0",
+    "chai-as-promised": "5.3.0",
+    "colors": "1.1.2",
+    "cordova": "6.1.0",
+    "denodeify": "1.2.1",
+    "eslint": "2.7.0",
+    "js-extend": "1.0.1",
+    "lodash.find": "4.2.0",
+    "lodash.map": "4.2.1",
+    "lodash.zipobject": "4.1.2",
+    "mkdirp": "0.5.1",
+    "phantomjs-prebuilt": "2.1.7",
+    "pouchdb-ajax": "5.4.4",
+    "pouchdb-binary-utils": "5.4.4",
+    "pouchdb-browser": "5.4.4",
+    "pouchdb-errors": "5.4.4",
+    "pouchdb-utils": "5.4.4",
+    "replace": "0.3.0",
+    "request-promise": "2.0.1",
+    "rimraf": "2.5.2",
+    "rollupify": "0.2.0",
+    "sauce-connect-launcher": "0.14.0",
+    "stream-to-promise": "1.1.0",
+    "tape": "4.5.1",
+    "ua-parser-js": "0.7.10",
+    "uuid": "2.0.1",
+    "wd": "0.4.0",
+    "websql": "0.4.4",
+    "zuul": "3.10.1"
+  },
+  "files": [
+    "src/android",
+    "src/ios",
+    "plugin.xml",
+    "dist"
+  ]
+}
