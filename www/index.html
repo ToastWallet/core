@@ -297,6 +297,22 @@ function selectAccount(accselected) {
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
+	$("#btnremoveaddr").off("click");
+	$("#btnremoveaddr").click(function() {
+
+	    navigator.notification.prompt(
+		"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
+		function(result) {
+			if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
+				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
+			}
+		},                  
+		'Confirm you wish to remove Ripple address',
+		['Ok','Cancel!'],              // buttonLabels
+		""
+	    );
+
+	});
 	showTab("#tabaccountdetails");	
 }
 
@@ -355,6 +371,7 @@ function refreshAccounts() {
 				} else {
 					$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
 					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+
 				}
 			});
 		}
@@ -797,6 +814,29 @@ function importAddress(secret, phrase) {
 
 	addSecret(address, secret, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
 
+}
+function removeSecret(address, successfun, failfun) {
+                var f = function(secrets) {
+                        if (secrets.data == undefined) {
+                                secrets = {};
+                        } else {
+                                secrets = JSON.parse(secrets.data);
+                        }
+
+			if (secrets[address] != undefined) delete secrets[address];
+                        db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+                                navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
+                                successfun();
+                        }).catch(function(x){
+                                navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
+                                failfun();
+                        });
+
+                }
+
+                db.get("secrets").then(f).catch(f);
+
+	
 }
 function addSecret(address, secret, successfun, failfun) {
 
