@@ -192,6 +192,16 @@ function showAlert(alertclass, buttons) {
 
 </div>
 
+<div id="tabencryptionwarning" class="screentab" data-hasback="true" data-title="Encrypt Your Keys" style="display: block; color:black;">
+    <p style="text-align:center;"><b style=" font-size:1.3em;">We know you're keen to get started with ToastWallet</b></p>
+
+<p>But first you should know that each Ripple wallet consists of: </p><ul style="margin-left:1em !important; list-style-type: circle;"><li><b style="color:blue">Public Address</b><br><i style="color: blue;">which is like a bank account number</i></li><li><b style="color:red;">Secret Key</b><br><i style="color:red; font-weight:bold;">which is like your bank pin</i></li></ul><p style="">We highly recommend securing your Secret Key against theft or loss:</p><ul><li><button type="button" class="btn btn-success
+                             " style="width:100%">Premium - $10/year</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers and phone loss</p></li><li><button type="button" class="btn btn-warning" style="width:100%">Basic Encryption - $5/year</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers but not backed up</p></li><li><button type="button" class="btn btn-danger" style="width:100%">No Encryption - Free</button><p style="font-size:0.9em; text-align:center; font-family: monospace !important;">XRP may be stolen by hackers</p></li>
+
+    </ul>
+</div>
 
 <div id="tabtrade" class="screentab" data-primarytab="true" data-title="Trade">
 
@@ -480,7 +490,7 @@ function doPay() {
 
 	
 
-	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){}, function() {});
+	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
 }
 
 $("#navaccounts").click(function() { showTab("#tabaccounts"); });
@@ -741,17 +751,23 @@ function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID,
 				transaction.invoiceID(invoiceID);
 
 				transaction.submit(function(err, res) {
-					if (res == null || res.engine_result == 'tesSUCCESS') {
+					if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
+					
+						window.setInterval( function() {sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun);}, 1000);
+				
+					} else if ( (res == undefined || res == null || res.engine_result == 'tesSUCCESS') && !(res != null && res.engine_result == 'tejMaxLedger') ) {
 						navigator.notification.alert("Payment failed.", failfun, "Failure", "OK");
+						hideSpinner();
+						failfun();
 					} else {
 						navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
 						$("#toaddress").val("");
 						$("#desttag").val("");
 						$("#invoiceid").val("");
 						$("#payamount").val("");
-						showTab("#tabaccounts");
+						hideSpinner();
+						successfun();
 					}
-					hideSpinner();
 				});
 			} else {
 				navigator.notification.alert("Invalid account selected.", failfun, "Error", "OK");

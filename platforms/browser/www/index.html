@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <meta charset="utf-8" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+<meta charset="utf-8" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="msapplication-tap-highlight" content="no" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
 <!--meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" /-->
 
 <link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
@@ -30,9 +30,9 @@
 
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true">
-	<ul class="list-group" id="accountslist">
-		<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
-	</ul>
+<ul class="list-group" id="accountslist">
+<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+</ul>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true">
@@ -74,108 +74,108 @@
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display: block;">
 
 
-	<label for="secret">Ripple Secret</label>
-	<div class="input-group">
-		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn">
-			<button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button>
-		</span>
-	</div>
+<label for="secret">Ripple Secret</label>
+<div class="input-group">
+<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+<span class="input-group-btn">
+<button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button>
+</span>
+</div>
 
-	<br />
+<br />
 
-	<label for="secret">Decryption Phrase (if applicable)</label>
-	<div>
-		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
-	</div>
+<label for="secret">Decryption Phrase (if applicable)</label>
+<div>
+<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+</div>
 
-	<br />
+<br />
 
-	<center>
-	<div>
-			<button type="button" class="btn btn-primary" id="btnimport">Import Account</button>
-	</div>
-	</center>
+<center>
+<div>
+<button type="button" class="btn btn-primary" id="btnimport">Import Account</button>
+</div>
+</center>
 
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key">
-	<div class="input-group"><video id="qrpreview"></video></div>
-	<br />
-	<div id="qrerror" class="input-group"></div>
-	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
+<div class="input-group"><video id="qrpreview"></video></div>
+<br />
+<div id="qrerror" class="input-group"></div>
+<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
 </div>
 
 
 
 <div id="tabalert" class="screentab" data-hasback="false" data-title="">
-	<div id="alertmsg"></div>
-	<br />
-	<center id="alertbtns">
-	</center>
+<div id="alertmsg"></div>
+<br />
+<center id="alertbtns">
+</center>
 </div>
 
 <script>
-	function showAlert(alertclass, buttons) {
-		$("#alertmsg").removeClass();
-		if (alertclass == undefined || alertclass == "") alertclass = "alert-info";
-		if (buttons == undefined || buttons == "") buttons = [
-			'<button type="button" class="btn btn-primary" onclick="showTab(-1);"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>'
-		 ];
+function showAlert(alertclass, buttons) {
+	$("#alertmsg").removeClass();
+	if (alertclass == undefined || alertclass == "") alertclass = "alert-info";
+	if (buttons == undefined || buttons == "") buttons = [
+		'<button type="button" class="btn btn-primary" onclick="showTab(-1);"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>'
+			];
 
-		$("#alertbtns").empty();
-		for (var i = 0; i < buttons.length; i++)
-			$("#alertbtns").append(buttons[i]);
-		showTab("#tabalert");
-	}
+	$("#alertbtns").empty();
+	for (var i = 0; i < buttons.length; i++)
+		$("#alertbtns").append(buttons[i]);
+	showTab("#tabalert");
+}
 </script>
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account">
-	<div id="generatedaddress"></div>
-	<br />
-	<div><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></div>
-	<br />
-	<div><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></div>
+<div id="generatedaddress"></div>
+<br />
+<div><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></div>
+<br />
+<div><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></div>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Make a Payment">
 
 <label for="toaccount">From Account</label>
-	<div>
-		<select id="payfromaccount" class="form-control">
-		</select>
-	</div>
+<div>
+<select id="payfromaccount" class="form-control">
+</select>
+</div>
 <br />
 
 <label for="toaccount">To Address</label>
-	<div class="input-group">
-		<input type="text" id="toaddress" class="form-control" placeholder="">
-		<span class="input-group-btn">
-			<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
-		</span>
-	</div>
+<div class="input-group">
+<input type="text" id="toaddress" class="form-control" placeholder="">
+<span class="input-group-btn">
+<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
+</span>
+</div>
 <br />
 
 
 <label>Destination Tag (optional)</label>
-	<div>
-	      <input type="text" id="desttag" class="form-control" placeholder="">
-	</div>
+<div>
+<input type="text" id="desttag" class="form-control" placeholder="">
+</div>
 <br />
 
 <label>Invoice ID (optional)</label>
-	<div>
-	      <input type="text" id="invoiceid" class="form-control" placeholder="">
-	</div>
+<div>
+<input type="text" id="invoiceid" class="form-control" placeholder="">
+</div>
 <br />
 
 <label>Amount</label>
-	<div class="input-group">
-		<input type="text" id="toaddress" class="form-control" placeholder="">
-		<span class="input-group-btn">
-			<button class="btn btn-success" id="btnpay" type="button">Pay</button>
-		</span>
-	</div>
+<div class="input-group">
+<input type="text" id="payamount" class="form-control" placeholder="">
+<span class="input-group-btn">
+<button class="btn btn-success" id="btnpay" type="button">Pay</button>
+</span>
+</div>
 
 </div>
 
@@ -192,6 +192,16 @@
 
 </div>
 
+<div id="tabencryptionwarning" class="screentab" data-hasback="true" data-title="Encrypt Your Keys" style="display: block; color:black;">
+    <p style="text-align:center;"><b style=" font-size:1.3em;">We know you're keen to get started with ToastWallet</b></p>
+
+<p>But first you should know that each Ripple wallet consists of: </p><ul style="margin-left:1em !important; list-style-type: circle;"><li><b style="color:blue">Public Address</b><br><i style="color: blue;">which is like a bank account number</i></li><li><b style="color:red;">Secret Key</b><br><i style="color:red; font-weight:bold;">which is like your bank pin</i></li></ul><p style="">We highly recommend securing your Secret Key against theft or loss:</p><ul><li><button type="button" class="btn btn-success
+                             " style="width:100%">Premium - $10/year</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers and phone loss</p></li><li><button type="button" class="btn btn-warning" style="width:100%">Basic Encryption - $5/year</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers but not backed up</p></li><li><button type="button" class="btn btn-danger" style="width:100%">No Encryption - Free</button><p style="font-size:0.9em; text-align:center; font-family: monospace !important;">XRP may be stolen by hackers</p></li>
+
+    </ul>
+</div>
 
 <div id="tabtrade" class="screentab" data-primarytab="true" data-title="Trade">
 
@@ -227,10 +237,10 @@
 
 <ul id="navheader"><li class="headerleft"></li><li class="headermiddle">Accounts</li><li class="headerright">Logout</li></ul>
 <ul id="navfooter">
-	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>PAYMENTS</div></li>
-	<!--li id="navtrustlines"><i class="fa fa-exchange" aria-hidden="true"></i></i><div>TRUSTLINES</div></li-->
-	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
+<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>PAYMENTS</div></li>
+<!--li id="navtrustlines"><i class="fa fa-exchange" aria-hidden="true"></i></i><div>TRUSTLINES</div></li-->
+<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
 </ul>
 
 <ul id="dummyfooter">
@@ -244,43 +254,43 @@
 var scanner;
 function scanQR(intofield, returntab) {
 
-    if (device.platform == 'browser') {
-	showTab("#tabqrscan");
-        scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
-        scanner.addListener('scan', function (content) {
-                        $(intofield).val(content);
-                        showTab(returntab);
-                        });
-        Instascan.Camera.getCameras().then(function (cameras) {
-                        if (cameras.length > 0) {
-                        scanner.start(cameras[0]);
-                        } else {
-                        $("#qrerror").innerText = 'Error: No cameras found.';
-                        }
-                        }).catch(function (e) {
+	if (device.platform == 'browser') {
+		showTab("#tabqrscan");
+		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
+		scanner.addListener('scan', function (content) {
+				$(intofield).val(content);
+				showTab(returntab);
+				});
+		Instascan.Camera.getCameras().then(function (cameras) {
+				if (cameras.length > 0) {
+				scanner.start(cameras[0]);
+				} else {
+				$("#qrerror").innerText = 'Error: No cameras found.';
+				}
+				}).catch(function (e) {
 
-                                console.error(e);
-			});
-    } else {
-	    cordova.plugins.barcodeScanner.scan(
-		function (result) {
-		    if(!result.cancelled)
-		    {
+					console.error(e);
+					});
+	} else {
+		cordova.plugins.barcodeScanner.scan(
+				function (result) {
+				if(!result.cancelled)
+				{
 				$(intofield).val(result.text);
 				showtab(returntab);
-		    }
-		},
-		function (error) {
-			showTab("#tabqrscan");
-			$("#qrerror").innerText = 'Error: No access to camera.';
-		}
-	   );
-    }
+				}
+				},
+				function (error) {
+				showTab("#tabqrscan");
+				$("#qrerror").innerText = 'Error: No access to camera.';
+				}
+				);
+	}
 }
 
 function selectAccount(accselected) {
-        var acc = $(".accountitem");
-        for (var i = 0; i < acc.length; i++) {	
+	var acc = $(".accountitem");
+	for (var i = 0; i < acc.length; i++) {	
 		acc.removeClass("active");
 	}
 	$("#ra" + accselected).addClass("active");
@@ -297,19 +307,19 @@ function selectAccount(accselected) {
 	$("#btnremoveaddr").off("click");
 	$("#btnremoveaddr").click(function() {
 
-	    navigator.notification.prompt(
-		"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
-		function(result) {
-			if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
+			navigator.notification.prompt(
+				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
+				function(result) {
+				if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
 				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
-			}
-		},                  
-		'Confirm you wish to remove Ripple address',
-		['Ok','Cancel!'],              // buttonLabels
-		""
-	    );
+				}
+				},                  
+				'Confirm you wish to remove Ripple address',
+				['Ok','Cancel!'],              // buttonLabels
+				""
+				);
 
-	});
+			});
 	showTab("#tabaccountdetails");	
 }
 
@@ -320,25 +330,25 @@ function renderSecret(acctorender) {
 	$("#accsecret").empty();
 	$("#accsecretqr").empty();
 
-        getAccounts(function(secrets) {
-		if (secrets[acctorender] !== undefined) {
+	getAccounts(function(secrets) {
+			if (secrets[acctorender] !== undefined) {
 			$("#accdetailssecretaddress").append(acctorender);
 			$("#accsecret").append(secrets[acctorender]);	
 			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
 			return;
-		}
-	});
-	
+			}
+			});
+
 }
 
 function getAccounts(callback) {
 	var f	= function(secrets) {
-                       if (secrets.data == undefined) {
-                                secrets = {};
-                        } else {
-                                secrets = JSON.parse(secrets.data);
-                        }
-			callback(secrets);
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
+		callback(secrets);
 	}
 	db.get("secrets").then(f).catch(f);
 }
@@ -353,10 +363,10 @@ function refreshAccounts() {
 	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
-		var first = true;
-		for (var i in acc) {
+			var first = true;
+			for (var i in acc) {
 			if (activeaccount == ""){
-				activeaccount = i;	
+			activeaccount = i;	
 			}
 
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
@@ -364,19 +374,19 @@ function refreshAccounts() {
 			$("#payfromaccount").append('<option'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
 
 			remote.requestAccountInfo({
-			account: i,
-			ledger: "validated"
-			}, function(err, res) {
-				if (err) {
-					//accountInfoError(err, table);
-				} else {
-					$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
-					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+account: i,
+ledger: "validated"
+}, function(err, res) {
+if (err) {
+//accountInfoError(err, table);
+} else {
+$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
 
-				}
-			});
-		}
-	});
+}
+});
+}
+});
 
 }
 
@@ -449,6 +459,40 @@ function importGeneratedAccount() {
 	showTab("#tabaccounts");
 }
 
+function doPay() {
+
+	var payfrom = $("#payfromaccount").find(":selected").text();
+	var payto = $("#toaddress").val();
+	var dest = $("#desttag").val();
+	var invid = $("#invoiceid").val();
+	var amount = $("#payamount").val();
+
+
+
+	if (dest == "") dest = 0;
+
+	if (payfrom == "") {
+		navigator.notification.alert("You must select an account to pay from", function(){$("#payfromaccount").focus();}, "Select a from account", "OK");
+		return;
+	}
+
+
+	if (payto == "") {
+		navigator.notification.alert("You must select an address to pay to", function(){$("#toaddress").focus();}, "Select a to address", "OK");
+		return;
+	}
+
+
+	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
+		navigator.notification.alert("You must select a valid amount to send", function(){$("#payamount").focus();}, "Select a payment amount", "OK");
+		return;
+	}
+
+	
+
+	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
+}
+
 $("#navaccounts").click(function() { showTab("#tabaccounts"); });
 $("#navpayments").click(function() { showTab("#tabpayments"); });
 $("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
@@ -467,6 +511,10 @@ $("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
 $("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
 
 
+$("#btnpay").click(function() {
+		doPay();
+		});
+
 // Opening setup
 // --------------------------------
 
@@ -475,7 +523,7 @@ var MASTER_SECRET;
 var remote = new ripple.Remote({
 servers: [
 /*"wss://s-west.ripple.com:443",
-"wss://s-east.ripple.com:443"*/
+  "wss://s-east.ripple.com:443"*/
 "wss://s.altnet.rippletest.net:51233"
 ]
 });
@@ -491,283 +539,37 @@ function showSpinner() {
 
 function hideSpinner() {
 	$("#loading").hide();
-	showTab("#tabaccounts");
 }
 var db;
 var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-		FastClick.attach(document.body);
-		window.screen.orientation.lock('portrait');
-		db = new PouchDB('toastwallet');
-                connectToRipple();
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
+	// Application Constructor
+initialize: function() {
+		    this.bindEvents();
+	    },
+	    // Bind Event Listeners
+	    //
+	    // Bind any events that are required on startup. Common events are:
+	    // 'load', 'deviceready', 'offline', and 'online'.
+bindEvents: function() {
+		    document.addEventListener('deviceready', this.onDeviceReady, false);
+	    },
+	    // deviceready Event Handler
+	    //
+	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+	    // function, we must explicitly call 'app.receivedEvent(...);'
+onDeviceReady: function() {
+		       FastClick.attach(document.body);
+		       window.screen.orientation.lock('portrait');
+		       db = new PouchDB('toastwallet');
+		       connectToRipple();
+	       },
+	       // Update DOM on a Received Event
+receivedEvent: function(id) {
 
-        console.log('Received Event: ' + id);
-    }
+		       console.log('Received Event: ' + id);
+	       }
 };
-        app.initialize();
-
-// Helper functions
-// --------------------------------
-
-
-
-
-// State/input validation
-
-var validate = {
-number: function(x) {
-		return x!=="" && !isNaN(x);
-	},
-address: function(x) {
-		 return ripple.UInt160.is_valid(x);
-	 },
-currency: function(x) {
-		  return x.length===3 && x.toUpperCase()===x;
-	  },
-integer: function(x) {
-		 // Allow x==="" because "integer" is only used on optional fields
-		 return x==="" || (!isNaN(x) && parseInt(x)===parseFloat(x));
-	 },
-	 "hex string": function(x) {
-		 // Allow x==="" because "hex string" is only used on optional fields
-		 return /^[0-9A-Fa-f]*$/.test(x) && x.length<=64;
-	 },
-secret: function(x) {
-		return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
-	},
-encryptedSecret: function(x) {
-			 return !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, x)) ||
-				 !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, x))
-		 },
-		 "currency/issuer pair": function(x) {
-			 var s = x.split("/");
-			 if (s.length === 1 && s[0] === "XRP") {
-				 return true;
-			 } else {
-				 return (s.length === 2 &&
-						 validate.currency(s[0]) &&
-						 validate.address(s[1])
-					);
-			 }
-		 },
-ALLOW_ALL: function(x) {
-		   return true;
-	   }
-};
-
-function mustConnect(r) {
-	if (remote.isConnected()) {
-		return r;
-	} else {
-		return {error: "you must connect first"};
-	}
-}
-
-function mustIdentify(r) {
-	if (MASTER_SECRET) {
-		return r;
-	} else {
-		return {error: "you must set an identity first"};
-	}
-}
-
-function mustBeValid(values, types) {
-	if (values.length !== types.length) {
-		throw "values and types must be the same length";
-	}
-	return function(r) {
-		var returnValues = [];
-		for (var i=0; i<values.length; i++) {
-			var value = eval(values[i]);
-			var type = types[i];
-			if (!validate[type](value)) {
-				return {error: '"'+value+'" is not a valid '+type};
-			} else {
-				returnValues.push(value);
-			}
-		}
-		return {values: returnValues};
-	};
-}
-
-function guard(guardians, target) {
-	return function(){
-		var result = {}
-		for (var i=0; i<guardians.length; i++) {
-			var guardian = guardians[i];
-			result = guardian(result);
-			if (result.error) {
-				alert(result.error);
-				return;
-			}
-		}
-		target.apply(this, result.values);
-	};
-}
-
-
-
-// Ripple names
-
-function httpGet(url, callback) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() { 
-		if (xhr.readyState === 4 && xhr.status === 200) {
-			callback(null, xhr.responseText);
-		}
-	}
-	xhr.onerror = function() {
-		callback(true);
-	}
-	xhr.open("GET", url, true);   
-	xhr.send(null);
-}
-
-var rnCache = {};
-function resolveRippleName(name, callback) {
-	var nameURL = document.getElementById("nameurl").value;
-	if (!rnCache[nameURL]) {
-		rnCache[nameURL] = {};
-	}
-	if ("undefined" !== typeof rnCache[nameURL][name]) {
-		callback(null, rnCache[nameURL][name]);
-	} else {
-		httpGet("https://"+nameURL+name, function(err, res){
-				var result;
-				if (!err) {
-				var parsed = JSON.parse(res);
-				var result = parsed.exists && parsed.address;
-				rnCache[nameURL][name] = result;
-				}
-				callback(err, result);
-				});
-	}
-}
-
-function pressResolve(pressedButton, inputs) {
-	if (!document.getElementById("useripplenames").checked) {
-		alert("you must enable the ~ button");
-		return;
-	}
-	pressedButton.disabled = "disabled";
-	pressedButton.innerHTML = "...";
-	var numberOfResponses = 0;
-	function concludeResponse() {
-		numberOfResponses++;
-		if (numberOfResponses === inputs.length) {
-			pressedButton.disabled = "";
-			pressedButton.innerHTML = "~";
-		}
-	}
-	var alreadyAlerted = false;
-	for (var i=0; i<inputs.length; i++) {
-		var input = inputs[i];
-		var value = document.getElementById(input).value;
-		var ci = value.split("/");
-		var currency = false;
-		if (ci.length === 2) {
-			currency = ci[0];
-			value = ci[1];
-		}
-		if (!value || inputs.length > 1 && !currency && value === "XRP" || validate.address(value)) {
-			concludeResponse();
-			continue;
-		}
-		if (value.charAt(0) !== "~") {
-			alreadyAlerted || alert("ripple name must begin with ~");
-			alreadyAlerted = true;
-			concludeResponse();
-		} else {
-			resolveRippleName(value, (function(){
-						var inp = input;
-						var cur = currency;
-						return function(err, result) {
-						concludeResponse();
-						if (err) {
-						alreadyAlerted || alert("could not reach ripple name resolver");
-						alreadyAlerted = true;
-						} else if (!result) {
-						alreadyAlerted || alert("could not resolve ripple name "+value);
-						alreadyAlerted = true;
-						} else {
-						document.getElementById(inp).value = cur ? 
-						cur+"/"+result : result;
-						}
-						}
-						})());
-		}
-	}
-}
-
-
-// Miscellaneous
-
-function notifyOutcome(err, res) {
-	var outcome = "transaction finalized with " + 
-		(err ? "error" : "result") + ":";
-	prompt(outcome, JSON.stringify(err||res));
-}
-
-// This is a really kludgy workaround to deal with the fact that
-// ripple-lib doesn't currently support signing transactions with
-// a RegularKey.
-var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
-function redefineSigningToAlwaysUseSecret(secret) {
-	if (!secret) {
-		ripple.Transaction.prototype.sign = NORMAL_SIGNING_FUNCTION;
-	} else {
-		ripple.Transaction.prototype.sign = function(testnet) {
-			this.setSecret(secret);
-			this.tx_json.SigningPubKey = ripple.Seed.from_json(this._secret).get_key().to_hex_pub();
-			var seed = ripple.Seed.from_json(this._secret);
-			var prev_sig = this.tx_json.TxnSignature;
-
-			delete this.tx_json.TxnSignature;
-
-			var hash = this.signingHash(testnet);
-
-			// If the hash is the same, we can re-use the previous signature
-			if (prev_sig && hash === this.previousSigningHash) {
-				this.tx_json.TxnSignature = prev_sig;
-				return this;
-			}
-
-			var key = seed.get_key();
-			var sig = key.sign(hash);
-			var hex = ripple.sjcl.codec.hex.fromBits(sig).toUpperCase();
-
-			this.tx_json.TxnSignature = hex;
-			this.previousSigningHash = hash;
-
-			return this;
-		};
-	}
-}
-
-
-
-
-
-// Identity
-// --------------------------------
+app.initialize();
 
 function importAddress(secret, phrase) {
 	$("#tabimportstatus .alert-danger").hide();
@@ -817,279 +619,53 @@ function importAddress(secret, phrase) {
 
 }
 function removeSecret(address, successfun, failfun) {
-                var f = function(secrets) {
-                        if (secrets.data == undefined) {
-                                secrets = {};
-                        } else {
-                                secrets = JSON.parse(secrets.data);
-                        }
+	var f = function(secrets) {
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
 
-			if (secrets[address] != undefined) delete secrets[address];
-                        db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-                                navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
-                                successfun();
-                        }).catch(function(x){
-                                navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
-                                failfun();
-                        });
+		if (secrets[address] != undefined) delete secrets[address];
+		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+				navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
+				successfun();
+				}).catch(function(x){
+					navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
+					failfun();
+					});
 
-                }
+	}
 
-                db.get("secrets").then(f).catch(f);
+	db.get("secrets").then(f).catch(f);
 
-	
+
 }
 function addSecret(address, secret, successfun, failfun) {
 
-		var f = function(secrets) {
-			if (secrets.data == undefined) {
-				secrets = {};
-			} else {
-				secrets = JSON.parse(secrets.data);
-			}
-	                var result = generateAddress(secret);
-        	        secrets[(address != "" ? address : result.address)] = result.secret;
+	var f = function(secrets) {
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
+		var result = generateAddress(secret);
+		secrets[(address != "" ? address : result.address)] = result.secret;
 
-/*			db.put({_id: "secrets", _rev: (rev+1), data: JSON.stringify(secrets)}).then(function(x){
+		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
 				navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
 				successfun();
-			}).catch(function(x){
-				navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
-				failfun();
-			});*/
+				}).catch(function(x){
+					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
+					failfun();
+					});
 
-			db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-                                navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
-                                successfun();
-                        }).catch(function(x){
-                                navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
-                                failfun();
-                        });
-
-		}
-
-		db.get("secrets").then(f).catch(f);
-
-}
-
-function pressSetIdentity() {
-	var secret = document.getElementById("mysecret").value;
-	if (document.getElementById("myaddress").innerHTML) {
-		alert("you must clear the old identity first");
-	} else if (secret) {
-		if (secret.charAt(0) === "s" && setOrdinarySecret(secret)) {
-			// pass
-		} else if (secret.charAt(0) === "3" && setRekeyedSecret(secret)) {
-			// pass
-		} else if (secret.charAt(0) === "h" && setEncryptedSecret(secret)) {
-			// pass
-		} else {
-			alert('"'+secret+'" is not a valid secret');
-		}
-	} else {
-		alert("you must enter a secret");
 	}
+
+	db.get("secrets").then(f).catch(f);
+
 }
 
-function setOrdinarySecret(secret) {
-	if (!validate.secret(secret)) {
-		return false;
-	} else {
-		var result = generateAddress(secret);
-		setIdentity(result.address, result.secret, result.secret);
-		remote.setSecret(result.address, result.secret);
-		redefineSigningToAlwaysUseSecret(false);
-		return true;
-	}
-}
-
-function setRekeyedSecret(secret) {
-	// This uses a custom format that is specific to this application:
-	// ripple.Base.encode_check(VER_REKEYED, regular_key_secret concat master_secret)
-	if (secret.length < 2) {
-		return false;
-	}
-	var b = ripple.Base.decode_check(VER_REKEYED, secret);
-	if (isNaN(b)) {
-		return false;
-	}
-	var y = ripple.sjcl.codec.bytes.fromBits(b.toBits());
-	if (y.length !== 32) {
-		return false;
-	}
-	var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
-	var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
-	var ra = generateAddress(ms).address;
-	setIdentity(ra, secret, ms);
-	remote.setSecret(ra, ms);
-	remote.setSecret(generateAddress(rks).address, rks);
-	redefineSigningToAlwaysUseSecret(rks);
-	return true;
-}
-
-function setEncryptedSecret(encryptedSecret) {
-	if (!validate.encryptedSecret(encryptedSecret)) {
-		return false;
-	}
-	showDecryptor();
-	return true;
-}
-
-function pressDecrypt() {
-	var es = document.getElementById("mysecret").value;
-	var passphrase = document.getElementById("passphrase").value;
-	if (es.charAt(0) !== "h" || !validate.encryptedSecret(es)) {
-		alert('invalid encrypted secret');
-		return;
-	}
-	if (!passphrase) {
-		alert('you must enter a passphrase');
-		return;
-	}
-	var secret;
-	try {
-		secret = decryptSecret(passphrase, es);
-	} catch(err) {
-		alert('invalid passphrase or encrypted secret');
-		document.getElementById("passphrase").value = "";
-		return;
-	}
-	if (secret.charAt(0) === "s" && setOrdinarySecret(secret)) {
-		hideDecryptor();
-	} else if (secret.charAt(0) === "3" && setRekeyedSecret(secret)) {
-		hideDecryptor();
-	} else {
-		alert('invalid passphrase or encrypted secret');
-		document.getElementById("passphrase").value = "";
-	}
-}
-
-function showDecryptor() {
-	document.getElementById("passphrase").className = "";
-	document.getElementById("decryptbutton").className = "";
-	document.getElementById("encryptshow").className = "displaynone";
-}
-
-function hideDecryptor() {
-	var pp = document.getElementById("passphrase");
-	pp.value = "";
-	pp.className = "displaynone";
-	document.getElementById("decryptbutton").className = "displaynone";
-}
-
-function showEncryptorShower() {
-	document.getElementById("encryptshow").className = "";
-}
-
-function showEncryptor() {
-	document.getElementById("passphrase").className = "";
-	document.getElementById("confirmpassphrase").className = "";
-	document.getElementById("encryptshow").className = "displaynone";
-	document.getElementById("encryptbutton").className = "";
-}
-
-function hideEncryptor() {
-	var pp = document.getElementById("passphrase")
-		pp.className = "displaynone";
-	pp.value = "";
-	var pp2 = document.getElementById("confirmpassphrase")
-		pp2.className = "displaynone";
-	pp2.value = "";
-	document.getElementById("encryptshow").className = "";
-	document.getElementById("encryptbutton").className = "displaynone";
-}
-
-function pressEncryptSecret() {
-	var pp = document.getElementById("passphrase").value;
-	var pp2 = document.getElementById("confirmpassphrase").value;
-	if (!pp || !pp2) {
-		alert("you must enter something");
-	} else if (pp !== pp2) {
-		alert("passphrases must match");
-	} else {
-		var es = encryptSecret(pp, document.getElementById("mysecret").value);
-		prompt("your encrypted secret is:", es);
-		hideEncryptor();
-	}
-}
-
-function encryptSecret(passphrase, secret) {
-	var payloadBytes = ripple.Base.decode(secret);
-	var version = payloadBytes[0]===ripple.Base.VER_FAMILY_SEED ?
-		VER_ENCRYPTED_ORDINARY : VER_ENCRYPTED_REKEYED;
-	var salt = ripple.sjcl.random.randomWords(2); // 8 bytes of salt
-	var streamBytes = ripple.sjcl.codec.bytes.fromBits(
-			ripple.sjcl.misc.pbkdf2(passphrase, salt, void(0), 8*payloadBytes.length)
-			);
-	var encryptedBytes = streamBytes.map(function(x,i) {
-			return x ^ payloadBytes[i];
-			});
-	var saltBytes = ripple.sjcl.codec.bytes.fromBits(salt);
-	return ripple.Base.encode_check(version, saltBytes.concat(encryptedBytes));
-}
-
-function decryptSecret(passphrase, es) {
-	var ao = ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, es);
-	var ar = ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, es);
-	var a = isNaN(ao) ? ar : ao;
-	ripple.sjcl.codec.bytes.fromBits(a.toBits());
-	var b = ripple.sjcl.codec.bytes.fromBits(a.toBits());
-	var saltBytes = b.slice(0,8)
-		var encryptedBytes = b.slice(8)
-		var streamBytes = ripple.sjcl.codec.bytes.fromBits(
-				ripple.sjcl.misc.pbkdf2(passphrase, ripple.sjcl.codec.bytes.toBits(saltBytes), void(0), 8*encryptedBytes.length)
-				);
-	var payloadBytes = streamBytes.map(function(x,i) {
-			return x ^ encryptedBytes[i];
-			});
-	var result = ripple.Base.encode(payloadBytes);
-	return result;
-}
-
-
-function setIdentity(address, displayedSecret, masterSecret) {
-	MY_ADDRESS = address;
-	MASTER_SECRET = masterSecret;
-	document.getElementById("mysecret").value = displayedSecret;
-	document.getElementById("myaddress").innerHTML = address;
-	document.getElementById("mysecret").disabled="disabled";
-	document.getElementById("mysecret").className="hidden";
-	showEncryptorShower();
-}
-
-
-function pressGenerateIdentity() {
-	if (document.getElementById("myaddress").innerHTML) {
-		alert("you must clear the old identity first");
-	} else {
-		var result = generateAddress();
-		setIdentity(result.address, result.secret, result.secret);
-		remote.setSecret(result.address, result.secret);
-		alert("save your secret before you close the window!");
-	}
-}
-
-function pressClearIdentity() {
-	if (confirm("are you sure? the secret will be lost!")) {
-		document.getElementById("mysecret").value = "";
-		document.getElementById("myaddress").innerHTML = "";
-		setIdentity("", "");
-		document.getElementById("mysecret").disabled=null;
-		document.getElementById("mysecret").className="";
-		hideEncryptor();
-		hideDecryptor();
-		document.getElementById("encryptshow").className = "displaynone";
-	}
-}
-
-function toggleSecret() {
-	var s = document.getElementById("mysecret");
-	if (s.className === "hidden") {
-		s.className = "";
-	} else {
-		s.className = "hidden";
-	}
-}
 
 function generateAddress(secret) {
 	if (secret) {
@@ -1103,102 +679,6 @@ secret: secret.to_json(),
 	};
 }
 
-function generateRekeyedKey() {
-	var keypair = generateAddress();
-	var a1 = ripple.sjcl.codec.bytes.fromBits(ripple.Seed.from_json(keypair.secret).to_bits());
-	var a2 = ripple.sjcl.codec.bytes.fromBits(ripple.Seed.from_json(MASTER_SECRET).to_bits());
-	var rks = ripple.Base.encode_check(VER_REKEYED, a1.concat(a2));
-	return {
-regularKey: keypair.address,
-		    rekeyedSecret: rks,
-		    actualSecret: keypair.secret
-	};
-}
-
-var pressRekey = guard([
-		mustConnect,
-		mustIdentify,
-		], function() {
-		var rekeyedKey = generateRekeyedKey();
-		if (null!==prompt(
-				"This will submit a transaction to invalidate your current " +
-				"secret and replace it with the new secret below, which you "+
-				"should save before continuing. Are you sure you want to do "+
-				"this?", rekeyedKey.rekeyedSecret)
-		   ) {
-		var rb = document.getElementById("rekeybutton");
-		rb.disabled = "disabled";
-		rb.innerHTML = "rekeying...";
-		rekeyAccount(rekeyedKey);
-		}
-		}
-		);
-
-function rekeyAccount(rekeyedKey) {
-	remote.requestAccountInfo({
-account: MY_ADDRESS,
-ledger: "validated"
-}, function(err, info) {
-if (err) {
-prompt("requestAccountInfo failed with error:", JSON.stringify(err));
-reenableRB();
-} else {
-// Set regular key
-var transaction = remote.createTransaction("SetRegularKey", {
-account: MY_ADDRESS,
-regular_key: rekeyedKey.regularKey
-});
-transaction.submit(function(err, res) {
-	if (err) {
-	prompt("SetRegularKey failed with error:", JSON.stringify(err));
-	reenableRB();
-	} else {
-	var dm = ripple.Remote.flags.account_root.DisableMaster;
-	if (info.account_data.Flags && (info.account_data.Flags & dm)) {
-	concludeRekeying(rekeyedKey);
-	} else { // We need to set the DisableMaster flag now.
-	var transaction2 = remote.createTransaction("AccountSet", {
-account: MY_ADDRESS,
-set_flag: ripple.Transaction.set_clear_flags.AccountSet.asfDisableMaster
-});
-	transaction2.submit(function(err, res) {
-		if (err) {
-		prompt("DisableMaster transaction failed with error:", JSON.stringify(err));
-		}
-		concludeRekeying(rekeyedKey);
-		});
-	}
-	}
-});
-}
-});
-}
-
-function concludeRekeying(rekeyedKey) {
-	remote.setSecret(rekeyedKey.regularKey, rekeyedKey.actualSecret);
-	redefineSigningToAlwaysUseSecret(rekeyedKey.actualSecret)
-		document.getElementById("mysecret").value = rekeyedKey.rekeyedSecret;
-	alert("rekeying complete");
-	reenableRB();
-}
-
-function reenableRB() {
-	var rb = document.getElementById("rekeybutton");
-	rb.disabled = "";
-	rb.innerHTML = "rekey account";
-}
-
-
-
-
-
-
-
-
-
-// Connect
-// --------------------------------
-
 function connectToRipple() {
 	remote.connect(function(err, res) {
 			if (err) {
@@ -1207,774 +687,136 @@ function connectToRipple() {
 			connectToRipple();
 			} else {
 			hideSpinner();
+			showTab("#tabaccounts");
 			}
 			});
 }
 
-function disconnectFromRipple() {
-	remote.disconnect(function(){
-			alert("disconnected");
-			});
-}
-
-
-
-
-
-
-// Account Details
-// --------------------------------
-
-
-// Helper functions
-
-function useCurrentIdentity() {
-	if (MY_ADDRESS && MY_ADDRESS !== "") {
-		document.getElementById("infoaccount").value = MY_ADDRESS;
-	}
-}
-
-
-function accountInfoError(err, table) {
-	if (err.remote && err.remote.error === "actNotFound") {
-		table.innerHTML = "account not found";
+var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
+function redefineSigningToAlwaysUseSecret(secret) {
+	if (!secret) {
+		ripple.Transaction.prototype.sign = NORMAL_SIGNING_FUNCTION;
 	} else {
-		prompt("request failed with error:", JSON.stringify(err));
-	}
-}
+		ripple.Transaction.prototype.sign = function(testnet) {
+			this.setSecret(secret);
+			this.tx_json.SigningPubKey = ripple.Seed.from_json(this._secret).get_key().to_hex_pub();
+			var seed = ripple.Seed.from_json(this._secret);
+			var prev_sig = this.tx_json.TxnSignature;
 
+			delete this.tx_json.TxnSignature;
 
-// Button presses
+			var hash = this.signingHash(testnet);
 
-function takeAddressAndDo(action) {
-	return guard([
-			mustConnect,
-			mustBeValid([
-				'document.getElementById("infoaccount").value'
-				],["address"])
-			], function(account){
-			var ia = document.getElementById("infoaccount");
-			ia.readOnly = true;
-			ia.disabled = "disabled";
-			action(account);
-			});
-}
-var pressInfo = takeAddressAndDo(getAccountInfo);
-var pressLines = takeAddressAndDo(getAccountLines);
-var pressOffers = takeAddressAndDo(getAccountOffers);
-var pressFlags = takeAddressAndDo(loadFlagsTable);
-
-
-
-
-// Query the network
-
-function getAccountInfo(account) {
-	remote.requestAccountInfo({
-account: account,
-ledger: "validated"
-}, function(err, res) {
-var table = document.getElementById("infotable");
-if (err) {
-accountInfoError(err, table);
-} else {
-var content = "";
-var data = res.account_data;
-for (var key in data) {
-content += ("<tr><th>"+key+"</th><td>"+data[key]+"</td></tr>");
-}
-table.innerHTML = content;
-}
-});
-}
-
-function getAccountLines(account) {
-	remote.requestAccountLines({
-account: account,
-ledger: "validated"
-}, function(err, res) {
-var table = document.getElementById("linestable");
-if (err) {
-accountInfoError(err, table);
-} else {
-var content = "";
-var lines = res.lines;
-if (!lines.length) {
-table.innerHTML = "account has no trustlines";
-} else {
-for (var i=0; i<lines.length; i++) {
-var data = lines[i];
-var entry = "";
-for (var key in data) {
-entry += ("<tr><th>"+key+"</th><td>"+data[key]+"</td></tr>");
-}
-entry = "<table>"+entry+"</table>";
-content += ("<tr><td>"+entry+"</td></tr>");
-	}
-table.innerHTML = content;
-}
-}
-});
-}
-
-function getAccountOffers(account) {
-	remote.requestAccountOffers({
-account: account,
-ledger: "validated"
-}, function(err, res) {
-var table = document.getElementById("offerstable");
-if (err) {
-accountInfoError(err, table);
-} else {
-var content = "";
-if (!res.offers.length) {
-content = "account has no offers";
-} else {
-content = "<tr>"+
-"<th colspan=2>TakerGets</th>"+
-"<th colspan=2>TakerPays</th>"+
-"<th rowspan=2>cancel</th>"+
-"</tr>"+
-"<tr>"+
-"<th>amount</th>"+
-"<th>CUR/issuer</th>"+
-"<th>amount</th>"+
-"<th>CUR/issuer</th>"+
-"</tr>";
-	for (var i=0; i<res.offers.length; i++) {
-		var offer = res.offers[i];
-		var tg = offer.taker_gets;
-		var tgc, tgv;
-		var tp = offer.taker_pays;
-		var tpc, tpv;
-		if (tg.currency) {
-			tgc = tg.currency+"/"+tg.issuer;
-			tgv = tg.value;
-		} else {
-			tgc = "XRP";
-			tgv = parseInt(tg) / 1000000;
-		}
-		if (tp.currency) {
-			tpc = tp.currency+"/"+tp.issuer;
-			tpv = tp.value;
-		} else {
-			tpc = "XRP";
-			tpv = parseInt(tp) / 1000000;
-		}
-		var args = '"' + res.account + '","' + offer.seq + '"';
-		content += ("<tr>"+
-				"<td>"+tgv+"</td>"+
-				"<td>"+tgc+"</td>"+
-				"<td>"+tpv+"</td>"+
-				"<td>"+tpc+"</td>"+
-				"<td><button class='cancelbutton' onclick='pressCancelOffer(this,"+args+
-				")'>cancel</button></td>"+
-				"</tr>");
-	}
-}
-table.innerHTML = content;
-}
-});
-}
-
-function loadFlagsTable(account) {
-	remote.requestAccountInfo({
-account: account,
-ledger: "validated"
-}, function(err, res) {
-var table = document.getElementById("flagstable");
-if (err) {
-accountInfoError(err, table);
-} else {
-var flags = parseInt(res.account_data.Flags);
-var content = ("<tr>"+
-	"<th>flag</th>"+
-	"<th>value</th>"+
-	"<th>edit</th>"
-	);
-for (var flagName in ripple.Remote.flags.account_root) {
-var mask = ripple.Remote.flags.account_root[flagName];
-var flagOn = (mask & flags);
-content += ("<tr>"+
-	"<th>"+flagName+"</th>"+
-	"<td class='centered'>"+(flagOn?"1":"0")+"</td>"+
-	"<td>"+
-	"<button class='editflagbutton' onclick='pressEditFlag(this,"+
-	'"'+res.account_data.Account+'",'+
-	'"'+flagName+'",'+
-	(flagOn?"false":"true")+
-	")'>"+
-	"turn "+(flagOn?"off":"on")+
-	"</button>"+
-	"</td>"+
-	"</tr>");
-}
-table.innerHTML = content;
-}
-});
-}
-
-
-
-// Editing offers
-
-function pressCancelOffer(pressedButton, account, sequence) {
-	guard([mustConnect], function(){
-			if (MY_ADDRESS === account) {
-			var buttons = document.getElementsByClassName("cancelbutton");
-			for (var i=0; i<buttons.length; i++) {
-			buttons[i].disabled = "disabled";
+			// If the hash is the same, we can re-use the previous signature
+			if (prev_sig && hash === this.previousSigningHash) {
+				this.tx_json.TxnSignature = prev_sig;
+				return this;
 			}
-			pressedButton.innerHTML = "cancelling...";
-			cancelOffer(sequence);
+
+			var key = seed.get_key();
+			var sig = key.sign(hash);
+			var hex = ripple.sjcl.codec.hex.fromBits(sig).toUpperCase();
+
+			this.tx_json.TxnSignature = hex;
+			this.previousSigningHash = hash;
+
+			return this;
+		};
+	}
+}
+
+var lastsend = 0;
+function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun) {
+
+	var timenow = $.now();
+	if (timenow - lastsend < 100) return;
+	lastsend = timenow;
+
+	showSpinner();
+
+        getAccounts(function(secrets) {
+                        if (secrets[fromacc] !== undefined) {
+
+				remote.setSecret(fromacc, secrets[fromacc]);
+
+				redefineSigningToAlwaysUseSecret(false);
+
+				var transaction = remote.createTransaction("Payment", {
+					account: fromacc,
+					destination: destination,
+					amount: xrpAmount * 1000000
+				});
+				transaction.destinationTag(parseInt(destTag));
+				transaction.sourceTag(parseInt(sourceTag));
+				transaction.invoiceID(invoiceID);
+
+				transaction.submit(function(err, res) {
+					if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
+					
+						window.setInterval( function() {sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun);}, 1000);
+				
+					} else if ( (res == undefined || res == null || res.engine_result == 'tesSUCCESS') && !(res != null && res.engine_result == 'tejMaxLedger') ) {
+						navigator.notification.alert("Payment failed.", failfun, "Failure", "OK");
+						hideSpinner();
+						failfun();
+					} else {
+						navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
+						$("#toaddress").val("");
+						$("#desttag").val("");
+						$("#invoiceid").val("");
+						$("#payamount").val("");
+						hideSpinner();
+						successfun();
+					}
+				});
 			} else {
-			alert("you must set your identity to "+account);
+				navigator.notification.alert("Invalid account selected.", failfun, "Error", "OK");
 			}
-			})();
-}
+	});
 
-function cancelOffer(sequence) {
-	var transaction = remote.createTransaction("OfferCancel", {
-account: MY_ADDRESS,
-sequence: sequence
-});
-transaction.submit(function(err, res) {
-		notifyOutcome(err, res);
-		getAccountOffers(MY_ADDRESS);
-		});
 }
 
 
-
-// Editing flags
-
-function pressEditFlag(pressedButton, account, flagName, newValue) {
-	guard([mustConnect], function(){
-			if (MY_ADDRESS === account) {
-			var buttons = document.getElementsByClassName("editflagbutton");
-			for (var i=0; i<buttons.length; i++) {
-			buttons[i].disabled = "disabled";
-			}
-			pressedButton.innerHTML = "saving...";
-			editFlag(flagName, newValue);
-			} else {
-			alert("you must set your identity to "+account);
-			}
-			})();
-}
-
-var flagDictionary = ripple.Transaction.set_clear_flags.AccountSet;
-flagDictionary["asfRequireDestTag"] = flagDictionary["asfRequireDest"];
-
-function editFlag(flagName, newValue) {
-	var options = {
-account: MY_ADDRESS	
-	};
-	options[newValue ? "set_flag" : "clear_flag"] = flagDictionary["asf"+flagName];
-	var transaction = remote.createTransaction("AccountSet", options);
-	transaction.submit(function(err, res) {
-			notifyOutcome(err, res);
-			loadFlagsTable(MY_ADDRESS);
-			});
-}
-
-
-
-
-
-
-// Send Payment
-// --------------------------------
-
-
-
-// Helper functions
-
-function renderAmount(amount) {
-	if ("string" === typeof amount) {
-		return parseInt(amount)/1000000 + " XRP";
-	} else {
-		return amount.value + " " + amount.currency;
-	}
-}
-
-function toggleOptionalFields(cb) {
-	var of = document.getElementById("optionalfields");
-	if (cb.checked) {
-		of.className = "";
-	} else {
-		of.className = "displaynone";
-	}
-}
-
-function toggleDirectXRP(cb) {
-	var sc = document.getElementById("sendcurrency");
-	var cs = document.getElementById("complexsender");
-	var ds = document.getElementById("directsender");
-	if (cb.checked) {
-		sc.value = "XRP";
-		sc.readOnly = true;
-		cs.className = "displaynone";
-		ds.className = "";
-	} else {
-		sc.value = "";
-		sc.readOnly = false;
-		ds.className = "displaynone";
-		cs.className = "";
-	}
-}
-
-
-// Managing optional fields
-
-function applyOptionalFields(transaction, optionalFields) {
-	if (optionalFields.destinationTag) {
-		transaction.destinationTag(parseInt(optionalFields.destinationTag));
-	}
-	if (optionalFields.sourceTag) {
-		transaction.sourceTag(parseInt(optionalFields.sourceTag));
-	}
-	if (optionalFields.invoiceID) {
-		transaction.invoiceID(optionalFields.invoiceID);
-	}
-}
-
-function optionalFieldsValid(r) {
-	if (eval('document.getElementById("useoptional").checked')) {
-		return mustBeValid([
-				'document.getElementById("destinationtag").value',
-				'document.getElementById("sourcetag").value',
-				'document.getElementById("invoiceid").value'
-				], ["integer","integer","hex string"]
-				)(r);
-	} else {
-		return r;
-	}
-}
-
-function readOptionalFields() {
-	if (document.getElementById("useoptional").checked) {
-		var result = {};
-		var dt = document.getElementById("destinationtag").value;
-		var st = document.getElementById("sourcetag").value;
-		var ii = document.getElementById("invoiceid").value;
-		if (dt) {
-			result.destinationTag = dt;
-		}
-		if (st) {
-			result.sourceTag = st;
-		}
-		if (ii) {
-			result.invoiceID = ii;
-		}
-		return result;
-	} else {
-		return void(0);
-	}
-}
-
-
-
-// Direct XRP -> XRP
-
-var pressSend = guard([
-		mustConnect,
-		mustIdentify,
-		optionalFieldsValid, // This passes its values forward, but the next guardian obliterates them.
-		mustBeValid([
-			'document.getElementById("sendamount").value',
-			'document.getElementById("senddestination").value'
-			], ["number","address"]),
-		], function(xrpAmount, destination) {
-		xrpAmount = parseFloat(xrpAmount);
-		var optionalFields = readOptionalFields();
-		var sb = document.getElementById("sendbutton");
-		sb.disabled = "disabled";
-		sb.innerHTML = "sending...";
-		sendXRP(xrpAmount, destination, optionalFields);
-		}
-		);
-
-function sendXRP(xrpAmount, destination, optionalFields) {
-	var transaction = remote.createTransaction("Payment", {
-account: MY_ADDRESS,
-destination: destination,
-amount: xrpAmount * 1000000
-});
-if (optionalFields) {
-	applyOptionalFields(transaction, optionalFields);
-}
-transaction.submit(function(err, res) {
-		notifyOutcome(err, res);
-		var sb = document.getElementById("sendbutton");
-		document.getElementById("sendamount").value = "";
-		sb.disabled = "";
-		sb.innerHTML = "send";
-		});
-}
-
-
-
-// Complex payments
-
-var PATHFINDING = false;
-var pressPathfind = guard([
-		mustConnect,
-		mustIdentify,
-		optionalFieldsValid, // This passes its values forward, but the next guardian obliterates them.
-		mustBeValid([
-			'document.getElementById("sendamount").value',
-			'document.getElementById("sendcurrency").value',
-			'document.getElementById("senddestination").value'
-			], ["number","currency","address"]),
-		], function(iouAmount, iouCurrency, iouDestination) {
-		PATHFINDING = true;
-		var startB = document.getElementById("startpathfindingbutton");
-		var stopB = document.getElementById("stoppathfindingbutton");
-		startB.innerHTML = "finding paths...";
-		startB.disabled = "disabled";
-		stopB.disabled = "";
-		startPathfinding(MY_ADDRESS, iouDestination, iouAmount, iouCurrency);
-		}
-		);
-
-var pathfind;
-function startPathfinding(source, destination, amount, currency) {
-	// Find out what currencies source has
-	remote.requestAccountLines({
-account: source,
-ledger: "validated"
-}, function(err, res) {
-if (err) {
-prompt("request failed with error:", JSON.stringify(err));
-concludePathfinding();
-} else {
-var lines = res.lines;
-var currencies = {"XRP": true};
-for (var i=0; i<lines.length; i++) {
-var line = lines[i];
-if (line.limit !== "0") {
-currencies[line.currency] = true;
-}
-}
-var sourceCurrencies = [];
-for (var cur in currencies) {
-sourceCurrencies.push({currency: cur});
-}
-var receiveAmount = ripple.Amount.from_json(currency==="XRP" ?
-	""+(amount*1000000) : {
-value: amount,
-currency: currency,
-issuer: destination
-}
-);
-pathfind = remote.pathFind({
-src_account: source,
-dst_account: destination,
-dst_amount: receiveAmount,
-src_currencies: sourceCurrencies
-});
-pathfind.on("update", function(u) {
-		console.log("pathfind update!");
-		if (pathfind === null) {
-		concludePathfinding();
-		return;
-		}
-		var pathsTable = document.getElementById("pathstable");
-		var content = "";
-		if (u.alternatives.length) {
-		content = "<tr><th>you will pay...</th>"+
-		"<th>path</th>"+
-		"<th>send</th></tr>";
-		for (var i=0; i<u.alternatives.length; i++) {
-		var alt = u.alternatives[i];
-		var args = JSON.stringify(alt.source_amount)+","+	//sendmax
-		JSON.stringify(receiveAmount.to_json())+","+	//amount
-		'"'+destination+'",'+							//destination
-		JSON.stringify(alt.paths_computed);				//paths
-		content += ("<tr>"+
-			"<td>"+renderAmount(alt.source_amount)+"</td>"+
-			"<td class='pathsJSON'><div>"+JSON.stringify(alt.paths_computed)+"</div></td>"+
-			"<td><button class='complexsendbutton' onclick='pressComplex(this,"+args+")'>send</button></td>"+
-			"</tr>"
+var validate = {
+	number: function(x) {
+		return x!=="" && !isNaN(x);
+	},
+	address: function(x) {
+		return ripple.UInt160.is_valid(x);
+	},
+	currency: function(x) {
+		return x.length===3 && x.toUpperCase()===x;
+	},
+	integer: function(x) {
+		// Allow x==="" because "integer" is only used on optional fields
+		return x==="" || (!isNaN(x) && parseInt(x)===parseFloat(x));
+	},
+	"hex string": function(x) {
+		// Allow x==="" because "hex string" is only used on optional fields
+		return /^[0-9A-Fa-f]*$/.test(x) && x.length<=64;
+	},
+	secret: function(x) {
+		return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
+	},
+	encryptedSecret: function(x) {
+		return !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, x)) ||
+			!isNaN(ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, x))
+	},
+	"currency/issuer pair": function(x) {
+		var s = x.split("/");
+		if (s.length === 1 && s[0] === "XRP") {
+			return true;
+		} else {
+			return (s.length === 2 &&
+				validate.currency(s[0]) &&
+				validate.address(s[1])
 			);
 		}
-		} else {
-			content = "no paths found";
-		}
-		pathsTable.innerHTML = content;
-});
-}
-});
-}
-
-function stopPathfinding() {
-	pathfind.removeAllListeners();
-	pathfind.close();
-	concludePathfinding();
-}
-
-function pressComplex(pressedButton, sendMax, amount, destination, paths) {
-	guard([ // We need to do it like this, since pressComplex takes arguments.
-			mustConnect,
-			mustIdentify,
-			optionalFieldsValid
-			], function(){
-			if (!PATHFINDING) {
-			var optionalFields = readOptionalFields();
-			var buttons = document.getElementsByClassName("complexsendbutton");
-			for (var i=0; i<buttons.length; i++) {
-			buttons[i].disabled = "disabled";
-			}
-			pressedButton.innerHTML = "sending...";
-			sendComplexPayment(sendMax, amount, destination, paths, optionalFields);
-			} else {
-			alert("you must stop pathfinding first");
-			}
-			})();
-}
-
-function sendComplexPayment(sendMax, amount, destination, paths, optionalFields) {
-	var transaction = remote.createTransaction("Payment", {
-account: MY_ADDRESS,
-destination: destination,
-amount: amount
-});
-transaction.paths(paths);
-transaction.sendMax(sendMax);
-if (optionalFields) {
-	applyOptionalFields(transaction, optionalFields);
-}
-transaction.submit(function(err, res) {
-		notifyOutcome(err, res);
-		concludePathfinding();
-		document.getElementById("pathstable").innerHTML = "";
-		});
-}
-
-function concludePathfinding() {
-	PATHFINDING = false;
-	var startB = document.getElementById("startpathfindingbutton");
-	var stopB = document.getElementById("stoppathfindingbutton");
-	startB.innerHTML = "find paths";
-	startB.disabled = "";
-	stopB.disabled = "disabled";
+	},
+	ALLOW_ALL: function(x) {
+		return true;
+	}
 };
-
-
-
-
-
-
-// Set Trust
-// --------------------------------
-
-var pressTrust = guard([
-		mustConnect,
-		mustIdentify,
-		mustBeValid([
-			'document.getElementById("trustamount").value',
-			'document.getElementById("trustcurrency").value',
-			'document.getElementById("trustissuer").value',
-			'document.getElementById("trustnoripple").checked'
-			], ["number","currency","address","ALLOW_ALL"]),
-		], function(trustAmount, trustCurrency, trustIssuer, trustNoRipple) {
-		var tb = document.getElementById("trustbutton");
-		tb.disabled = "disabled";
-		tb.innerHTML = "submitting...";
-		setTrust(trustAmount, trustCurrency, trustIssuer, trustNoRipple);
-		}
-		);
-
-function setTrust(amount, currency, issuer, noRipple) {
-	var transaction = remote.createTransaction("TrustSet", {
-account: MY_ADDRESS,
-limit: ""+amount+"/"+currency+"/"+issuer
-});
-if (noRipple) {
-	transaction.setFlags("NoRipple");
-}
-	transaction.submit(function(err, res) {
-			notifyOutcome(err, res)
-			var tb = document.getElementById("trustbutton");
-			document.getElementById("trustamount").value = "";
-			tb.disabled = "";
-			tb.innerHTML = "set trust";
-			});
-}
-
-
-
-
-// Trade
-// --------------------------------
-
-var pressBook = guard([
-		mustConnect,
-		mustBeValid([
-			'document.getElementById("curissuer1").value',
-			'document.getElementById("curissuer2").value',
-			], ["currency/issuer pair","currency/issuer pair"]),
-		], function(ci1, ci2) {
-		ci1 = ci1.split("/");
-		ci2 = ci2.split("/");
-		var currency1 = ci1[0];
-		var issuer1 = currency1 === "XRP" ?
-		ripple.UInt160.ACCOUNT_ZERO : ci1[1];
-		var currency2 = ci2[0];
-		var issuer2 = currency2 === "XRP" ?
-		ripple.UInt160.ACCOUNT_ZERO : ci2[1];
-		var input1 = document.getElementById("curissuer1");
-		var input2 = document.getElementById("curissuer2");
-		input1.readOnly = true;
-		input1.disabled = "disabled";
-		input2.readOnly = true;
-		input2.disabled = "disabled";
-		getBook(currency1, issuer1, currency2, issuer2);
-		}
-);
-
-function ciAbbreviation(currency, issuer) {
-	if (currency === "XRP") {
-		return "XRP";
-	} else {
-		return currency + "/" + issuer.slice(0,4) + "...";
-	}
-}
-
-function getBook(currency1, issuer1, currency2, issuer2) {
-	var requestBid = remote.requestBookOffers({
-gets: {currency: currency1, issuer: issuer1},
-pays: {currency: currency2, issuer: issuer2},
-});
-requestBid.request(function(err, res) {
-		if (err) {
-		prompt("request failed with error:", JSON.stringify(err));
-		} else {
-		renderBookTable(document.getElementById("bidtable"), 
-			res.offers, false,
-			currency1, issuer1,
-			currency2, issuer2
-			);
-		}
-		});
-var requestBid = remote.requestBookOffers({
-gets: {currency: currency2, issuer: issuer2},
-pays: {currency: currency1, issuer: issuer1},
-});
-requestBid.request(function(err, res) {
-		if (err) {
-		prompt("request failed with error:", JSON.stringify(err));
-		} else {
-		renderBookTable(document.getElementById("asktable"), 
-			res.offers, true,
-			currency2, issuer2,
-			currency1, issuer1
-			);
-		}
-		});
-}
-
-function renderBookTable(table, offers, flipRate, currency1, issuer1, currency2, issuer2) {
-	table.innerHTML = "";
-	var content = "<tr>"+
-		"<th>"+(flipRate
-				? ciAbbreviation(currency1, issuer1)+" per "+ciAbbreviation(currency2, issuer2)
-				: ciAbbreviation(currency2, issuer2)+" per "+ciAbbreviation(currency1, issuer1)
-		       )+"</th>"+
-		"<th>you can get ("+ciAbbreviation(currency1, issuer1)+")</th>"+
-		"<th>if you give ("+ciAbbreviation(currency2, issuer2)+")</th>"+
-		"<th>offerer</th>"+
-		"</tr>";
-	for (var i=0; i<offers.length; i++) {
-		var offer = offers[i];
-		var tg = (offer.taker_gets_funded || offer.TakerGets);
-		tg = (tg.value || ""+parseInt(tg)/1000000);
-		var tp = (offer.taker_pays_funded || offer.TakerPays);
-		tp = (tp.value || ""+parseInt(tp)/1000000);
-		if (tg === "0" && tp === "0") {
-			continue;
-		}
-		var quality = offer.quality;
-		if (currency1 === "XRP") {
-			quality *= 1000000;
-		}
-		if (currency2 === "XRP") {
-			quality /= 1000000;
-		}	
-		content += ("<tr>"+
-				"<td>"+(flipRate ? (1.0/quality) : quality)+"</td>"+
-				"<td>"+tg+"</td>"+
-				"<td>"+tp+"</td>"+
-				"<td>"+offer.Account+"</td>"+
-				"</tr>");
-	}
-	table.innerHTML = content;
-}
-
-function clearBooks() {
-	document.getElementById("bidtable").innerHTML = "";
-	document.getElementById("asktable").innerHTML = "";
-	var input1 = document.getElementById("curissuer1");
-	var input2 = document.getElementById("curissuer2");
-	input1.readOnly = false;
-	input1.disabled = "";
-	input2.readOnly = false;
-	input2.disabled = "";
-}
-
-var pressOffer = guard([
-		mustConnect,
-		mustIdentify,
-		mustBeValid([
-			'document.getElementById("tpamount").value',
-			'document.getElementById("tpcurissuer").value',
-			'document.getElementById("tgamount").value',
-			'document.getElementById("tgcurissuer").value'
-			], ["number","currency/issuer pair",
-			"number","currency/issuer pair"
-			]),
-		], function(tpa, tpci, tga, tgci) {
-		tpci = tpci.split("/");
-		tgci = tgci.split("/");
-		var ob = document.getElementById("offerbutton");
-		ob.innerHTML = "submitting...";
-		ob.disabled = "disabled";
-		submitOffer(tpa, tpci[0], tpci[1], tga, tgci[0], tgci[1]);
-		}
-		);
-
-function submitOffer(tpAmount, tpCurrency, tpIssuer, tgAmount, tgCurrency, tgIssuer) {
-	var tp = tpAmount;
-	var tg = tgAmount;
-	if (tpCurrency === "XRP") {
-		tp = 1000000*parseFloat(tp);
-	} else {
-		tp += ("/"+tpCurrency+"/"+tpIssuer);
-	}
-	if (tgCurrency === "XRP") {
-		tg = 1000000*parseFloat(tg);
-	} else {
-		tg += ("/"+tgCurrency+"/"+tgIssuer);
-	}
-	var transaction = remote.createTransaction("OfferCreate", {
-account: MY_ADDRESS,
-taker_pays: tp,
-taker_gets: tg
-});
-
-transaction.submit(function(err, res) {
-		var outcome = "transaction finalized with " + 
-		(err ? "error" : "result") + ":";
-		prompt(outcome, JSON.stringify(err||res));
-		var ob = document.getElementById("offerbutton");
-		ob.innerHTML = "submit offer";
-		ob.disabled = "";
-		document.getElementById("tpamount").value = "";
-		document.getElementById("tgamount").value = "";
-		});
-}
-
 
 
 
