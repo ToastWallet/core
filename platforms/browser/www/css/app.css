@@ -186,6 +186,9 @@ div.input-group>span.input-group-btn>button {
 	display:inline-block; 
 	max-width:100%; 
 	width:auto;
+	overflow:hidden;
+	text-overflow: clip;
+	word-wrap: break-word;
 }
 
 body:before {

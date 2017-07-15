@@ -191,18 +191,17 @@ function showAlert(alertclass, buttons) {
 <button id="trustbutton" onclick="pressTrust()">set trust</button>
 
 </div>
-
 <div id="tabencryptionwarning" class="screentab" data-hasback="true" data-title="Encrypt Your Keys" style="display: block; color:black;">
     <p style="text-align:center;"><b style=" font-size:1.3em;">We know you're keen to get started with ToastWallet</b></p>
 
-<p>But first you should know that each Ripple wallet consists of: </p><ul style="margin-left:1em !important; list-style-type: circle;"><li><b style="color:blue">Public Address</b><br><i style="color: blue;">which is like a bank account number</i></li><li><b style="color:red;">Secret Key</b><br><i style="color:red; font-weight:bold;">which is like your bank pin</i></li></ul><p style="">We highly recommend securing your Secret Key against theft or loss:</p><ul><li><button type="button" class="btn btn-success
-                             " style="width:100%">Premium - $10/year</button>
-<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers and phone loss</p></li><li><button type="button" class="btn btn-warning" style="width:100%">Basic Encryption - $5/year</button>
-<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers but not backed up</p></li><li><button type="button" class="btn btn-danger" style="width:100%">No Encryption - Free</button><p style="font-size:0.9em; text-align:center; font-family: monospace !important;">XRP may be stolen by hackers</p></li>
+<ul style="margin-left:1em !important; list-style-type: circle;"></ul><p style="text-align:justify">Before you do we highly recommend securing your Secret Key against theft or loss:</p><ul><li><button type="button" class="btn btn-success
+                             " style="width:100%">Strong + Backup - $10.00 / year</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers and phone loss</p></li><li><button type="button" class="btn btn-info" style="width:100%">Strong Encryption - $3.00 once</button>
+<p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Safe from hackers but not backed up</p></li><li><button type="button" class="btn btn-danger" style="width:100%">Standard Encryption - Free</button><p style="font-size:0.9em; text-align:center; font-family: monospace !important;">Not safe from sophisticated attacks</p></li>
 
     </ul>
+    
 </div>
-
 <div id="tabtrade" class="screentab" data-primarytab="true" data-title="Trade">
 
 <h2>trade</h2>
@@ -363,28 +362,39 @@ function refreshAccounts() {
 	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
-			var first = true;
+			accountbalances = {};
 			for (var i in acc) {
-			if (activeaccount == ""){
-			activeaccount = i;	
-			}
 
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 
-			$("#payfromaccount").append('<option'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
 
 			remote.requestAccountInfo({
-account: i,
-ledger: "validated"
-}, function(err, res) {
-if (err) {
-//accountInfoError(err, table);
-} else {
-$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
-accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+				account: i,
+				ledger: "validated"
+			}, function(err, res) {
+				if (err) {
+				} else {
+					$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+				}
 
-}
-});
+				var balcount = Object.keys(accountbalances).length;
+				if (balcount > 0 && activeaccount == "") {
+					var largest = 0; var largestindex = 0;
+					for (var x in accountbalances) {
+						if (accountbalances[x] > largest) {
+							largest = accountbalances[x];
+							largestindx = x;
+						}
+					}
+
+					activeaccount = x;
+
+					$("#opt" + x).prop('selected', true);
+					$("#ra" + x).addClass('active');	
+				}
+			});
 }
 });
 
@@ -418,7 +428,7 @@ function showTab(tab) {
 		scanner.stop();
 	}
 
-	if (tab == "#tabaccounts") {
+	if (tab == "#tabaccounts" || tab == "#tabpayments") {
 		refreshAccounts();	
 	} else if (tab == "#tabaccountsecret") {
 		renderSecret(activeaccount);
@@ -752,14 +762,10 @@ function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID,
 
 				transaction.submit(function(err, res) {
 					if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
-					
-						window.setInterval( function() {sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun);}, 1000);
-				
-					} else if ( (res == undefined || res == null || res.engine_result == 'tesSUCCESS') && !(res != null && res.engine_result == 'tejMaxLedger') ) {
-						navigator.notification.alert("Payment failed.", failfun, "Failure", "OK");
+						navigator.notification.alert("Payment failed most likely due to lack of funds in " + fromacc, failfun, "Failure", "OK");
 						hideSpinner();
 						failfun();
-					} else {
+					} else if ( (res != undefined && res != null || res.engine_result == 'tesSUCCESS') ) {
 						navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
 						$("#toaddress").val("");
 						$("#desttag").val("");
@@ -767,6 +773,10 @@ function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID,
 						$("#payamount").val("");
 						hideSpinner();
 						successfun();
+					} else {
+						navigator.notification.alert("Payment failed for an unknown reason.", failfun, "Failure", "OK");
+						hideSpinner();
+						failfun();
 					}
 				});
 			} else {
