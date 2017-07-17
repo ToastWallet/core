@@ -154,8 +154,6 @@ div.input-group>span.input-group-btn>button {
     background: linear-gradient(45deg, #1959ab, #317fe2);
     list-style: none;
     margin: 0;
-/*    padding: 0.5em 0.5em 0.5em 0.5em;*/
-    padding: 1em 0.5em 0.75em 0.5em;
     text-align: center;
     z-index: 99999;
     border-top: 1px solid hsla(214, 50%, 25%, 0.25);
@@ -175,7 +173,6 @@ div.input-group>span.input-group-btn>button {
 /*    background: #3f77bf;*/
     background: linear-gradient(45deg, #1959ab, #317fe2);
     margin: 0;
-    padding: 1.5em 0.5em 0.5em 0.5em;
     list-style: none;
     z-index: 99999;
     border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
@@ -209,6 +206,7 @@ body:before {
     vertical-align: middle;
     margin: 0;
     display: inline-block;
+    padding: 1.5em 0.5em 0.5em 0.5em;
 }
 
 .headerleft {
@@ -232,6 +230,7 @@ body:before {
     cursor: pointer;
     display: inline-block;
     min-width: 30%;
+    padding: 1em 0.5em 0.75em 0.5em;
 }
 #navfooter > li > div {
     font-size: 0.8em;
