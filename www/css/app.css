@@ -175,7 +175,7 @@ div.input-group>span.input-group-btn>button {
 /*    background: #3f77bf;*/
     background: linear-gradient(45deg, #1959ab, #317fe2);
     margin: 0;
-    padding: 0.5em 0.5em 0.5em 0.5em;
+    padding: 1.5em 0.5em 0.5em 0.5em;
     list-style: none;
     z-index: 99999;
     border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
