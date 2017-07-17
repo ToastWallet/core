@@ -24,7 +24,11 @@
 <body>
 
 
-
+<script>
+$(function() {
+	FastClick.attach(document.body);
+});
+</script>
 
 
 
@@ -567,7 +571,6 @@ bindEvents: function() {
 	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
 	    // function, we must explicitly call 'app.receivedEvent(...);'
 onDeviceReady: function() {
-		       FastClick.attach(document.body);
 		       window.screen.orientation.lock('portrait');
 		       db = new PouchDB('toastwallet');
 		       connectToRipple();
