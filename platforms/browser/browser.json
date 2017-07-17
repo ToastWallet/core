@@ -94,6 +94,9 @@
         },
         "cordova-plugin-screen-orientation": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {},
@@ -741,6 +744,7 @@
         "cordova-plugin-whitelist": "1.2.2",
         "phonegap-plugin-barcodescanner": "6.0.6",
         "cordova-plugin-sqlite-2": "1.0.4",
-        "cordova-plugin-screen-orientation": "2.0.1"
+        "cordova-plugin-screen-orientation": "2.0.1",
+        "cordova-plugin-crosswalk-webview": "2.3.0"
     }
 }

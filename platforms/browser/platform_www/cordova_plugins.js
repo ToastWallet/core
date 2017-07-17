@@ -645,7 +645,8 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.2.2",
     "phonegap-plugin-barcodescanner": "6.0.6",
     "cordova-plugin-sqlite-2": "1.0.4",
-    "cordova-plugin-screen-orientation": "2.0.1"
+    "cordova-plugin-screen-orientation": "2.0.1",
+    "cordova-plugin-crosswalk-webview": "2.3.0"
 }
 // BOTTOM OF METADATA
 });
