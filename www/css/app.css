@@ -6,7 +6,9 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-
+button:not(.varsize) {
+    min-width: 6em;
+}
 a:hover, a:visited, a:active, a:focus {
     text-decoration: none !important;
 }
@@ -94,6 +96,14 @@ img.loader {
 #accountslist > li {
     text-overflow: ellipsis;
     overflow: hidden;
+    min-height: 4em;
+}
+#btnaddaccount > * {
+    vertical-align: middle;
+}
+#tabgenaccount button {
+    min-width: 15em;
+    min-height: 4em;
 }
 i.fa {
     font-size: 1.3em !important;
@@ -122,17 +132,6 @@ div.input-group>span.input-group-btn>button {
 	margin: 0.5em;
 }
 
-#generatedaddress {
-    font-weight: bold;
-    text-align: center;
-    color: black;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    border: 1px black solid;
-    padding: 0.25em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 #loading {
     position: fixed;
@@ -170,7 +169,6 @@ div.input-group>span.input-group-btn>button {
     top: 0;
     left: 0;
     width: 100%;
-/*    background: #3f77bf;*/
     background: linear-gradient(45deg, #1959ab, #317fe2);
     margin: 0;
     list-style: none;
@@ -181,10 +179,10 @@ div.input-group>span.input-group-btn>button {
     padding-top: 1em;
     padding-bottom: 1em;
 }
-#accdetailsaddress, #accdetailssecretaddress {
-	font-size: 1.5em !important; 
+#generatedaddress, #accdetailsaddress, #accdetailssecretaddress {
+	font-size: 1.2em !important; 
 	color:black; 
-	border:1px solid black; 
+	border:1px dashed black; 
 	overflow-wrap:break-word; 
 	padding:0.2em; 
 	display:inline-block; 
@@ -200,15 +198,19 @@ body:before {
     display: inline-block;
 /*    padding: 1em 1em 1em 1em;*/
 
-    padding: 1.5em 0.5em 1.0em 0.5em;
+    padding: 1.5em 0.5em 2.0em 0.5em;
 }
 #navheader > li {
     vertical-align: middle;
     margin: 0;
     display: inline-block;
-    padding: 1.5em 0.5em 0.5em 0.5em;
 }
-
+#navheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
 .headerleft {
     width: 25%;
     text-align: left;

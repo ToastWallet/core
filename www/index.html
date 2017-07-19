@@ -11,14 +11,14 @@
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/font-awesome.css">
-<script src="deps/jquery-ui-bootstrap/assets/js/jquery-1.9.0.min.js" type="text/javascript"></script>
-<script src="deps/jquery-ui-bootstrap/assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js" type="text/javascript"></script>
 <script src="js/ripple-0.12.5-rc2-min.js"></script>
 <script src="js/instascan.min.js"></script>
-<script type="text/javascript" src="js/pouchdb.min.js"></script>
-<script type="text/javascript" src="js/pouchdb.upsert.min.js"></script>
-<script type="text/javascript" src="cordova.js"></script>
-<script type='application/javascript' src='js/fastclick.js'></script>
+<script src="js/pouchdb.min.js"></script>
+<script src="js/pouchdb.upsert.min.js"></script>
+<script src="cordova.js"></script>
+<script src='js/fastclick.js'></script>
 <script src="js/kjua-0.1.1.min.js"></script>
 </head>
 <body>
@@ -34,16 +34,15 @@ $(function() {
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true">
 <ul class="list-group" id="accountslist">
-<li class="list-group-item bottom-list-button"><a href="#" id="btnaddaccount"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 </ul>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true">
 <center>
-<div style="color:red">Your private secret key for</div><br>
 <center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
+<div style="color:black;">Your secret key</div><br>
 <center><div id="accsecret" style="color:blue"></div></center><br />
-<div style="color:red">QR code of your secret key</div><br>
 <center><div id="accsecretqr"></div>
 </center>
 
@@ -51,15 +50,14 @@ $(function() {
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true">
-<div style="color:grey">Your public Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 <center><div id="accdetailsaddress" ></div></center>
 
 <center><div id="accdetailsqr"></div>
 </center>
 
-<center><button id="btnbackupkey" type="button" class="btn btn-info">Backup Secret Key</button></center><br>
-<center>
-<button id="btnremoveaddr" type="button" class="btn btn-danger">Remove this address</button>
+<center><button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>&nbsp;
+<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
 </center>
 </div>
 
@@ -237,7 +235,7 @@ function showAlert(alertclass, buttons) {
 <div id="loaderror"></div>
 </div>
 
-<ul id="navheader"><li class="headerleft"></li><li class="headermiddle">Accounts</li><li class="headerright">Logout</li></ul>
+<ul id="navheader"><li class="headerleft"></li><li class="headermiddle">Accounts</li><li class="headerright"><i class="fa fa-lock" aria-hidden="true"></i></li></ul>
 <ul id="navfooter">
 <li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
 <li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>PAYMENTS</div></li>
@@ -453,9 +451,9 @@ function showTab(tab) {
 	}
 
 	if ($(tab).data('title')) {
-		$(".headermiddle")[0].innerText = $(tab).data('title');
+		$(".headermiddle")[0].innerHTML = '<span class="titletab">' + $(tab).data('title') + "</span>";
 	} else {
-		$(".headermiddle")[0].innerText = "";
+		$(".headermiddle")[0].innerHTML = "";
 	}
 }
 
