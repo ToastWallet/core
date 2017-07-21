@@ -219,11 +219,17 @@ body:before {
     margin: 0;
     display: inline-block;
 }
-#navheader > li > * {
+#navheader > li:not(.iosheader) > * {
     padding-left: 0.5em;
     padding-right: 0.5em;
     padding-top: 1em;
     padding-bottom: 1em;
+}
+#navheader > li.iosheader > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1.5em;
+    padding-bottom: 0.5em;
 }
 .headerleft {
     width: 25%;

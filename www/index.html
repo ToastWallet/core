@@ -556,6 +556,11 @@ bindEvents: function() {
 onDeviceReady: function() {
 		       window.screen.orientation.lock('portrait');
 		       db = new PouchDB('toastwallet');
+			if (device.platform == 'iOS') {
+				$("#navheader").addClass("iosheader");
+				$("body").addClass("iosheader");
+
+			}
 		       connectToRipple();
 	       },
 	       // Update DOM on a Received Event
