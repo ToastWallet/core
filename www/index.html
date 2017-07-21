@@ -1,255 +1,194 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<meta name="format-detection" content="telephone=no" />
-<meta name="msapplication-tap-highlight" content="no" />
-<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-<!--meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" /-->
-
-<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css">
-<link rel="stylesheet" href="css/font-awesome.css">
-<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
-<script src="js/bootstrap.min.js" type="text/javascript"></script>
-<script src="js/ripple-0.12.5-rc2-min.js"></script>
-<script src="js/instascan.min.js"></script>
-<script src="js/pouchdb.min.js"></script>
-<script src="js/pouchdb.upsert.min.js"></script>
-<script src="cordova.js"></script>
-<script src='js/fastclick.js'></script>
-<script src="js/kjua-0.1.1.min.js"></script>
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+	<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/ripple-0.12.5-rc2-min.js"></script>
+	<script src="js/instascan.min.js"></script>
+	<script src="js/pouchdb.min.js"></script>
+	<script src="js/pouchdb.upsert.min.js"></script>
+	<script src="cordova.js"></script>
+	<script src='js/fastclick.js'></script>
+	<script src="js/kjua-0.1.1.min.js"></script>
 </head>
 <body>
-
-
-<script>
-$(function() {
-		FastClick.attach(document.body);
-		});
-</script>
+<script>$(function() {FastClick.attach(document.body);});</script>
 
 
 
-<div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true">
-<ul class="list-group" id="accountslist">
-<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
-</ul>
+<div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
+	<ul class="list-group" id="accountslist">
+	<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	</ul>
 </div>
 
-<div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true">
-<center>
-<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
-<div style="color:black;">Your secret key</div><br>
-<center><div id="accsecret" style="color:blue"></div></center><br />
-<center><div id="accsecretqr"></div>
-</center>
-
-</center>
+<div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
+	<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
+	<center><div style="color:black;">Your secret key</div></center><br>
+	<center><div id="accsecret" style="color:blue"></div></center><br />
+	<center><div id="accsecretqr"></div></center>
 </div>
 
-<div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true">
-<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-<center><div id="accdetailsaddress" ></div></center>
-
-<center><div id="accdetailsqr"></div>
-</center>
-
-<center><button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>&nbsp;
-<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
-</center>
+<div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
+	<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+	<center><div id="accdetailsaddress" ></div></center>
+	<center><div id="accdetailsqr"></div></center>
+	<center>
+		<button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>
+		&nbsp;
+		<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
+	</center>
 </div>
 
-<div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account">
-<ul class="largebuttongrid">
-<li id="btngennewaddress">
-<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-plus-circle" aria-hidden="true"></i></div><div class="buttontext">Generate New Address</div></div>
-</li>
-<li id="btnaddexistingaddress">
-<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-camera" aria-hidden="true"></i></div><div class="buttontext">Add Existing Address</div></div>
-</li>
-</ul>
+<div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
+	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-plus-circle" aria-hidden="true"></i></div><div class="buttontext">Generate New Address</div></div>
+	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-camera" aria-hidden="true"></i></div><div class="buttontext">Add Existing Address</div></div>
 </div>
 
-<div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display: block;">
-
-
-<label for="secret">Ripple Secret</label>
-<div class="input-group">
-<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-<span class="input-group-btn">
-<button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button>
-</span>
+<div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
+	<label for="secret">Ripple Secret</label>
+	<div class="input-group">
+		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<span class="input-group-btn"><button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button></span>
+	</div>
+	<br />
+	<label for="secret">Decryption Phrase (if applicable)</label>
+	<div>
+		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+	</div>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" id="btnimport">Import Account</button></div></center>
 </div>
 
-<br />
-
-<label for="secret">Decryption Phrase (if applicable)</label>
-<div>
-<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
-</div>
-
-<br />
-
-<center>
-<div>
-<button type="button" class="btn btn-primary" id="btnimport">Import Account</button>
-</div>
-</center>
-
-</div>
-
-<div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key">
-<div class="input-group"><video id="qrpreview"></video></div>
-<br />
-<div id="qrerror" class="input-group"></div>
-<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
+<div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
+	<div class="input-group"><video id="qrpreview"></video></div>
+	<br />
+	<div id="qrerror" class="input-group"></div>
+	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
 </div>
 
 
-
-<div id="tabalert" class="screentab" data-hasback="false" data-title="">
-<div id="alertmsg"></div>
-<br />
-<center id="alertbtns">
-</center>
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" style="display:none">
+	<center><img src="images/toastwallet4.png" input-group"="" style="max-width:200px;"></center><br/>
+	<br><label for="password">Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
+	</span></div>
 </div>
 
-<script>
-function showAlert(alertclass, buttons) {
-	$("#alertmsg").removeClass();
-	if (alertclass == undefined || alertclass == "") alertclass = "alert-info";
-	if (buttons == undefined || buttons == "") buttons = [
-		'<button type="button" class="btn btn-primary" onclick="showTab(-1);"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>'
-			];
-
-	$("#alertbtns").empty();
-	for (var i = 0; i < buttons.length; i++)
-		$("#alertbtns").append(buttons[i]);
-	showTab("#tabalert");
-}
-</script>
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="Login" style="display: block;">
-<center><img src="images/toastwallet4.png" input-group"="" style="max-width:200px;"></center><br/>
-<br><label>Passphrase</label>
-<div class="input-group">
-<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
-<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
-</span></div>
-
+<div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display:none">
+	<br><label>Set a Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password1" class="form-control" placeholder=""><span class="input-group-btn"></div>
+	<br><label>The same Passphrase Again</label>
+	<div class="input-group">
+	<input type="password" id="password2" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
+	</span></div>
 </div>
 
-<div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display: block;">
-<br><label>Set a Passphrase</label>
-<div class="input-group">
-<input type="password" id="password1" class="form-control" placeholder=""><span class="input-group-btn">
-<br><label>The same Passphrase Again</label>
-<div class="input-group">
-<input type="password" id="password2" class="form-control" placeholder=""><span class="input-group-btn">
-<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
-</span></div>
-
+<div id="tabchangepassphrase" class="screentab" data-primarytab="true" data-title="Change Passphrase" style="display:none">
+	<br><label>Current Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password3" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
+	</span></div>
+	<br><label>New Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password4" class="form-control" placeholder=""><span class="input-group-btn"></div>
+	<br><label>New Passphrase Again</label>
+	<div class="input-group">
+	<input type="password" id="password5" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
+	</span></div>
 </div>
 
-<div id="tabchangepassphrase" class="screentab" data-primarytab="true" data-title="Change Passphrase" style="display: block;">
-<br><label>Current Passphrase</label>
-<div class="input-group">
-<input type="password" id="password3" class="form-control" placeholder=""><span class="input-group-btn">
-<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
-</span></div>
-<br><label>New Passphrase</label>
-<div class="input-group">
-<input type="password" id="password4" class="form-control" placeholder=""><span class="input-group-btn">
-<br><label>New Passphrase Again</label>
-<div class="input-group">
-<input type="password" id="password5" class="form-control" placeholder=""><span class="input-group-btn">
-<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
-</span></div>
+
+<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account" style="display:none">
+	<center><div id="generatedaddress"></div></center>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></div></center>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></div></center>
+</div>
+
+<div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
+	<label for="toaccount">From Account</label>
+	<div>
+	<select id="payfromaccount" class="form-control">
+	</select>
+	</div>
+	<br />
+
+	<label for="toaccount">To Address</label>
+	<div class="input-group">
+	<input type="text" id="toaddress" class="form-control" placeholder="">
+	<span class="input-group-btn">
+	<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
+	</span>
+	</div>
+	<br />
+
+
+	<label for="desttag">Destination Tag (optional)</label>
+	<div>
+	<input type="text" id="desttag" class="form-control" placeholder="">
+	</div>
+	<br />
+
+	<label for="invoiceid">Invoice ID (optional)</label>
+	<div>
+	<input type="text" id="invoiceid" class="form-control" placeholder="">
+	</div>
+	<br />
+
+	<label for="payamount">Amount</label>
+	<div class="input-group">
+	<input type="text" id="payamount" class="form-control" placeholder="">
+	<span class="input-group-btn">
+	<button class="btn btn-success" id="btnpay" type="button">Pay</button>
+	</span>
+	</div>
 
 </div>
 
 
-<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account">
-<center><div id="generatedaddress"></div></center>
-<br />
-<br />
-<div><center><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></center></div>
-<br />
-<div><center><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></center></div>
+<div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase">Change Passphrase</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabpayments" class="screentab" data-primarytab="true" data-title="Make a Payment">
-
-<label for="toaccount">From Account</label>
-<div>
-<select id="payfromaccount" class="form-control">
-</select>
-</div>
-<br />
-
-<label for="toaccount">To Address</label>
-<div class="input-group">
-<input type="text" id="toaddress" class="form-control" placeholder="">
-<span class="input-group-btn">
-<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
-</span>
-</div>
-<br />
-
-
-<label>Destination Tag (optional)</label>
-<div>
-<input type="text" id="desttag" class="form-control" placeholder="">
-</div>
-<br />
-
-<label>Invoice ID (optional)</label>
-<div>
-<input type="text" id="invoiceid" class="form-control" placeholder="">
-</div>
-<br />
-
-<label>Amount</label>
-<div class="input-group">
-<input type="text" id="payamount" class="form-control" placeholder="">
-<span class="input-group-btn">
-<button class="btn btn-success" id="btnpay" type="button">Pay</button>
-</span>
-</div>
-
-</div>
-
-
-<div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings">
-<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase">Change Passphrase</button></center></div>
-<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
-<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
-<div><center><button type="button" class="btn btn-primary" id="btnsettinglinktoastwalletcom">Link ToastWallet.com Account</button></center></div>
-
+<div id="tabrecovery" class="screentab" data-primarytab="false" hasback="true" data-title="Recovery Options" style="display:none">
+        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryforgotpass">Forgotten Passphrase</button></center></div>
+        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryrestorewallet">Restore Wallet From Backup</button></center></div>
 </div>
 
 
 
+<ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
 
-<div id="loading" style="">
-<img class="loader" src="images/rippleThrobber.gif">
-<div id="loaderror"></div>
-</div>
-
-<ul id="navheader"><li class="headerleft"></li><li class="headermiddle">Accounts</li><li class="headerright"><i class="fa fa-lock" aria-hidden="true"></i></li></ul>
-<ul id="navfooter">
-<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>SEND</div></li>
-<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
-<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
+<ul id="navfooter" style="display:none">
+	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>SEND</div></li>
+	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
+	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
 </ul>
 
 <ul id="dummyfooter">
-<li><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-<li><i class="fa fa-home" aria-hidden="true"></i><div>SEND</div></li>
-<li><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
-<li><i class="fa fa-home" aria-hidden="true"></i><div>SETTINGS</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>SEND</div></li>
+	<li><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>SETTINGS</div></li>
 </ul>
 
 
@@ -409,9 +348,25 @@ var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
+var userkey = "";
 function showTab(tab) {
 
+	$("#navheader").show();
+	if (tab == '#tablogin' || tab == '#tabrecovery') {
+		$("#navfooter").hide();
+		$(".headerright>i").removeClass("fa-lock");
+		$(".headerright>i").addClass("fa-medkit");
+		$(".headerright").click(function(){ showTab("#tabrecovery"); });
+	} else {
+		$("#navfooter>*").show();
+		$(".headerright>i").removeClass("fa-medkit");
+		$(".headerright>i").addClass("fa-lock");
+		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
+	}
+
 	if (tab == currenttab) return;
+
+	
 
 	if (tab == -1) {
 		// unwind mode
@@ -547,13 +502,14 @@ var VER_ENCRYPTED_ORDINARY = 160;
 var VER_ENCRYPTED_REKEYED = 250;
 
 
-function showSpinner() {
-	$("#loading").show();
+function showSpinner(msg) {
+	SpinnerPlugin.activityStart((msg == undefined ? "Loading..." : msg), {dimBackground: true} );
 }
 
 function hideSpinner() {
-	$("#loading").hide();
+	SpinnerPlugin.activityStop();
 }
+
 var db;
 var app = {
 	// Application Constructor
@@ -700,7 +656,7 @@ function connectToRipple() {
 			connectToRipple();
 			} else {
 			hideSpinner();
-			showTab("#tabaccounts");
+			showTab("#tablogin");
 			}
 			});
 }

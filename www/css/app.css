@@ -6,6 +6,10 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
+#tabsettings button, #tabrecovery button {
+    min-width: 20em;
+    margin-bottom: 1em;
+}
 button:not(.varsize) {
     min-width: 6em;
 }
@@ -118,32 +122,10 @@ label {
 	display:none;
 }
 
-.largebuttongrid {
-	text-align: center;
-}
 div.input-group>span.input-group-btn>button {
     min-width: 5em;
 }
-.largebuttongrid > li {
-	min-width: 15em;
-	background-color: #337ab7;
-	padding: 1em;
-	border-radius: 0.25em;
-	margin: 0.5em;
-}
 
-
-#loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 100000;
-    text-align: center;
-    vertical-align: middle;
-    background: #fff;
-}
 #navfooter {
     position: fixed;
     bottom: 0;
@@ -231,8 +213,11 @@ body:before {
     position: relative;
     cursor: pointer;
     display: inline-block;
-    min-width: 30%;
-    padding: 1em 0.5em 0.75em 0.5em;
+    min-width: calc(25% - 1em);
+    padding: 1em 0.5em 1em 0.5em;
+}
+#navfooter div {
+    display: none;
 }
 #navfooter > li > div {
     font-size: 0.8em;
