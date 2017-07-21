@@ -10,6 +10,38 @@ body {
     min-width: 20em;
     margin-bottom: 1em;
 }
+.loading:before {
+    display: block;
+    animation: fa-spin 2s infinite linear;
+    z-index: 99999999999;
+    background: white;
+    content: "\f110";
+    color: #307ee0;
+    font: normal normal normal 4em/1 FontAwesome;
+    -webkit-animation: fa-spin 2s infinite linear;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: calc(50% - 0.5em);
+    top: calc(50% - 0.5em);
+}
+.loading:after {
+    position: absolute;
+    display: block;
+    background: white;
+    content: " ";
+    width: 100%;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+    z-index: 999999998;
+}
 button:not(.varsize) {
     min-width: 6em;
 }

@@ -19,7 +19,7 @@
 	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 </head>
-<body>
+<body class="loading">
 <script>$(function() {FastClick.attach(document.body);});</script>
 
 
@@ -168,7 +168,7 @@
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabrecovery" class="screentab" data-primarytab="false" hasback="true" data-title="Recovery Options" style="display:none">
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display:none">
         <div><center><button type="button" class="btn btn-primary" id="btnrecoveryforgotpass">Forgotten Passphrase</button></center></div>
         <div><center><button type="button" class="btn btn-primary" id="btnrecoveryrestorewallet">Restore Wallet From Backup</button></center></div>
 </div>
@@ -348,16 +348,30 @@ var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
-var userkey = "";
+var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
+
+var recveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+
 function showTab(tab) {
 
 	$("#navheader").show();
-	if (tab == '#tablogin' || tab == '#tabrecovery') {
+
+
+	var isrecoverytab = false;
+
+	for (var i = 0; i < recoveryicontabs.length; i++) {
+		if (tab == recoveryicontabs[i] || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == recoveryicontabs[i])) {
+			isrecoverytab = true;
+			break;
+		}
+	}
+
+	if (isrecoverytab) { // set recovery icon for logged out tabs
 		$("#navfooter").hide();
 		$(".headerright>i").removeClass("fa-lock");
 		$(".headerright>i").addClass("fa-medkit");
 		$(".headerright").click(function(){ showTab("#tabrecovery"); });
-	} else {
+	} else { // set logout icon for logged in tabs
 		$("#navfooter>*").show();
 		$(".headerright>i").removeClass("fa-medkit");
 		$(".headerright>i").addClass("fa-lock");
@@ -403,6 +417,7 @@ function showTab(tab) {
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").click(function() {showTab(-1);});
+		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
 		$(".headerleft").click(function() {});
@@ -503,11 +518,11 @@ var VER_ENCRYPTED_REKEYED = 250;
 
 
 function showSpinner(msg) {
-	SpinnerPlugin.activityStart((msg == undefined ? "Loading..." : msg), {dimBackground: true} );
+	$("body").addClass("loading");
 }
 
 function hideSpinner() {
-	SpinnerPlugin.activityStop();
+	$("body").removeClass("loading");
 }
 
 var db;
