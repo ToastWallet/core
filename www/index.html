@@ -76,8 +76,8 @@
 </div>
 
 
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" >
-	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-width:calc(100% - 1em);"></center><br/>
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
+	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-width: calc(75%);margin-top: 15%;margin-bottom: 1em;"></center><br/>
 	<br><label for="password">Passphrase</label>
 	<div class="input-group">
 	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
@@ -354,6 +354,9 @@ var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a re
 
 function showTab(tab) {
 
+	console.log("showTab(" + tab + ");");
+	console.log(previoustabs);
+
 	$("#navheader").show();
 
 
@@ -368,13 +371,18 @@ function showTab(tab) {
 
 	if (isrecoverytab) { // set recovery icon for logged out tabs
 		$("#navfooter").hide();
+		$("#dummyfooter").hide();
+
 		$(".headerright>i").removeClass("fa-lock");
 		$(".headerright>i").addClass("fa-medkit");
+		$(".headerright").off();
 		$(".headerright").click(function(){ showTab("#tabrecovery"); });
 	} else { // set logout icon for logged in tabs
-		$("#navfooter>*").show();
+		$("#navfooter").show();
+		$("#dummyfooter").show();
 		$(".headerright>i").removeClass("fa-medkit");
 		$(".headerright>i").addClass("fa-lock");
+		$(".headerright").off();
 		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
 	}
 
@@ -416,10 +424,12 @@ function showTab(tab) {
 
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
+		$(".headerleft").off();
 		$(".headerleft").click(function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
+		$(".headerleft").off();
 		$(".headerleft").click(function() {});
 	}
 
