@@ -6,7 +6,45 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-
+#tabsettings button, #tabrecovery button {
+    min-width: 20em;
+    margin-bottom: 1em;
+}
+.loading:before {
+    display: block;
+    animation: fa-spin 2s infinite linear;
+    z-index: 99999999999;
+    background: white;
+    content: "\f110";
+    color: #307ee0;
+    font: normal normal normal 4em/1 FontAwesome;
+    -webkit-animation: fa-spin 2s infinite linear;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: calc(50% - 0.5em);
+    top: calc(50% - 0.5em);
+}
+.loading:after {
+    position: absolute;
+    display: block;
+    background: white;
+    content: " ";
+    width: 100%;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+    z-index: 999999998;
+}
+button:not(.varsize) {
+    min-width: 6em;
+}
 a:hover, a:visited, a:active, a:focus {
     text-decoration: none !important;
 }
@@ -94,6 +132,14 @@ img.loader {
 #accountslist > li {
     text-overflow: ellipsis;
     overflow: hidden;
+    min-height: 4em;
+}
+#btnaddaccount > * {
+    vertical-align: middle;
+}
+#tabgenaccount button {
+    min-width: 15em;
+    min-height: 4em;
 }
 i.fa {
     font-size: 1.3em !important;
@@ -105,60 +151,30 @@ label {
     margin-bottom: 0 !important;
 }
 .screentab {
+	display:none;
 }
 
-.largebuttongrid {
-	text-align: center;
-}
 div.input-group>span.input-group-btn>button {
     min-width: 5em;
 }
-.largebuttongrid > li {
-	min-width: 15em;
-	background-color: #337ab7;
-	padding: 1em;
-	border-radius: 0.25em;
-	margin: 0.5em;
-}
 
-#generatedaddress {
-    font-weight: bold;
-    text-align: center;
-    color: black;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    border: 1px black solid;
-    padding: 0.25em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 100000;
-    text-align: center;
-    vertical-align: middle;
-    background: #fff;
-}
 #navfooter {
     position: fixed;
     bottom: 0;
     width: 100%;
     left: 0;
-    background: hsla(214, 50%, 50%, 1);
+/*    background: hsla(214, 50%, 50%, 1);*/
+    background: linear-gradient(45deg, #1959ab, #317fe2);
     list-style: none;
     margin: 0;
-    padding: 0.5em 0.5em 0.5em 0.5em;
     text-align: center;
     z-index: 99999;
+    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
 }
 
 #dummyfooter {
-    padding: 0.5em 0.5em 0.5em 0.5em;
+ /*   padding: 0.5em 0.5em 0.5em 0.5em;*/
+    padding: 1em 0.5em 0.75em 0.5em;
     margin: 0;
 }
 
@@ -167,20 +183,20 @@ div.input-group>span.input-group-btn>button {
     top: 0;
     left: 0;
     width: 100%;
-    background: #3f77bf;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
     margin: 0;
-    padding: 0.5em 0.5em 0.5em 0.5em;
     list-style: none;
     z-index: 99999;
+    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
 }
 #accdetailsqr {
     padding-top: 1em;
     padding-bottom: 1em;
 }
-#accdetailsaddress, #accdetailssecretaddress {
-	font-size: 1.5em !important; 
+#generatedaddress, #accdetailsaddress, #accdetailssecretaddress {
+	font-size: 1.2em !important; 
 	color:black; 
-	border:1px solid black; 
+	border:1px dashed black; 
 	overflow-wrap:break-word; 
 	padding:0.2em; 
 	display:inline-block; 
@@ -194,14 +210,21 @@ div.input-group>span.input-group-btn>button {
 body:before {
     content: "A";
     display: inline-block;
-    padding: 1em 1em 1em 1em;
+/*    padding: 1em 1em 1em 1em;*/
+
+    padding: 1.5em 0.5em 2.0em 0.5em;
 }
 #navheader > li {
     vertical-align: middle;
     margin: 0;
     display: inline-block;
 }
-
+#navheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
 .headerleft {
     width: 25%;
     text-align: left;
@@ -222,7 +245,11 @@ body:before {
     position: relative;
     cursor: pointer;
     display: inline-block;
-    min-width: 30%;
+    min-width: calc(25% - 1em);
+    padding: 1em 0.5em 1em 0.5em;
+}
+#navfooter div {
+    display: none;
 }
 #navfooter > li > div {
     font-size: 0.8em;

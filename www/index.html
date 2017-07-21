@@ -18,6 +18,7 @@
 	<script src="cordova.js"></script>
 	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
+	<script src="js/sodium.min.js"></script>
 </head>
 <body class="loading">
 <script>$(function() {FastClick.attach(document.body);});</script>
@@ -434,7 +435,7 @@ function showTab(tab) {
 	}
 
 	if ($(tab).data('title')) {
-		$(".headermiddle")[0].innerHTML = '<span class="titletab">' + $(tab).data('title') + "</span>";
+		$(".headermiddle")[0].innerHTML = '<div>' + $(tab).data('title') + "</div>";
 	} else {
 		$(".headermiddle")[0].innerHTML = "";
 	}
