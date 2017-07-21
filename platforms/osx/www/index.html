@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+	<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/ripple-0.12.5-rc2-min.js"></script>
+	<script src="js/instascan.min.js"></script>
+	<script src="js/pouchdb.min.js"></script>
+	<script src="js/pouchdb.upsert.min.js"></script>
+	<script src="cordova.js"></script>
+	<script src='js/fastclick.js'></script>
+	<script src="js/kjua-0.1.1.min.js"></script>
+	<script src="js/sodium.min.js"></script>
+</head>
+<body class="loading">
+<script>$(function() {FastClick.attach(document.body);});</script>
+
+
+
+<div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
+	<ul class="list-group" id="accountslist">
+	<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	</ul>
+</div>
+
+<div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
+	<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
+	<center><div style="color:black;">Your secret key</div></center><br>
+	<center><div id="accsecret" style="color:blue"></div></center><br />
+	<center><div id="accsecretqr"></div></center>
+</div>
+
+<div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
+	<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+	<center><div id="accdetailsaddress" ></div></center>
+	<center><div id="accdetailsqr"></div></center>
+	<center>
+		<button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>
+		&nbsp;
+		<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
+	</center>
+</div>
+
+<div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
+	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-plus-circle" aria-hidden="true"></i></div><div class="buttontext">Generate New Address</div></div>
+	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-camera" aria-hidden="true"></i></div><div class="buttontext">Add Existing Address</div></div>
+</div>
+
+<div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
+	<label for="secret">Ripple Secret</label>
+	<div class="input-group">
+		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<span class="input-group-btn"><button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button></span>
+	</div>
+	<br />
+	<label for="secret">Decryption Phrase (if applicable)</label>
+	<div>
+		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+	</div>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" id="btnimport">Import Account</button></div></center>
+</div>
+
+<div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
+	<div class="input-group"><video id="qrpreview"></video></div>
+	<br />
+	<div id="qrerror" class="input-group"></div>
+	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
+</div>
+
+
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
+	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-width: calc(75%);margin-top: 15%;margin-bottom: 1em;"></center><br/>
+	<br><label for="password">Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
+	</span></div>
+</div>
+
+<div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display:none">
+	<br><label>Set a Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password1" class="form-control" placeholder=""><span class="input-group-btn"></div>
+	<br><label>The same Passphrase Again</label>
+	<div class="input-group">
+	<input type="password" id="password2" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
+	</span></div>
+</div>
+
+<div id="tabchangepassphrase" class="screentab" data-primarytab="true" data-title="Change Passphrase" style="display:none">
+	<br><label>Current Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password3" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
+	</span></div>
+	<br><label>New Passphrase</label>
+	<div class="input-group">
+	<input type="password" id="password4" class="form-control" placeholder=""><span class="input-group-btn"></div>
+	<br><label>New Passphrase Again</label>
+	<div class="input-group">
+	<input type="password" id="password5" class="form-control" placeholder=""><span class="input-group-btn">
+	<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
+	</span></div>
+</div>
+
+
+<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account" style="display:none">
+	<center><div id="generatedaddress"></div></center>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></div></center>
+	<br />
+	<center><div><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></div></center>
+</div>
+
+<div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
+	<label for="toaccount">From Account</label>
+	<div>
+	<select id="payfromaccount" class="form-control">
+	</select>
+	</div>
+	<br />
+
+	<label for="toaccount">To Address</label>
+	<div class="input-group">
+	<input type="text" id="toaddress" class="form-control" placeholder="">
+	<span class="input-group-btn">
+	<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
+	</span>
+	</div>
+	<br />
+
+
+	<label for="desttag">Destination Tag (optional)</label>
+	<div>
+	<input type="text" id="desttag" class="form-control" placeholder="">
+	</div>
+	<br />
+
+	<label for="invoiceid">Invoice ID (optional)</label>
+	<div>
+	<input type="text" id="invoiceid" class="form-control" placeholder="">
+	</div>
+	<br />
+
+	<label for="payamount">Amount</label>
+	<div class="input-group">
+	<input type="text" id="payamount" class="form-control" placeholder="">
+	<span class="input-group-btn">
+	<button class="btn btn-success" id="btnpay" type="button">Pay</button>
+	</span>
+	</div>
+
+</div>
+
+
+<div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase">Change Passphrase</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
+</div>
+
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display:none">
+        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryforgotpass">Forgotten Passphrase</button></center></div>
+        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryrestorewallet">Restore Wallet From Backup</button></center></div>
+</div>
+
+
+
+<ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
+
+<ul id="navfooter" style="display:none">
+	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>SEND</div></li>
+	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
+	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
+</ul>
+
+<ul id="dummyfooter">
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>SEND</div></li>
+	<li><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i><div>SETTINGS</div></li>
+</ul>
+
+
+<script>
+var scanner;
+function scanQR(intofield, returntab) {
+
+	if (device.platform == 'browser') {
+		showTab("#tabqrscan");
+		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
+		scanner.addListener('scan', function (content) {
+				$(intofield).val(content);
+				showTab(returntab);
+				});
+		Instascan.Camera.getCameras().then(function (cameras) {
+				if (cameras.length > 0) {
+				scanner.start(cameras[0]);
+				} else {
+				$("#qrerror").innerText = 'Error: No cameras found.';
+				}
+				}).catch(function (e) {
+
+					console.error(e);
+					});
+	} else {
+		cordova.plugins.barcodeScanner.scan(
+				function (result) {
+				if(!result.cancelled)
+				{
+				$(intofield).val(result.text);
+				showtab(returntab);
+				}
+				},
+				function (error) {
+				showTab("#tabqrscan");
+				$("#qrerror").innerText = 'Error: No access to camera.';
+				}
+				);
+	}
+}
+
+function selectAccount(accselected) {
+	var acc = $(".accountitem");
+	for (var i = 0; i < acc.length; i++) {	
+		acc.removeClass("active");
+	}
+	$("#ra" + accselected).addClass("active");
+	activeaccount = accselected;
+	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
+	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
+
+
+	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
+	$("#accdetailsaddress")[0].innerText = accselected;
+
+	$("#accdetailsqr").empty();
+	$("#accdetailsqr").append(kjua({text: accselected}));
+	$("#btnremoveaddr").off("click");
+	$("#btnremoveaddr").click(function() {
+
+			navigator.notification.prompt(
+				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
+				function(result) {
+				if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
+				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
+				}
+				},                  
+				'Confirm you wish to remove Ripple address',
+				['Ok','Cancel!'],              // buttonLabels
+				""
+				);
+
+			});
+	showTab("#tabaccountdetails");	
+}
+
+
+function renderSecret(acctorender) {
+
+	$("#accdetailssecretaddress").empty();
+	$("#accsecret").empty();
+	$("#accsecretqr").empty();
+
+	getAccounts(function(secrets) {
+			if (secrets[acctorender] !== undefined) {
+			$("#accdetailssecretaddress").append(acctorender);
+			$("#accsecret").append(secrets[acctorender]);	
+			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
+			return;
+			}
+			});
+
+}
+
+function getAccounts(callback) {
+	var f	= function(secrets) {
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
+		callback(secrets);
+	}
+	db.get("secrets").then(f).catch(f);
+}
+
+function refreshAccounts() {
+	// delete all accounts in the list then readd them from localstorage	
+	var acc = $(".accountitem");
+	for (var i = 0; i < acc.length; i++) {
+		acc[i].remove();
+	}
+
+	$("#payfromaccount").empty();
+
+	getAccounts(function(acc) {
+			accountbalances = {};
+			for (var i in acc) {
+
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
+
+			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+
+			remote.requestAccountInfo({
+account: i,
+ledger: "validated"
+}, function(err, res) {
+if (err) {
+} else {
+$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+}
+
+var balcount = Object.keys(accountbalances).length;
+if (balcount > 0 && activeaccount == "") {
+var largest = 0; var largestindex = 0;
+for (var x in accountbalances) {
+if (accountbalances[x] > largest) {
+largest = accountbalances[x];
+largestindx = x;
+}
+}
+
+activeaccount = x;
+
+			$("#opt" + x).prop('selected', true);
+			$("#ra" + x).addClass('active');	
+			}
+});
+}
+});
+
+}
+
+
+var currenttab = "";
+var previoustabs = [];
+var activeaccount = "";
+var accountbalances = {};
+var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
+
+var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+
+function showTab(tab) {
+
+	console.log("showTab(" + tab + ");");
+	console.log(previoustabs);
+
+	$("#navheader").show();
+
+
+	var isrecoverytab = false;
+
+	for (var i = 0; i < recoveryicontabs.length; i++) {
+		if (tab == recoveryicontabs[i] || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == recoveryicontabs[i])) {
+			isrecoverytab = true;
+			break;
+		}
+	}
+
+	if (isrecoverytab) { // set recovery icon for logged out tabs
+		$("#navfooter").hide();
+		$("#dummyfooter").hide();
+
+		$(".headerright>i").removeClass("fa-lock");
+		$(".headerright>i").addClass("fa-medkit");
+		$(".headerright").off();
+		$(".headerright").click(function(){ showTab("#tabrecovery"); });
+	} else { // set logout icon for logged in tabs
+		$("#navfooter").show();
+		$("#dummyfooter").show();
+		$(".headerright>i").removeClass("fa-medkit");
+		$(".headerright>i").addClass("fa-lock");
+		$(".headerright").off();
+		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
+	}
+
+	if (tab == currenttab) return;
+
+	
+
+	if (tab == -1) {
+		// unwind mode
+
+		if (previoustabs.length == 0) return; // cannot unwind so do nothing
+
+		tab = currenttab = previoustabs.pop();
+
+	} else {
+		//windup mode
+		previoustabs.push(currenttab);
+		currenttab = tab;
+	}
+
+	if ($(tab).data('primarytab')) previoustabs = [];
+
+	if (tab != "#tabqrscan" && scanner != undefined) {
+		scanner.stop();
+	}
+
+	if (tab == "#tabaccounts" || tab == "#tabpayments") {
+		refreshAccounts();	
+	} else if (tab == "#tabaccountsecret") {
+		renderSecret(activeaccount);
+	}
+
+	var tabs = $(".screentab");
+	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
+
+	$(tab).show();
+
+
+
+	if ($(tab).data('hasback')) {
+		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
+		$(".headerleft").off();
+		$(".headerleft").click(function() {showTab(-1);});
+		$(".headerleft").show();
+	} else {
+		$(".headerleft")[0].innerHTML = '';
+		$(".headerleft").off();
+		$(".headerleft").click(function() {});
+	}
+
+	if ($(tab).data('title')) {
+		$(".headermiddle")[0].innerHTML = '<div>' + $(tab).data('title') + "</div>";
+	} else {
+		$(".headermiddle")[0].innerHTML = "";
+	}
+}
+
+var generatedAcount = {};
+function showAndGenAccount() {
+	var result = generateAddress();
+	generatedAccount = result;
+	$("#generatedaddress")[0].innerText = result.address;
+	showTab("#tabgenaccount");	
+}
+
+function importGeneratedAccount() {
+	importAddress(generatedAccount.secret);
+	showTab("#tabaccounts");
+}
+
+function doPay() {
+
+	var payfrom = $("#payfromaccount").find(":selected").text();
+	var payto = $("#toaddress").val();
+	var dest = $("#desttag").val();
+	var invid = $("#invoiceid").val();
+	var amount = $("#payamount").val();
+
+
+
+	if (dest == "") dest = 0;
+
+	if (payfrom == "") {
+		navigator.notification.alert("You must select an account to pay from", function(){$("#payfromaccount").focus();}, "Select a from account", "OK");
+		return;
+	}
+
+
+	if (payto == "") {
+		navigator.notification.alert("You must select an address to pay to", function(){$("#toaddress").focus();}, "Select a to address", "OK");
+		return;
+	}
+
+
+	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
+		navigator.notification.alert("You must select a valid amount to send", function(){$("#payamount").focus();}, "Select a payment amount", "OK");
+		return;
+	}
+
+
+
+	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
+}
+
+$("#navaccounts").click(function() { showTab("#tabaccounts"); });
+$("#navpayments").click(function() { showTab("#tabpayments"); });
+$("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
+$("#navsettings").click(function() { showTab("#tabsettings"); });
+
+$("#btngennewaddress").click(function(){ showAndGenAccount(); });
+$("#btnaddexistingaddress").click(function(){ showTab("#tabaddexistingaccount"); });
+
+$("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
+
+$("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
+$("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
+
+$("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
+
+$("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
+
+
+$("#btnpay").click(function() {
+		doPay();
+		});
+
+// Opening setup
+// --------------------------------
+
+var MY_ADDRESS;
+var MASTER_SECRET;
+var remote = new ripple.Remote({
+servers: [
+/*"wss://s-west.ripple.com:443",
+  "wss://s-east.ripple.com:443"*/
+"wss://s.altnet.rippletest.net:51233"
+]
+});
+
+var VER_REKEYED = 220;
+var VER_ENCRYPTED_ORDINARY = 160;
+var VER_ENCRYPTED_REKEYED = 250;
+
+
+function showSpinner(msg) {
+	$("body").addClass("loading");
+}
+
+function hideSpinner() {
+	$("body").removeClass("loading");
+}
+
+var db;
+var app = {
+	// Application Constructor
+initialize: function() {
+		    this.bindEvents();
+	    },
+	    // Bind Event Listeners
+	    //
+	    // Bind any events that are required on startup. Common events are:
+	    // 'load', 'deviceready', 'offline', and 'online'.
+bindEvents: function() {
+		    document.addEventListener('deviceready', this.onDeviceReady, false);
+	    },
+	    // deviceready Event Handler
+	    //
+	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+	    // function, we must explicitly call 'app.receivedEvent(...);'
+onDeviceReady: function() {
+		       window.screen.orientation.lock('portrait');
+		       db = new PouchDB('toastwallet');
+			if (device.platform == 'iOS') {
+				$("#navheader").addClass("iosheader");
+				$("body").addClass("iosheader");
+
+			}
+		       connectToRipple();
+	       },
+	       // Update DOM on a Received Event
+receivedEvent: function(id) {
+
+		       console.log('Received Event: ' + id);
+	       }
+};
+app.initialize();
+
+function importAddress(secret, phrase) {
+	$("#tabimportstatus .alert-danger").hide();
+	$("#tabimportstatus .alert-success").hide();
+
+	var address = "";
+	if (secret.charAt(0) === "s" ) {
+		// pass
+	} else if (secret.charAt(0) === "3" ) {
+		// pass 
+		if (secret.length < 2) {
+			return false;
+		}
+		var b = ripple.Base.decode_check(VER_REKEYED, secret);
+		if (isNaN(b)) {
+			return false;
+		}
+		var y = ripple.sjcl.codec.bytes.fromBits(b.toBits());
+		if (y.length !== 32) {
+			return false;
+		}
+		var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
+		var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
+		address = generateAddress(ms).address;
+
+	} else if (secret.charAt(0) === "h" && phrase == "") {
+		$("#tabimportstatus .alert-danger")[0].innerText = 'You must enter a decryption phrase.';
+		$("#tabimportstatus .alert-success")[0].innerText = '';
+		$("#tabimportstatus .alert-danger").show();
+		return;
+	} 
+
+	if (!validate.secret(secret) || (secret.charAt(0) === "h" && !validate.encryptedSecret(secret)) ) {
+		$("#tabimportstatus .alert-danger")[0].innerText = '"' + secret+'" is not a valid Ripple secret.';
+		$("#tabimportstatus .alert-success")[0].innerText = '';
+		$("#tabimportstatus .alert-danger").show();
+
+		return;
+	}
+
+	if (secret.charAt(0) === "h") {
+		secret = decryptSecret(phrase, secret);
+	}
+
+
+	addSecret(address, secret, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
+
+}
+function removeSecret(address, successfun, failfun) {
+	var f = function(secrets) {
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
+
+		if (secrets[address] != undefined) delete secrets[address];
+		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+				navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
+				successfun();
+				}).catch(function(x){
+					navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
+					failfun();
+					});
+
+	}
+
+	db.get("secrets").then(f).catch(f);
+
+
+}
+function addSecret(address, secret, successfun, failfun) {
+
+	var f = function(secrets) {
+		if (secrets.data == undefined) {
+			secrets = {};
+		} else {
+			secrets = JSON.parse(secrets.data);
+		}
+		var result = generateAddress(secret);
+		secrets[(address != "" ? address : result.address)] = result.secret;
+
+		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+				navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
+				successfun();
+				}).catch(function(x){
+					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
+					failfun();
+					});
+
+	}
+
+	db.get("secrets").then(f).catch(f);
+
+}
+
+
+function generateAddress(secret) {
+	if (secret) {
+		secret = ripple.Seed.from_json(secret);
+	} else {
+		secret = ripple.Seed.from_bits(ripple.sjcl.random.randomWords(4));
+	}
+	return {
+secret: secret.to_json(),
+		address: secret.get_key().get_address().to_json()
+	};
+}
+
+function connectToRipple() {
+	remote.connect(function(err, res) {
+			if (err) {
+			console.log(err);
+			$("#loaderror").innerText = err;			
+			connectToRipple();
+			} else {
+			hideSpinner();
+			showTab("#tablogin");
+			}
+			});
+}
+
+var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
+function redefineSigningToAlwaysUseSecret(secret) {
+	if (!secret) {
+		ripple.Transaction.prototype.sign = NORMAL_SIGNING_FUNCTION;
+	} else {
+		ripple.Transaction.prototype.sign = function(testnet) {
+			this.setSecret(secret);
+			this.tx_json.SigningPubKey = ripple.Seed.from_json(this._secret).get_key().to_hex_pub();
+			var seed = ripple.Seed.from_json(this._secret);
+			var prev_sig = this.tx_json.TxnSignature;
+
+			delete this.tx_json.TxnSignature;
+
+			var hash = this.signingHash(testnet);
+
+			// If the hash is the same, we can re-use the previous signature
+			if (prev_sig && hash === this.previousSigningHash) {
+				this.tx_json.TxnSignature = prev_sig;
+				return this;
+			}
+
+			var key = seed.get_key();
+			var sig = key.sign(hash);
+			var hex = ripple.sjcl.codec.hex.fromBits(sig).toUpperCase();
+
+			this.tx_json.TxnSignature = hex;
+			this.previousSigningHash = hash;
+
+			return this;
+		};
+	}
+}
+
+var lastsend = 0;
+function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun) {
+
+	var timenow = $.now();
+	if (timenow - lastsend < 100) return;
+	lastsend = timenow;
+
+	showSpinner();
+
+	getAccounts(function(secrets) {
+			if (secrets[fromacc] !== undefined) {
+
+			remote.setSecret(fromacc, secrets[fromacc]);
+
+			redefineSigningToAlwaysUseSecret(false);
+
+			var transaction = remote.createTransaction("Payment", {
+account: fromacc,
+destination: destination,
+amount: xrpAmount * 1000000
+});
+			transaction.destinationTag(parseInt(destTag));
+			transaction.sourceTag(parseInt(sourceTag));
+			transaction.invoiceID(invoiceID);
+
+			transaction.submit(function(err, res) {
+				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
+				navigator.notification.alert("Payment failed most likely due to lack of funds in " + fromacc, failfun, "Failure", "OK");
+				hideSpinner();
+				failfun();
+				} else if ( (res != undefined && res != null || res.engine_result == 'tesSUCCESS') ) {
+				navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
+				$("#toaddress").val("");
+				$("#desttag").val("");
+				$("#invoiceid").val("");
+				$("#payamount").val("");
+				hideSpinner();
+				successfun();
+				} else {
+				navigator.notification.alert("Payment failed for an unknown reason.", failfun, "Failure", "OK");
+				hideSpinner();
+				failfun();
+				}
+				});
+} else {
+	navigator.notification.alert("Invalid account selected.", failfun, "Error", "OK");
+}
+});
+
+}
+
+
+var validate = {
+number: function(x) {
+		return x!=="" && !isNaN(x);
+	},
+address: function(x) {
+		 return ripple.UInt160.is_valid(x);
+	 },
+currency: function(x) {
+		  return x.length===3 && x.toUpperCase()===x;
+	  },
+integer: function(x) {
+		 // Allow x==="" because "integer" is only used on optional fields
+		 return x==="" || (!isNaN(x) && parseInt(x)===parseFloat(x));
+	 },
+	 "hex string": function(x) {
+		 // Allow x==="" because "hex string" is only used on optional fields
+		 return /^[0-9A-Fa-f]*$/.test(x) && x.length<=64;
+	 },
+secret: function(x) {
+		return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
+	},
+encryptedSecret: function(x) {
+			 return !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, x)) ||
+				 !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, x))
+		 },
+		 "currency/issuer pair": function(x) {
+			 var s = x.split("/");
+			 if (s.length === 1 && s[0] === "XRP") {
+				 return true;
+			 } else {
+				 return (s.length === 2 &&
+						 validate.currency(s[0]) &&
+						 validate.address(s[1])
+					);
+			 }
+		 },
+ALLOW_ALL: function(x) {
+		   return true;
+	   }
+};
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
