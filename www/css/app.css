@@ -265,7 +265,7 @@ ul.iosheader > li > * {
 
 .pinpad {
     text-align: center;
-    margin-top: calc(50vh - 16em);
+    margin-top: calc(50vh - 18em);
 }
 
 
@@ -306,10 +306,11 @@ ul.iosheader > li > * {
     border-radius: 50%;
     border: none;
     padding: 0px;
-    margin: 0.2em;
+    margin: 0.4em;
     line-height: 3em;
-    min-width: 5.5em !important;
-    min-height: 5.5em !important;
+    font-size: 1.5em;
+    min-width: 3.6em !important;
+    min-height: 3.6em !important;
     position: relative;
     text-align: center;
 }
