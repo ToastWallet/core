@@ -378,7 +378,10 @@ function dopinpad(x) {
 	}
 
 	if (enteredpin.length < PIN_MAX) enteredpin += val;
+	setTimeout(renderEnteredPin, 0);
+}
 
+function renderEnteredPin() {
 	for (var i = 1; i <= PIN_MAX; i++) {
 		if (i <= enteredpin.length) {
 			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle-thin");
