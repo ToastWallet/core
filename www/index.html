@@ -16,7 +16,6 @@
 	<script src="js/pouchdb.min.js"></script>
 	<script src="js/pouchdb.upsert.min.js"></script>
 	<script src="cordova.js"></script>
-	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 </head>
 <body class="loading">
@@ -59,7 +58,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
 		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button></span>
+		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
 	<br />
 	<label for="secret">Decryption Phrase (if applicable)</label>
@@ -74,7 +73,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
 	<div id="qrerror" class="input-group"></div>
-	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
+	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
 <div id="tablogin" class="screentab" data-primarytab="true" data-title="" style="display: block;">
@@ -90,18 +89,18 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
         <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 </div>
 <br>
-<button ontouchstart="dopinpad('1'); return false;" onclick="dopinpad('1');"><div>1</div></button>
-<button ontouchstart="dopinpad('2'); return false;" onclick="dopinpad('2');"><div>2</div></button>
-<button ontouchstart="dopinpad('3'); return false;" onclick="dopinpad('3');"><div>3</div></button><br>
-<button ontouchstart="dopinpad('4'); return false;" onclick="dopinpad('4');"><div>4</div></button>
-<button ontouchstart="dopinpad('5'); return false;" onclick="dopinpad('5');"><div>5</div></button>
-<button ontouchstart="dopinpad('6'); return false;" onclick="dopinpad('6');"><div>6</div></button><br>
-<button ontouchstart="dopinpad('7'); return false;" onclick="dopinpad('7');"><div>7</div></button>
-<button ontouchstart="dopinpad('8'); return false;" onclick="dopinpad('8');"><div>8</div></button>
-<button ontouchstart="dopinpad('9'); return false;" onclick="dopinpad('9');"><div>9</div></button><br>
-<button ontouchstart="dopinpad('Help'); return false;" onclick="dopinpad('Help');"><div>Help</div></button>
-<button ontouchstart="dopinpad('0'); return false;" onclick="dopinpad('0');"><div>0</div></button>
-<button ontouchstart="dopinpad(''); return false;" onclick="dopinpad('');"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+<button ontouchstart="dopinpad('Help'); return false;"><div>Help</div></button>
+<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 </div>
 </center>
     
@@ -138,9 +137,9 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account" style="display:none">
 	<center><div id="generatedaddress"></div></center>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart='showAndGenAccount();'>Generate Another</button></div></center>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount();">Import this Address</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -155,7 +154,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<div class="input-group">
 	<input type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
+	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -269,7 +268,7 @@ function selectAccount(accselected) {
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
 	$("#btnremoveaddr").off("click");
-	$("#btnremoveaddr").click(function() {
+	$("#btnremoveaddr").bind('touchstart', function() {
 
 			navigator.notification.prompt(
 				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
@@ -330,7 +329,7 @@ function refreshAccounts() {
 			accountbalances = {};
 			for (var i in acc) {
 
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="selectAccount(\''+i+'\');"><a href="#" ontouchstart="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 
 			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
 
@@ -443,14 +442,14 @@ function showTab(tab) {
 		$(".headerright>i").removeClass("fa-lock");
 		$(".headerright>i").addClass("fa-medkit");
 		$(".headerright").off();
-		$(".headerright").click(function(){ showTab("#tabrecovery"); });
+		$(".headerright").bind('touchstart', function(){ showTab("#tabrecovery"); });
 	} else { // set logout icon for logged in tabs
 		$("#navfooter").show();
 		$("#dummyfooter").show();
 		$(".headerright>i").removeClass("fa-medkit");
 		$(".headerright>i").addClass("fa-lock");
 		$(".headerright").off();
-		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
+		$(".headerright").bind('touchstart', function(){ showTab("#tablogin"); userkey = ""; });
 	}
 
 	if (tab == currenttab) return;
@@ -492,12 +491,12 @@ function showTab(tab) {
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").off();
-		$(".headerleft").click(function() {showTab(-1);});
+		$(".headerleft").bind('touchstart', function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
 		$(".headerleft").off();
-		$(".headerleft").click(function() {});
+		$(".headerleft").bind('touchstart', function() {});
 	}
 
 	if ($(tab).data('title')) {
@@ -554,25 +553,25 @@ function doPay() {
 	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
 }
 
-$("#navaccounts").click(function() { showTab("#tabaccounts"); });
-$("#navpayments").click(function() { showTab("#tabpayments"); });
-$("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
-$("#navsettings").click(function() { showTab("#tabsettings"); });
+$("#navaccounts").bind('touchstart', function() { showTab("#tabaccounts"); });
+$("#navpayments").bind('touchstart', function() { showTab("#tabpayments"); });
+$("#navtrustlines").bind('touchstart', function() { showTab("#tabtrustlines"); });
+$("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 
-$("#btngennewaddress").click(function(){ showAndGenAccount(); });
-$("#btnaddexistingaddress").click(function(){ showTab("#tabaddexistingaccount"); });
+$("#btngennewaddress").bind('touchstart', function(){ showAndGenAccount(); });
+$("#btnaddexistingaddress").bind('touchstart', function(){ showTab("#tabaddexistingaccount"); });
 
-$("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
+$("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
 
-$("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
-$("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
+$("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
+$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
-$("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
+$("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
 
-$("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
+$("#btnbackupkey").bind('touchstart', function() { showTab("#tabaccountsecret"); });
 
 
-$("#btnpay").click(function() {
+$("#btnpay").bind('touchstart', function() {
 		doPay();
 		});
 
@@ -637,7 +636,6 @@ onDeviceReady: function() {
 			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
 
-			FastClick.attach(document.body);
 	       },
 	       // Update DOM on a Received Event
 receivedEvent: function(id) {
