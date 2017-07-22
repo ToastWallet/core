@@ -90,18 +90,18 @@ $(function() {FastClick.attach(document.body);});</script>
         <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 </div>
 <br>
-<button onclick="dopinpad("1");"><div>1</div></button>
-<button onclick="dopinpad("2");"><div>2</div></button>
-<button onclick="dopinpad("3");"><div>3</div></button><br>
-<button onclick="dopinpad("4");"><div>4</div></button>
-<button onclick="dopinpad("5");"><div>5</div></button>
-<button onclick="dopinpad("6");"><div>6</div></button><br>
-<button onclick="dopinpad("7");"><div>7</div></button>
-<button onclick="dopinpad("8");"><div>8</div></button>
-<button onclick="dopinpad("9");"><div>9</div></button><br>
-<button onclick="dopinpad("Help");"><div>Help</div></button>
-<button onclick="dopinpad("0");"><div>0</div></button>
-<button onclick="dopinpad("");"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+<button onclick="dopinpad('1');"><div>1</div></button>
+<button onclick="dopinpad('2');"><div>2</div></button>
+<button onclick="dopinpad('3');"><div>3</div></button><br>
+<button onclick="dopinpad('4');"><div>4</div></button>
+<button onclick="dopinpad('5');"><div>5</div></button>
+<button onclick="dopinpad('6');"><div>6</div></button><br>
+<button onclick="dopinpad('7');"><div>7</div></button>
+<button onclick="dopinpad('8');"><div>8</div></button>
+<button onclick="dopinpad('9');"><div>9</div></button><br>
+<button onclick="dopinpad('Help');"><div>Help</div></button>
+<button onclick="dopinpad('0');"><div>0</div></button>
+<button onclick="dopinpad('');"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 </div>
 </center>
     
@@ -369,7 +369,7 @@ activeaccount = x;
 var enteredpin = "";
 var PIN_MAX = 6;
 function dopinpad(x) {
-	x = x.trim();
+	var val = x.trim();
 	if ((val == "" || val == undefined) && enteredpin != "") {
 		enteredpin = enteredpin.slice(0,-1);
 	}
