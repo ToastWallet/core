@@ -76,8 +76,8 @@
 </div>
 
 
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" style="display:none">
-	<center><img src="images/toastwallet4.png" input-group"="" style="max-width:200px;"></center><br/>
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
+	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-height: 50vh; margin-bottom: 1em;"></center><br/>
 	<br><label for="password">Passphrase</label>
 	<div class="input-group">
 	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
@@ -350,9 +350,12 @@ var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
-var recveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
 
 function showTab(tab) {
+
+	console.log("showTab(" + tab + ");");
+	console.log(previoustabs);
 
 	$("#navheader").show();
 
@@ -368,13 +371,18 @@ function showTab(tab) {
 
 	if (isrecoverytab) { // set recovery icon for logged out tabs
 		$("#navfooter").hide();
+		$("#dummyfooter").hide();
+
 		$(".headerright>i").removeClass("fa-lock");
 		$(".headerright>i").addClass("fa-medkit");
+		$(".headerright").off();
 		$(".headerright").click(function(){ showTab("#tabrecovery"); });
 	} else { // set logout icon for logged in tabs
-		$("#navfooter>*").show();
+		$("#navfooter").show();
+		$("#dummyfooter").show();
 		$(".headerright>i").removeClass("fa-medkit");
 		$(".headerright>i").addClass("fa-lock");
+		$(".headerright").off();
 		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
 	}
 
@@ -416,15 +424,17 @@ function showTab(tab) {
 
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
+		$(".headerleft").off();
 		$(".headerleft").click(function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
+		$(".headerleft").off();
 		$(".headerleft").click(function() {});
 	}
 
 	if ($(tab).data('title')) {
-		$(".headermiddle")[0].innerHTML = '<span class="titletab">' + $(tab).data('title') + "</span>";
+		$(".headermiddle")[0].innerHTML = '<div>' + $(tab).data('title') + "</div>";
 	} else {
 		$(".headermiddle")[0].innerHTML = "";
 	}
@@ -545,6 +555,19 @@ bindEvents: function() {
 onDeviceReady: function() {
 		       window.screen.orientation.lock('portrait');
 		       db = new PouchDB('toastwallet');
+			console.log("device.platform = " + device.platform);
+			if ((device.platform + "").toLowerCase() == 'ios') {
+				$("#navheader").addClass("iosheader");
+				$("body").addClass("iosheader");
+				console.log('added iosheader class');
+
+			}
+
+			var f = function(secrets) {
+				
+			};
+
+			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
 	       },
 	       // Update DOM on a Received Event

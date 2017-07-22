@@ -18,7 +18,6 @@
 	<script src="cordova.js"></script>
 	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
-	<script src="js/sodium.min.js"></script>
 </head>
 <body class="loading">
 <script>$(function() {FastClick.attach(document.body);});</script>
@@ -78,7 +77,7 @@
 
 
 <div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
-	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-width: calc(75%);margin-top: 15%;margin-bottom: 1em;"></center><br/>
+	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-height: 50vh; margin-bottom: 1em;"></center><br/>
 	<br><label for="password">Passphrase</label>
 	<div class="input-group">
 	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
@@ -556,11 +555,19 @@ bindEvents: function() {
 onDeviceReady: function() {
 		       window.screen.orientation.lock('portrait');
 		       db = new PouchDB('toastwallet');
-			if (device.platform == 'iOS') {
+			console.log("device.platform = " + device.platform);
+			if ((device.platform + "").toLowerCase() == 'ios') {
 				$("#navheader").addClass("iosheader");
 				$("body").addClass("iosheader");
+				console.log('added iosheader class');
 
 			}
+
+			var f = function(secrets) {
+				
+			};
+
+			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
 	       },
 	       // Update DOM on a Received Event

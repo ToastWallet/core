@@ -18,7 +18,6 @@
 	<script src="cordova.js"></script>
 	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
-	<script src="js/sodium.min.js"></script>
 </head>
 <body class="loading">
 <script>$(function() {FastClick.attach(document.body);});</script>
@@ -76,14 +75,34 @@
 	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
 </div>
 
-
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
-	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-height: 50vh; margin-bottom: 1em;"></center><br/>
-	<br><label for="password">Passphrase</label>
-	<div class="input-group">
-	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
-	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
-	</span></div>
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="" style="display: block;">
+    
+<center>
+<div class="pinpad" style="">
+    <div class="pinnumber">
+    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+</div>
+<br>
+<button onclick="dopinpad(this);"><div>1</div></button>
+<button onclick="dopinpad(this);"><div>2</div></button>
+<button onclick="dopinpad(this);"><div>3</div></button><br>
+<button onclick="dopinpad(this);"><div>4</div></button>
+<button onclick="dopinpad(this);"><div>5</div></button>
+<button onclick="dopinpad(this);"><div>6</div></button><br>
+<button onclick="dopinpad(this);"><div>7</div></button>
+<button onclick="dopinpad(this);"><div>8</div></button>
+<button onclick="dopinpad(this);"><div>9</div></button><br>
+<button onclick="dopinpad(this);"><div>Help</div></button>
+<button onclick="dopinpad(this);"><div>0</div></button>
+<button onclick="dopinpad(this);"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+</div>
+</center>
+    
 </div>
 
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display:none">
@@ -345,6 +364,33 @@ activeaccount = x;
 }
 
 
+var enteredpin = "";
+var PIN_MAX = 6;
+function dopinpad(x) {
+	var val = x.innerText.trim();
+	if ((val == "" || val == undefined) && enteredpin != "") {
+		enteredpin = enteredpin.slice(0,-1);
+	}
+	if (val == "Help") {
+		showTab("#tabrecovery");
+		pin = "";
+		return;
+	}
+
+	if (enteredpin.length < PIN_MAX) enteredpin += val;
+
+	for (var i = 1; i <= PIN_MAX; i++) {
+		if (i <= enteredpin.length) {
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle-thin");
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle");
+		} else {
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle-thin");
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle");
+
+		}
+	}
+}
+
 var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
@@ -352,6 +398,7 @@ var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+var darktabs = ['#tablogin']; // these tabs have a dark background
 
 function showTab(tab) {
 
@@ -359,6 +406,20 @@ function showTab(tab) {
 	console.log(previoustabs);
 
 	$("#navheader").show();
+
+	var isdarktab = false;
+
+	for (var i = 0; i < darktabs.length; i++) {
+		if (tab == darktabs[i] || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == darktabs[i])) {
+			isdarktab = true;
+			break;
+		}
+	}
+
+	$("body").removeClass("darkbackground");
+	if (isdarktab) {
+		$("body").addClass("darkbackground");
+	}
 
 
 	var isrecoverytab = false;
@@ -563,6 +624,12 @@ onDeviceReady: function() {
 				console.log('added iosheader class');
 
 			}
+
+			var f = function(secrets) {
+				
+			};
+
+			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
 	       },
 	       // Update DOM on a Received Event

@@ -260,3 +260,67 @@ ul.iosheader > li > * {
 #navfooter > li > div {
     font-size: 0.8em;
 }
+
+
+
+.pinpad {
+    text-align: center;
+    margin-top: calc(50vh - 14em);
+}
+
+
+
+.logobackground {
+    background: url('images/toastwallet4finalgrd2new.png') no-repeat;
+    background-size: 100%;
+    height: 100vh;
+}
+
+
+
+.darkbackground {
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+}
+
+.pinnumber {
+    color: rgba(255,255,255,0.7);
+}
+
+.darkbackground:after {
+    position: absolute;
+    /* background: url('images/toastwallet4finalgrd2new.png'); */
+    width: 100%;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+    z-index: -1;
+    content: " ";
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-y: 50%;
+    opacity: 0.1;
+}
+	
+.pinpad button {
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    border: none;
+    padding: 0px;
+    margin: 0.2em;
+    line-height: 3em;
+    min-width: 4em !important;
+    min-height: 4em !important;
+    position: relative;
+    text-align: center;
+}
+
+.pinpad *:focus {
+    outline: none;
+}
+.pinpad button:active {
+    background-color: rgba(255,0,0,0.6);
+    -moz-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}

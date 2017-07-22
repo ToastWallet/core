@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schema.android.com/apk/res/android" id="cordova-plugin-minisodium" version="1.0.0">
+	<name>MiniSodium</name>
+	<description>
+		A minimal build of the libsodium library, as a plugin for Cordova applications on iOS and Android
+	</description>
+
+	<license>MIT</license>
+	<keywords>
+		curve25519,ed25519,X25519,ecdh,eddsa,secretbox,crypto,cryptography
+	</keywords>
+	<engines>
+		<engine name="cordova" version=">=3.0.0" />
+	</engines>
+
+	<js-module name="MiniSodium" src="www/MiniSodium.js">
+		<clobbers target="window.plugins.MiniSodium"/>
+	</js-module>
+
+	<platform name="ios">
+		<config-file target="config.xml" parent="/*">
+			<feature name="MiniSodium">
+				<param name="ios-package" value="MiniSodium"/>
+			</feature>
+		</config-file>
+		<header-file src="src/ios/MiniSodium.h"/>
+		<source-file src="src/ios/MiniSodium.m"/>
+
+		<header-file src="src/libsodium-ios/include/sodium.h"/>
+		<header-file src="src/libsodium-ios/include/sodium/"/>
+		<source-file src="src/libsodium-ios/lib/libsodium.a" framework="true"/>
+	</platform>
+
+	<platform name="android">
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="MiniSodium">
+				<param name="android-package" value="me.lockate.plugins.MiniSodium" />
+				<param name="onload" value="true" />
+			</feature>
+		</config-file>
+
+		<config-file target="AndroidManifest.xml" parent="/manifest">
+			<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19"/>
+		</config-file>
+
+		<source-file src="src/android/me/lockate/plugins/MiniSodium.java" target-dir="src/me/lockate/plugins" />
+
+		<framework src="src/android/jni.gradle" custom="true" type="gradleReference" />
+
+		<resource-file src="src/libsodium-jni/libsodium-jni-release.aar" target="libs/libsodium-jni-release.aar" />
+	</platform>
+</plugin>

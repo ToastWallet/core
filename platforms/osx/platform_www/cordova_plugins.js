@@ -500,6 +500,14 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.barcodeScanner"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-minisodium/www/MiniSodium.js",
+        "id": "cordova-plugin-minisodium.MiniSodium",
+        "pluginId": "cordova-plugin-minisodium",
+        "clobbers": [
+            "window.plugins.MiniSodium"
+        ]
     }
 ];
 module.exports.metadata = 

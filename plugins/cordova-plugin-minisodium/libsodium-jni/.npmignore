@@ -1,0 +1,17 @@
+.idea/
+*.iml
+target/
+hs_err*
+*.*~
+*.class
+jni/swig-2.0.10
+libs/armeabi
+obj
+jni
+libs
+.DS_Store
+build
+.gradle/
+*.key
+*.swp
+src/main/jniLibs/

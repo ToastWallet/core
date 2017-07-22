@@ -96,6 +96,9 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-minisodium": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {},
@@ -599,6 +602,14 @@
             "pluginId": "phonegap-plugin-barcodescanner",
             "clobbers": [
                 "cordova.plugins.barcodeScanner"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-minisodium/www/MiniSodium.js",
+            "id": "cordova-plugin-minisodium.MiniSodium",
+            "pluginId": "cordova-plugin-minisodium",
+            "clobbers": [
+                "window.plugins.MiniSodium"
             ]
         }
     ]

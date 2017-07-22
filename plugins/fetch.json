@@ -199,5 +199,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-minisodium": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-minisodium"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

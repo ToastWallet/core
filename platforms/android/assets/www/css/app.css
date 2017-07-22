@@ -225,6 +225,12 @@ body:before {
     padding-top: 1em;
     padding-bottom: 1em;
 }
+ul.iosheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1.5em !important;
+    padding-bottom: 0.5em !important;
+}
 .headerleft {
     width: 25%;
     text-align: left;
