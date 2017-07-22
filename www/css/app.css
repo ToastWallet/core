@@ -265,7 +265,7 @@ ul.iosheader > li > * {
 
 .pinpad {
     text-align: center;
-    margin-top: calc(50vh - 14em);
+    margin-top: calc(50vh - 16em);
 }
 
 
@@ -300,7 +300,7 @@ ul.iosheader > li > * {
     background-position-y: 50%;
     opacity: 0.1;
 }
-	
+
 .pinpad button {
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
@@ -308,11 +308,12 @@ ul.iosheader > li > * {
     padding: 0px;
     margin: 0.2em;
     line-height: 3em;
-    min-width: 4em !important;
-    min-height: 4em !important;
+    min-width: 5.5em !important;
+    min-height: 5.5em !important;
     position: relative;
     text-align: center;
 }
+
 
 .pinpad *:focus {
     outline: none;
