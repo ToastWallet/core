@@ -22,7 +22,7 @@
 <body class="loading">
 <script>
 $('body').on('cut copy paste',function(e){e.preventDefault();});
-$(function() {FastClick.attach(document.body);});</script>
+</script>
 
 
 
@@ -636,6 +636,8 @@ onDeviceReady: function() {
 
 			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
+
+			FastClick.attach(document.body);
 	       },
 	       // Update DOM on a Received Event
 receivedEvent: function(id) {
@@ -896,9 +898,7 @@ ALLOW_ALL: function(x) {
 
 
 
-
 </script>
-
 
 
 </body>
