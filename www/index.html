@@ -384,7 +384,10 @@ function dopinpad(x) {
 	setTimeout(renderEnteredPin, 0);
 
 	if (enteredpin.length == 6 /* AND PIN IS WRONG */) {
-		$(".pinpad").removeClass("shake"); setTimeout(function(){ $(".pinpad").addClass("shake")
+		$(".pinpad").removeClass("shake"); setTimeout(function(){ 
+
+			$(".pinpad").addClass("shake");
+			navigator.notification.vibrate(300);
 
 			setTimeout(
 				function() {
