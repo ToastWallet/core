@@ -6,7 +6,7 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabrecovery button {
+#tabsettings button {
     min-width: 20em;
     margin-bottom: 1em;
 }
@@ -345,6 +345,9 @@ input
 user-select: auto !important;
 }
 
+#tabrecovery div {
+    margin-bottom: 1em;
+}
 
 .shake {
   animation: shakeanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;

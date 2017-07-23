@@ -76,33 +76,94 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
+
 <div id="tablogin" class="screentab" data-primarytab="true" data-title="" style="display: block;">
     
-<center>
-<div class="pinpad" style="">
-    <div class="pinnumber">
-    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-        <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="dopinpad('Help'); return false;"><div>Help</div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
+    
 </div>
-<br>
-<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
-<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
-<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
-<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
-<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
-<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
-<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
-<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
-<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
-<button ontouchstart="dopinpad('Help'); return false;"><div>Help</div></button>
-<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
-<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+
+<div id="tabpinset1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Set New PIN" style="display: block;">
+    
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="showTab(-1); return false;"><div>Cancel</div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
+    
 </div>
-</center>
+
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Repeat New PIN" style="display: block;">
+    
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="showTab(-1); return false;"><div>Cancel</div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
     
 </div>
 
@@ -189,11 +250,13 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display:none">
-        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryforgotpass">Forgotten Passphrase</button></center></div>
-        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryrestorewallet">Restore Wallet From Backup</button></center></div>
-</div>
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display: block;">  
+    <div>
+	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
+    </div>
 
+    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Recover</button></div>
+</div>
 
 
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
@@ -214,6 +277,32 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 
 
 <script>
+
+
+
+function doResetPin(recoveryphrase, successfunc, failfunc) {
+	//todo: check recovery phrase here 
+
+
+	var f;
+	runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
+		// there is no way to fail validation on this screen.
+		return true;
+	}, f = function(pin1) {
+	
+		runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
+			return currenttab == '#tabpinset1' || pin1 == pin2;
+		}, function(pin2) {
+			if (currenttab == '#tabpinset1') return f(pin2);
+			// todo: set new pin to db here
+			successfunc();
+		}, function(pin2) {
+			navigator.notification.alert('The PINs do not match.', failfunc, 'Problem...', 'OK');
+		});
+	
+	}, function(){});
+}
+
 var scanner;
 function scanQR(intofield, returntab) {
 
@@ -364,6 +453,16 @@ activeaccount = x;
 
 }
 
+var pinpadvalidate = function(pin) { return false ; }
+var pinpadsuccess = function() {}
+var pinpadfailure = function() {}
+
+function runPinPad(tab, validationfunc, successfunc, failurefunc) {
+	pinpadvalidate = validationfunc;
+	pinpadsuccess = successfunc;
+	pinpadfailure = failurefunc;
+	if (tab != "" && tab != undefined) showTab(tab);
+}
 
 var enteredpin = "";
 var PIN_MAX = 6;
@@ -383,20 +482,27 @@ function dopinpad(x) {
 	
 	setTimeout(renderEnteredPin, 0);
 
-	if (enteredpin.length == 6 /* AND PIN IS WRONG */) {
-		$(".pinpad").removeClass("shake"); setTimeout(function(){ 
-
-			$(".pinpad").addClass("shake");
-			navigator.notification.vibrate(300);
-
-			setTimeout(
-				function() {
-					enteredpin = "";
-					renderEnteredPin();
-				}, 500);
-		 }, 0);
+	if (enteredpin.length == PIN_MAX) {
+		if (pinpadvalidate(enteredpin)) {
+			renderEnteredPin();
+			pinpadsuccess(enteredpin);
+			enteredpin = "";
+			renderEnteredPin();
+		} else {
+			$(".pinpad").removeClass("shake"); 
+			setTimeout(function(){ 
+				$(".pinpad").addClass("shake");
+				setTimeout(
+					function() {
+						enteredpin = "";
+						renderEnteredPin();
+						pinpadfailure(enteredpin);
+					}, 500);
+			}, 0);
+		}
 	}
 }
+
 
 function renderEnteredPin() {
 	for (var i = 1; i <= PIN_MAX; i++) {
@@ -418,8 +524,12 @@ var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
-var darktabs = ['#tablogin']; // these tabs have a dark background
+var darktabs = ['#tablogin', '#tabpinset1', '#tabpinset2' ]; // these tabs have a dark background
 
+function checkPin(pin) {
+	// todo: add actual pin checking
+	return false;
+}
 function showTab(tab) {
 
 	$(".pinpad").removeClass("shake");
@@ -428,6 +538,14 @@ function showTab(tab) {
 	console.log(previoustabs);
 
 	$("#navheader").show();
+
+	if (tab == '#tablogin' || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == '#tablogin')) {
+		runPinPad("", checkPin, function() {
+			showTab("#tabaccounts");
+		}, function() {
+			// do nothing, screen will shake
+		});
+	}
 
 	var isdarktab = false;
 
