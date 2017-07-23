@@ -379,7 +379,20 @@ function dopinpad(x) {
 	}
 
 	if (enteredpin.length < PIN_MAX) enteredpin += val;
+
+	
 	setTimeout(renderEnteredPin, 0);
+
+	if (enteredpin.length == 6 /* AND PIN IS WRONG */) {
+		$(".pinpad").removeClass("shake"); setTimeout(function(){ $(".pinpad").addClass("shake")
+
+			setTimeout(
+				function() {
+					enteredpin = "";
+					renderEnteredPin();
+				}, 500);
+		 }, 0);
+	}
 }
 
 function renderEnteredPin() {
