@@ -77,7 +77,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 </div>
 
 
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="" style="display: block;">
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -99,7 +99,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
 	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
 	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="dopinpad('Help'); return false;"><div>Help</div></button>
+	<button ontouchstart="dopinpad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
 	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
 	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
@@ -129,7 +129,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
 	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
 	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="showTab(-1); return false;"><div>Cancel</div></button>
+	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
 	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
 	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
@@ -159,7 +159,7 @@ $('body').on('cut copy paste',function(e){e.preventDefault();});
 	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
 	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
 	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="showTab(-1); return false;"><div>Cancel</div></button>
+	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
 	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
 	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
@@ -523,7 +523,7 @@ var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
-var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+var recoveryicontabs = ['#tablogin', '#tabrecovery', '#tabpinset1', '#tabpinset2']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
 var darktabs = ['#tablogin', '#tabpinset1', '#tabpinset2' ]; // these tabs have a dark background
 
 function checkPin(pin) {
@@ -533,6 +533,7 @@ function checkPin(pin) {
 function showTab(tab) {
 
 	$(".pinpad").removeClass("shake");
+	enteredpin = ""; renderEnteredPin();
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);

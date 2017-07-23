@@ -265,7 +265,7 @@ ul.iosheader > li > * {
 
 .pinpad {
     text-align: center;
-    margin-top: calc(50vh - 18em);
+    margin-top: calc(50vh - 17em);
 }
 
 
@@ -287,26 +287,26 @@ ul.iosheader > li > * {
 }
 
 .darkbackground:after {
-    position: absolute;
-    /* background: url('images/toastwallet4finalgrd2new.png'); */
-    width: 100%;
-    height: 100vh;
-    top: 0px;
-    left: 0px;
-    z-index: -1;
     content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url(../images/background.png);
+    opacity: 0.1;
     background-size: 100%;
     background-repeat: no-repeat;
     background-position-y: 50%;
-    opacity: 0.1;
+    z-index: -1;
 }
-
 .pinpad button {
+    border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
-    border: none;
     padding: 0px;
-    margin: 0.4em;
+    margin: 0.2em 0.4em 0.2em 0.4em;
     line-height: 3em;
     font-size: 1.4em;
     min-width: 3.6em !important;
