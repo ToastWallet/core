@@ -67,8 +67,10 @@
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
-	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-plus-circle" aria-hidden="true"></i></div><div class="buttontext">Generate New Address</div></div>
-	<div class="buttoncontent"><div class="buttonicon"><i class="fa fa-camera" aria-hidden="true"></i></div><div class="buttontext">Add Existing Address</div></div>
+	<center>
+		<button type="button" class="btn btn-primary" ontouchstart="showAndGenAccount();">Generate New Address</button><br />
+		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
+	</center>
 </div>
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
@@ -709,6 +711,7 @@ function showTab(tab) {
 
 
 	if ($(tab).data('recovery')) { // set recovery icon for logged out tabs
+		$(".headerright").show();
                 $("#navfooter").hide();
                 $("#dummyfooter").hide();
                 $(".headerright>i").removeClass("fa-lock");
@@ -720,6 +723,7 @@ function showTab(tab) {
                 $("#navfooter").hide();
                 $("#dummyfooter").hide();
         } else { // set logout icon for logged in tabs
+		$(".headerright").show();
                 $("#navfooter").show();
                 $("#dummyfooter").show();
                 $(".headerright>i").removeClass("fa-medkit");
@@ -790,8 +794,6 @@ $("#navpayments").bind('touchstart', function() { showTab("#tabpayments"); });
 $("#navtrustlines").bind('touchstart', function() { showTab("#tabtrustlines"); });
 $("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 
-$("#btngennewaddress").bind('touchstart', function(){ showAndGenAccount(); });
-$("#btnaddexistingaddress").bind('touchstart', function(){ showTab("#tabaddexistingaccount"); });
 
 $("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
 

@@ -6,10 +6,11 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button {
+#tabsettings button, #tabaddaccount button {
     min-width: 20em;
     margin-bottom: 1em;
 }
+
 .loading:before {
     display: block;
     animation: fa-spin 2s infinite linear;
