@@ -40,7 +40,7 @@
 </script>
 
 
-<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="false" data-hasback="true">
+<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true"> 
 <p style="color:red; font-weight:bold">Your recovery phrases appear below. Please write these down and store them in a safe location. If you ever forget your passphrase this code will be the only way for you to regain access to your XRP.</p>
 <div id="showrecoveryphrase">
 </div>
@@ -1192,7 +1192,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = sodium.from_hex(ppdata.salt1);
+                        oldsalt1 = ( mode == 2 ? "" : sodium.from_hex(ppdata.salt1));
 			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 
