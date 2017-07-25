@@ -6,9 +6,28 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabaddaccount button {
+#tabsettings button, #tabaddaccount button, #tabgenaccount button {
     min-width: 20em;
     margin-bottom: 1em;
+}
+
+.moreindicatorabovenav {
+    bottom: calc(10px + 2.8em) !important;
+}
+
+.moreindicatordark {
+    color: black !important;
+}
+#inputblocker {
+    position: fixed;
+    z-index: 9999999999999;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
 }
 
 .loading:before {
@@ -137,10 +156,6 @@ img.loader {
 }
 #btnaddaccount > * {
     vertical-align: middle;
-}
-#tabgenaccount button {
-    min-width: 15em;
-    min-height: 4em;
 }
 i.fa {
     font-size: 1.3em !important;

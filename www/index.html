@@ -20,6 +20,7 @@
 	<script src="js/sodium.js"></script>
 </head>
 <body class="loading">
+<div id="inputblocker" style="display:none">&nbsp;</div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	$('body').on('cut copy paste',function(e){e.preventDefault();});
@@ -214,12 +215,15 @@
 </div>
 
 
-<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account" style="display:none">
+<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
 	<center><div id="generatedaddress"></div></center>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" ontouchstart='showAndGenAccount();'>Generate Another</button></div></center>
+        <label for="toaccount">Nickname for this account</label>
+        <div>
+        <input type="text" id="newaccnick" class="form-control" placeholder="">
+	</div>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount();">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -380,23 +384,29 @@ NO WARRANTY
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
 
 <ul id="navfooter" style="display:none">
-	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i><div>SEND</div></li>
-	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
-	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i><div>SETTINGS</div></li>
+	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i></li>
+	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i></li>
+	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i></li>
+	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i></li>
 </ul>
 
 <ul id="dummyfooter">
-	<li><i class="fa fa-home" aria-hidden="true"></i><div>ACCOUNTS</div></li>
-	<li><i class="fa fa-home" aria-hidden="true"></i><div>SEND</div></li>
-	<li><i class="fa fa-inbox" aria-hidden="true"></i><div>RECEIVE</div></li>
-	<li><i class="fa fa-home" aria-hidden="true"></i><div>SETTINGS</div></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i></li>
+	<li><i class="fa fa-inbox" aria-hidden="true"></i></li>
+	<li><i class="fa fa-home" aria-hidden="true"></i></li>
 </ul>
 
 
 <script>
 
+function blockInput() {
+	$("#inputblocker").show();
+}
 
+function unblockInput() {
+	$("#inputblocker").hide();
+}
 
 function doResetPin(recoveryphrase, successfunc, failfunc) {
 	//todo: check recovery phrase here 
@@ -412,10 +422,13 @@ function doResetPin(recoveryphrase, successfunc, failfunc) {
 			return currenttab == '#tabpinset1' || pin1 == pin2;
 		}, function(pin2) {
 			if (currenttab == '#tabpinset1') return f(pin2);
-			// todo: set new pin to db here
-			successfunc();
+			if (currenttab == '#tablogin') return;
+			setPin(pin2, successfunc, function() {
+				navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
+			});
 		}, function(pin2) {
-			navigator.notification.alert('The PINs do not match.', failfunc, 'Problem...', 'OK');
+			if (currenttab == '#tablogin') return;
+			navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
 		});
 	
 	}, function(){});
@@ -575,11 +588,54 @@ var pinpadvalidate = function(pin) { return false ; }
 var pinpadsuccess = function() {}
 var pinpadfailure = function() {}
 
+
 function runPinPad(tab, validationfunc, successfunc, failurefunc) {
 	pinpadvalidate = validationfunc;
 	pinpadsuccess = successfunc;
 	pinpadfailure = failurefunc;
 	if (tab != "" && tab != undefined) showTab(tab);
+}
+
+
+/**
+ * NB: The Pin system is really just a courtesy for keeping unwanted 
+ * phone users/friends out of your wallet app. It doesn't actually provide
+ * very much security. The security of the wallet is provided by the 
+ * passphrase/recovery phrase, which are both used to protect the address's
+ * secrets.
+**/
+function doShowLogin() {
+	runPinPad("#tablogin", function(pin) {
+		validatePin(pin, function() {
+			showTab("#tabaccounts");
+		}, function() {
+                        setTimeout(function() {
+                                shakeandclearpinpad( function() { });
+                        }, 0);
+		}, function() {
+			showTab("#tablicense");
+		});
+		return true;
+	}, function(pin) { // we don't use the success and failure functions in this use case
+	}, function(pin) { // because the validation function is async, so we piggyback it above
+	});
+}
+
+
+function shakeandclearpinpad(afterfunc) {
+	$(".pinpad").removeClass("shake");
+	blockInput();
+	setTimeout(function(){
+		$(".pinpad").addClass("shake");
+		setTimeout(
+			function() {
+				enteredpin = "";
+				renderEnteredPin();
+				$(".pinpad").removeClass("shake");
+				unblockInput();
+				afterfunc();
+			}, 500);
+	}, 0);
 }
 
 var enteredpin = "";
@@ -607,15 +663,8 @@ function dopinpad(x) {
 			enteredpin = "";
 			renderEnteredPin();
 		} else {
-			$(".pinpad").removeClass("shake"); 
-			setTimeout(function(){ 
-				$(".pinpad").addClass("shake");
-				setTimeout(
-					function() {
-						enteredpin = "";
-						renderEnteredPin();
-						pinpadfailure(enteredpin);
-					}, 500);
+			setTimeout(function() {
+				shakeandclearpinpad( function() { pinpadfailure(enteredpin); });
 			}, 0);
 		}
 	}
@@ -646,10 +695,15 @@ function checkPin(pin) {
 	// todo: add actual pin checking
 	return false;
 }
+
 function showTab(tab) {
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
+
+	$("#morecontentindicator").removeClass("moreindicatorabovenav");
+	$("#morecontentindicator").removeClass("moreindicatordark");
+
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);
@@ -729,13 +783,16 @@ function showTab(tab) {
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
-                $(".headerright").bind('touchstart', function(){ showTab("#tablogin"); userkey = ""; });
+                $(".headerright").bind('touchstart', function(){ doShowLogin(); });
+	        $("#morecontentindicator").addClass("moreindicatorabovenav");
         }	
 
 
 	$("body").removeClass("darkbackground");
 	if ($(tab).data('dark')) { // dark background
 		$("body").addClass("darkbackground");
+	} else {
+		$("#morecontentindicator").addClass("moreindicatordark");
 	}
 
 	renderMoreContentIndicator();
@@ -750,8 +807,8 @@ function showAndGenAccount() {
 	showTab("#tabgenaccount");	
 }
 
-function importGeneratedAccount() {
-	importAddress(generatedAccount.secret);
+function importGeneratedAccount(nickname) {
+	importAddress(generatedAccount.secret, "", nickname);
 	showTab("#tabaccounts");
 }
 
@@ -840,7 +897,41 @@ var walletsalt;
 
 
 
+function setPin(pin, successfunc, failfunc) {
 
+	var salt;
+	var pindata = { salt: salt=sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES), hash: sodium.to_hex(sodium.crypto_shorthash(pin, salt, 'hex')) };
+
+	db.upsert("pindata", 
+		function(doc) { 
+		return { data: JSON.stringify(pindata)}; }).then(
+		function(x){
+			successfunc();
+		}).catch(function(x){
+			failfun();
+		});
+	
+
+	
+
+}
+
+function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
+	var f = function(pindata) {
+		if (pindata.data == undefined || pindata.data == "") {
+			// this means the app has never run before.
+			return nopinsetfunc();
+		} else {
+			pindata = JSON.parse(pindata.data);
+			var hash = sodium.crypto_shorthash(pin, sodium.from_hex(pindata.salt), 'hex');
+			if (hash == pindata.hash) 
+				return successfunc();
+			return failfunc();
+		}
+	};
+
+	db.get("pindata").then(f).catch(f);
+}
 
 
 var app = {
@@ -862,6 +953,10 @@ bindEvents: function() {
 onDeviceReady: function() {
 		       window.screen.orientation.lock('portrait');
 		       db = new PouchDB('toastwallet');
+
+			/* This is a visual patch for iOS devices where the phone uses a margin at the top
+			** for various status indicators. 
+			*/
 			console.log("device.platform = " + device.platform);
 			if ((device.platform + "").toLowerCase() == 'ios') {
 				$("#navheader").addClass("iosheader");
@@ -870,16 +965,15 @@ onDeviceReady: function() {
 
 			}
 
-			var f = function(pindata) {
-				if (pindata.data == undefined || pindata.data == "") {
-
-			       		connectToRipple("#tablicense");
-				} else {
-			       		connectToRipple("#tablogin");
-				}
-			};
-
-			db.get("pin").then(f).catch(f);
+			/* To kick off the application, we attempt to validate an always incorrect pin
+			** of zero length, this will then in turn fire either the login procedure or
+			** license and setup procedure. 
+			*/
+			validatePin("",
+				function() {   connectToRipple( doShowLogin ); },
+				function() {   connectToRipple( doShowLogin ); },
+			       	function() {   connectToRipple( function() {showTab("#tablicense");}); }
+			);
 
 	       },
 	       // Update DOM on a Received Event
@@ -890,7 +984,7 @@ receivedEvent: function(id) {
 };
 app.initialize();
 
-function importAddress(secret, phrase) {
+function importAddress(secret, phrase, nickname) {
 	$("#tabimportstatus .alert-danger").hide();
 	$("#tabimportstatus .alert-success").hide();
 
@@ -934,9 +1028,208 @@ function importAddress(secret, phrase) {
 	}
 
 
-	addSecret(address, secret, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
+	addSecret(address, secret, nickname, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
 
 }
+
+
+function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
+	
+        var f = function(ppdata) {
+                if (ppdata.data == undefined || ppdata.data == "") {
+                        return nopasssphrasefunc();
+                } else {
+                        ppdata = JSON.parse(ppdata.data);
+			salt1 = sodium.from_hex(ppdata.salt1);
+			salt2 = sodium.from_hex(ppdata.salt2);
+			var pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
+				sodium.crypto_pwhash_scryptsalsa208sha256(16, passphrase, 
+				salt1, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+			salt2, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+			passphrase=""; delete passphrase;
+
+                        if (pphash == ppdata.pphash)
+                                return successfunc();
+                        return failfunc();
+                }
+        };
+
+        db.get(( isrecoveryphrase? "rpdata" : "ppdata")).then(f).catch(f);	
+}
+
+/** Updates the ppdata/rpdata key-value store to reflect a new passphrase.
+ ** If issettingrecoveryphrase is set then it will write over rpdata.
+ ** Oldpassphrase may be either their existing passphrase or the recovery phrase.
+ */
+function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, successfunc, failurefunc) {
+
+
+	var passPhraseUpdate = function(mode) {
+		/* mode 0 - setting a new passphrase/recoveryphrase with valid current passphrase
+		 * mode 1 - setting a new passphrase/recoveryphrase with valid current recoveryphrase
+		 * mode 2 - setting a new passphrase/recoveryphrase for the first time.
+		 */
+
+		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
+
+		var doupdate = function(ppdata) {
+
+			
+	                if (ppdata.data == undefined || ppdata.data == "") {
+				if (mode != 2) {
+					// execution can only proceed from here in mode 2
+					failurefunc();
+					return;
+				}
+				ppdata = {};
+        	        } else {
+				ppdata = JSON.parse(ppdata.data);
+			}
+
+			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+                        oldsalt1 = sodium.from_hex(ppdata.salt1);
+			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+
+
+			/* updating the key is a two step process:
+			** A: the account secrets need to be decoded using the old key and recoded to the new key
+			** B: the pp/rpdata entry needs to be updated
+			*/
+
+
+			//B
+			/* The argument to this function is a copy of the original secrets (accounts) data structure
+			** before it was rekeyed to the new secret. This is used to roll back that structure should
+			** the ppdata update fail.
+			*/
+			var updatePpdata = function(backupsecrets) {
+				ppdata.salt1 = newsalt1;
+				ppdata.salt2 = newsalt2;
+				ppdata.pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16,
+			                                sodium.crypto_pwhash_scryptsalsa208sha256(16, 
+								newpassphrase, 
+								newsalt1 
+								sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
+								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+				                        newsalt2, 
+							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+				newpassphrase = ""; delete newpassphrase;
+	                        db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
+        	                        // success
+					successfunc();
+                	        }).catch(function(x){
+                        	        // failure
+					// this is a panic failure because the account secrets have already been updated
+					// therefore we must roll them back if possible.
+					if (backupsecrets != undefined) {
+						db.upsert("secrets", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
+							failurefunc();
+						}).catch(function(x){
+							failurefunc();
+						});
+
+					} else {
+						failurefunc();
+					}
+	                        });			
+			}
+
+			//A
+
+			var updateSecrets = function(secrets) {
+			
+				if (secrets.data == undefined || mode == 2) {
+					// no account secrets exist so we're done with part A
+					return updatePpdata();
+				}
+				
+				// now we need to decode all the existing secrets
+				// and re-encode them with the new secret
+				
+				backupsecrets = JSON.parse(secrets.data);
+				secrets = JSON.parse(secrets.data);
+
+				for (var public_addr in secrets) {
+					var ppsalt;
+					var ppciphertext;
+					if (mode == 0) { // get secret using passphrase
+						ppsalt = secrets[public_addr].ppsalt;
+						ppciphertext = sodium.from_hex(secrets[public_addr].ppsecret);
+					} else if (mode == 1) { // get secret using recovery phrase
+						ppsalt = secrets[public_addr].rpsalt;
+						ppciphertext = sodium.from_hex(secrets[public_addr].rpsecret);
+					}
+
+
+					var nonce = ppciphertext.slice(0, sodium.crypto_box_NONCEBYTES);
+					var ppciphertext = ppciphertext.slice(sodium.crypto_box_NONCEBYTES);					
+
+					var newnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					var newppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+					var newppciphertext = sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
+						/* this is the plaintext */
+						sodium.crypto_secretbox_open_easy(ciphertext, nonce, 
+							/* this is the old key to unlock the cipher text */
+							sodium.crypto_pwhash_scryptsalsa208sha256(16,  
+								sodium.crypto_pwhash_scryptsalsa208sha256(16,
+                                                                	oldpassphrase,
+	                                                                oldsalt1,
+        	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                        	                                ppsalt,
+                                	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE), 
+							/* end of key */
+							'text'),
+						/* end of plaintext */
+						newnonce,
+						newppsalt,
+						'hex');
+
+					if (issettingrecoveryphrase) {
+						secrets[public_addr].rpsalt = sodium.to_hex(newppsalt);
+						secrets[public_addr].rpsecret = newppciphertext;
+					} else {
+						secrets[public_addr].ppsalt = sodium.to_hex(newppsalt);
+						secrets[public_addr].ppsecret = newppciphertext;
+					}
+				}
+
+				/* at this point the data structure for the accounts (`secrets`) now contains fully updated
+				** ciphertext and salts, so we can do a db.upsert then move to part B */
+
+				db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+					updatePpdata(backupsecrets);
+				}).catch(function(x){
+					failurefunc();
+				});
+					
+			}
+			db.get("secrets").then(updateSecrets).catch(updateSecrets);
+			
+		}
+
+		db.get(storagekey).then(doupdate).catch(doupdate);
+		
+	}
+
+	// this code checks if the supplied oldpassphrase is either their current passphrase or the 
+	// recovery phrase, and returns to the above function accordingly, or if the current phrase is unset.
+	validatePassphrase(oldpassphrase, false, 
+		function() {passPhraseUpdate(0);}, 
+		function() {
+			validatePassphrase(oldpassphrase, true, 
+				function(){passPhraseUpdate(1);}, 
+				failurefunc, 
+				function(){passPhraseUpdate(2);}
+			);}, 
+		function(){passPhraseUpdate(2);}
+	);
+
+}
+
 function removeSecret(address, successfun, failfun) {
 	var f = function(secrets) {
 		if (secrets.data == undefined) {
@@ -960,7 +1253,7 @@ function removeSecret(address, successfun, failfun) {
 
 
 }
-function addSecret(address, secret, successfun, failfun) {
+function addSecret(address, secret, nickname, successfun, failfun) {
 
 	var f = function(secrets) {
 		if (secrets.data == undefined) {
@@ -998,15 +1291,15 @@ secret: secret.to_json(),
 	};
 }
 
-function connectToRipple(firsttabtoshow) {
+function connectToRipple(funcsuccess) {
 	remote.connect(function(err, res) {
 			if (err) {
 			console.log(err);
 //			$("#loaderror").innerText = err;			
-			connectToRipple();
+				connectToRipple(funcsuccess);
 			} else {
-			hideSpinner();
-			showTab(firsttabtoshow);
+				hideSpinner();
+				funcsuccess();
 			}
 			});
 }
