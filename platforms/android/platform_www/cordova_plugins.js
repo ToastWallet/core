@@ -539,14 +539,6 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.screenorientation"
         ]
-    },
-    {
-        "id": "cordova-plugin-minisodium.MiniSodium",
-        "file": "plugins/cordova-plugin-minisodium/www/MiniSodium.js",
-        "pluginId": "cordova-plugin-minisodium",
-        "clobbers": [
-            "window.plugins.MiniSodium"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -576,8 +568,7 @@ module.exports.metadata =
     "cordova-plugin-sqlite-2": "1.0.4",
     "es6-promise-plugin": "4.1.0",
     "cordova-plugin-screen-orientation": "2.0.1",
-    "cordova-plugin-crosswalk-webview": "2.3.0",
-    "cordova-plugin-minisodium": "1.0.0"
+    "cordova-plugin-crosswalk-webview": "2.3.0"
 };
 // BOTTOM OF METADATA
 });

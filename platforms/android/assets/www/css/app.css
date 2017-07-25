@@ -6,7 +6,7 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabrecovery button {
+#tabsettings button {
     min-width: 20em;
     margin-bottom: 1em;
 }
@@ -259,4 +259,117 @@ ul.iosheader > li > * {
 }
 #navfooter > li > div {
     font-size: 0.8em;
+}
+
+
+
+.pinpad {
+    text-align: center;
+    margin-top: calc(50vh - 17em);
+}
+
+
+
+.logobackground {
+    background: url('images/toastwallet4finalgrd2new.png') no-repeat;
+    background-size: 100%;
+    height: 100vh;
+}
+
+
+
+.darkbackground {
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+}
+
+.pinnumber {
+    color: rgba(255,255,255,0.7);
+}
+
+.darkbackground:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url(../images/background.png);
+    opacity: 0.1;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-y: 50%;
+    z-index: -1;
+}
+.pinpad button {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    padding: 0px;
+    margin: 0.2em 0.4em 0.2em 0.4em;
+    line-height: 3em;
+    font-size: 1.4em;
+    min-width: 3.6em !important;
+    min-height: 3.6em !important;
+    position: relative;
+    text-align: center;
+}
+
+
+.pinpad *:focus {
+    outline: none;
+}
+.pinpad button:active {
+    background-color: rgba(255,0,0,0.6);
+    -moz-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+
+* {
+ -webkit-user-select: none;
+ -khtml-user-select: none;
+ -moz-user-select: none;
+ -ms-user-select: none;
+ user-select: none;
+ }
+
+input
+{
+-webkit-user-select: auto !important;
+-khtml-user-select: auto !important;
+-moz-user-select: auto !important;
+-ms-user-select: auto !important;
+user-select: auto !important;
+}
+
+#tabrecovery div {
+    margin-bottom: 1em;
+}
+
+.shake {
+  animation: shakeanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@keyframes shakeanimation {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }

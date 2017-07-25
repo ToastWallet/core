@@ -1,5 +1,0 @@
-os:
-  - osx
-  - linux
-script:
-  - travis_wait ./travis.sh

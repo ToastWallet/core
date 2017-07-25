@@ -16,11 +16,13 @@
 	<script src="js/pouchdb.min.js"></script>
 	<script src="js/pouchdb.upsert.min.js"></script>
 	<script src="cordova.js"></script>
-	<script src='js/fastclick.js'></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
+	<script src="js/sodium.js"></script>
 </head>
 <body class="loading">
-<script>$(function() {FastClick.attach(document.body);});</script>
+<script>
+$('body').on('cut copy paste',function(e){e.preventDefault();});
+</script>
 
 
 
@@ -57,7 +59,7 @@
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
 		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button class="btn btn-primary" type="button" onclick='scanQR("#txtsecret", -1);'>QR</button></span>
+		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
 	<br />
 	<label for="secret">Decryption Phrase (if applicable)</label>
@@ -72,17 +74,98 @@
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
 	<div id="qrerror" class="input-group"></div>
-	<div class="input-group"><center><button type="button" class="btn btn-primary" onclick="showTab(-1);">Cancel</button></center></div>
+	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
 
-<div id="tablogin" class="screentab" data-primarytab="true" data-title="" >
-	<center><img src="images/toastwallet4finalgrd2new.png" input-group"="" style="max-height: 50vh; margin-bottom: 1em;"></center><br/>
-	<br><label for="password">Passphrase</label>
-	<div class="input-group">
-	<input type="password" id="password" class="form-control" placeholder=""><span class="input-group-btn">
-	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
-	</span></div>
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" style="display: block;">
+    
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="dopinpad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
+    
+</div>
+
+<div id="tabpinset1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Set New PIN" style="display: block;">
+    
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
+    
+</div>
+
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Repeat New PIN" style="display: block;">
+    
+	<center>
+	<div class="pinpad" style="">
+	    <div class="pinnumber">
+	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	</div>
+	<br>
+	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	</div>
+	</center>
+    
 </div>
 
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display:none">
@@ -116,9 +199,9 @@
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="Generate Account" style="display:none">
 	<center><div id="generatedaddress"></div></center>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" onclick='showAndGenAccount();'>Generate Another</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart='showAndGenAccount();'>Generate Another</button></div></center>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" onclick="importGeneratedAccount();">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount();">Import this Address</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -133,7 +216,7 @@
 	<div class="input-group">
 	<input type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-info" onclick='scanQR("#toaddress", -1);' type="button">QR</button>
+	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -168,11 +251,13 @@
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display:none">
-        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryforgotpass">Forgotten Passphrase</button></center></div>
-        <div><center><button type="button" class="btn btn-primary" id="btnrecoveryrestorewallet">Restore Wallet From Backup</button></center></div>
-</div>
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options" style="display: block;">  
+    <div>
+	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
+    </div>
 
+    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Recover</button></div>
+</div>
 
 
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
@@ -193,6 +278,32 @@
 
 
 <script>
+
+
+
+function doResetPin(recoveryphrase, successfunc, failfunc) {
+	//todo: check recovery phrase here 
+
+
+	var f;
+	runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
+		// there is no way to fail validation on this screen.
+		return true;
+	}, f = function(pin1) {
+	
+		runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
+			return currenttab == '#tabpinset1' || pin1 == pin2;
+		}, function(pin2) {
+			if (currenttab == '#tabpinset1') return f(pin2);
+			// todo: set new pin to db here
+			successfunc();
+		}, function(pin2) {
+			navigator.notification.alert('The PINs do not match.', failfunc, 'Problem...', 'OK');
+		});
+	
+	}, function(){});
+}
+
 var scanner;
 function scanQR(intofield, returntab) {
 
@@ -247,7 +358,7 @@ function selectAccount(accselected) {
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
 	$("#btnremoveaddr").off("click");
-	$("#btnremoveaddr").click(function() {
+	$("#btnremoveaddr").bind('touchstart', function() {
 
 			navigator.notification.prompt(
 				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
@@ -308,7 +419,7 @@ function refreshAccounts() {
 			accountbalances = {};
 			for (var i in acc) {
 
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" onclick="selectAccount(\''+i+'\');"><a href="#" onclick="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="selectAccount(\''+i+'\');"><a href="#" ontouchstart="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
 
 			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
 
@@ -343,6 +454,69 @@ activeaccount = x;
 
 }
 
+var pinpadvalidate = function(pin) { return false ; }
+var pinpadsuccess = function() {}
+var pinpadfailure = function() {}
+
+function runPinPad(tab, validationfunc, successfunc, failurefunc) {
+	pinpadvalidate = validationfunc;
+	pinpadsuccess = successfunc;
+	pinpadfailure = failurefunc;
+	if (tab != "" && tab != undefined) showTab(tab);
+}
+
+var enteredpin = "";
+var PIN_MAX = 6;
+function dopinpad(x) {
+	var val = x.trim();
+	if ((val == "" || val == undefined) && enteredpin != "") {
+		enteredpin = enteredpin.slice(0,-1);
+	}
+	if (val == "Help") {
+		showTab("#tabrecovery");
+		pin = "";
+		return;
+	}
+
+	if (enteredpin.length < PIN_MAX) enteredpin += val;
+
+	
+	setTimeout(renderEnteredPin, 0);
+
+	if (enteredpin.length == PIN_MAX) {
+		if (pinpadvalidate(enteredpin)) {
+			renderEnteredPin();
+			pinpadsuccess(enteredpin);
+			enteredpin = "";
+			renderEnteredPin();
+		} else {
+			$(".pinpad").removeClass("shake"); 
+			setTimeout(function(){ 
+				$(".pinpad").addClass("shake");
+				setTimeout(
+					function() {
+						enteredpin = "";
+						renderEnteredPin();
+						pinpadfailure(enteredpin);
+					}, 500);
+			}, 0);
+		}
+	}
+}
+
+
+function renderEnteredPin() {
+	for (var i = 1; i <= PIN_MAX; i++) {
+		if (i <= enteredpin.length) {
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle-thin");
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle");
+		} else {
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle-thin");
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle");
+
+		}
+	}
+}
 
 var currenttab = "";
 var previoustabs = [];
@@ -350,14 +524,44 @@ var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
-var recoveryicontabs = ['#tablogin', '#tabrecovery']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+var recoveryicontabs = ['#tablogin', '#tabrecovery', '#tabpinset1', '#tabpinset2']; // these tabs display a recovery icon in the top right instead of a lock/logout icon
+var darktabs = ['#tablogin', '#tabpinset1', '#tabpinset2' ]; // these tabs have a dark background
 
+function checkPin(pin) {
+	// todo: add actual pin checking
+	return false;
+}
 function showTab(tab) {
+
+	$(".pinpad").removeClass("shake");
+	enteredpin = ""; renderEnteredPin();
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);
 
 	$("#navheader").show();
+
+	if (tab == '#tablogin' || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == '#tablogin')) {
+		runPinPad("", checkPin, function() {
+			showTab("#tabaccounts");
+		}, function() {
+			// do nothing, screen will shake
+		});
+	}
+
+	var isdarktab = false;
+
+	for (var i = 0; i < darktabs.length; i++) {
+		if (tab == darktabs[i] || (tab == -1 && previoustabs.length > 0 && previoustabs[previoustabs.length-1] == darktabs[i])) {
+			isdarktab = true;
+			break;
+		}
+	}
+
+	$("body").removeClass("darkbackground");
+	if (isdarktab) {
+		$("body").addClass("darkbackground");
+	}
 
 
 	var isrecoverytab = false;
@@ -376,14 +580,14 @@ function showTab(tab) {
 		$(".headerright>i").removeClass("fa-lock");
 		$(".headerright>i").addClass("fa-medkit");
 		$(".headerright").off();
-		$(".headerright").click(function(){ showTab("#tabrecovery"); });
+		$(".headerright").bind('touchstart', function(){ showTab("#tabrecovery"); });
 	} else { // set logout icon for logged in tabs
 		$("#navfooter").show();
 		$("#dummyfooter").show();
 		$(".headerright>i").removeClass("fa-medkit");
 		$(".headerright>i").addClass("fa-lock");
 		$(".headerright").off();
-		$(".headerright").click(function(){ showTab("#tablogin"); userkey = ""; });
+		$(".headerright").bind('touchstart', function(){ showTab("#tablogin"); userkey = ""; });
 	}
 
 	if (tab == currenttab) return;
@@ -425,12 +629,12 @@ function showTab(tab) {
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").off();
-		$(".headerleft").click(function() {showTab(-1);});
+		$(".headerleft").bind('touchstart', function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
 		$(".headerleft").off();
-		$(".headerleft").click(function() {});
+		$(".headerleft").bind('touchstart', function() {});
 	}
 
 	if ($(tab).data('title')) {
@@ -487,25 +691,25 @@ function doPay() {
 	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
 }
 
-$("#navaccounts").click(function() { showTab("#tabaccounts"); });
-$("#navpayments").click(function() { showTab("#tabpayments"); });
-$("#navtrustlines").click(function() { showTab("#tabtrustlines"); });
-$("#navsettings").click(function() { showTab("#tabsettings"); });
+$("#navaccounts").bind('touchstart', function() { showTab("#tabaccounts"); });
+$("#navpayments").bind('touchstart', function() { showTab("#tabpayments"); });
+$("#navtrustlines").bind('touchstart', function() { showTab("#tabtrustlines"); });
+$("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 
-$("#btngennewaddress").click(function(){ showAndGenAccount(); });
-$("#btnaddexistingaddress").click(function(){ showTab("#tabaddexistingaccount"); });
+$("#btngennewaddress").bind('touchstart', function(){ showAndGenAccount(); });
+$("#btnaddexistingaddress").bind('touchstart', function(){ showTab("#tabaddexistingaccount"); });
 
-$("#btnaddaccount").click(function() { showTab("#tabaddaccount"); });
+$("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
 
-$("#btnscanqr").click(function() { scanQR("#txtsecret", -1); });
-$("#btnimport").click(function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
+$("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
+$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
-$("#btndifferentaccount").click(function() { showTab("#tabaccounts"); } );
+$("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
 
-$("#btnbackupkey").click(function() { showTab("#tabaccountsecret"); });
+$("#btnbackupkey").bind('touchstart', function() { showTab("#tabaccountsecret"); });
 
 
-$("#btnpay").click(function() {
+$("#btnpay").bind('touchstart', function() {
 		doPay();
 		});
 
@@ -569,6 +773,7 @@ onDeviceReady: function() {
 
 			db.get("secrets").then(f).catch(f);
 		       connectToRipple();
+
 	       },
 	       // Update DOM on a Received Event
 receivedEvent: function(id) {
@@ -829,9 +1034,7 @@ ALLOW_ALL: function(x) {
 
 
 
-
 </script>
-
 
 
 </body>

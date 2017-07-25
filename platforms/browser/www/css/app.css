@@ -6,10 +6,30 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabrecovery button {
+#tabsettings button, #tabaddaccount button, #tabgenaccount button, #tabsetpassphrase button, #tabchangepassphrase button {
     min-width: 20em;
     margin-bottom: 1em;
 }
+
+.moreindicatorabovenav {
+    bottom: calc(10px + 2.8em) !important;
+}
+
+.moreindicatordark {
+    color: black !important;
+}
+#inputblocker {
+    position: fixed;
+    z-index: 9999999999999;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
 .loading:before {
     display: block;
     animation: fa-spin 2s infinite linear;
@@ -137,10 +157,6 @@ img.loader {
 #btnaddaccount > * {
     vertical-align: middle;
 }
-#tabgenaccount button {
-    min-width: 15em;
-    min-height: 4em;
-}
 i.fa {
     font-size: 1.3em !important;
 }
@@ -265,7 +281,7 @@ ul.iosheader > li > * {
 
 .pinpad {
     text-align: center;
-    margin-top: calc(50vh - 14em);
+    margin-top: calc(50vh - 17em);
 }
 
 
@@ -279,40 +295,53 @@ ul.iosheader > li > * {
 
 
 .darkbackground {
-    background: linear-gradient(45deg, #1959ab, #317fe2);
+    background: linear-gradient(45deg, #1959ab, #317fe2),  #1959ab;
+    background-repeat: no-repeat;
 }
 
+#tablicense h1 {
+    margin: 0 0 0.3em 0 !important;
+    padding: 0 !important;
+}
+#morecontentindicator {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    opacity: 0.5;
+}
 .pinnumber {
     color: rgba(255,255,255,0.7);
 }
 
 .darkbackground:after {
-    position: absolute;
-    /* background: url('images/toastwallet4finalgrd2new.png'); */
-    width: 100%;
-    height: 100vh;
-    top: 0px;
-    left: 0px;
-    z-index: -1;
     content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url(../images/background.png);
+    opacity: 0.1;
     background-size: 100%;
     background-repeat: no-repeat;
     background-position-y: 50%;
-    opacity: 0.1;
+    z-index: -1;
 }
-	
 .pinpad button {
+    border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255,255,255,0.1);
     border-radius: 50%;
-    border: none;
     padding: 0px;
-    margin: 0.2em;
+    margin: 0.2em 0.4em 0.2em 0.4em;
     line-height: 3em;
-    min-width: 4em !important;
-    min-height: 4em !important;
+    font-size: 1.4em;
+    min-width: 3.6em !important;
+    min-height: 3.6em !important;
     position: relative;
     text-align: center;
 }
+
 
 .pinpad *:focus {
     outline: none;
@@ -324,3 +353,71 @@ ul.iosheader > li > * {
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
 }
+
+
+* {
+ -webkit-user-select: none;
+ -khtml-user-select: none;
+ -moz-user-select: none;
+ -ms-user-select: none;
+ user-select: none;
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+ }
+
+input
+{
+-webkit-user-select: auto !important;
+-khtml-user-select: auto !important;
+-moz-user-select: auto !important;
+-ms-user-select: auto !important;
+user-select: auto !important;
+}
+
+#tabrecovery div {
+    margin-bottom: 1em;
+}
+
+.shake {
+  animation: shakeanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+.bounce {
+  animation: bounceanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+
+@keyframes shakeanimation {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+@keyframes bounceanimation {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40% {
+    transform: translate3d(0, -30px, 0);
+  }
+  60% {
+    transform: translate3d(0, -15px, 0);
+  }
+}
+

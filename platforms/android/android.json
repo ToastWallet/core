@@ -119,10 +119,6 @@
                         {
                             "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"MiniSodium\"><param name=\"android-package\" value=\"me.lockate.plugins.MiniSodium\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -194,10 +190,6 @@
                         },
                         {
                             "xml": "<uses-feature android:name=\"android.hardware.camera\" android:required=\"true\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-sdk android:minSdkVersion=\"16\" android:targetSdkVersion=\"19\" />",
                             "count": 1
                         }
                     ],
@@ -304,9 +296,6 @@
             "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-minisodium": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
@@ -851,14 +840,6 @@
             "clobbers": [
                 "cordova.plugins.screenorientation"
             ]
-        },
-        {
-            "id": "cordova-plugin-minisodium.MiniSodium",
-            "file": "plugins/cordova-plugin-minisodium/www/MiniSodium.js",
-            "pluginId": "cordova-plugin-minisodium",
-            "clobbers": [
-                "window.plugins.MiniSodium"
-            ]
         }
     ],
     "plugin_metadata": {
@@ -886,7 +867,6 @@
         "cordova-plugin-sqlite-2": "1.0.4",
         "es6-promise-plugin": "4.1.0",
         "cordova-plugin-screen-orientation": "2.0.1",
-        "cordova-plugin-crosswalk-webview": "2.3.0",
-        "cordova-plugin-minisodium": "1.0.0"
+        "cordova-plugin-crosswalk-webview": "2.3.0"
     }
 }

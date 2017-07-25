@@ -40,6 +40,11 @@
 </script>
 
 
+<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="false" data-hasback="true">
+<p style="color:red; font-weight:bold">Your recovery phrases appear below. Please write these down and store them in a safe location. If you ever forget your passphrase this code will be the only way for you to regain access to your XRP.</p>
+<div id="showrecoveryphrase">
+</div>
+</div>
 
 
 
@@ -69,7 +74,7 @@
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button type="button" class="btn btn-primary" ontouchstart="showAndGenAccount();">Generate New Address</button><br />
+		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabgenaccount1');">Generate New Address</button><br />
 		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
@@ -187,38 +192,54 @@
     
 </div>
 
-<div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" style="display:none">
+<div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
 	<br><label>Set a Passphrase</label>
-	<div class="input-group">
-	<input type="password" id="password1" class="form-control" placeholder=""><span class="input-group-btn"></div>
-	<br><label>The same Passphrase Again</label>
-	<div class="input-group">
-	<input type="password" id="password2" class="form-control" placeholder=""><span class="input-group-btn">
-	<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="">Set Passphrase</button>
-	</span></div>
+	<div>
+		<input type="password" id="setpassword1" class="form-control" placeholder="">
+	</div>
+	<br><label>Repeat Passphrase</label>
+	<div>
+		<input type="password" id="setpassword2" class="form-control" placeholder="">
+	</div>
+	<br>
+	<center>
+		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
+	</center>
 </div>
 
 <div id="tabchangepassphrase" class="screentab" data-primarytab="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
-	<div class="input-group">
-	<input type="password" id="password3" class="form-control" placeholder=""><span class="input-group-btn">
-	<button class="btn btn-primary" id="btnlogin" type="button">Login</button>
-	</span></div>
+	<div>
+		<input type="password" id="setpassword3" class="form-control" placeholder="">
+	</div>
 	<br><label>New Passphrase</label>
-	<div class="input-group">
-	<input type="password" id="password4" class="form-control" placeholder=""><span class="input-group-btn"></div>
+	<div>
+	<input type="password" id="setpassword4" class="form-control" placeholder="">
+	</div>
 	<br><label>New Passphrase Again</label>
-	<div class="input-group">
-	<input type="password" id="password5" class="form-control" placeholder=""><span class="input-group-btn">
-	<button class="btn btn-primary" id="btnsetpassphrase" type="button">Set Passphrase</button>
-	</span></div>
+	<div>
+		<input type="password" id="setpassword5" class="form-control" placeholder="">
+	</div>
+	<div>
+		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
+	</div>
 </div>
 
 
-<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+
+<div id="tabgenaccount1" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input type="password" id="genaccpassword" class="form-control" placeholder="">
+        </div>
+        <div>
+                <button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="showAndGenAccount($('#genaccpassword').val())">Generate New Account</button>
+        </div>	
+</div>
+<div id="tabgenaccount2" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
 	<center><div id="generatedaddress"></div></center>
 	<br />
-        <label for="toaccount">Nickname for this account</label>
+        <label for="toaccount">Account Nickname (optional)</label>
         <div>
         <input type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
@@ -375,7 +396,7 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button class="btn btn-success" type="button"  ontouchstart="doResetPin('', function(){showTab('#tabaccounts');}, function(){});">I Understand And Agree To The Above</button></center>
+<center><button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){});">I Understand And Agree To The Above</button></center>
 <br />
 <p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </div>
@@ -408,6 +429,8 @@ function unblockInput() {
 	$("#inputblocker").hide();
 }
 
+
+
 function doResetPin(recoveryphrase, successfunc, failfunc) {
 	//todo: check recovery phrase here 
 
@@ -432,6 +455,58 @@ function doResetPin(recoveryphrase, successfunc, failfunc) {
 		});
 	
 	}, function(){});
+}
+
+
+function setAndShowNewRecoveryPhrase(passphrase) {
+
+	var randomWord = function() {
+		var vowels = ['a', 'e', 'i', 'o', 'u'];
+		var consts =  ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'tt', 'ch', 'sh'];
+		var len = 5;
+		var word = '';
+		var is_vowel = false;
+		var arr;
+		for (var i = 0; i < len; i++) {
+		  if (is_vowel) arr = vowels
+		  else arr = consts
+		  is_vowel = !is_vowel;
+		  word +=  arr[Math.round( (sodium.randombytes_random() % arr.length)-1)];
+		}
+		return word;
+	};
+
+	var rp = "";
+	for (var i = 0; i < 6; i++) {
+		rp += randomWord() + (i == 5 ? '' : ' ');
+	}
+	
+	$("#showrecoveryphrase").innerText = rp;
+
+	showTab("#tabshowrecovery");
+	
+	
+
+}
+
+function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
+	if (pp1 != pp2) {
+		navigator.notification.alert("The passphrases do not match.", function(){}, "Error", "OK");
+		return;
+	}
+
+	setPassphrase(pp1, oldpp, false, 
+		function() {
+			//success
+			navigator.notification.alert("Your new passphrase has been set", 
+				function(){
+					successfunc();
+				}, "Success", "OK");
+		}, function() {
+			//failure
+			navigator.notification.alert("Old passphrase is incorrect.", function(){}, "Failure", "OK");
+		}
+	);
 }
 
 var scanner;
@@ -533,7 +608,7 @@ function getAccounts(callback) {
 		}
 		callback(secrets);
 	}
-	db.get("secrets").then(f).catch(f);
+	db.get("accounts").then(f).catch(f);
 }
 
 function refreshAccounts() {
@@ -607,12 +682,15 @@ function runPinPad(tab, validationfunc, successfunc, failurefunc) {
 function doShowLogin() {
 	runPinPad("#tablogin", function(pin) {
 		validatePin(pin, function() {
+			$("#btnbootstrapsequence").hide();
 			showTab("#tabaccounts");
 		}, function() {
+			$("#btnbootstrapsequence").hide();
                         setTimeout(function() {
                                 shakeandclearpinpad( function() { });
                         }, 0);
 		}, function() {
+			$("#btnbootstrapsequence").hide();
 			showTab("#tablicense");
 		});
 		return true;
@@ -704,6 +782,9 @@ function showTab(tab) {
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
+
+	$("input[type='password']").val("");
+	$("input[type='text']").val("");
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);
@@ -799,17 +880,27 @@ function showTab(tab) {
 
 }
 
-var generatedAcount = {};
-function showAndGenAccount() {
-	var result = generateAddress();
+function showAndGenAccount(passphrase) {
+	// NB: a recovery phrase cannot be used to generate a new account
+	
+	validatePassphase(passphrase, false,
+		function() {
+			// correct phrase
+			
+		},
+		function() {
+			 navigator.notification.alert("Your passphrase is incorrect.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
+		},
+		function() {
+			 navigator.notification.alert("Your passphrase has not been correctly set. Please use the change passphrase tool in settings.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
+		}
+	);
+
+/*	var result = generateAddress();
 	generatedAccount = result;
 	$("#generatedaddress")[0].innerText = result.address;
-	showTab("#tabgenaccount");	
-}
-
-function importGeneratedAccount(nickname) {
-	importAddress(generatedAccount.secret, "", nickname);
-	showTab("#tabaccounts");
+	showTab("#tabgenaccount");	*/
+/* importAddress(generatedAccount.secret, "", nickname); */
 }
 
 function doPay() {
@@ -1032,12 +1123,25 @@ function importAddress(secret, phrase, nickname) {
 
 }
 
+function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopassphrasefunc) {
+        validatePassphrase(passphrase, false,
+		successfunc,
+                function() {
+                        validatePassphrase(passphrase, true,
+				successfunc,
+                                failurefunc,
+				nopassphrasefunc
+                        );},
+		nopassphrasefunc
+        );
+
+}
 
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
 	
         var f = function(ppdata) {
                 if (ppdata.data == undefined || ppdata.data == "") {
-                        return nopasssphrasefunc();
+                        return nopassphrasefunc();
                 } else {
                         ppdata = JSON.parse(ppdata.data);
 			salt1 = sodium.from_hex(ppdata.salt1);
@@ -1109,7 +1213,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 				ppdata.pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16,
 			                                sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 								newpassphrase, 
-								newsalt1 
+								newsalt1,
 								sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
 								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
 				                        newsalt2, 
@@ -1124,7 +1228,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 					// this is a panic failure because the account secrets have already been updated
 					// therefore we must roll them back if possible.
 					if (backupsecrets != undefined) {
-						db.upsert("secrets", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
+						db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
 							failurefunc();
 						}).catch(function(x){
 							failurefunc();
@@ -1200,14 +1304,14 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 				/* at this point the data structure for the accounts (`secrets`) now contains fully updated
 				** ciphertext and salts, so we can do a db.upsert then move to part B */
 
-				db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
 					updatePpdata(backupsecrets);
 				}).catch(function(x){
 					failurefunc();
 				});
 					
 			}
-			db.get("secrets").then(updateSecrets).catch(updateSecrets);
+			db.get("accounts").then(updateSecrets).catch(updateSecrets);
 			
 		}
 
@@ -1239,7 +1343,7 @@ function removeSecret(address, successfun, failfun) {
 		}
 
 		if (secrets[address] != undefined) delete secrets[address];
-		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
 				navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
 				successfun();
 				}).catch(function(x){
@@ -1249,11 +1353,11 @@ function removeSecret(address, successfun, failfun) {
 
 	}
 
-	db.get("secrets").then(f).catch(f);
+	db.get("accounts").then(f).catch(f);
 
 
 }
-function addSecret(address, secret, nickname, successfun, failfun) {
+function addSecret(address, secretdata, successfun, failfun) {
 
 	var f = function(secrets) {
 		if (secrets.data == undefined) {
@@ -1261,10 +1365,9 @@ function addSecret(address, secret, nickname, successfun, failfun) {
 		} else {
 			secrets = JSON.parse(secrets.data);
 		}
-		var result = generateAddress(secret);
-		secrets[(address != "" ? address : result.address)] = result.secret;
+		secrets[(address != "" ? address : result.address)] = secretdata;
 
-		db.upsert("secrets", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
+		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
 				navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
 				successfun();
 				}).catch(function(x){
@@ -1274,17 +1377,19 @@ function addSecret(address, secret, nickname, successfun, failfun) {
 
 	}
 
-	db.get("secrets").then(f).catch(f);
+	db.get("accounts").then(f).catch(f);
 
 }
 
 
-function generateAddress(secret) {
-	if (secret) {
+function generateAddress(secret, passphrase, nickname) {
+	if (secret != undefined && secret != "") {
 		secret = ripple.Seed.from_json(secret);
 	} else {
 		secret = ripple.Seed.from_bits(ripple.sjcl.random.randomWords(4));
 	}
+
+	
 	return {
 secret: secret.to_json(),
 		address: secret.get_key().get_address().to_json()
@@ -1349,6 +1454,7 @@ function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID,
 	getAccounts(function(secrets) {
 			if (secrets[fromacc] !== undefined) {
 
+			//todo: decode secret here
 			remote.setSecret(fromacc, secrets[fromacc]);
 
 			redefineSigningToAlwaysUseSecret(false);

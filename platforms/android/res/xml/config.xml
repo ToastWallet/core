@@ -64,10 +64,6 @@
     <feature name="CDVOrientation">
         <param name="android-package" value="cordova.plugins.screenorientation.CDVOrientation" />
     </feature>
-    <feature name="MiniSodium">
-        <param name="android-package" value="me.lockate.plugins.MiniSodium" />
-        <param name="onload" value="true" />
-    </feature>
     <feature name="SQLitePlugin">
         <param name="android-package" value="com.nolanlawson.cordova.sqlite.SQLitePlugin" />
     </feature>
