@@ -6,7 +6,7 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabaddaccount button, #tabgenaccount button, #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button {
+#tabsettings button, #tabaddaccount button, #tabgenaccount button, #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, #tabcorruptionprompt button {
     min-width: 20em;
     margin-bottom: 1em;
 }
@@ -22,7 +22,7 @@ body {
     background: red;
     display: inline-block;
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100vw;
     text-align: center;

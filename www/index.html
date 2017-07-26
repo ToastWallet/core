@@ -315,6 +315,18 @@ Never share your recovery phrase with anyone.</p>
     <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Recover</button></div>
 </div>
 
+<div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: block;">
+    <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
+    <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
+    <div>
+        <label for="corruptionpp">Passphrase</label><input type="password" id="corruptionpp" class="form-control" placeholder="">
+    </div>
+    <div>
+        <label for="corruptionrp">Recovery Phrase</label><input type="password" id="corruptionrp" class="form-control" placeholder="">
+    </div><br>
+    <div><center><button type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
+</div>
+
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: block;">
    <center>
     <h1>Toast Wallet</h1>
@@ -509,9 +521,14 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 	
 	$("#showrecoveryphrase")[0].innerHTML = rp;
 
-	showTab("#tabshowrecovery");
-	
-	
+	setPassphrase(rp, passphrase, true, 
+		function(){ 
+			showTab("#tabshowrecovery"); 
+		}, 
+		function() {
+			navigator.notification.alert('Unable to setup your recovery phrase, possibly due to a device error or out of storage. Toast Wallet cannot proceed and will now restart.', 
+			function(){ restart(); }, 'Fatal Error', "OK");
+	});
 
 }
 
@@ -1113,19 +1130,19 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 					var accountscorrupt = false;
 					var accountspresent = (accounts.data != undefined && accounts.data != "");
                                         try {
-                                                accounts = JSON.parse(accounts.data);
+						accounts = JSON.parse(accounts.data);
 						for (i in accounts) {
-                                                	accountscorrupt = 
-                                                        	accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false ||
-	                                                        accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false ||
-        	                                                accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false ||
-                	                                        accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
+							accountscorrupt = 
+								accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false ||
+								accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false ||
+								accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false ||
+								accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
 							if (accountscorrupt) break;
 						}
 
                                         } catch(e) { accountscorrupt = true; handle_error(e); }
 
-					if (pindatapresent && ppdatapresent && rpdatapresent && accountspresent && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
+					if (pindatapresent && ppdatapresent && rpdatapresent /*&& accountspresent*/ && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
 						funcok();
 					} else if (!pindatapresent && !ppdatapresent && !rpdatapresent && !accountspresent) {
 						funcnodata();
@@ -1204,56 +1221,146 @@ function normalboot () {
 	);
 }
 
-
+var corruptionstate;
 function recoveryboot(corruption) {
 	var msg = "Your wallet data appears to be corrupted. Here's what we know: " + 
 		"PIN: " + corruption.pindata + ", Passphrase: " + corruption.ppdata + 
 		", Recovery Data: " + corruption.rpdata + ", Accounts: " + corruption.accounts;
 
-	navigator.notification.alert(msg, function(){doDataCorruptionRecovery(corruption)}, "Data Error", "OK");
+	corruptionstate = corruption;
+	navigator.notification.alert(msg, function(){hideSpinner(); showTab("#tabcorruptionprompt");}, "Data Error", "OK");
 }
 
-function doDataCorruptionRecovery(c) {
+function restart() {
+		validateDataStores(
+			normalboot,
+			normalboot,
+			recoveryboot
+		);
+};
 
-	var restart = function() {
-                        validateDataStores(
-                                normalboot,
-                                normalboot,
-                                recoveryboot
-                        );
+function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, recoveryphraseverified) {
+
+	var freshinstall = function() {
+		navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.", 
+		function() {
+			db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
+			db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
+			db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
+			db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
+				normalboot();
+			})})})});
+		}, "Fresh Install", "OK");
 	};
+
+	if (passphrase == undefined) passphraseverified = false;
+	if (recoveryphrase == undefined) recoveryphraseverified = false;
+
+	if (c.ppdata == 'ok' && passphrase != undefined && passphraseverified == undefined) {
+		// validate the passphrase provided
+		validatePassphrase(passphrase, false, 
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, true, recoveryphraseverified); },
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); },
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); }
+		);
+		return;
+	} else passphraseverified = false;
+
+	if (c.rpdata == 'ok' && recoveryphrase != undefined && recoveryphraseverified == undefined) {
+		// validate the recoveryphrase provided
+		validatePassphrase(passphrase, true, 
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, true); },
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); },
+			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); }
+		);
+		return;
+	} else passphraseverified = false;
+
 	
 	if (c.accounts == 'missing') {
-		db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
-		db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
-		db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
-		db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
-			navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.", normalboot, "Fresh Install", "OK");
-		})})})});
-
+		freshinstall();
 		return;
 	}
 
 	if (c.accounts == 'corrupt') {
-		//todo: recover accounts data here
-		console.log("todo: recover accounts data here");
-		navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", normalboot, "Recovery", "OK");
+
+		var i = function(accounts) {
+			try {
+				accounts = JSON.parse(accounts.data);
+				for (i in accounts) {
+					var ppok = true;
+					var rpok = true;
+					if (accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false) {
+						ppok = false;
+					}
+					if (accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false) {
+						rpok = false;
+					}
+					if (accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false) {
+						ppok = false;
+					}
+					if (accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false) {
+						rpok = false;
+					}
+
+					if (rpok && ppok) continue;
+
+					//todo: add attempted recovery when only ppok or only rpok
+					console.log('todo: add attempted recovery when only ppok or only rpok');
+					delete accounts[i];
+
+				}
+
+			} catch(e) { accounts = {} }
+
+			navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", function() {
+				c.accounts = 'ok';
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){ doDataCorruptionRecovery(c, passphrase, recoveryphrase); }).catch(function(x){ 
+					navigator.notification.alert("Recovery process could not write to your device's storage. Please free up some space or grant the correct permissions and try again.",
+						function(){}, "Fatal Error", "OK"
+					);
+				});
+			}, "Recovery", "OK");
+		}
+
+		db.get("accounts").then(i).catch(i);
 		return;
 	}
+
 
 	if (c.ppdata != 'ok') {
 		
 		if (c.rpdata != 'ok') {
-			//todo: prompt for either recovery or passphrase and attempt partial decryption of account secrets, match to public key
-			console.log("todo: prompt for either recovery or passphrase and attempt partial decryption of account secrets, match to public key");
+
+			//attempt partial decryption of account secrets, match to public key
+	                var i = function(accounts) {
+        	                try {
+                	                accounts = JSON.parse(accounts.data);
+				} catch(e) { accounts = {} }
+				var count = 0;
+				for (i in accounts) count++;
+
+				// cannot perform any recovery if there are no accounts. fresh install required
+				if (count == 0) {
+					freshinstall();
+					return;
+				}
+
+				//todo: verify credentials from an account
+				console.log("todo: verify credentials from an account");
+				
+			}
+
+			db.get("accounts").then(i).catch(i);
+
+			return;
 		} else {
+
 			//todo: prompt for recovery phrase to reset passphrase
 			console.log("todo: prompt for recovery phrase to reset passphrase");
+			return freshinstall();
 		}
 		
-		//todo: when the above todos are removed remove this too
-		console.log("todo: when the above todos are removed remove this too");
-		return normalboot();
 	}
 
 	if (c.rpdata != 'ok') {
@@ -1406,7 +1513,7 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 
                         if (pphash == ppdata.pphash)
                                 return successfunc();
-                        return failfunc();
+                        return failurefunc();
                 } } catch(e) { handle_error(e); } };
 
         db.get(( isrecoveryphrase? "rpdata" : "ppdata")).then(f).catch(f);	
