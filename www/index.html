@@ -1140,7 +1140,7 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 							if (accountscorrupt) break;
 						}
 
-                                        } catch(e) { accountscorrupt = true; handle_error(e); }
+                                        } catch(e) { if (accounts.data != "") accountscorrupt = true; handle_error(e); }
 
 					if (pindatapresent && ppdatapresent && rpdatapresent /*&& accountspresent*/ && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
 						funcok();
@@ -1199,7 +1199,8 @@ function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
 			return nopinsetfunc();
 		} else {
 			pindata = JSON.parse(pindata.data);
-			var hash = sodium.crypto_shorthash(pin, sodium.from_hex(pindata.salt), 'hex');
+			var salt = sodium.from_hex(pindata.salt);
+			var hash = sodium.crypto_shorthash(pin, salt, 'hex');
 			if (hash == pindata.hash) 
 				return successfunc();
 			return failfunc();
@@ -1532,6 +1533,12 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 		 * mode 2 - setting a new passphrase/recoveryphrase for the first time.
 		 */
 
+		if (mode == 1 && issettingrecoveryphrase) {
+			//cannot set a recovery phrase from a recovery phrase, must use a passphrase for erk
+			failurefunc();
+			return;
+		}
+
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
 		var doupdate = function(ppdata) { try {
@@ -1576,25 +1583,62 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 				                        newsalt2, 
 							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
 							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE));
-				newpassphrase = ""; delete newpassphrase;
-	                        db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
-        	                        // success
-					successfunc();
-                	        }).catch(function(x){
-                        	        // failure
-					// this is a panic failure because the account secrets have already been updated
-					// therefore we must roll them back if possible.
-					if (backupsecrets != undefined) {
-						db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
-							failurefunc();
-						}).catch(function(x){
-							failurefunc();
-						});
+	                        
+				var commit = function(ppdata) {
+					db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
+						// success
+						successfunc();
+					}).catch(function(x){
+						// failure
+						// this is a panic failure because the account secrets have already been updated
+						// therefore we must roll them back if possible.
+						if (backupsecrets != undefined) {
+							db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
+								failurefunc();
+							}).catch(function(x){
+								failurefunc();
+							});
 
-					} else {
-						failurefunc();
-					}
-	                        });			
+						} else {
+							failurefunc();
+						}
+					});			
+				}
+
+				var seterk = function(realpp) {
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					realpp = JSON.parse(realpp.data);
+
+					var realppsalt1 = fromhex_chksum(realpp.salt1);
+					ppdata.erk = 
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						/* pp secret key */
+						sodium.crypto_pwhash_scryptsalsa208sha256(16,
+							oldpassphrase,
+							realppsalt1,
+							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+						/* ppsecret key end */
+						nonce, 
+						/* rp recovery key */
+						sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+							newpassphrase,
+							newsalt1,
+							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+						/* rp recovery key end */
+					'hex')));
+
+					commit(ppdata);
+				}
+
+				if (issettingrecoveryphrase) {
+					db.get("ppdata").then(seterk).catch(seterk);
+				} else {
+					commit(ppdata);
+				}
+
 			}
 
 			//A
