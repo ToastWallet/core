@@ -6,10 +6,50 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
-#tabsettings button, #tabaddaccount button, #tabgenaccount button, #tabsetpassphrase button, #tabchangepassphrase button {
+#tabsettings button, #tabaddaccount button, #tabgenaccount button, #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button {
     min-width: 20em;
     margin-bottom: 1em;
 }
+.toggleswitch {
+    float: right;
+    font-size: 2em;
+    vertical-align: middle;
+    opacity: 0.5;
+}
+
+#navheader div:before {
+    content: "WARNING -- TESTNET ALPHA. DO NOT USE REAL XRP.";
+    background: red;
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    text-align: center;
+    font-size: 0.5em;
+}
+
+#showrecoveryphrase {
+    color: blue;
+    font-size: 2em;
+    text-align: center;
+    font-weight: bold;
+    border: 1px dashed;
+    padding-bottom: 0.5em;
+    padding-top: 0.2em;
+}
+
+#tabshowrecovery h1 {
+    margin-top: 0 !important;
+}
+
+.toggleswitch {
+    float: right;
+    font-size: 2em;
+    vertical-align: middle;
+    opacity: 0.5;
+}
+
 
 .moreindicatorabovenav {
     bottom: calc(10px + 2.8em) !important;

@@ -40,12 +40,23 @@
 </script>
 
 
-<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true"> 
-<p style="color:red; font-weight:bold">Your recovery phrases appear below. Please write these down and store them in a safe location. If you ever forget your passphrase this code will be the only way for you to regain access to your XRP.</p>
-<div id="showrecoveryphrase">
-</div>
-</div>
+<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: block;">
+    <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
 
+<p style="color:black; font-weight:bold; text-align:justify;">Your six(6) word recovery phrase appears below. <u style="color:red;">Write it down on paper</u> and store it in a safe location. If you ever forget your passphrase this code will be the <u style="
+
+    color:red;
+
+    ">only way for you to regain access to your XRP.</u>&nbsp;
+Never share your recovery phrase with anyone.</p>
+<u style="font-size:1.1em;"><u>
+    </u></u>
+<div id="showrecoveryphrase">
+</div><br><p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
+<center><button class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
+
+
+</div>
 
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
@@ -193,7 +204,7 @@
 </div>
 
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
-	<br><label>Set a Passphrase</label>
+	<label>Set a Passphrase</label>
 	<div>
 		<input type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
@@ -201,6 +212,8 @@
 	<div>
 		<input type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
+	<br>
+	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
 	<br>
 	<center>
 		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
@@ -431,6 +444,19 @@ function unblockInput() {
 
 
 
+function doFinishSetup() {
+	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
+		navigator.notification.alert("You must write your recovery phrase down.", function(){}, "STOP", "OK");
+		return;
+	}
+
+	// destroy the data from memory
+	$("#showrecoveryphrase")[0].innerHTML = "";
+
+	// we're all done
+	showTab("#tabaccounts");
+}
+
 function doResetPin(recoveryphrase, successfunc, failfunc) {
 	//todo: check recovery phrase here 
 
@@ -463,7 +489,7 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 	var randomWord = function() {
 		var vowels = ['a', 'e', 'i', 'o', 'u'];
 		var consts =  ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'tt', 'ch', 'sh'];
-		var len = 5;
+		var len = 4;
 		var word = '';
 		var is_vowel = false;
 		var arr;
@@ -471,7 +497,7 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 		  if (is_vowel) arr = vowels
 		  else arr = consts
 		  is_vowel = !is_vowel;
-		  word +=  arr[Math.round( (sodium.randombytes_random() % arr.length)-1)];
+		  word +=  arr[sodium.randombytes_random() % arr.length];
 		}
 		return word;
 	};
@@ -481,7 +507,7 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 		rp += randomWord() + (i == 5 ? '' : ' ');
 	}
 	
-	$("#showrecoveryphrase").innerText = rp;
+	$("#showrecoveryphrase")[0].innerHTML = rp;
 
 	showTab("#tabshowrecovery");
 	
@@ -489,11 +515,35 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 
 }
 
+function passphraseComplexityCheck(pp){
+	var minlen = 6;
+	var hascapital = /[A-Z]/im.test(pp);
+	var haslowecase = /[a-z]/im.test(pp);
+	var hasnumber = /[0-9]/im.test(pp);
+	var hasspecialchar = /[^a-zA-Z0-9]/im.test(pp);
+	var islongenough = pp.length >= minlen;
+
+	var msg = "";
+	if (!hascapital) msg += (msg == "" ? "have at least one: " : ", ") + "capital";
+	if (!haslowecase) msg += (msg == "" ? "have at least one: " : ", ") + "lowercase";
+	if (!hasnumber) msg += (msg == "" ? "have at least one: " : ", ") + "number";
+	if (!hasspecialchar) msg += (msg == "" ? "have at least one: " : ", ") + "non-alphanumeric";
+	if (!islongenough) msg += (msg == "" ? "" : ", and ") + "be at least "+minlen+" long";
+
+	return msg;
+}
 function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
 	if (pp1 != pp2) {
 		navigator.notification.alert("The passphrases do not match.", function(){}, "Error", "OK");
 		return;
 	}
+
+	var complexity = passphraseComplexityCheck(pp1);
+	if (complexity != "") {
+		navigator.notification.alert("The passphrase must " + complexity, function(){},  "Error", "OK");
+		return;
+	}
+	
 
 	setPassphrase(pp1, oldpp, false, 
 		function() {
@@ -600,14 +650,14 @@ function renderSecret(acctorender) {
 }
 
 function getAccounts(callback) {
-	var f	= function(secrets) {
+	var f	= function(secrets) { try {
 		if (secrets.data == undefined) {
 			secrets = {};
 		} else {
 			secrets = JSON.parse(secrets.data);
 		}
 		callback(secrets);
-	}
+	} catch(e) { handle_error(e); } }
 	db.get("accounts").then(f).catch(f);
 }
 
@@ -987,11 +1037,128 @@ var db;
 var walletsalt;
 
 
+function dbgdumpdata() {
+	var f = function(x) {console.log(x);}
+	
+	db.get("pindata").then(function(x){ console.log("pindata: " + x.data);});
+	db.get("ppdata").then(function(x){ console.log("ppdata: " + x.data);});
+	db.get("rpdata").then(function(x){ console.log("rpdata: " + x.data);});
+	db.get("accounts").then(function(x){ console.log("accounts: " + x.data);});
+}
+
+
+/* Generate a checksum and prepend it to data, returns as hex */
+function tohex_chksum(data) {
+	if (typeof data == 'string') data = sodium.from_string(data);
+	return sodium.crypto_generichash(4, data, '', 'hex') + sodium.to_hex(data);
+}
+
+/* Remove a checksum from the front of data, check if the data matches 
+** return the data if the checksum matches (as uint8array) or false
+** if data does not match */
+function fromhex_chksum(hex, format) {
+	var chksum = hex.slice(0,8);
+	var payload = sodium.from_hex(hex.slice(8));
+	if (sodium.crypto_generichash(4, payload, '', 'hex') != chksum) return false;
+	if (format == 'string') return sodium.to_string(payload);
+	return payload;
+}
+
+function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
+
+	var f = function(pindata) {
+		var pindatacorrupt = false;
+		var pindatapresent = (pindata.data != undefined && pindata.data != "");
+
+		if (pindatapresent) {
+			try {
+				pindata = JSON.parse(pindata.data);
+				pindatacorrupt = 
+					pindata.salt == undefined || (/[^a-fA-F0-9]/.test(pindata.salt)) || fromhex_chksum(pindata.salt) === false 
+					pindata.hash == undefined || (/[^a-fA-F0-9]/.test(pindata.hash)) || fromhex_chksum(pindata.hash) === false;
+
+			} catch(e) { pindatacorrupt = true; handle_error(e); }
+		}
+
+		var g = function(ppdata) {
+			var ppdatacorrupt = false;
+			var ppdatapresent = (ppdata.data != undefined && ppdata.data != "");
+			if (ppdatapresent) {
+				try {
+					ppdata = JSON.parse(ppdata.data);
+					ppdatacorrupt = 
+						ppdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt1)) || fromhex_chksum(ppdata.salt1) === false ||
+						ppdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt2)) || fromhex_chksum(ppdata.salt2) === false || 
+						ppdata.pphash == undefined || (/[^a-fA-F0-9]/.test(ppdata.pphash)) || fromhex_chksum(ppdata.pphash) === false;
+
+				} catch(e) { ppdatacorrupt = true; handle_error(e); }
+			}
+
+			var h = function(rpdata) {
+				var rpdatacorrupt = false;
+				var rpdatapresent = (rpdata.data != undefined && rpdata.data != "");
+				if (rpdatapresent) {
+					try {
+						rpdata = JSON.parse(rpdata.data);
+						rpdatacorrupt = 
+							rpdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt1)) || fromhex_chksum(rpdata.salt1) === false ||
+							rpdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt2)) || fromhex_chksum(rpdata.salt2) === false ||
+							rpdata.pphash == undefined || (/[^a-fA-F0-9]/.test(rpdata.pphash)) || fromhex_chksum(rpdata.pphash) === false ||
+							rpdata.erk == undefined || (/[^a-fA-F0-9]/.test(rpdata.erk)) || fromhex_chksum(rpdata.erk) === false;
+
+					} catch(e) { rpdatacorrupt = true; handle_error(e); }
+				}
+
+				var i = function(accounts) {
+					var accountscorrupt = false;
+					var accountspresent = (accounts.data != undefined && accounts.data != "");
+                                        try {
+                                                accounts = JSON.parse(accounts.data);
+						for (i in accounts) {
+                                                	accountscorrupt = 
+                                                        	accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false ||
+	                                                        accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false ||
+        	                                                accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false ||
+                	                                        accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
+							if (accountscorrupt) break;
+						}
+
+                                        } catch(e) { accountscorrupt = true; handle_error(e); }
+
+					if (pindatapresent && ppdatapresent && rpdatapresent && accountspresent && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
+						funcok();
+					} else if (!pindatapresent && !ppdatapresent && !rpdatapresent && !accountspresent) {
+						funcnodata();
+					} else {
+						funcdatacorrupt( { 
+							pindata : ( !pindatapresent ? "missing" : ( pindatacorrupt ? "corrupt" : "ok" ) ),
+							ppdata : ( !ppdatapresent ? "missing" : ( ppdatacorrupt ? "corrupt" : "ok" ) ),
+							rpdata : ( !rpdatapresent ? "missing" : ( rpdatacorrupt ? "corrupt" : "ok" ) ),
+							accounts : ( !accountspresent ? "missing" : ( accountscorrupt ? "corrupt" : "ok" ) ) });
+					}
+					
+				}
+				db.get("accounts").then(i).catch(i);
+			}
+			db.get("rpdata").then(h).catch(h);
+		}
+		db.get("ppdata").then(g).catch(g);
+	}
+	db.get("pindata").then(f).catch(f);
+}
+
+
+function handle_error(e) {
+	console.log("Error: " + e);
+	console.log("Stack trace: " + e.stack);
+}
+
 
 function setPin(pin, successfunc, failfunc) {
 
 	var salt;
-	var pindata = { salt: salt=sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES), hash: sodium.to_hex(sodium.crypto_shorthash(pin, salt, 'hex')) };
+	var pindata = { salt: tohex_chksum(salt=sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES)), 
+			hash: tohex_chksum(sodium.crypto_shorthash(pin, salt)) };
 
 	db.upsert("pindata", 
 		function(doc) { 
@@ -1007,8 +1174,9 @@ function setPin(pin, successfunc, failfunc) {
 
 }
 
+
 function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
-	var f = function(pindata) {
+	var f = function(pindata) { try {
 		if (pindata.data == undefined || pindata.data == "") {
 			// this means the app has never run before.
 			return nopinsetfunc();
@@ -1018,12 +1186,90 @@ function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
 			if (hash == pindata.hash) 
 				return successfunc();
 			return failfunc();
-		}
-	};
+		} } catch(e) { handle_error(e); } };
+
 
 	db.get("pindata").then(f).catch(f);
 }
 
+function normalboot () {
+	/* To kick off the application, we attempt to validate an always incorrect pin
+	** of zero length, this will then in turn fire either the login procedure or
+	** license and setup procedure. 
+	*/
+	validatePin("",
+		function() {   connectToRipple( doShowLogin ); },
+		function() {   connectToRipple( doShowLogin ); },
+		function() {   connectToRipple( function() {showTab("#tablicense");}); }
+	);
+}
+
+
+function recoveryboot(corruption) {
+	var msg = "Your wallet data appears to be corrupted. Here's what we know: " + 
+		"PIN: " + corruption.pindata + ", Passphrase: " + corruption.ppdata + 
+		", Recovery Data: " + corruption.rpdata + ", Accounts: " + corruption.accounts;
+
+	navigator.notification.alert(msg, function(){doDataCorruptionRecovery(corruption)}, "Data Error", "OK");
+}
+
+function doDataCorruptionRecovery(c) {
+
+	var restart = function() {
+                        validateDataStores(
+                                normalboot,
+                                normalboot,
+                                recoveryboot
+                        );
+	};
+	
+	if (c.accounts == 'missing') {
+		db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
+		db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
+		db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
+		db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
+			navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.", normalboot, "Fresh Install", "OK");
+		})})})});
+
+		return;
+	}
+
+	if (c.accounts == 'corrupt') {
+		//todo: recover accounts data here
+		console.log("todo: recover accounts data here");
+		navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", normalboot, "Recovery", "OK");
+		return;
+	}
+
+	if (c.ppdata != 'ok') {
+		
+		if (c.rpdata != 'ok') {
+			//todo: prompt for either recovery or passphrase and attempt partial decryption of account secrets, match to public key
+			console.log("todo: prompt for either recovery or passphrase and attempt partial decryption of account secrets, match to public key");
+		} else {
+			//todo: prompt for recovery phrase to reset passphrase
+			console.log("todo: prompt for recovery phrase to reset passphrase");
+		}
+		
+		//todo: when the above todos are removed remove this too
+		console.log("todo: when the above todos are removed remove this too");
+		return normalboot();
+	}
+
+	if (c.rpdata != 'ok') {
+		//todo: issue new recovery phrase here
+		console.log("todo: issue new recovery phrase here");
+		return normalboot(); //todo: remove this when above todo is finished
+	}
+
+	if (c.pindata != 'ok') {
+		// pin recovery is nice and easy just show the pin recovery tab
+		navigator.notification.alert("Your PIN data is corrupt please set a new PIN using your passphrase or recovery phrase.", function(){showTab("#tabrecovery");}, "Change PIN", "OK");
+		return;
+	}
+
+	
+}
 
 var app = {
 	// Application Constructor
@@ -1056,15 +1302,20 @@ onDeviceReady: function() {
 
 			}
 
-			/* To kick off the application, we attempt to validate an always incorrect pin
-			** of zero length, this will then in turn fire either the login procedure or
-			** license and setup procedure. 
+			dbgdumpdata();
+
+
+
+			/* There is a possibility the datastores were corrupted somehow, and we need
+			** to know this before bootstrapping the app. This function call will tell us
+			** how to proceed and whether we need to run a recovery.
 			*/
-			validatePin("",
-				function() {   connectToRipple( doShowLogin ); },
-				function() {   connectToRipple( doShowLogin ); },
-			       	function() {   connectToRipple( function() {showTab("#tablicense");}); }
+			validateDataStores(
+				normalboot,
+				normalboot,
+				recoveryboot
 			);
+
 
 	       },
 	       // Update DOM on a Received Event
@@ -1139,13 +1390,13 @@ function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopass
 
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
 	
-        var f = function(ppdata) {
+        var f = function(ppdata) { try {
                 if (ppdata.data == undefined || ppdata.data == "") {
                         return nopassphrasefunc();
                 } else {
                         ppdata = JSON.parse(ppdata.data);
-			salt1 = sodium.from_hex(ppdata.salt1);
-			salt2 = sodium.from_hex(ppdata.salt2);
+			salt1 = fromhex_chksum(ppdata.salt1);
+			salt2 = fromhex_chksum(ppdata.salt2);
 			var pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 				sodium.crypto_pwhash_scryptsalsa208sha256(16, passphrase, 
 				salt1, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
@@ -1156,8 +1407,7 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
                         if (pphash == ppdata.pphash)
                                 return successfunc();
                         return failfunc();
-                }
-        };
+                } } catch(e) { handle_error(e); } };
 
         db.get(( isrecoveryphrase? "rpdata" : "ppdata")).then(f).catch(f);	
 }
@@ -1177,7 +1427,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
-		var doupdate = function(ppdata) {
+		var doupdate = function(ppdata) { try {
 
 			
 	                if (ppdata.data == undefined || ppdata.data == "") {
@@ -1192,7 +1442,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( mode == 2 ? "" : sodium.from_hex(ppdata.salt1));
+                        oldsalt1 = ( mode == 2 ? "" : fromhex_chksum(ppdata.salt1));
 			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 
@@ -1208,9 +1458,9 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			** the ppdata update fail.
 			*/
 			var updatePpdata = function(backupsecrets) {
-				ppdata.salt1 = newsalt1;
-				ppdata.salt2 = newsalt2;
-				ppdata.pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16,
+				ppdata.salt1 = tohex_chksum(newsalt1);
+				ppdata.salt2 = tohex_chksum(newsalt2);
+				ppdata.pphash = tohex_chksum(sodium.crypto_pwhash_scryptsalsa208sha256(16,
 			                                sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 								newpassphrase, 
 								newsalt1,
@@ -1218,7 +1468,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
 				                        newsalt2, 
 							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
-							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE));
 				newpassphrase = ""; delete newpassphrase;
 	                        db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
         	                        // success
@@ -1242,7 +1492,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 			//A
 
-			var updateSecrets = function(secrets) {
+			var updateSecrets = function(secrets) { try {
 			
 				if (secrets.data == undefined || mode == 2) {
 					// no account secrets exist so we're done with part A
@@ -1260,10 +1510,10 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 					var ppciphertext;
 					if (mode == 0) { // get secret using passphrase
 						ppsalt = secrets[public_addr].ppsalt;
-						ppciphertext = sodium.from_hex(secrets[public_addr].ppsecret);
+						ppciphertext = fromhex_chksum(secrets[public_addr].ppsecret, 'string');
 					} else if (mode == 1) { // get secret using recovery phrase
 						ppsalt = secrets[public_addr].rpsalt;
-						ppciphertext = sodium.from_hex(secrets[public_addr].rpsecret);
+						ppciphertext = fromhex_chksum(secrets[public_addr].rpsecret, 'string');
 					}
 
 
@@ -1272,7 +1522,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 					var newnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 					var newppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-					var newppciphertext = sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
+					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
 						/* this is the plaintext */
 						sodium.crypto_secretbox_open_easy(ciphertext, nonce, 
 							/* this is the old key to unlock the cipher text */
@@ -1290,13 +1540,13 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 						/* end of plaintext */
 						newnonce,
 						newppsalt,
-						'hex');
+						'hex')));
 
 					if (issettingrecoveryphrase) {
-						secrets[public_addr].rpsalt = sodium.to_hex(newppsalt);
+						secrets[public_addr].rpsalt = tohex_chksum(newppsalt);
 						secrets[public_addr].rpsecret = newppciphertext;
 					} else {
-						secrets[public_addr].ppsalt = sodium.to_hex(newppsalt);
+						secrets[public_addr].ppsalt = tohex_chksum(newppsalt);
 						secrets[public_addr].ppsecret = newppciphertext;
 					}
 				}
@@ -1308,12 +1558,12 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 					updatePpdata(backupsecrets);
 				}).catch(function(x){
 					failurefunc();
-				});
+				}); 
 					
-			}
+			} catch(e) { handle_error(e); } }
 			db.get("accounts").then(updateSecrets).catch(updateSecrets);
 			
-		}
+		} catch(e) { handle_error(e); } }
 
 		db.get(storagekey).then(doupdate).catch(doupdate);
 		
@@ -1335,7 +1585,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 }
 
 function removeSecret(address, successfun, failfun) {
-	var f = function(secrets) {
+	var f = function(secrets) { try {
 		if (secrets.data == undefined) {
 			secrets = {};
 		} else {
@@ -1351,7 +1601,7 @@ function removeSecret(address, successfun, failfun) {
 					failfun();
 					});
 
-	}
+	} catch(e) { handle_error(e); } }
 
 	db.get("accounts").then(f).catch(f);
 
@@ -1359,7 +1609,7 @@ function removeSecret(address, successfun, failfun) {
 }
 function addSecret(address, secretdata, successfun, failfun) {
 
-	var f = function(secrets) {
+	var f = function(secrets) { try {
 		if (secrets.data == undefined) {
 			secrets = {};
 		} else {
@@ -1375,7 +1625,7 @@ function addSecret(address, secretdata, successfun, failfun) {
 					failfun();
 					});
 
-	}
+	} catch(e) { handle_error(e); } }
 
 	db.get("accounts").then(f).catch(f);
 
@@ -1543,5 +1793,19 @@ ALLOW_ALL: function(x) {
 </script>
 
 
+<script>
+$(".toggleswitch").bind('touchstart',function() {
+	var ele = $($(this).children()[0]);
+	if (ele.hasClass("fa-toggle-off")) {
+		ele.removeClass("fa-toggle-off");
+		ele.addClass("fa-toggle-on");
+		$(this).data("checked", "true");
+	} else {
+		ele.removeClass("fa-toggle-on");
+		ele.addClass("fa-toggle-off");
+		$(this).data("checked", "false");
+	}
+});
+</script>
 </body>
 </html>
