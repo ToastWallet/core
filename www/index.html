@@ -96,13 +96,16 @@ Never share your recovery phrase with anyone.</p>
 		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
-	<br />
-	<label for="secret">Decryption Phrase (if applicable)</label>
-	<div>
-		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+	<br>
+        <label for="toaccount">Account Nickname (optional)</label>
+        <div>
+        <input type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
-	<br />
-	<center><div><button type="button" class="btn btn-primary" id="btnimport">Import Account</button></div></center>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input type="password" id="extaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="importExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
@@ -945,11 +948,16 @@ function showTab(tab) {
 
 var generatedAccount = {};
 function showAndGenAccount() {
-	var generatedAccount = generateAddress();
+	generatedAccount = generateAddress();
 	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
 	showTab("#tabgenaccount");	
 }
 
+
+function importExistingAccount(passphrase, nickname, secret) {
+	generatedAccount.secret = secret;
+	importGeneratedAccount(passphrase, nickname);
+}
 
 function importGeneratedAccount(passphrase, nickname) {
 
@@ -959,13 +967,13 @@ function importGeneratedAccount(passphrase, nickname) {
 			importAddress(generatedAccount.secret, nickname, passphrase, 
 				function() {
 					// success
-					navigator.notification.alert("Address imported successfully", function(){showTab('#tabaccounts'); refreshAccounts();}, "Success", "OK");
+					generatedAccount = {};
+					showTab('#tabaccounts'); 
 				},
 				function() {
 					// import failure will produce its own message 
 				}
 			);
-			generatedAccount = {};
 		},
 		function() {
 			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", function(){$("#genaccpassword").focus();}, "Error", "OK");
@@ -1020,7 +1028,6 @@ $("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 $("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
 
 $("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
-//$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
 $("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
 
@@ -1250,19 +1257,23 @@ function restart() {
 		);
 };
 
+
+function __freshinstall() {
+                navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.",
+                function() {
+                        db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
+                                normalboot();
+                        })})})});
+                }, "Fresh Install", "OK");
+        };
+
+
 function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, recoveryphraseverified) {
 
-	var freshinstall = function() {
-		navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.", 
-		function() {
-			db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
-			db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
-			db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
-			db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
-				normalboot();
-			})})})});
-		}, "Fresh Install", "OK");
-	};
+	var freshinstall = __freshinstall;
 
 	if (passphrase == undefined) passphraseverified = false;
 	if (recoveryphrase == undefined) recoveryphraseverified = false;
@@ -1448,8 +1459,14 @@ function getRpPpData(successfunc) {
 
 	var f = function(ppdata) {
 		if (ppdata.data == undefined || ppdata.data == "") ppdata = {};
+		try {
+			ppdata = JSON.parse(ppdata.data);
+		} catch(e) {handle_error(e); ppdata={};}
 		var g = function(rpdata) {
 			if (rpdata.data == undefined || rpdata.data == "") rpdata = {};
+			try {
+				rpdata = JSON.parse(rpdata.data);
+			} catch(e) {handle_error(e); rpdata={};}
 			try {
 			successfunc(ppdata, rpdata);
 			} catch(e) {handle_error(e);}
@@ -1499,7 +1516,7 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 	var rpsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 	getRpPpData(
-		function(rpdata, ppdata) {
+		function(ppdata, rpdata) {
 
                         var secret32key =
 				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
@@ -1568,14 +1585,14 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 			if (nickname == undefined) nickname = "";
 
 			var f = function(accounts) { try {
-				if (accounts.data == undefined) {
+				if (accounts.data == undefined || accounts.data == "") {
 					accounts = {};
 				} else {
 					accounts = JSON.parse(accounts.data);
 				}
 				accounts[address] = {
-					ppsalt: ppsalt, ppsecret: ppsecret,
-					rpsalt: rpsalt, rpsecret: rpsecret,
+					ppsalt: tohex_chksum(ppsalt), ppsecret: ppsecret,
+					rpsalt: tohex_chksum(rpsalt), rpsecret: rpsecret,
 					nickname: nickname
 				};
 
@@ -1630,7 +1647,7 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 
 			passphrase=""; 
 
-                        if (pphash == fromhex_chksum(ppdata.hash))
+                        if (tohex_chksum(pphash) == ppdata.hash)
                                 return successfunc();
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
@@ -1665,19 +1682,14 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 			backupdata = {};
 	                if (data.data == undefined || data.data == "") {
-				if (mode != 2) {
-					// execution can only proceed from here in mode 2
-					failurefunc();
-					return;
-				}
 				data = {};
         	        } else {
-				data = JSON.parse(data.data);
 				backupdata = JSON.parse(data.data);
+				data = JSON.parse(data.data);
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( mode == 2 ? "" : fromhex_chksum(data.salt1));
+                        oldsalt1 = ( data.salt1 == undefined ? "" : fromhex_chksum(data.salt1));
 			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 
@@ -1875,7 +1887,7 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 			var updateSecrets = function(secrets) { try {
 			
-				if (secrets.data == undefined || mode == 2) {
+				if (secrets.data == undefined || secrets.data == "") {
 					// no account secrets exist so we're done with part A
 					return updateData();
 				}
@@ -1955,6 +1967,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 	validatePassphrase(oldphrase, false, 
 		function() {passPhraseUpdate(0);}, 
 		function() {
+			// a recovery phrase cannot be used to set a recovery phrase.
+			if (issettingrecoveryphrase) return failurefunc();
 			validatePassphrase(oldphrase, true, 
 				function(){passPhraseUpdate(1);}, 
 				failurefunc, 

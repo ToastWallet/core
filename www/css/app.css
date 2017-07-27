@@ -8,7 +8,7 @@ body {
 }
 #tabsettings button, #tabaddaccount button, #tabgenaccount button, 
 #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, 
-#tabcorruptionprompt button, #tabgenaccount1 button {
+#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport {
     min-width: 20em;
     margin-bottom: 1em;
 }
