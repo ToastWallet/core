@@ -241,10 +241,6 @@ Never share your recovery phrase with anyone.</p>
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
-        <br><label>Enter your Passphrase</label>
-        <div>
-                <input type="password" id="genaccpassword" class="form-control" placeholder="">
-        </div><br>
 	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
@@ -252,8 +248,12 @@ Never share your recovery phrase with anyone.</p>
         <div>
         <input type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input type="password" id="genaccpassword" class="form-control" placeholder="">
+        </div><br>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val, $('#newaccnick').val());">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -946,21 +946,32 @@ function showTab(tab) {
 var generatedAccount = {};
 function showAndGenAccount() {
 	var generatedAccount = generateAddress();
+	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
 	showTab("#tabgenaccount");	
 }
 
 
 function importGeneratedAccount(passphrase, nickname) {
+
 	validatePassphrase(passphrase, false, 
 		function() {
-			
+			//function importAddress(secret, nickname, passphrase, successfunc, failurefunc)			
+			importAddress(generatedAccount.secret, nickname, passphrase, 
+				function() {
+					// success
+					navigator.notification.alert("Address imported successfully", function(){showTab('#tabaccounts'); refreshAccounts();}, "Success", "OK");
+				},
+				function() {
+					// import failure will produce its own message 
+				}
+			);
 			generatedAccount = {};
 		},
 		function() {
-
-		
+			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", function(){$("#genaccpassword").focus();}, "Error", "OK");
 		},
 		function() {
+			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
 		}
 	);
 
@@ -1451,6 +1462,8 @@ function getRpPpData(successfunc) {
 /* Assumes passphrase has already been validated!!!!
 */
 function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
+	
+	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
 
 	var address = "";
 	if (secret.charAt(0) === "s" ) {
@@ -1600,7 +1613,9 @@ function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopass
 }
 
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
-	
+
+	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
+
         var f = function(ppdata) { try {
                 if (ppdata.data == undefined || ppdata.data == "") {
                         return nopassphrasefunc();
@@ -1615,7 +1630,7 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 
 			passphrase=""; 
 
-                        if (pphash == ppdata.hash)
+                        if (pphash == fromhex_chksum(ppdata.hash))
                                 return successfunc();
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
@@ -1629,6 +1644,8 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
  */
 function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfunc, failurefunc) {
 
+	//if (typeof newphrase == 'string') newphrase = sodium.from_string(newphrase);
+	//if (typeof oldphrase == 'string') oldphrase = sodium.from_string(oldphrase);
 
 	var passPhraseUpdate = function(mode) {
 		/* mode 0 - setting a new passphrase/recoveryphrase with valid current passphrase
