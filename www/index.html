@@ -66,8 +66,12 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
-	<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
-	<center><div style="color:black;">Your secret key</div></center><br>
+	<center><div id="accdetailssecretaddress" style="color:black"></div></center>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input type="password" id="rsecaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="revealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress')[0].innerText);">Reveal Ripple Secret</button></div></center>
 	<center><div id="accsecret" style="color:blue"></div></center><br />
 	<center><div id="accsecretqr"></div></center>
 </div>
@@ -77,7 +81,7 @@ Never share your recovery phrase with anyone.</p>
 	<center><div id="accdetailsaddress" ></div></center>
 	<center><div id="accdetailsqr"></div></center>
 	<center>
-		<button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>
+		<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
 		&nbsp;
 		<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
 	</center>
@@ -255,7 +259,6 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
-	<br />
 	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
@@ -311,7 +314,7 @@ Never share your recovery phrase with anyone.</p>
 	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
-    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Recover</button></div>
+    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
 </div>
 
 <div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: block;">
@@ -648,20 +651,69 @@ function selectAccount(accselected) {
 }
 
 
-function renderSecret(acctorender) {
-
-	$("#accdetailssecretaddress").empty();
-	$("#accsecret").empty();
-	$("#accsecretqr").empty();
-
-	getAccounts(function(secrets) {
-			if (secrets[acctorender] !== undefined) {
-			$("#accdetailssecretaddress").append(acctorender);
-			$("#accsecret").append(secrets[acctorender]);	
-			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
-			return;
+function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
+	getRpPpData(function(ppdata, rpdata) { try {
+		getAccounts(function(accounts) { try {
+			if (accounts[address] == undefined || accounts[address].ppsecret == undefined || accounts[address].ppsalt == undefined) {
+				// the address doesn't exist but it should
+				navigator.notification.alert("Could not find the specified address. Your wallet data may have been corrupted. " +
+					"Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+				return;
 			}
+			
+			// generate regular secret key
+			var secretkey =
+				sodium.crypto_pwhash_scryptsalsa208sha256(16,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+
+			passphrase = "";
+
+			//now generate the keys that will be used to lock the ppsecret and rpsecret boxes
+			var ppsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					secretkey,
+					fromhex_chksum(accounts[address].ppsalt),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+			
+			secretkey = "";
+		
+			// decrypt ppsecret 
+			ppsecret = fromhex_chksum(accounts[address].ppsecret);
+			var nonce = ppsecret.slice(0, sodium.crypto_box_NONCEBYTES);
+			ppsecret = ppsecret.slice(sodium.crypto_box_NONCEBYTES);
+			var secret = sodium.crypto_secretbox_open_easy(ppsecret, nonce, ppsecret32key);
+
+			successfunc(sodium.to_string(secret));
+		} catch(e) {handle_error(e); failurefunc();}});
+	} catch(e) {handle_error(e); failurefunc();}});
+
+}
+
+function revealRippleSecret(passphrase, address) {
+        validatePassphrase(passphrase, false,
+                function() {
+			getSecretForAccount(passphrase, address, function(secret) {
+				$("#tabaccountsecret label").hide();
+				$("#tabaccountsecret button").hide();
+				$("#tabaccountsecret input[type='password']").hide();
+        	                $("#accsecret").append(secret);
+                	        $("#accsecretqr").append(kjua({text: secret}));				
+			}, function() {
+                        	navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
 			});
+
+                },
+                function() {
+                        navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", function(){$("#genaccpassword").focus();}, "Error", "OK");
+                },
+                function() {
+                        navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+                }
+        );
 
 }
 
@@ -700,7 +752,9 @@ ledger: "validated"
 }, function(err, res) {
 if (err) {
 } else {
+try {
 $("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+} catch(e) {handle_error(e);}
 accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
 }
 
@@ -848,6 +902,8 @@ function showTab(tab) {
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
+        $("#accsecret").empty();
+        $("#accsecretqr").empty();
 
 	$("input[type='password']").val("");
 	$("input[type='text']").val("");
@@ -883,7 +939,9 @@ function showTab(tab) {
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
 		refreshAccounts();	
 	} else if (tab == "#tabaccountsecret") {
-		renderSecret(activeaccount);
+		$("#tabaccountsecret label").show();
+		$("#tabaccountsecret button").show();
+		$("#tabaccountsecret input[type='password']").show();
 	}
 
 	var tabs = $(".screentab");
@@ -963,7 +1021,6 @@ function importGeneratedAccount(passphrase, nickname) {
 
 	validatePassphrase(passphrase, false, 
 		function() {
-			//function importAddress(secret, nickname, passphrase, successfunc, failurefunc)			
 			importAddress(generatedAccount.secret, nickname, passphrase, 
 				function() {
 					// success
@@ -1031,7 +1088,6 @@ $("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
 
 $("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
 
-$("#btnbackupkey").bind('touchstart', function() { showTab("#tabaccountsecret"); });
 
 
 $("#btnpay").bind('touchstart', function() {
