@@ -85,7 +85,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabgenaccount1');">Generate New Address</button><br />
+		<button type="button" class="btn btn-primary" ontouchstart="showAndGenAccount();">Generate New Address</button><br />
 		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
@@ -240,16 +240,12 @@ Never share your recovery phrase with anyone.</p>
 
 
 
-<div id="tabgenaccount1" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
         <br><label>Enter your Passphrase</label>
         <div>
                 <input type="password" id="genaccpassword" class="form-control" placeholder="">
-        </div>
-        <div>
-                <button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="showAndGenAccount($('#genaccpassword').val())">Generate New Account</button>
-        </div>	
-</div>
-<div id="tabgenaccount2" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+        </div><br>
+	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
         <label for="toaccount">Account Nickname (optional)</label>
@@ -257,7 +253,7 @@ Never share your recovery phrase with anyone.</p>
         <input type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
 	<br />
-	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#newaccnick').val());">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val, $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -947,27 +943,27 @@ function showTab(tab) {
 
 }
 
-function showAndGenAccount(passphrase) {
-	// NB: a recovery phrase cannot be used to generate a new account
-	
-	validatePassphase(passphrase, false,
+var generatedAccount = {};
+function showAndGenAccount() {
+	var generatedAccount = generateAddress();
+	showTab("#tabgenaccount");	
+}
+
+
+function importGeneratedAccount(passphrase, nickname) {
+	validatePassphrase(passphrase, false, 
 		function() {
-			// correct phrase
 			
+			generatedAccount = {};
 		},
 		function() {
-			 navigator.notification.alert("Your passphrase is incorrect.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
+
+		
 		},
 		function() {
-			 navigator.notification.alert("Your passphrase has not been correctly set. Please use the change passphrase tool in settings.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
 		}
 	);
 
-/*	var result = generateAddress();
-	generatedAccount = result;
-	$("#generatedaddress")[0].innerText = result.address;
-	showTab("#tabgenaccount");	*/
-/* importAddress(generatedAccount.secret, "", nickname); */
 }
 
 function doPay() {
@@ -1013,7 +1009,7 @@ $("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 $("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
 
 $("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
-$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
+//$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
 
 $("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
 
@@ -1083,6 +1079,9 @@ function fromhex_chksum(hex, format) {
 
 function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 
+	var saltlen = 72;
+	var hashlen = 40;
+
 	var f = function(pindata) {
 		var pindatacorrupt = false;
 		var pindatapresent = (pindata.data != undefined && pindata.data != "");
@@ -1091,8 +1090,8 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 			try {
 				pindata = JSON.parse(pindata.data);
 				pindatacorrupt = 
-					pindata.salt == undefined || (/[^a-fA-F0-9]/.test(pindata.salt)) || fromhex_chksum(pindata.salt) === false 
-					pindata.hash == undefined || (/[^a-fA-F0-9]/.test(pindata.hash)) || fromhex_chksum(pindata.hash) === false;
+					pindata.salt == undefined || (/[^a-fA-F0-9]/.test(pindata.salt)) || fromhex_chksum(pindata.salt) === false ||
+					pindata.hash == undefined || (/[^a-fA-F0-9]/.test(pindata.hash)) || fromhex_chksum(pindata.hash) === false ;
 
 			} catch(e) { pindatacorrupt = true; handle_error(e); }
 		}
@@ -1104,9 +1103,9 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 				try {
 					ppdata = JSON.parse(ppdata.data);
 					ppdatacorrupt = 
-						ppdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt1)) || fromhex_chksum(ppdata.salt1) === false ||
-						ppdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt2)) || fromhex_chksum(ppdata.salt2) === false || 
-						ppdata.pphash == undefined || (/[^a-fA-F0-9]/.test(ppdata.pphash)) || fromhex_chksum(ppdata.pphash) === false;
+						ppdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt1)) || fromhex_chksum(ppdata.salt1) === false || ppdata.salt1.length != saltlen ||
+						ppdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt2)) || fromhex_chksum(ppdata.salt2) === false || ppdata.salt2.length != saltlen ||
+						ppdata.hash == undefined || (/[^a-fA-F0-9]/.test(ppdata.hash)) || fromhex_chksum(ppdata.hash) === false || ppdata.hash.length != hashlen;
 
 				} catch(e) { ppdatacorrupt = true; handle_error(e); }
 			}
@@ -1118,9 +1117,9 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 					try {
 						rpdata = JSON.parse(rpdata.data);
 						rpdatacorrupt = 
-							rpdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt1)) || fromhex_chksum(rpdata.salt1) === false ||
-							rpdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt2)) || fromhex_chksum(rpdata.salt2) === false ||
-							rpdata.pphash == undefined || (/[^a-fA-F0-9]/.test(rpdata.pphash)) || fromhex_chksum(rpdata.pphash) === false ||
+							rpdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt1)) || fromhex_chksum(rpdata.salt1) === false || rpdata.salt1.length != saltlen ||
+							rpdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt2)) || fromhex_chksum(rpdata.salt2) === false || rpdata.salt2.length != saltlen ||
+							rpdata.hash == undefined || (/[^a-fA-F0-9]/.test(rpdata.hash)) || fromhex_chksum(rpdata.hash) === false || rpdata.hash.length != hashlen ||
 							rpdata.erk == undefined || (/[^a-fA-F0-9]/.test(rpdata.erk)) || fromhex_chksum(rpdata.erk) === false;
 
 					} catch(e) { rpdatacorrupt = true; handle_error(e); }
@@ -1133,10 +1132,10 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 						accounts = JSON.parse(accounts.data);
 						for (i in accounts) {
 							accountscorrupt = 
-								accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false ||
-								accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false ||
-								accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false ||
-								accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
+							accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false || accounts[i].ppsalt.length != saltlen ||
+							accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false || accounts[i].rpsalt.length != saltlen ||
+							accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false || 
+							accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
 							if (accountscorrupt) break;
 						}
 
@@ -1199,8 +1198,8 @@ function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
 			return nopinsetfunc();
 		} else {
 			pindata = JSON.parse(pindata.data);
-			var salt = sodium.from_hex(pindata.salt);
-			var hash = sodium.crypto_shorthash(pin, salt, 'hex');
+			var salt = fromhex_chksum(pindata.salt);
+			var hash = tohex_chksum(sodium.crypto_shorthash(pin, salt));
 			if (hash == pindata.hash) 
 				return successfunc();
 			return failfunc();
@@ -1434,9 +1433,24 @@ receivedEvent: function(id) {
 };
 app.initialize();
 
-function importAddress(secret, phrase, nickname) {
-	$("#tabimportstatus .alert-danger").hide();
-	$("#tabimportstatus .alert-success").hide();
+function getRpPpData(successfunc) {
+
+	var f = function(ppdata) {
+		if (ppdata.data == undefined || ppdata.data == "") ppdata = {};
+		var g = function(rpdata) {
+			if (rpdata.data == undefined || rpdata.data == "") rpdata = {};
+			try {
+			successfunc(ppdata, rpdata);
+			} catch(e) {handle_error(e);}
+		}
+		db.get("rpdata").then(g).catch(g);
+	}
+	db.get("ppdata").then(f).catch(f);
+}
+
+/* Assumes passphrase has already been validated!!!!
+*/
+function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 
 	var address = "";
 	if (secret.charAt(0) === "s" ) {
@@ -1457,28 +1471,117 @@ function importAddress(secret, phrase, nickname) {
 		var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
 		var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
 		address = generateAddress(ms).address;
-
-	} else if (secret.charAt(0) === "h" && phrase == "") {
-		$("#tabimportstatus .alert-danger")[0].innerText = 'You must enter a decryption phrase.';
-		$("#tabimportstatus .alert-success")[0].innerText = '';
-		$("#tabimportstatus .alert-danger").show();
-		return;
 	} 
 
-	if (!validate.secret(secret) || (secret.charAt(0) === "h" && !validate.encryptedSecret(secret)) ) {
-		$("#tabimportstatus .alert-danger")[0].innerText = '"' + secret+'" is not a valid Ripple secret.';
-		$("#tabimportstatus .alert-success")[0].innerText = '';
-		$("#tabimportstatus .alert-danger").show();
-
+	if (!validate.secret(secret)) {
+		navigator.notification.alert("Invalid Ripple secret.", failurefunc, "Error", "OK");
 		return;
 	}
 
-	if (secret.charAt(0) === "h") {
-		secret = decryptSecret(phrase, secret);
-	}
+	var address = generateAddress(secret).address;
+
+	// to proceed to storage we need to generate salts and secrets
+
+	var ppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+	var rpsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+
+	getRpPpData(
+		function(rpdata, ppdata) {
+
+                        var secret32key =
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+			// decrypt erk
+			erk = fromhex_chksum(rpdata.erk);
+			var nonce = erk.slice(0, sodium.crypto_box_NONCEBYTES);
+			erk = erk.slice(sodium.crypto_box_NONCEBYTES);
+			var recoverykey = sodium.crypto_secretbox_open_easy(erk, nonce, secret32key);	
+
+			// generate regular secret key
+                        var secretkey =
+				sodium.crypto_pwhash_scryptsalsa208sha256(16,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+
+			passphrase = "";
+
+			//now generate the keys that will be used to lock the ppsecret and rpsecret boxes
+			var ppsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					secretkey,
+					ppsalt,
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+			
+			secretkey = "";
+
+			var rpsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					recoverykey,
+					rpsalt,
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+			recoverykey = "";
+
+			// finally lock the true ripple secret into two boxes: rpsecret and ppsecret
+			var ppnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+			var rpnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
+			var ppsecret = tohex_chksum(sodium.from_hex(sodium.to_hex(ppnonce) + sodium.crypto_secretbox_easy(
+				secret,
+				ppnonce,
+				ppsecret32key,
+			'hex')));
+			
+
+			ppsecret32key = "";
+
+			var rpsecret = tohex_chksum(sodium.from_hex(sodium.to_hex(rpnonce) + sodium.crypto_secretbox_easy(
+				secret,
+				rpnonce,
+				rpsecret32key,
+			'hex')));
+
+			rpsecret32key = "";
+			secret = "";
+
+			if (nickname == undefined) nickname = "";
+
+			var f = function(accounts) { try {
+				if (accounts.data == undefined) {
+					accounts = {};
+				} else {
+					accounts = JSON.parse(accounts.data);
+				}
+				accounts[address] = {
+					ppsalt: ppsalt, ppsecret: ppsecret,
+					rpsalt: rpsalt, rpsecret: rpsecret,
+					nickname: nickname
+				};
+
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+					navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
+					successfunc();
+				}).catch(function(x){
+					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
+					failurefunc();
+				});
+
+			} catch(e) { handle_error(e); } }
+
+			db.get("accounts").then(f).catch(f);
+
+		}
+	);
 
 
-	addSecret(address, secret, nickname, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
 
 }
 
@@ -1510,9 +1613,9 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 				salt1, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
 			salt2, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
 
-			passphrase=""; delete passphrase;
+			passphrase=""; 
 
-                        if (pphash == ppdata.pphash)
+                        if (pphash == ppdata.hash)
                                 return successfunc();
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
@@ -1524,7 +1627,7 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
  ** If issettingrecoveryphrase is set then it will write over rpdata.
  ** Oldpassphrase may be either their existing passphrase or the recovery phrase.
  */
-function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, successfunc, failurefunc) {
+function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfunc, failurefunc) {
 
 
 	var passPhraseUpdate = function(mode) {
@@ -1534,29 +1637,30 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 		 */
 
 		if (mode == 1 && issettingrecoveryphrase) {
-			//cannot set a recovery phrase from a recovery phrase, must use a passphrase for erk
+			//cannot set a recovery phrase from a recovery phrase, must use an old passphrase for erk
 			failurefunc();
 			return;
 		}
 
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
-		var doupdate = function(ppdata) { try {
+		var doupdate = function(data) { try {
 
-			
-	                if (ppdata.data == undefined || ppdata.data == "") {
+			backupdata = {};
+	                if (data.data == undefined || data.data == "") {
 				if (mode != 2) {
 					// execution can only proceed from here in mode 2
 					failurefunc();
 					return;
 				}
-				ppdata = {};
+				data = {};
         	        } else {
-				ppdata = JSON.parse(ppdata.data);
+				data = JSON.parse(data.data);
+				backupdata = JSON.parse(data.data);
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( mode == 2 ? "" : fromhex_chksum(ppdata.salt1));
+                        oldsalt1 = ( mode == 2 ? "" : fromhex_chksum(data.salt1));
 			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 
@@ -1571,12 +1675,13 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			** before it was rekeyed to the new secret. This is used to roll back that structure should
 			** the ppdata update fail.
 			*/
-			var updatePpdata = function(backupsecrets) {
-				ppdata.salt1 = tohex_chksum(newsalt1);
-				ppdata.salt2 = tohex_chksum(newsalt2);
-				ppdata.pphash = tohex_chksum(sodium.crypto_pwhash_scryptsalsa208sha256(16,
-			                                sodium.crypto_pwhash_scryptsalsa208sha256(16, 
-								newpassphrase, 
+			var updateData = function(backupsecrets) {
+				data.salt1 = tohex_chksum(newsalt1);
+				data.salt2 = tohex_chksum(newsalt2);
+				var secret;
+				data.hash = tohex_chksum(sodium.crypto_pwhash_scryptsalsa208sha256(16,
+			                                secret = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
+								newphrase, 
 								newsalt1,
 								sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
 								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
@@ -1584,60 +1689,168 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
 							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE));
 	                        
-				var commit = function(ppdata) {
-					db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
+				var commit = function(data, storagekey, success, failure) {
+					db.upsert(storagekey, function(doc) { return { data: JSON.stringify(data)}; }).then(function(x){
 						// success
-						successfunc();
+						success();
 					}).catch(function(x){
 						// failure
 						// this is a panic failure because the account secrets have already been updated
 						// therefore we must roll them back if possible.
 						if (backupsecrets != undefined) {
 							db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
-								failurefunc();
+								failure();
 							}).catch(function(x){
-								failurefunc();
+								failure();
 							});
 
 						} else {
-							failurefunc();
+							failure();
 						}
 					});			
 				}
 
-				var seterk = function(realpp) {
+				/* There are three end of sequence possibilities here which change the way the erk is set:
+				** 1. Setting a new pp using an old pp 	[ seterk1 ]
+				** 2. Setting a new pp using a rp 	[ seterk2 ]
+				** 3. Setting a new rp using a pp	[ seterk3 ]
+				*/
+
+				/* This erk set function is only called when setting the recovery phrase using pp [ mode=0, issettingrecoveryphrase ]*/
+				var seterk3 = function(ppdata /* this is the ppdata, data is rpdata */) {
 
 					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
-					realpp = JSON.parse(realpp.data);
+					ppdata = JSON.parse(ppdata.data);
 
-					var realppsalt1 = fromhex_chksum(realpp.salt1);
-					ppdata.erk = 
+					var ppsalt1 = fromhex_chksum(ppdata.salt1);
+					// no need to decrypt the old erk because were setting a new recovery phrase so we already have the erk
+					data.erk =
 					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
-						/* pp secret key */
-						sodium.crypto_pwhash_scryptsalsa208sha256(16,
-							oldpassphrase,
-							realppsalt1,
-							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
-						/* ppsecret key end */
-						nonce, 
-						/* rp recovery key */
+						secret, /* the recovery key */
+						nonce,
+						/* 32byte secret key */
 						sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
-							newpassphrase,
-							newsalt1,
+							oldphrase,
+							ppsalt1,
 							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
 							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
-						/* rp recovery key end */
+						/* end secret key */
 					'hex')));
 
-					commit(ppdata);
+					commit(data, "rpdata", successfunc, failurefunc);
 				}
 
-				if (issettingrecoveryphrase) {
-					db.get("ppdata").then(seterk).catch(seterk);
-				} else {
-					commit(ppdata);
+
+
+				/* This erk set function is only called when setting the pp using rp  [ mode=1, !issettingrecoveryphrase ] */
+				var seterk2 = function(rpdata) {
+
+					if (rpdata.data == undefined) {
+						commit(data, "ppdata", successfunc, failurefunc);
+						return;
+					} 
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					rpdata = JSON.parse(rpdata.data);
+
+					var rpsalt1 = fromhex_chksum(rpdata.salt1);
+
+					// we have the recovery phrase (oldphrase) so we just need to generate the recovery key from it
+					// and encrypt it using the 32byte secretkey
+
+					var recoverykey = sodium.crypto_pwhash_scryptsalsa208sha256(16,
+                                                        oldphrase,
+                                                        rpsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+					rpdata.erk = 
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						recoverykey, /* the recovery key */
+						nonce,
+						/* 32 byte secret key */
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        newphrase,
+                                                        newsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),					
+						/* end secret key */
+					'hex')));
+
+					commit(data, "ppdata", function() {
+						commit(rpdata, "rpdata", successfunc, 
+							function() {
+								// if rpdata fails to set then we need to rollback ppdata
+								commit(backupdata, "ppdata", failurefunc, failurefunc);
+							}
+						);
+					}, failurefunc);
 				}
+
+
+
+				/* This erk set function is only called when setting the pp using old pp  [ mode=0, !issettingrecoveryphrase ] */
+				var seterk1 = function(rpdata) {
+
+					if (rpdata.data == undefined) {
+						commit(data, "ppdata", successfunc, failurefunc);
+						return;
+					} 
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					rpdata = JSON.parse(rpdata.data);
+
+					var rpsalt1 = fromhex_chksum(rpdata.salt1);
+
+					/* this is the most complicated of the seterk functions, we must first decrypt the existing erk */
+
+                                        // generate old 32byte secret key
+                                        var old32secret =
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        oldphrase,
+                                                        ppsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+                                        // decrypt the old erk
+                                        olderk = fromhex_chksum(rpdata.erk);
+                                        var oldnonce = olderk.slice(0, sodium.crypto_box_NONCEBYTES);
+                                        olderk = olderk.slice(sodium.crypto_box_NONCEBYTES);
+                                        var recoverykey = sodium.crypto_secretbox_open_easy(olderk, oldnonce, old32secret);
+
+					// now re-encrypt it with the new 32byte secret key
+					rpdata.erk = 
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						recoverykey, /* the recovery key */
+						nonce,
+                                                /* 32 byte secret key */
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        newphrase,
+                                                        newsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                                                /* end secret key */
+					
+					'hex')));
+
+					commit(data, "ppdata", function() {
+						commit(rpdata, "rpdata", successfunc, 
+							function() {
+								// if rpdata fails to set then we need to rollback ppdata
+								commit(backupdata, "ppdata", failurefunc, failurefunc);
+							}
+						);
+					}, failurefunc);
+				}
+
+
+				if (issettingrecoveryphrase) {
+					db.get("ppdata").then(seterk3).catch(seterk3);
+				} else if (mode == 1) {
+					db.get("rpdata").then(seterk2).catch(seterk2);
+				} else {
+					db.get("rpdata").then(seterk1).catch(seterk1);
+				} 
 
 			}
 
@@ -1647,7 +1860,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			
 				if (secrets.data == undefined || mode == 2) {
 					// no account secrets exist so we're done with part A
-					return updatePpdata();
+					return updateData();
 				}
 				
 				// now we need to decode all the existing secrets
@@ -1679,7 +1892,7 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 							/* this is the old key to unlock the cipher text */
 							sodium.crypto_pwhash_scryptsalsa208sha256(16,  
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
-                                                                	oldpassphrase,
+                                                                	oldphrase,
 	                                                                oldsalt1,
         	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                 	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
@@ -1702,11 +1915,11 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 					}
 				}
 
-				/* at this point the data structure for the accounts (`secrets`) now contains fully updated
+				/* at this point the data structure for the accounts now contains fully updated
 				** ciphertext and salts, so we can do a db.upsert then move to part B */
 
 				db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-					updatePpdata(backupsecrets);
+					updateData(backupsecrets);
 				}).catch(function(x){
 					failurefunc();
 				}); 
@@ -1722,10 +1935,10 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 	// this code checks if the supplied oldpassphrase is either their current passphrase or the 
 	// recovery phrase, and returns to the above function accordingly, or if the current phrase is unset.
-	validatePassphrase(oldpassphrase, false, 
+	validatePassphrase(oldphrase, false, 
 		function() {passPhraseUpdate(0);}, 
 		function() {
-			validatePassphrase(oldpassphrase, true, 
+			validatePassphrase(oldphrase, true, 
 				function(){passPhraseUpdate(1);}, 
 				failurefunc, 
 				function(){passPhraseUpdate(2);}
@@ -1758,32 +1971,12 @@ function removeSecret(address, successfun, failfun) {
 
 
 }
-function addSecret(address, secretdata, successfun, failfun) {
-
-	var f = function(secrets) { try {
-		if (secrets.data == undefined) {
-			secrets = {};
-		} else {
-			secrets = JSON.parse(secrets.data);
-		}
-		secrets[(address != "" ? address : result.address)] = secretdata;
-
-		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-				navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
-				successfun();
-				}).catch(function(x){
-					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
-					failfun();
-					});
-
-	} catch(e) { handle_error(e); } }
-
-	db.get("accounts").then(f).catch(f);
-
-}
 
 
-function generateAddress(secret, passphrase, nickname) {
+/* Generates a ripple address keypair, returned as json {secret:.., address:..}
+*  If a secret is provided it will generate the public key for that secret
+*/
+function generateAddress(secret) {
 	if (secret != undefined && secret != "") {
 		secret = ripple.Seed.from_json(secret);
 	} else {
@@ -1792,7 +1985,7 @@ function generateAddress(secret, passphrase, nickname) {
 
 	
 	return {
-secret: secret.to_json(),
+		secret: secret.to_json(),
 		address: secret.get_key().get_address().to_json()
 	};
 }
