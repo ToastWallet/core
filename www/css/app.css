@@ -8,7 +8,7 @@ body {
 }
 #tabsettings button, #tabaddaccount button, #tabgenaccount button, 
 #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, 
-#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport {
+#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport, #tabpaymentconfirm button {
     min-width: 20em;
     margin-bottom: 1em;
 }
@@ -18,6 +18,36 @@ body {
     vertical-align: middle;
     opacity: 0.5;
 }
+
+.paygrouping {
+    margin-bottom: 0.5em;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+.paygrouping > div {
+    text-align: right;
+    margin: 0;
+    padding-left: 1em;
+}
+
+.paygrouping {
+    padding: 0.2em;
+}
+
+.paygrouping > label {
+    float: left;
+    min-width: 50%;
+}
+
+#tabpaymentconfirm div[id^="confirm"] {
+    color: blue;
+    font-size: 1em;
+    overflow-wrap: break-word;
+    display: block;
+    vertical-align: middle;
+}
+
+
 
 #navheader div:before {
     content: "WARNING -- TESTNET ALPHA. DO NOT USE REAL XRP.";

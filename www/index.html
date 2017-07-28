@@ -274,23 +274,35 @@ Never share your recovery phrase with anyone.</p>
 	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
-<div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display:none">
-	<label>From Account</label>
-	<blockquote id="confirmpayfromaccount"></blockquote>
+<div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: block;">
+	<div class="paygrouping">
+    <label>From Account</label>
+	<div id="confirmpayfromaccount"></div>
+    </div>
+    <div class="paygrouping">
 	<label>To Address</label>
-	<blockquote id="confirmpaytoaddress"></blockquote>
+	<div id="confirmpaytoaddress"></div>
+    </div>
+    <div class="paygrouping">
 	<label>Destination Tag</label>
-	<blockquote id="confirmdesttag"></blockquote>
+	<div id="confirmdesttag"></div>
+    </div>
+    <div class="paygrouping">
 	<label>Invoice ID</label>
-	<blockquote id="confirminvoiceid"></blockquote>
+	<div id="confirminvoiceid"></div>
+    </div>
+	<div class="paygrouping">
 	<label>Amount</label>
-	<blockquote id="confirmpayamount"></blockquote>
-        <br><label>Enter your Passphrase to CONFIRM this payment</label>
+	
+    <div id="confirmpayamount"></div></div>
+    <br>
+        <label>Enter your Passphrase</label>
         <div>
                 <input type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-success" ontouchstart="onPressConfirmPay();">Import this Address</button></div></center>
+	<center><div><button type="button" class="btn btn-success" ontouchstart="onPressConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
+
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
 	<label for="payfromaccount">From Account</label>
 	<div>
@@ -950,8 +962,13 @@ function showTab(tab) {
         $("#accsecret").empty();
         $("#accsecretqr").empty();
 
-	$("input[type='password']").val("");
-	$("input[type='text']").val("");
+
+	if (tab == -1 && currenttab == "#tabqrscan") {
+		// if the user has gone for a QR scan we dont want to wipe their form.
+	} else {
+		$("input[type='password']").val("");
+		$("input[type='text']").val("");
+	}
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);
@@ -1095,7 +1112,7 @@ function clearPaymentScreen() {
 	$("#payamount").val("");
 }
 
-function onPressConfirmPay() {
+function onPressConfirmPay(passphrase) {
 	if (confirmpay.nonce == lastpaidnonce) {
 		// this is an accidental double tap
 		return;
@@ -1138,7 +1155,7 @@ function onPressConfirmPay() {
 			);
 		},
 		function() { 
-			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", function(){lastpaidnonce = "":}, "Error", "OK");
+			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", function(){lastpaidnonce = "";}, "Error", "OK");
 		}
 	);
 
@@ -1187,14 +1204,15 @@ function onPressPay(nonce) {
 		nonce: nonce
 	};
 
-	confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, hex);
+	confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
 
-	$('#confirmpayfromaccount').innerText = payfrom;
-	$('#confirmpaytoaddress').innerText = payTo;
-	$('#confirmdesttag').innerText = dest;
-	$('#confirminvoiceid').innerText = invid;
-	$('#confirmpayamount').innerText = amount;
+	$('#confirmpayfromaccount')[0].innerText = payfrom;
+	$('#confirmpaytoaddress')[0].innerText = payto;
+	$('#confirmdesttag')[0].innerText = dest;
+	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : "");
+	$('#confirmpayamount')[0].innerText = amount + " XRP";
 
+	showTab("#tabpaymentconfirm");
 }
 
 
