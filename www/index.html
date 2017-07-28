@@ -61,7 +61,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 	</ul>
 </div>
 
@@ -76,14 +76,26 @@ Never share your recovery phrase with anyone.</p>
 	<center><div id="accsecretqr"></div></center>
 </div>
 
+<div id="tabaccountdelete" class="screentab" data-title="Delete Account" data-hasback="true" style="display:none">
+	<center><div id="accdeleteaddress" style="color:black"></div></center><br>
+	<p style="color:red;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
+        <br><label>Enter your Passphrase to DELETE</label>
+        <div>
+                <input type="password" id="delaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doPressDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
+	<center><div id="accsecret" style="color:blue"></div></center><br />
+	<center><div id="accsecretqr"></div></center>
+</div>
+
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
-	<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+	<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 	<center><div id="accdetailsaddress" ></div></center>
 	<center><div id="accdetailsqr"></div></center>
 	<center>
 		<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
 		&nbsp;
-		<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
+		<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
 	</center>
 </div>
 
@@ -262,8 +274,25 @@ Never share your recovery phrase with anyone.</p>
 	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
+<div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display:none">
+	<label>From Account</label>
+	<blockquote id="confirmpayfromaccount"></blockquote>
+	<label>To Address</label>
+	<blockquote id="confirmpaytoaddress"></blockquote>
+	<label>Destination Tag</label>
+	<blockquote id="confirmdesttag"></blockquote>
+	<label>Invoice ID</label>
+	<blockquote id="confirminvoiceid"></blockquote>
+	<label>Amount</label>
+	<blockquote id="confirmpayamount"></blockquote>
+        <br><label>Enter your Passphrase to CONFIRM this payment</label>
+        <div>
+                <input type="password" id="confirmpaypassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-success" ontouchstart="onPressConfirmPay();">Import this Address</button></div></center>
+</div>
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
-	<label for="toaccount">From Account</label>
+	<label for="payfromaccount">From Account</label>
 	<div>
 	<select id="payfromaccount" class="form-control">
 	</select>
@@ -296,7 +325,7 @@ Never share your recovery phrase with anyone.</p>
 	<div class="input-group">
 	<input type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-success" id="btnpay" type="button">Pay</button>
+	<button class="btn btn-success" id="btnpay" ontouchstart="onPressPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
 	</div>
 
@@ -432,10 +461,10 @@ NO WARRANTY
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
 
 <ul id="navfooter" style="display:none">
-	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i></li>
-	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i></li>
-	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i></li>
-	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i></li>
+	<li id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></li>
+	<li id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fa fa-usd" aria-hidden="true"></i></li>
+	<li id="navreceive"  ontouchstart="showTab('#tabreceive');" ><i class="fa fa-inbox" aria-hidden="true"></i></li>
+	<li id="navsettings" ontouchstart="showTab('#tabsettings');"><i class="fa fa-cog" aria-hidden="true"></i></li>
 </ul>
 
 <ul id="dummyfooter">
@@ -615,7 +644,7 @@ function scanQR(intofield, returntab) {
 	}
 }
 
-function selectAccount(accselected) {
+function selectAccount(accselected, nickname) {
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {	
 		acc.removeClass("active");
@@ -631,22 +660,10 @@ function selectAccount(accselected) {
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
-	$("#btnremoveaddr").off("click");
-	$("#btnremoveaddr").bind('touchstart', function() {
+	
+	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "Ripple address" : nickname);
 
-			navigator.notification.prompt(
-				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
-				function(result) {
-				if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
-				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
-				}
-				},                  
-				'Confirm you wish to remove Ripple address',
-				['Ok','Cancel!'],              // buttonLabels
-				""
-				);
-
-			});
+	
 	showTab("#tabaccountdetails");	
 }
 
@@ -693,6 +710,33 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 
 }
 
+function doPressDeleteAccount(passphrase, address, toggle) {
+        if (!toggle) {
+                navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
+                return;
+        }
+
+	validatePassphrase( passphrase, false,
+		function() {
+			removeSecret(address, 
+				function() { 
+					navigator.notification.alert("Account deleted successfully", function(){showTab("#tabaccounts");}, "Success", "OK");
+				}, 
+				function() {
+					navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", function(){}, "Failure", "OK");
+				}
+			);
+		},
+		function() {
+			navigator.notification.alert("Your passphrase is incorrect. Recovery phrase cannot be used here.", function(){}, "Error", "OK");
+		},
+		function() {
+			navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", function(){}, "Failure", "OK");
+		}
+	);
+	
+}
+
 function revealRippleSecret(passphrase, address) {
         validatePassphrase(passphrase, false,
                 function() {
@@ -730,7 +774,7 @@ function getAccounts(callback) {
 }
 
 function refreshAccounts() {
-	// delete all accounts in the list then readd them from localstorage	
+	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {
 		acc[i].remove();
@@ -741,10 +785,11 @@ function refreshAccounts() {
 	getAccounts(function(acc) {
 			accountbalances = {};
 			for (var i in acc) {
+			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="selectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchstart="selectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
 
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="selectAccount(\''+i+'\');"><a href="#" ontouchstart="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
-
-			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
+			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
 
 			remote.requestAccountInfo({
 account: i,
@@ -1018,7 +1063,8 @@ function importExistingAccount(passphrase, nickname, secret) {
 }
 
 function importGeneratedAccount(passphrase, nickname) {
-
+	if (nickname == undefined) nickname = "";
+	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
 	validatePassphrase(passphrase, false, 
 		function() {
 			importAddress(generatedAccount.secret, nickname, passphrase, 
@@ -1042,7 +1088,68 @@ function importGeneratedAccount(passphrase, nickname) {
 
 }
 
-function doPay() {
+function clearPaymentScreen() {
+	$("#toaddress").val("");
+	$("#desttag").val("");
+	$("#invoiceid").val("");
+	$("#payamount").val("");
+}
+
+function onPressConfirmPay() {
+	if (confirmpay.nonce == lastpaidnonce) {
+		// this is an accidental double tap
+		return;
+	} 
+
+	lastpaidnonce = confirmpay.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmpay == undefined || confirmpay.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+confirmpay.nonce, 'hex') != confirmpayhash ) {
+				navigator.notification.alert("An error occured when trying to make your payment. No payment was made.", function(){showTab(-1);}, "Error", "OK");
+				return;
+			}
+
+
+
+			sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
+				function(){
+					navigator.notification.alert("Your payment was successfully sent.", 
+						function(){
+							clearPaymentScreen();
+							showTab("#tabaccounts");
+						}, "Success", "OK"); 
+				}, 
+				function() {
+					navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
+					function(){
+						lastpaidnonce = "";
+						showTab(-1);
+					}, 
+					"Error", "OK");
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lastpaidnonce = "";
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", function(){lastpaidnonce = "":}, "Error", "OK");
+		}
+	);
+
+
+}
+
+
+var confirmpay = {};
+var confirmpayhash = "";
+var lastpaidnonce;
+function onPressPay(nonce) {
 
 	var payfrom = $("#payfromaccount").find(":selected").text();
 	var payto = $("#toaddress").val();
@@ -1071,34 +1178,26 @@ function doPay() {
 		return;
 	}
 
+	confirmpay = { 
+		payfrom: payfrom,
+		payto: payto,
+		dest: dest,
+		invid: invid,
+		amount: amount,
+		nonce: nonce
+	};
 
+	confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, hex);
 
-	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
+	$('#confirmpayfromaccount').innerText = payfrom;
+	$('#confirmpaytoaddress').innerText = payTo;
+	$('#confirmdesttag').innerText = dest;
+	$('#confirminvoiceid').innerText = invid;
+	$('#confirmpayamount').innerText = amount;
+
 }
 
-$("#navaccounts").bind('touchstart', function() { showTab("#tabaccounts"); });
-$("#navpayments").bind('touchstart', function() { showTab("#tabpayments"); });
-$("#navtrustlines").bind('touchstart', function() { showTab("#tabtrustlines"); });
-$("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 
-
-$("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
-
-$("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
-
-$("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
-
-
-
-$("#btnpay").bind('touchstart', function() {
-		doPay();
-		});
-
-// Opening setup
-// --------------------------------
-
-var MY_ADDRESS;
-var MASTER_SECRET;
 var remote = new ripple.Remote({
 servers: [
 /*"wss://s-west.ripple.com:443",
@@ -1559,7 +1658,7 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 		address = generateAddress(ms).address;
 	} 
 
-	if (!validate.secret(secret)) {
+	if (!validateSecret(secret)) {
 		navigator.notification.alert("Invalid Ripple secret.", failurefunc, "Error", "OK");
 		return;
 	}
@@ -1703,7 +1802,8 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 
 			passphrase=""; 
 
-                        if (tohex_chksum(pphash) == ppdata.hash)
+			pphash = tohex_chksum(pphash);
+                        if (pphash == ppdata.hash)
                                 return successfunc();
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
@@ -2035,28 +2135,28 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 }
 
-function removeSecret(address, successfun, failfun) {
-	var f = function(secrets) { try {
-		if (secrets.data == undefined) {
-			secrets = {};
-		} else {
-			secrets = JSON.parse(secrets.data);
-		}
+function removeSecret(address, successfunc, failurefunc) {
+	var f = function(accounts) { try {
+		if (accounts.data == undefined || accounts.data == "") 
+			return failurefunc();
 
-		if (secrets[address] != undefined) delete secrets[address];
-		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-				navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
-				successfun();
-				}).catch(function(x){
-					navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
-					failfun();
-					});
+		accounts = JSON.parse(accounts.data);
+		
+
+		if (accounts[address] == undefined)
+			return failurefunc();
+
+		delete accounts[address];
+
+		db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+			successfunc();
+		}).catch(function(x){
+			failurefunc();
+		});
 
 	} catch(e) { handle_error(e); } }
 
 	db.get("accounts").then(f).catch(f);
-
-
 }
 
 
@@ -2123,99 +2223,53 @@ function redefineSigningToAlwaysUseSecret(secret) {
 	}
 }
 
-var lastsend = 0;
-function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun) {
-
-	var timenow = $.now();
-	if (timenow - lastsend < 100) return;
-	lastsend = timenow;
+/* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
+** before calling.
+*/
+function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
 
 	showSpinner();
-
-	getAccounts(function(secrets) {
-			if (secrets[fromacc] !== undefined) {
-
-			//todo: decode secret here
-			remote.setSecret(fromacc, secrets[fromacc]);
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+			
+			remote.setSecret(fromacc, secret);
 
 			redefineSigningToAlwaysUseSecret(false);
 
 			var transaction = remote.createTransaction("Payment", {
-account: fromacc,
-destination: destination,
-amount: xrpAmount * 1000000
-});
+				account: fromacc,
+				destination: destination,
+				amount: xrpAmount * 1000000
+			});
 			transaction.destinationTag(parseInt(destTag));
 			transaction.sourceTag(parseInt(sourceTag));
 			transaction.invoiceID(invoiceID);
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
-				navigator.notification.alert("Payment failed most likely due to lack of funds in " + fromacc, failfun, "Failure", "OK");
-				hideSpinner();
-				failfun();
+					hideSpinner();
+					failurefunc();
 				} else if ( (res != undefined && res != null || res.engine_result == 'tesSUCCESS') ) {
-				navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
-				$("#toaddress").val("");
-				$("#desttag").val("");
-				$("#invoiceid").val("");
-				$("#payamount").val("");
-				hideSpinner();
-				successfun();
+					hideSpinner();
+					successfunc();
 				} else {
-				navigator.notification.alert("Payment failed for an unknown reason.", failfun, "Failure", "OK");
-				hideSpinner();
-				failfun();
+					hideSpinner();
+					failurefunc();
 				}
-				});
-} else {
-	navigator.notification.alert("Invalid account selected.", failfun, "Error", "OK");
-}
-});
+			});
+		},
+		function() {
+			hideSpinner();
+			failurefunc();
+		});
 
 }
 
 
-var validate = {
-number: function(x) {
-		return x!=="" && !isNaN(x);
-	},
-address: function(x) {
-		 return ripple.UInt160.is_valid(x);
-	 },
-currency: function(x) {
-		  return x.length===3 && x.toUpperCase()===x;
-	  },
-integer: function(x) {
-		 // Allow x==="" because "integer" is only used on optional fields
-		 return x==="" || (!isNaN(x) && parseInt(x)===parseFloat(x));
-	 },
-	 "hex string": function(x) {
-		 // Allow x==="" because "hex string" is only used on optional fields
-		 return /^[0-9A-Fa-f]*$/.test(x) && x.length<=64;
-	 },
-secret: function(x) {
-		return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
-	},
-encryptedSecret: function(x) {
-			 return !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, x)) ||
-				 !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, x))
-		 },
-		 "currency/issuer pair": function(x) {
-			 var s = x.split("/");
-			 if (s.length === 1 && s[0] === "XRP") {
-				 return true;
-			 } else {
-				 return (s.length === 2 &&
-						 validate.currency(s[0]) &&
-						 validate.address(s[1])
-					);
-			 }
-		 },
-ALLOW_ALL: function(x) {
-		   return true;
-	   }
-};
+function validateSecret(x) {
+	return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
+}
 
 
 
