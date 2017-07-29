@@ -72,6 +72,9 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.verso.cordova.clipboard": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {

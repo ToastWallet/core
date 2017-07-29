@@ -77,6 +77,9 @@
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.verso.cordova.clipboard": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {

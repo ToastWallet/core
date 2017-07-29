@@ -18,11 +18,13 @@
 	<script src="cordova.js"></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
+	<script src="js/clipboard.min.js"></script>
 </head>
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
+	var debug = true;
 	$('body').on('cut copy paste',function(e){e.preventDefault();});
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -37,44 +39,156 @@
 	  $("html, body").animate({ scrollTop: $(document).height() }, "slow");
 	  return false;
 	});
+
+
+	function afterCordovaLoad()  {
+		if (debug) console.log("afterCordovaLoad");
+		if (Keyboard != undefined) { try {
+			Keyboard.shrinkView(true);
+			Keyboard.hideFormAccessoryBar(true);
+			Keyboard.disableScrollingInShrinkView(true);
+		} catch(e) { handle_error(e); } }
+
+		if (debug) console.log("afterCordovaLoad:2");
+
+		document.addEventListener("pause", function(){
+			if (debug) console.log("onPause");
+			if (
+				currenttab != "#tabpinset1" && 
+				currenttab != "#tabpinset2"  && 
+				currenttab != "#tabsetpassphrase" && 
+				currenttab != "#tabrecovery" && 
+				currenttab != "tabcorruptionprompt" &&
+				currenttab != "tablicense" &&
+				currenttab != "tabshowrecovery"
+			) {
+				if (debug) console.log("onPause - show login");
+				unblockInput();
+				showTab("#tablogin");
+			}
+		}, false);
+	
+	        window.screen.orientation.lock('portrait');
+		/* This is a visual patch for iOS devices where the phone uses a margin at the top
+		** for various status indicators. 
+		*/
+		console.log("device.platform = " + device.platform);
+		if ((device.platform + "").toLowerCase() == 'ios') {
+			$("#navheader").addClass("iosheader");
+			$("body").addClass("iosheader");
+			console.log('added iosheader class');
+
+		}
+	}
 </script>
 
+<div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: block;">
+    <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
+	<center>
+	<div>
+		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info" ontouchstart="doCopyBackup();">Copy</button>
+	</div>
+	</center><br>
+	<textarea style="color:black;" id="walletbackup"></textarea>
+	<script>new Clipboard('#btncopywallet');</script>
+</div>
 
-<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true"> 
-<p style="color:red; font-weight:bold">Your recovery phrases appear below. Please write these down and store them in a safe location. If you ever forget your passphrase this code will be the only way for you to regain access to your XRP.</p>
+<div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: block;">  
+    <div>
+	<label for="backuppassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="backuppassword" class="form-control" placeholder="">
+    </div>
+    <br>
+    <div align="right"><button class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
+</div>
+
+<div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: block;">  
+    <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
+
+    <textarea id="restorebackup"></textarea>
+    <br>
+    <div>
+	<label for="restorepassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
+    </div>
+    <br>
+    <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
+    
+    <div align="center">
+    
+    
+    <button class="btn btn-danger" ontouchstart="doRestoreBackup();">Restore Backup</button></div>
+</div>
+<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: block;">
+    <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
+
+<p style="color:black; font-weight:bold; text-align:justify;">Your six(6) word recovery phrase appears below. <u style="color:red;">Write it down on paper</u> and store it in a safe location. If you ever forget your passphrase this code will be the <u style="
+
+    color:red;
+
+    ">only way for you to regain access to your XRP.</u>&nbsp;
+Never share your recovery phrase with anyone.</p>
+<u style="font-size:1.1em;"><u>
+    </u></u>
 <div id="showrecoveryphrase">
-</div>
-</div>
+</div><br>
+<p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
+<center><button class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
 
+
+</div>
 
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 	</ul>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
-	<center><div id="accdetailssecretaddress" style="color:black"></div></center><br />
-	<center><div style="color:black;">Your secret key</div></center><br>
+	<center><div id="accdetailssecretaddress" style="color:black"></div></center>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress')[0].innerText);">Reveal Ripple Secret</button></div></center>
+	<center><div id="accsecret" style="color:blue"></div></center><br />
+	<center><div id="accsecretqr"></div></center>
+</div>
+
+<div id="tabaccountdelete" class="screentab" data-title="Delete Account" data-hasback="true" style="display:none">
+	<center><div id="accdeleteaddress" style="color:black"></div></center><br>
+	<p style="color:red;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
+        <br><label>Enter your Passphrase to DELETE</label>
+        <div>
+                <input ontouchstart="$(this).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 	<center><div id="accsecret" style="color:blue"></div></center><br />
 	<center><div id="accsecretqr"></div></center>
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
-	<div style="color:grey">Ripple address<span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-	<center><div id="accdetailsaddress" ></div></center>
-	<center><div id="accdetailsqr"></div></center>
-	<center>
-		<button id="btnbackupkey" type="button" class="btn btn-info">Backup</button>
-		&nbsp;
-		<button id="btnremoveaddr" type="button" class="btn btn-danger">Delete</button>
-	</center>
+	<ul class="accountdetailsselector">
+		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
+		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress')[0].innerText, '');});" class="">Transactions</li>
+	</ul>
+<ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
+	<div id="accdetailsaddressdetails" class="innertab">
+		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+		<center><div id="accdetailsaddress"></div></center>
+		<center><div id="accdetailsqr"></div></center>
+		<center>
+			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
+			&nbsp;
+			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
+		</center>
+	</div>
+	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
+	</div>
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabgenaccount1');">Generate New Address</button><br />
+		<button type="button" class="btn btn-primary" ontouchstart="doShowAndGenerateAccount();">Generate New Address</button><br />
 		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
@@ -82,16 +196,19 @@
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
-		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<input ontouchstart="$(this).focus();" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
-	<br />
-	<label for="secret">Decryption Phrase (if applicable)</label>
-	<div>
-		<input class="form-control" type="text" placeholder="If your secret starts with 's' leave this blank" id="txtsecretphrase">
+	<br>
+        <label for="toaccount">Account Nickname (optional)</label>
+        <div>
+        <input ontouchstart="$(this).focus();" type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
-	<br />
-	<center><div><button type="button" class="btn btn-primary" id="btnimport">Import Account</button></div></center>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input ontouchstart="$(this).focus();" type="password" id="extaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
@@ -115,24 +232,24 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="dopinpad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
-	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
 </div>
 
-<div id="tabpinset1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Set New PIN"  data-dark="true" data-recovery="true" style="display: block;">
+<div id="tabpinset1" class="screentab" data-primarytab="false" data-title="Set New PIN"  data-dark="2" data-noright="true" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -145,24 +262,24 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
 	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
 </div>
 
-<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="true" data-recovery="true" data-title="Repeat New PIN" style="display: block;">
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-noright="true" data-title="Repeat New PIN" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -175,80 +292,107 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="dopinpad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="dopinpad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="dopinpad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="dopinpad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="dopinpad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="dopinpad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="dopinpad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="dopinpad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="dopinpad('9'); return false;"><div>9</div></button><br>
+	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
 	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button ontouchstart="dopinpad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="dopinpad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
 </div>
 
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
-	<br><label>Set a Passphrase</label>
+	<label>Set a Passphrase</label>
 	<div>
-		<input type="password" id="setpassword1" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
 	<br><label>Repeat Passphrase</label>
 	<div>
-		<input type="password" id="setpassword2" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
 	<br>
+	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
+	<br>
 	<center>
-		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
+		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
 	</center>
 </div>
 
-<div id="tabchangepassphrase" class="screentab" data-primarytab="true" data-title="Change Passphrase" style="display:none">
+<div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
 	<div>
-		<input type="password" id="setpassword3" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase</label>
 	<div>
-	<input type="password" id="setpassword4" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="password" id="setpassword4" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase Again</label>
 	<div>
-		<input type="password" id="setpassword5" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
-	<div>
+	<br>
+	<center>
 		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
-	</div>
+	</center>
 </div>
 
 
 
-<div id="tabgenaccount1" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
-        <br><label>Enter your Passphrase</label>
-        <div>
-                <input type="password" id="genaccpassword" class="form-control" placeholder="">
-        </div>
-        <div>
-                <button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="showAndGenAccount($('#genaccpassword').val())">Generate New Account</button>
-        </div>	
-</div>
-<div id="tabgenaccount2" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+<div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
         <label for="toaccount">Account Nickname (optional)</label>
         <div>
-        <input type="text" id="newaccnick" class="form-control" placeholder="">
+        <input ontouchstart="$(this).focus();" type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
-	<br />
-	<center><div><button type="button" class="btn btn-primary" ontouchstart="importGeneratedAccount($('#newaccnick').val());">Import this Address</button></div></center>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input ontouchstart="$(this).focus();" type="password" id="genaccpassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
+</div>
+
+<div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: block;">
+	<div class="paygrouping">
+    <label>From Account</label>
+	<div id="confirmpayfromaccount"></div>
+    </div>
+    <div class="paygrouping">
+	<label>To Address</label>
+	<div id="confirmpaytoaddress"></div>
+    </div>
+    <div class="paygrouping">
+	<label>Destination Tag</label>
+	<div id="confirmdesttag"></div>
+    </div>
+    <div class="paygrouping">
+	<label>Invoice ID</label>
+	<div id="confirminvoiceid"></div>
+    </div>
+	<div class="paygrouping">
+	<label>Amount</label>
+	
+    <div id="confirmpayamount"></div></div>
+    <br>
+        <label>Enter your Passphrase</label>
+        <div>
+                <input ontouchstart="$(this).focus();" type="password" id="confirmpaypassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div><button type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
-	<label for="toaccount">From Account</label>
+	<label for="payfromaccount">From Account</label>
 	<div>
 	<select id="payfromaccount" class="form-control">
 	</select>
@@ -257,7 +401,7 @@
 
 	<label for="toaccount">To Address</label>
 	<div class="input-group">
-	<input type="text" id="toaddress" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
 	</span>
@@ -267,21 +411,21 @@
 
 	<label for="desttag">Destination Tag (optional)</label>
 	<div>
-	<input type="text" id="desttag" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="desttag" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="invoiceid">Invoice ID (optional)</label>
 	<div>
-	<input type="text" id="invoiceid" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="invoiceid" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="payamount">Amount</label>
 	<div class="input-group">
-	<input type="text" id="payamount" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-success" id="btnpay" type="button">Pay</button>
+	<button class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
 	</div>
 
@@ -289,17 +433,30 @@
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase">Change Passphrase</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" ontouchstart="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-recovery="true" style="display: block;">  
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: block;">  
     <div>
-	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
-    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Recover</button></div>
+    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
+</div>
+
+<div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: block;">
+    <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
+    <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
+    <div>
+        <label for="corruptionpp">Passphrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionpp" class="form-control" placeholder="">
+    </div>
+    <div>
+        <label for="corruptionrp">Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionrp" class="form-control" placeholder="">
+    </div><br>
+    <div><center><button type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
 
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: block;">
@@ -405,16 +562,14 @@ NO WARRANTY
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
 
 <ul id="navfooter" style="display:none">
-	<li id="navaccounts"><i class="fa fa-home" aria-hidden="true"></i></li>
-	<li id="navpayments"><i class="fa fa-usd" aria-hidden="true"></i></li>
-	<li id="navpayments"><i class="fa fa-inbox" aria-hidden="true"></i></li>
-	<li id="navsettings"><i class="fa fa-cog" aria-hidden="true"></i></li>
+	<li id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></li>
+	<li id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fa fa-usd" aria-hidden="true"></i></li>
+	<li id="navsettings" ontouchstart="showTab('#tabsettings');"><i class="fa fa-cog" aria-hidden="true"></i></li>
 </ul>
 
 <ul id="dummyfooter">
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
-	<li><i class="fa fa-inbox" aria-hidden="true"></i></li>
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
 </ul>
 
@@ -423,47 +578,111 @@ NO WARRANTY
 
 function blockInput() {
 	$("#inputblocker").show();
+	$('body').addClass('liteloading');
 }
 
 function unblockInput() {
 	$("#inputblocker").hide();
+	$('body').removeClass('liteloading');
 }
 
 
+function doGenerateBackup() {
+	if (debug) console.log("doGenerateBackup");
+	blockInput();
+	validatePassphrase(
+		$('#backuppassword').val(), false,
+		function(){
+			exportWallet(
+				function(data){
+					$('#walletbackup').val( data ); 
+					showTab('#tabbackup2');
+					unblockInput();
+				}
+			)
+		}, 
+		function(){
+			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', 
+				function(){
+					unblockInput();
+				}, 
+				'Error', 
+				'OK'
+			);
+		}, 
+		function(){
+			unblockInput();
+		}
+	);
+}
 
-function doResetPin(recoveryphrase, successfunc, failfunc) {
-	//todo: check recovery phrase here 
+function doFinishSetup() {
+	if (debug) console.log("doFinishSetup");
+	blockInput();
+	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
+		navigator.notification.alert("You must write your recovery phrase down.", 
+			function(){
+				unblockInput();
+			}, 
+			"STOP", 
+			"OK"
+		);
+		return;
+	}
 
+	// destroy the data from memory
+	$("#showrecoveryphrase")[0].innerHTML = "";
 
-	var f;
-	runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
-		// there is no way to fail validation on this screen.
-		return true;
-	}, f = function(pin1) {
-	
-		runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
-			return currenttab == '#tabpinset1' || pin1 == pin2;
-		}, function(pin2) {
-			if (currenttab == '#tabpinset1') return f(pin2);
-			if (currenttab == '#tablogin') return;
-			setPin(pin2, successfunc, function() {
-				navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
-			});
-		}, function(pin2) {
-			if (currenttab == '#tablogin') return;
-			navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
-		});
-	
-	}, function(){});
+	// we're all done
+	showTab("#tabaccounts");
+	unblockInput();
+}
+
+function doResetPin(passphrase, successfunc, failfunc) {
+	if (debug) console.log("doResetPin");
+	blockInput();
+
+	var s;
+	validatePassphaseOrRecovery(passphrase,
+		s = function() {
+			unblockInput();
+			var f;
+			runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
+				// there is no way to fail validation on this screen.
+				return true;
+			}, f = function(pin1) {
+				runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
+					return currenttab == '#tabpinset1' || pin1 == pin2;
+				}, function(pin2) {
+					if (currenttab == '#tabpinset1') return f(pin2);
+					if (currenttab == '#tablogin') return;
+					setPin(pin2, successfunc, function() {
+						navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
+					});
+				}, function(pin2) {
+					if (currenttab == '#tablogin') return;
+					navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
+				});
+			
+			}, function(){});
+		},
+		function() {
+			unblockInput();
+			navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
+		},
+		s
+	);
 }
 
 
 function setAndShowNewRecoveryPhrase(passphrase) {
 
+	blockInput();
+
 	var randomWord = function() {
 		var vowels = ['a', 'e', 'i', 'o', 'u'];
 		var consts =  ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'tt', 'ch', 'sh'];
-		var len = 5;
+		var len = 4;
 		var word = '';
 		var is_vowel = false;
 		var arr;
@@ -471,7 +690,7 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 		  if (is_vowel) arr = vowels
 		  else arr = consts
 		  is_vowel = !is_vowel;
-		  word +=  arr[Math.round( (sodium.randombytes_random() % arr.length)-1)];
+		  word +=  arr[sodium.randombytes_random() % arr.length];
 		}
 		return word;
 	};
@@ -481,19 +700,66 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 		rp += randomWord() + (i == 5 ? '' : ' ');
 	}
 	
-	$("#showrecoveryphrase").innerText = rp;
+	$("#showrecoveryphrase")[0].innerHTML = rp;
 
-	showTab("#tabshowrecovery");
-	
-	
+	setPassphrase(rp, passphrase, true, 
+		function(){ 
+			showTab("#tabshowrecovery"); 
+			unblockInput();
+		}, 
+		function() {
+			navigator.notification.alert('Unable to setup your recovery phrase, possibly due to a device error or out of storage. Toast Wallet cannot proceed and will now restart.', 
+			function(){ 
+				restart(); 
+				unblockInput(); 
+			}, 'Fatal Error', "OK");
+	});
 
 }
 
+function passphraseComplexityCheck(pp){
+	var minlen = 6;
+	var hascapital = /[A-Z]/im.test(pp);
+	var haslowecase = /[a-z]/im.test(pp);
+	var hasnumber = /[0-9]/im.test(pp);
+	var hasspecialchar = /[^a-zA-Z0-9]/im.test(pp);
+	var islongenough = pp.length >= minlen;
+
+	var msg = "";
+	if (!hascapital) msg += (msg == "" ? "have at least one: " : ", ") + "capital";
+	if (!haslowecase) msg += (msg == "" ? "have at least one: " : ", ") + "lowercase";
+	if (!hasnumber) msg += (msg == "" ? "have at least one: " : ", ") + "number";
+//	if (!hasspecialchar) msg += (msg == "" ? "have at least one: " : ", ") + "non-alphanumeric";
+	if (!islongenough) msg += (msg == "" ? "" : ", and ") + "be at least "+minlen+" long";
+
+	return msg;
+}
 function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
+	if (debug) console.log("doResetPassphrase");
+	blockInput();
 	if (pp1 != pp2) {
-		navigator.notification.alert("The passphrases do not match.", function(){}, "Error", "OK");
+		navigator.notification.alert("The passphrases do not match.", 
+			function(){
+				unblockInput();
+			}, 
+			"Error", 
+			"OK"
+		);
 		return;
 	}
+
+	var complexity = passphraseComplexityCheck(pp1);
+	if (complexity != "") {
+		navigator.notification.alert("The passphrase must " + complexity, 
+			function(){
+				unblockInput();
+			},  
+			"Error", 
+			"OK"
+		);
+		return;
+	}
+	
 
 	setPassphrase(pp1, oldpp, false, 
 		function() {
@@ -501,10 +767,17 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
 			navigator.notification.alert("Your new passphrase has been set", 
 				function(){
 					successfunc();
+					unblockInput();
 				}, "Success", "OK");
 		}, function() {
 			//failure
-			navigator.notification.alert("Old passphrase is incorrect.", function(){}, "Failure", "OK");
+			navigator.notification.alert("Old passphrase is incorrect.", 
+				function(){
+					unblockInput();
+				}, 
+				"Failure", 
+				"OK"
+			);
 		}
 	);
 }
@@ -546,7 +819,8 @@ function scanQR(intofield, returntab) {
 	}
 }
 
-function selectAccount(accselected) {
+function doSelectAccount(accselected, nickname) {
+	if (debug) console.log("doSelectAccount");
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {	
 		acc.removeClass("active");
@@ -562,57 +836,170 @@ function selectAccount(accselected) {
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
-	$("#btnremoveaddr").off("click");
-	$("#btnremoveaddr").bind('touchstart', function() {
+	
+	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "Ripple address" : nickname);
 
-			navigator.notification.prompt(
-				"Type DELETE to confirm you wish to delete " + accselected + ". This action cannot be undone.",
-				function(result) {
-				if (result.buttonIndex == 1 && (result.input1 + "").toLowerCase() == 'delete') {
-				removeSecret(accselected, function() { showTab("#tabaccounts"); }, function() {});
-				}
-				},                  
-				'Confirm you wish to remove Ripple address',
-				['Ok','Cancel!'],              // buttonLabels
-				""
-				);
-
-			});
+	
 	showTab("#tabaccountdetails");	
 }
 
 
-function renderSecret(acctorender) {
-
-	$("#accdetailssecretaddress").empty();
-	$("#accsecret").empty();
-	$("#accsecretqr").empty();
-
-	getAccounts(function(secrets) {
-			if (secrets[acctorender] !== undefined) {
-			$("#accdetailssecretaddress").append(acctorender);
-			$("#accsecret").append(secrets[acctorender]);	
-			$("#accsecretqr").append(kjua({text: secrets[acctorender]}));
-			return;
+function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
+	getRpPpData(function(ppdata, rpdata) { try {
+		getAccounts(function(accounts) { try {
+			if (accounts[address] == undefined || accounts[address].ppsecret == undefined || accounts[address].ppsalt == undefined) {
+				// the address doesn't exist but it should
+				navigator.notification.alert("Could not find the specified address. Your wallet data may have been corrupted. " +
+					"Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+				return;
 			}
+			
+			// generate regular secret key
+			var secretkey =
+				sodium.crypto_pwhash_scryptsalsa208sha256(16,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+
+			passphrase = "";
+
+			//now generate the keys that will be used to lock the ppsecret and rpsecret boxes
+			var ppsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					secretkey,
+					fromhex_chksum(accounts[address].ppsalt),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+			
+			secretkey = "";
+		
+			// decrypt ppsecret 
+			ppsecret = fromhex_chksum(accounts[address].ppsecret);
+			var nonce = ppsecret.slice(0, sodium.crypto_box_NONCEBYTES);
+			ppsecret = ppsecret.slice(sodium.crypto_box_NONCEBYTES);
+			var secret = sodium.crypto_secretbox_open_easy(ppsecret, nonce, ppsecret32key);
+
+			successfunc(sodium.to_string(secret));
+		} catch(e) {handle_error(e); failurefunc();}});
+	} catch(e) {handle_error(e); failurefunc();}});
+
+}
+
+function doDeleteAccount(passphrase, address, toggle) {
+	if (debug) console.log("doDeleteAccount");
+	blockInput();
+        if (!toggle) {
+                navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
+                return;
+        }
+
+	validatePassphrase( passphrase, false,
+		function() {
+			removeSecret(address, 
+				function() { 
+					navigator.notification.alert("Account deleted successfully", 
+						function(){
+							showTab("#tabaccounts");
+							unblockInput();
+						}, 
+						"Success", 
+						"OK"
+					);
+				}, 
+				function() {
+					navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", 
+						function(){
+							unblockInput();
+						}, 
+						"Failure", 
+						"OK"
+					);
+				}
+			);
+		},
+		function() {
+			navigator.notification.alert("Your passphrase is incorrect. Recovery phrase cannot be used here.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", 
+				function(){
+					unblockInput();
+				}, 
+				"Failure", 
+				"OK"
+			);
+		}
+	);
+	
+}
+
+function doRevealRippleSecret(passphrase, address) {
+	if (debug) console.log("doRevealRippleSecret");
+	blockInput();
+        validatePassphrase(passphrase, false,
+                function() {
+			getSecretForAccount(passphrase, address, function(secret) {
+				$("#tabaccountsecret label").hide();
+				$("#tabaccountsecret button").hide();
+				$("#tabaccountsecret input[type='password']").hide();
+        	                $("#accsecret").append(secret);
+                	        $("#accsecretqr").append(kjua({text: secret}));				
+				unblockInput();
+			}, function() {
+                        	navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+					function(){
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
 			});
+
+                },
+                function() {
+                        navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
+				function(){
+					$("#genaccpassword").focus();
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+                },
+                function() {
+                        navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+                }
+        );
 
 }
 
 function getAccounts(callback) {
-	var f	= function(secrets) {
+	var f	= function(secrets) { try {
 		if (secrets.data == undefined) {
 			secrets = {};
 		} else {
 			secrets = JSON.parse(secrets.data);
 		}
 		callback(secrets);
-	}
+	} catch(e) { handle_error(e); } }
 	db.get("accounts").then(f).catch(f);
 }
 
 function refreshAccounts() {
-	// delete all accounts in the list then readd them from localstorage	
+	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {
 		acc[i].remove();
@@ -623,10 +1010,11 @@ function refreshAccounts() {
 	getAccounts(function(acc) {
 			accountbalances = {};
 			for (var i in acc) {
+			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchstart="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
 
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="selectAccount(\''+i+'\');"><a href="#" ontouchstart="selectAccount(\''+i+'\');"><span class="address">'+i+'</span></a><div class="amount"></div></li>');
-
-			$("#payfromaccount").append('<option id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + i + '</option>');
+			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
+			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
 
 			remote.requestAccountInfo({
 account: i,
@@ -634,7 +1022,9 @@ ledger: "validated"
 }, function(err, res) {
 if (err) {
 } else {
+try {
 $("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+} catch(e) {handle_error(e);}
 accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
 }
 
@@ -665,6 +1055,7 @@ var pinpadfailure = function() {}
 
 
 function runPinPad(tab, validationfunc, successfunc, failurefunc) {
+	if (debug) console.log("runPinPad");
 	pinpadvalidate = validationfunc;
 	pinpadsuccess = successfunc;
 	pinpadfailure = failurefunc;
@@ -680,6 +1071,7 @@ function runPinPad(tab, validationfunc, successfunc, failurefunc) {
  * secrets.
 **/
 function doShowLogin() {
+	if (debug) console.log("doShowLogin");
 	runPinPad("#tablogin", function(pin) {
 		validatePin(pin, function() {
 			$("#btnbootstrapsequence").hide();
@@ -718,7 +1110,8 @@ function shakeandclearpinpad(afterfunc) {
 
 var enteredpin = "";
 var PIN_MAX = 6;
-function dopinpad(x) {
+function doPinPad(x) {
+	if (debug) console.log("doPinPad");
 	var val = x.trim();
 	if ((val == "" || val == undefined) && enteredpin != "") {
 		enteredpin = enteredpin.slice(0,-1);
@@ -769,12 +1162,9 @@ var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 
-function checkPin(pin) {
-	// todo: add actual pin checking
-	return false;
-}
-
 function showTab(tab) {
+
+	if (debug) console.log("showTab(" + tab + ")");
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
@@ -782,9 +1172,16 @@ function showTab(tab) {
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
+        $("#accsecret").empty();
+        $("#accsecretqr").empty();
 
-	$("input[type='password']").val("");
-	$("input[type='text']").val("");
+
+	if (tab == -1 && currenttab == "#tabqrscan") {
+		// if the user has gone for a QR scan we dont want to wipe their form.
+	} else {
+		$("input[type='password']").val("");
+		$("input[type='text']").val("");
+	}
 
 	console.log("showTab(" + tab + ");");
 	console.log(previoustabs);
@@ -817,9 +1214,15 @@ function showTab(tab) {
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
 		refreshAccounts();	
 	} else if (tab == "#tabaccountsecret") {
-		renderSecret(activeaccount);
+		$("#tabaccountsecret label").show();
+		$("#tabaccountsecret button").show();
+		$("#tabaccountsecret input[type='password']").show();
+	} else if (tab == '#tabaccountdetails') {
+		$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); 
+		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
+		$('#accdetailstransactiondetails').hide(); 
+		$('#accdetailsaddressdetails').show();
 	}
-
 	var tabs = $(".screentab");
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
@@ -870,8 +1273,14 @@ function showTab(tab) {
 
 
 	$("body").removeClass("darkbackground");
+	$("body").removeClass("darkbackground2");
 	if ($(tab).data('dark')) { // dark background
-		$("body").addClass("darkbackground");
+		if ($(tab).data('dark') == '2') {
+
+			$("body").addClass("darkbackground2");
+		} else {
+			$("body").addClass("darkbackground");
+		}
 	} else {
 		$("#morecontentindicator").addClass("moreindicatordark");
 	}
@@ -880,30 +1289,150 @@ function showTab(tab) {
 
 }
 
-function showAndGenAccount(passphrase) {
-	// NB: a recovery phrase cannot be used to generate a new account
-	
-	validatePassphase(passphrase, false,
-		function() {
-			// correct phrase
-			
-		},
-		function() {
-			 navigator.notification.alert("Your passphrase is incorrect.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
-		},
-		function() {
-			 navigator.notification.alert("Your passphrase has not been correctly set. Please use the change passphrase tool in settings.", function(){$("#" + currenttab + " input[type='password']").focus();}, "Error", "OK");
-		}
-	);
-
-/*	var result = generateAddress();
-	generatedAccount = result;
-	$("#generatedaddress")[0].innerText = result.address;
-	showTab("#tabgenaccount");	*/
-/* importAddress(generatedAccount.secret, "", nickname); */
+var generatedAccount = {};
+function doShowAndGenerateAccount() {
+	if (debug) console.log("doShowAndGenerateAccount");
+	blockInput();
+	generatedAccount = generateAddress();
+	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
+	showTab("#tabgenaccount");	
+	unblockInput();
 }
 
-function doPay() {
+
+function doImportExistingAccount(passphrase, nickname, secret) {
+	if (debug) console.log("doImportExistingAccount");
+	generatedAccount.secret = secret;
+	doImportGeneratedAccount(passphrase, nickname);
+}
+
+function doImportGeneratedAccount(passphrase, nickname) {
+	if (debug) console.log("doImportGeneratedAccount");
+	blockInput();
+	if (nickname == undefined) nickname = "";
+	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
+	validatePassphrase(passphrase, false, 
+		function() {
+			importAddress(generatedAccount.secret, nickname, passphrase, 
+				function() {
+					// success
+					generatedAccount = {};
+					showTab('#tabaccounts'); 
+					unblockInput();
+				},
+				function() {
+					// import failure will produce its own message 
+					unblockInput();
+				}
+			);
+		},
+		function() {
+			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
+				function(){
+					$("#genaccpassword").focus();
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
+function clearPaymentScreen() {
+	$("#toaddress").val("");
+	$("#desttag").val("");
+	$("#invoiceid").val("");
+	$("#payamount").val("");
+}
+
+function doConfirmPay(passphrase) {
+	if (debug) console.log("doConfirmPay");
+	if (confirmpay.nonce == lastpaidnonce) {
+		// this is an accidental double tap
+		return;
+	} 
+	blockInput();
+
+	lastpaidnonce = confirmpay.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmpay == undefined || confirmpay.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+confirmpay.nonce, 'hex') != confirmpayhash ) {
+				navigator.notification.alert("An error occured when trying to make your payment. No payment was made.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
+				return;
+			}
+
+
+
+			checkConnection(
+				function(){
+					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
+						function(){
+							navigator.notification.alert("Your payment was successfully sent.", 
+								function(){
+									clearPaymentScreen();
+									showTab("#tabaccounts");
+									unblockInput();
+								}, "Success", "OK"); 
+						}, 
+						function() {
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
+							function(){
+								lastpaidnonce = "";
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error", "OK");
+						}
+					);
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lastpaidnonce = "";
+					unblockInput();
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lastpaidnonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
+
+var confirmpay = {};
+var confirmpayhash = "";
+var lastpaidnonce;
+function doPay(nonce) {
+	if (debug) console.log("doPay");
+	blockInput();
 
 	var payfrom = $("#payfromaccount").find(":selected").text();
 	var payto = $("#toaddress").val();
@@ -916,52 +1445,66 @@ function doPay() {
 	if (dest == "") dest = 0;
 
 	if (payfrom == "") {
-		navigator.notification.alert("You must select an account to pay from", function(){$("#payfromaccount").focus();}, "Select a from account", "OK");
+		navigator.notification.alert("You must select an account to pay from", 
+			function(){
+				$("#payfromaccount").focus();
+				unblockInput();
+			}, 
+			"Select a from account", 
+			"OK"
+		);
 		return;
 	}
 
 
 	if (payto == "") {
-		navigator.notification.alert("You must select an address to pay to", function(){$("#toaddress").focus();}, "Select a to address", "OK");
+		navigator.notification.alert("You must select an address to pay to", 
+			function(){
+				$("#toaddress").focus();
+				unblockInput();
+			}, 
+			"Select a to address", 
+			"OK"
+		);
 		return;
 	}
 
 
 	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
-		navigator.notification.alert("You must select a valid amount to send", function(){$("#payamount").focus();}, "Select a payment amount", "OK");
+		navigator.notification.alert("You must select a valid amount to send", 
+			function(){
+				$("#payamount").focus();
+				unblockInput();
+			}, 
+			"Select a payment amount", 
+			"OK"
+		);
 		return;
 	}
 
+	confirmpay = { 
+		payfrom: payfrom,
+		payto: payto,
+		dest: dest,
+		invid: invid,
+		amount: amount,
+		nonce: nonce
+	};
 
+	confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
 
-	sendXRP(payfrom, parseFloat(amount), payto, 0, dest, invid, function(){showTab("#tabaccounts");}, function() {});
+	$('#confirmpayfromaccount')[0].innerText = payfrom;
+	$('#confirmpaytoaddress')[0].innerText = payto;
+	$('#confirmdesttag')[0].innerText = dest;
+	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : "");
+	$('#confirmpayamount')[0].innerText = amount + " XRP";
+
+	showTab("#tabpaymentconfirm");
+	
+	unblockInput();
 }
 
-$("#navaccounts").bind('touchstart', function() { showTab("#tabaccounts"); });
-$("#navpayments").bind('touchstart', function() { showTab("#tabpayments"); });
-$("#navtrustlines").bind('touchstart', function() { showTab("#tabtrustlines"); });
-$("#navsettings").bind('touchstart', function() { showTab("#tabsettings"); });
 
-
-$("#btnaddaccount").bind('touchstart', function() { showTab("#tabaddaccount"); });
-
-$("#btnscanqr").bind('touchstart', function() { scanQR("#txtsecret", -1); });
-$("#btnimport").bind('touchstart', function() { importAddress($("#txtsecret").val(), $("#txtsecretphrase")); showTab("#tabimportstatus");});
-
-$("#btndifferentaccount").bind('touchstart', function() { showTab("#tabaccounts"); } );
-
-$("#btnbackupkey").bind('touchstart', function() { showTab("#tabaccountsecret"); });
-
-
-$("#btnpay").bind('touchstart', function() {
-		doPay();
-		});
-
-// Opening setup
-// --------------------------------
-
-var MY_ADDRESS;
-var MASTER_SECRET;
 var remote = new ripple.Remote({
 servers: [
 /*"wss://s-west.ripple.com:443",
@@ -987,11 +1530,166 @@ var db;
 var walletsalt;
 
 
+function exportWallet(exportfunc) {
+
+	db.get("pindata").then(function(pindata) {
+		db.get("ppdata").then(function(ppdata) {
+			db.get("rpdata").then(function(rpdata) {
+				db.get("accounts").then(function(accounts) {
+		
+					var exp = {walletversion: "1.0"};
+					if (pindata.data != undefined) { exp['pindata'] = JSON.parse(pindata.data); }
+					if (ppdata.data != undefined) { exp['ppdata'] = JSON.parse(ppdata.data); }
+					if (rpdata.data != undefined) { exp['rpdata'] = JSON.parse(rpdata.data); }
+					if (accounts.data != undefined) { exp['accounts'] = JSON.parse(accounts.data); }
+
+					var json =  JSON.stringify(exp);
+					exportfunc(sodium.crypto_generichash(4, json, '', 'hex') + json);
+				});
+			});
+		});
+	});
+}
+
+function doCopyBackup() {
+	if (debug) console.log("doCopyBackup");
+	blockInput();
+	$('#restorebackup').val(cordova.plugins.clipboard.paste(
+		function() {
+			unblockInput();
+		},
+		function() {
+			unblockInput();
+		}
+	));
+
+}
+
+function dbgdumpdata() {
+	var f = function(x) {console.log(x);}
+	
+	db.get("pindata").then(function(x){ console.log("pindata: " + x.data);});
+	db.get("ppdata").then(function(x){ console.log("ppdata: " + x.data);});
+	db.get("rpdata").then(function(x){ console.log("rpdata: " + x.data);});
+	db.get("accounts").then(function(x){ console.log("accounts: " + x.data);});
+}
+
+
+/* Generate a checksum and prepend it to data, returns as hex */
+function tohex_chksum(data) {
+	if (typeof data == 'string') data = sodium.from_string(data);
+	return sodium.crypto_generichash(4, data, '', 'hex') + sodium.to_hex(data);
+}
+
+/* Remove a checksum from the front of data, check if the data matches 
+** return the data if the checksum matches (as uint8array) or false
+** if data does not match */
+function fromhex_chksum(hex, format) {
+	var chksum = hex.slice(0,8);
+	var payload = sodium.from_hex(hex.slice(8));
+	if (sodium.crypto_generichash(4, payload, '', 'hex') != chksum) return false;
+	if (format == 'string') return sodium.to_string(payload);
+	return payload;
+}
+
+function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
+
+	var saltlen = 72;
+	var hashlen = 40;
+
+	var f = function(pindata) {
+		var pindatacorrupt = false;
+		var pindatapresent = (pindata.data != undefined && pindata.data != "");
+
+		if (pindatapresent) {
+			try {
+				pindata = JSON.parse(pindata.data);
+				pindatacorrupt = 
+					pindata.salt == undefined || (/[^a-fA-F0-9]/.test(pindata.salt)) || fromhex_chksum(pindata.salt) === false ||
+					pindata.hash == undefined || (/[^a-fA-F0-9]/.test(pindata.hash)) || fromhex_chksum(pindata.hash) === false ;
+
+			} catch(e) { pindatacorrupt = true; handle_error(e); }
+		}
+
+		var g = function(ppdata) {
+			var ppdatacorrupt = false;
+			var ppdatapresent = (ppdata.data != undefined && ppdata.data != "");
+			if (ppdatapresent) {
+				try {
+					ppdata = JSON.parse(ppdata.data);
+					ppdatacorrupt = 
+						ppdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt1)) || fromhex_chksum(ppdata.salt1) === false || ppdata.salt1.length != saltlen ||
+						ppdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(ppdata.salt2)) || fromhex_chksum(ppdata.salt2) === false || ppdata.salt2.length != saltlen ||
+						ppdata.hash == undefined || (/[^a-fA-F0-9]/.test(ppdata.hash)) || fromhex_chksum(ppdata.hash) === false || ppdata.hash.length != hashlen;
+
+				} catch(e) { ppdatacorrupt = true; handle_error(e); }
+			}
+
+			var h = function(rpdata) {
+				var rpdatacorrupt = false;
+				var rpdatapresent = (rpdata.data != undefined && rpdata.data != "");
+				if (rpdatapresent) {
+					try {
+						rpdata = JSON.parse(rpdata.data);
+						rpdatacorrupt = 
+							rpdata.salt1 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt1)) || fromhex_chksum(rpdata.salt1) === false || rpdata.salt1.length != saltlen ||
+							rpdata.salt2 == undefined || (/[^a-fA-F0-9]/.test(rpdata.salt2)) || fromhex_chksum(rpdata.salt2) === false || rpdata.salt2.length != saltlen ||
+							rpdata.hash == undefined || (/[^a-fA-F0-9]/.test(rpdata.hash)) || fromhex_chksum(rpdata.hash) === false || rpdata.hash.length != hashlen ||
+							rpdata.erk == undefined || (/[^a-fA-F0-9]/.test(rpdata.erk)) || fromhex_chksum(rpdata.erk) === false;
+
+					} catch(e) { rpdatacorrupt = true; handle_error(e); }
+				}
+
+				var i = function(accounts) {
+					var accountscorrupt = false;
+					var accountspresent = (accounts.data != undefined && accounts.data != "");
+                                        try {
+						accounts = JSON.parse(accounts.data);
+						for (i in accounts) {
+							accountscorrupt = 
+							accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false || accounts[i].ppsalt.length != saltlen ||
+							accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false || accounts[i].rpsalt.length != saltlen ||
+							accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false || 
+							accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false;
+							if (accountscorrupt) break;
+						}
+
+                                        } catch(e) { if (accounts.data != "") accountscorrupt = true; handle_error(e); }
+
+					if (pindatapresent && ppdatapresent && rpdatapresent /*&& accountspresent*/ && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
+						funcok();
+					} else if (!pindatapresent && !ppdatapresent && !rpdatapresent && !accountspresent) {
+						funcnodata();
+					} else {
+						funcdatacorrupt( { 
+							pindata : ( !pindatapresent ? "missing" : ( pindatacorrupt ? "corrupt" : "ok" ) ),
+							ppdata : ( !ppdatapresent ? "missing" : ( ppdatacorrupt ? "corrupt" : "ok" ) ),
+							rpdata : ( !rpdatapresent ? "missing" : ( rpdatacorrupt ? "corrupt" : "ok" ) ),
+							accounts : ( !accountspresent ? "missing" : ( accountscorrupt ? "corrupt" : "ok" ) ) });
+					}
+					
+				}
+				db.get("accounts").then(i).catch(i);
+			}
+			db.get("rpdata").then(h).catch(h);
+		}
+		db.get("ppdata").then(g).catch(g);
+	}
+	db.get("pindata").then(f).catch(f);
+}
+
+
+function handle_error(e) {
+	console.log("Error: " + e);
+	console.log("Stack trace: " + e.stack);
+}
+
 
 function setPin(pin, successfunc, failfunc) {
 
 	var salt;
-	var pindata = { salt: salt=sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES), hash: sodium.to_hex(sodium.crypto_shorthash(pin, salt, 'hex')) };
+	var pindata = { salt: tohex_chksum(salt=sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES)), 
+			hash: tohex_chksum(sodium.crypto_shorthash(pin, salt)) };
 
 	db.upsert("pindata", 
 		function(doc) { 
@@ -1007,23 +1705,208 @@ function setPin(pin, successfunc, failfunc) {
 
 }
 
+
 function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
-	var f = function(pindata) {
+	var f = function(pindata) { try {
 		if (pindata.data == undefined || pindata.data == "") {
 			// this means the app has never run before.
 			return nopinsetfunc();
 		} else {
 			pindata = JSON.parse(pindata.data);
-			var hash = sodium.crypto_shorthash(pin, sodium.from_hex(pindata.salt), 'hex');
+			var salt = fromhex_chksum(pindata.salt);
+			var hash = tohex_chksum(sodium.crypto_shorthash(pin, salt));
 			if (hash == pindata.hash) 
 				return successfunc();
 			return failfunc();
-		}
-	};
+		} } catch(e) { handle_error(e); } };
+
 
 	db.get("pindata").then(f).catch(f);
 }
 
+function normalboot () {
+	/* To kick off the application, we attempt to validate an always incorrect pin
+	** of zero length, this will then in turn fire either the login procedure or
+	** license and setup procedure. 
+	*/
+	validatePin("",
+		function() {   connectToRipple( doShowLogin ); },
+		function() {   connectToRipple( doShowLogin ); },
+		function() {   connectToRipple( function() {showTab("#tablicense");}); }
+	);
+}
+
+var corruptionstate;
+function recoveryboot(corruption) {
+	var msg = "Your wallet data appears to be corrupted. Here's what we know: " + 
+		"PIN: " + corruption.pindata + ", Passphrase: " + corruption.ppdata + 
+		", Recovery Data: " + corruption.rpdata + ", Accounts: " + corruption.accounts;
+
+	corruptionstate = corruption;
+	navigator.notification.alert(msg, function(){hideSpinner(); showTab("#tabcorruptionprompt");}, "Data Error", "OK");
+}
+
+function restart() {
+		validateDataStores(
+			normalboot,
+			normalboot,
+			recoveryboot
+		);
+};
+
+
+function __freshinstall() {
+                navigator.notification.alert("Due to corruption the app will re-install. Afterwards restore a backup from the settings menu if you have one.",
+                function() {
+                        db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
+                                normalboot();
+                        })})})});
+                }, "Fresh Install", "OK");
+        };
+
+
+function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, recoveryphraseverified) {
+	if (debug) console.log("doDataCorruptionRecovery");
+	blockInput();
+
+	var freshinstall = __freshinstall;
+
+	if (passphrase == undefined) passphraseverified = false;
+	if (recoveryphrase == undefined) recoveryphraseverified = false;
+
+	if (c.ppdata == 'ok' && passphrase != undefined && passphraseverified == undefined) {
+		// validate the passphrase provided
+		validatePassphrase(passphrase, false, 
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, true, recoveryphraseverified); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); }
+		);
+		return;
+	} else passphraseverified = false;
+
+	if (c.rpdata == 'ok' && recoveryphrase != undefined && recoveryphraseverified == undefined) {
+		// validate the recoveryphrase provided
+		validatePassphrase(passphrase, true, 
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, true); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); }
+		);
+		return;
+	} else passphraseverified = false;
+
+	
+	if (c.accounts == 'missing') {
+		freshinstall();
+		return;
+	}
+
+	if (c.accounts == 'corrupt') {
+
+		var i = function(accounts) {
+			try {
+				accounts = JSON.parse(accounts.data);
+				for (i in accounts) {
+					var ppok = true;
+					var rpok = true;
+					if (accounts[i].ppsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsalt)) || fromhex_chksum(accounts[i].ppsalt) === false) {
+						ppok = false;
+					}
+					if (accounts[i].rpsalt == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsalt)) || fromhex_chksum(accounts[i].rpsalt) === false) {
+						rpok = false;
+					}
+					if (accounts[i].ppsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].ppsecret)) || fromhex_chksum(accounts[i].ppsecret) === false) {
+						ppok = false;
+					}
+					if (accounts[i].rpsecret == undefined || (/[^a-fA-F0-9]/.test(accounts[i].rpsecret)) || fromhex_chksum(accounts[i].rpsecret) === false) {
+						rpok = false;
+					}
+
+					if (rpok && ppok) continue;
+
+					//todo: add attempted recovery when only ppok or only rpok
+					console.log('todo: add attempted recovery when only ppok or only rpok');
+					delete accounts[i];
+
+				}
+
+			} catch(e) { accounts = {} }
+
+			navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", function() {
+				c.accounts = 'ok';
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){ unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase); }).catch(function(x){ 
+					navigator.notification.alert("Recovery process could not write to your device's storage. Please free up some space or grant the correct permissions and try again.",
+						function(){unblockInput();}, "Fatal Error", "OK"
+					);
+				});
+			}, "Recovery", "OK");
+		}
+
+		db.get("accounts").then(i).catch(i);
+		return;
+	}
+
+
+	if (c.ppdata != 'ok') {
+		
+		if (c.rpdata != 'ok') {
+
+			//attempt partial decryption of account secrets, match to public key
+	                var i = function(accounts) {
+        	                try {
+                	                accounts = JSON.parse(accounts.data);
+				} catch(e) { accounts = {} }
+				var count = 0;
+				for (i in accounts) count++;
+
+				// cannot perform any recovery if there are no accounts. fresh install required
+				if (count == 0) {
+					freshinstall();
+					return;
+				}
+
+				//todo: verify credentials from an account
+				console.log("todo: verify credentials from an account");
+				unblockInput(); 
+			}
+
+			db.get("accounts").then(i).catch(i);
+
+			return;
+		} else {
+
+			//todo: prompt for recovery phrase to reset passphrase
+			console.log("todo: prompt for recovery phrase to reset passphrase");
+			unblockInput(); 
+			return freshinstall();
+		}
+		
+	}
+
+	if (c.rpdata != 'ok') {
+		//todo: issue new recovery phrase here
+		console.log("todo: issue new recovery phrase here");
+		unblockInput(); 
+		return normalboot(); //todo: remove this when above todo is finished
+	}
+
+	if (c.pindata != 'ok') {
+		// pin recovery is nice and easy just show the pin recovery tab
+		navigator.notification.alert("Your PIN data is corrupt please set a new PIN using your passphrase or recovery phrase.", 
+			function(){
+				unblockInput(); 
+				showTab("#tabrecovery");
+			}, 
+			"Change PIN", 
+			"OK"
+		);
+		return;
+	}
+
+	
+}
 
 var app = {
 	// Application Constructor
@@ -1042,29 +1925,21 @@ bindEvents: function() {
 	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
 	    // function, we must explicitly call 'app.receivedEvent(...);'
 onDeviceReady: function() {
-		       window.screen.orientation.lock('portrait');
-		       db = new PouchDB('toastwallet');
+		       	db = new PouchDB('toastwallet');
+			setTimeout(afterCordovaLoad(), 0);
 
-			/* This is a visual patch for iOS devices where the phone uses a margin at the top
-			** for various status indicators. 
+
+
+			/* There is a possibility the datastores were corrupted somehow, and we need
+			** to know this before bootstrapping the app. This function call will tell us
+			** how to proceed and whether we need to run a recovery.
 			*/
-			console.log("device.platform = " + device.platform);
-			if ((device.platform + "").toLowerCase() == 'ios') {
-				$("#navheader").addClass("iosheader");
-				$("body").addClass("iosheader");
-				console.log('added iosheader class');
-
-			}
-
-			/* To kick off the application, we attempt to validate an always incorrect pin
-			** of zero length, this will then in turn fire either the login procedure or
-			** license and setup procedure. 
-			*/
-			validatePin("",
-				function() {   connectToRipple( doShowLogin ); },
-				function() {   connectToRipple( doShowLogin ); },
-			       	function() {   connectToRipple( function() {showTab("#tablicense");}); }
+			validateDataStores(
+				normalboot,
+				normalboot,
+				recoveryboot
 			);
+
 
 	       },
 	       // Update DOM on a Received Event
@@ -1075,9 +1950,32 @@ receivedEvent: function(id) {
 };
 app.initialize();
 
-function importAddress(secret, phrase, nickname) {
-	$("#tabimportstatus .alert-danger").hide();
-	$("#tabimportstatus .alert-success").hide();
+function getRpPpData(successfunc) {
+
+	var f = function(ppdata) {
+		if (ppdata.data == undefined || ppdata.data == "") ppdata = {};
+		try {
+			ppdata = JSON.parse(ppdata.data);
+		} catch(e) {handle_error(e); ppdata={};}
+		var g = function(rpdata) {
+			if (rpdata.data == undefined || rpdata.data == "") rpdata = {};
+			try {
+				rpdata = JSON.parse(rpdata.data);
+			} catch(e) {handle_error(e); rpdata={};}
+			try {
+			successfunc(ppdata, rpdata);
+			} catch(e) {handle_error(e);}
+		}
+		db.get("rpdata").then(g).catch(g);
+	}
+	db.get("ppdata").then(f).catch(f);
+}
+
+/* Assumes passphrase has already been validated!!!!
+*/
+function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
+	
+	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
 
 	var address = "";
 	if (secret.charAt(0) === "s" ) {
@@ -1098,32 +1996,121 @@ function importAddress(secret, phrase, nickname) {
 		var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
 		var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
 		address = generateAddress(ms).address;
-
-	} else if (secret.charAt(0) === "h" && phrase == "") {
-		$("#tabimportstatus .alert-danger")[0].innerText = 'You must enter a decryption phrase.';
-		$("#tabimportstatus .alert-success")[0].innerText = '';
-		$("#tabimportstatus .alert-danger").show();
-		return;
 	} 
 
-	if (!validate.secret(secret) || (secret.charAt(0) === "h" && !validate.encryptedSecret(secret)) ) {
-		$("#tabimportstatus .alert-danger")[0].innerText = '"' + secret+'" is not a valid Ripple secret.';
-		$("#tabimportstatus .alert-success")[0].innerText = '';
-		$("#tabimportstatus .alert-danger").show();
-
+	if (!validateSecret(secret)) {
+		navigator.notification.alert("Invalid Ripple secret.", failurefunc, "Error", "OK");
 		return;
 	}
 
-	if (secret.charAt(0) === "h") {
-		secret = decryptSecret(phrase, secret);
-	}
+	var address = generateAddress(secret).address;
+
+	// to proceed to storage we need to generate salts and secrets
+
+	var ppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+	var rpsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+
+	getRpPpData(
+		function(ppdata, rpdata) {
+
+                        var secret32key =
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+			// decrypt erk
+			erk = fromhex_chksum(rpdata.erk);
+			var nonce = erk.slice(0, sodium.crypto_box_NONCEBYTES);
+			erk = erk.slice(sodium.crypto_box_NONCEBYTES);
+			var recoverykey = sodium.crypto_secretbox_open_easy(erk, nonce, secret32key);	
+
+			// generate regular secret key
+                        var secretkey =
+				sodium.crypto_pwhash_scryptsalsa208sha256(16,
+					passphrase,
+					fromhex_chksum(ppdata.salt1),
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+
+			passphrase = "";
+
+			//now generate the keys that will be used to lock the ppsecret and rpsecret boxes
+			var ppsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					secretkey,
+					ppsalt,
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+			
+			secretkey = "";
+
+			var rpsecret32key = 
+				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+					recoverykey,
+					rpsalt,
+					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+			recoverykey = "";
+
+			// finally lock the true ripple secret into two boxes: rpsecret and ppsecret
+			var ppnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+			var rpnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+
+			var ppsecret = tohex_chksum(sodium.from_hex(sodium.to_hex(ppnonce) + sodium.crypto_secretbox_easy(
+				secret,
+				ppnonce,
+				ppsecret32key,
+			'hex')));
+			
+
+			ppsecret32key = "";
+
+			var rpsecret = tohex_chksum(sodium.from_hex(sodium.to_hex(rpnonce) + sodium.crypto_secretbox_easy(
+				secret,
+				rpnonce,
+				rpsecret32key,
+			'hex')));
+
+			rpsecret32key = "";
+			secret = "";
+
+			if (nickname == undefined) nickname = "";
+
+			var f = function(accounts) { try {
+				if (accounts.data == undefined || accounts.data == "") {
+					accounts = {};
+				} else {
+					accounts = JSON.parse(accounts.data);
+				}
+				accounts[address] = {
+					ppsalt: tohex_chksum(ppsalt), ppsecret: ppsecret,
+					rpsalt: tohex_chksum(rpsalt), rpsecret: rpsecret,
+					nickname: nickname
+				};
+
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+					navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
+					successfunc();
+				}).catch(function(x){
+					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
+					failurefunc();
+				});
+
+			} catch(e) { handle_error(e); } }
+
+			db.get("accounts").then(f).catch(f);
+
+		}
+	);
 
 
-	addSecret(address, secret, nickname, function() {showTab("#tabaccounts"); refreshAccounts(); }, function(){});
 
 }
 
-function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopassphrasefunc) {
+function validatePassphaseOrRecovery(passphrase, successfunc, failurefunc, nopassphrasefunc) {
         validatePassphrase(passphrase, false,
 		successfunc,
                 function() {
@@ -1137,27 +2124,51 @@ function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopass
 
 }
 
-function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
+
+
+/* Passphrase validation is used only to test if a passphrase is correct or incorrect primarily as a guard
+** for real encryption/decryption routines running elsewhere. It also provides the ability to reset PIN
+** and in general guard against unwanted manipulation of data. To speed up the validation routine the first
+** successful validation will cache as a lightweight hash which will thereafter be used for validation.
+*/
+var validatePassphraseCache = {};
+function _validatePassphraseCacheHit(passphrase) {
 	
-        var f = function(ppdata) {
+    return validatePassphraseCache.salt != undefined && validatePassphraseCache.hash == sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');	
+}
+
+function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
+
+	if (debug) console.log("validatePassphrase");
+	if (!isrecoveryphrase && _validatePassphraseCacheHit(passphrase)) return true;
+
+        var f = function(ppdata) { try {
                 if (ppdata.data == undefined || ppdata.data == "") {
+			if (debug) console.log("validatePassphrase - no passphrase set");
                         return nopassphrasefunc();
                 } else {
                         ppdata = JSON.parse(ppdata.data);
-			salt1 = sodium.from_hex(ppdata.salt1);
-			salt2 = sodium.from_hex(ppdata.salt2);
+			salt1 = fromhex_chksum(ppdata.salt1);
+			salt2 = fromhex_chksum(ppdata.salt2);
 			var pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 				sodium.crypto_pwhash_scryptsalsa208sha256(16, passphrase, 
 				salt1, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
 			salt2, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
 
-			passphrase=""; delete passphrase;
+			passphrase=""; 
 
-                        if (pphash == ppdata.pphash)
+			pphash = tohex_chksum(pphash);
+                        if (pphash == ppdata.hash) {
+				if (debug) console.log("validatePassphrase - correct");
+				if (!isrecoveryphrase) {
+					validatePassphraseCache.salt = sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES);
+					validatePassphraseCache.hash = sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');
+				}
                                 return successfunc();
-                        return failfunc();
-                }
-        };
+			}
+			if (debug) console.log("validatePassphrase - incorrect");
+                        return failurefunc();
+                } } catch(e) { handle_error(e); } };
 
         db.get(( isrecoveryphrase? "rpdata" : "ppdata")).then(f).catch(f);	
 }
@@ -1166,8 +2177,10 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
  ** If issettingrecoveryphrase is set then it will write over rpdata.
  ** Oldpassphrase may be either their existing passphrase or the recovery phrase.
  */
-function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, successfunc, failurefunc) {
+function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfunc, failurefunc) {
 
+	//if (typeof newphrase == 'string') newphrase = sodium.from_string(newphrase);
+	//if (typeof oldphrase == 'string') oldphrase = sodium.from_string(oldphrase);
 
 	var passPhraseUpdate = function(mode) {
 		/* mode 0 - setting a new passphrase/recoveryphrase with valid current passphrase
@@ -1175,24 +2188,26 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 		 * mode 2 - setting a new passphrase/recoveryphrase for the first time.
 		 */
 
+		if (mode == 1 && issettingrecoveryphrase) {
+			//cannot set a recovery phrase from a recovery phrase, must use an old passphrase for erk
+			failurefunc();
+			return;
+		}
+
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
-		var doupdate = function(ppdata) {
+		var doupdate = function(data) { try {
 
-			
-	                if (ppdata.data == undefined || ppdata.data == "") {
-				if (mode != 2) {
-					// execution can only proceed from here in mode 2
-					failurefunc();
-					return;
-				}
-				ppdata = {};
+			backupdata = {};
+	                if (data.data == undefined || data.data == "") {
+				data = {};
         	        } else {
-				ppdata = JSON.parse(ppdata.data);
+				backupdata = JSON.parse(data.data);
+				data = JSON.parse(data.data);
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( mode == 2 ? "" : sodium.from_hex(ppdata.salt1));
+                        oldsalt1 = ( data.salt1 == undefined ? "" : fromhex_chksum(data.salt1));
 			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 
 
@@ -1207,113 +2222,277 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 			** before it was rekeyed to the new secret. This is used to roll back that structure should
 			** the ppdata update fail.
 			*/
-			var updatePpdata = function(backupsecrets) {
-				ppdata.salt1 = newsalt1;
-				ppdata.salt2 = newsalt2;
-				ppdata.pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16,
-			                                sodium.crypto_pwhash_scryptsalsa208sha256(16, 
-								newpassphrase, 
+			var updateData = function(backupsecrets) {
+				data.salt1 = tohex_chksum(newsalt1);
+				data.salt2 = tohex_chksum(newsalt2);
+				var secret;
+				data.hash = tohex_chksum(sodium.crypto_pwhash_scryptsalsa208sha256(16,
+			                                secret = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
+								newphrase, 
 								newsalt1,
 								sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
 								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
 				                        newsalt2, 
 							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
-							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
-				newpassphrase = ""; delete newpassphrase;
-	                        db.upsert(storagekey, function(doc) { return { data: JSON.stringify(ppdata)}; }).then(function(x){
-        	                        // success
-					successfunc();
-                	        }).catch(function(x){
-                        	        // failure
-					// this is a panic failure because the account secrets have already been updated
-					// therefore we must roll them back if possible.
-					if (backupsecrets != undefined) {
-						db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
-							failurefunc();
-						}).catch(function(x){
-							failurefunc();
-						});
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE));
+	                        
+				var commit = function(data, storagekey, success, failure) {
+					db.upsert(storagekey, function(doc) { return { data: JSON.stringify(data)}; }).then(function(x){
+						// success
+						success();
+					}).catch(function(x){
+						// failure
+						// this is a panic failure because the account secrets have already been updated
+						// therefore we must roll them back if possible.
+						if (backupsecrets != undefined) {
+							db.upsert("accounts", function(doc) { return { data: JSON.stringify(backupsecrets)}; }).then(function(x){
+								failure();
+							}).catch(function(x){
+								failure();
+							});
 
-					} else {
-						failurefunc();
-					}
-	                        });			
+						} else {
+							failure();
+						}
+					});			
+				}
+
+				/* There are three end of sequence possibilities here which change the way the erk is set:
+				** 1. Setting a new pp using an old pp 	[ seterk1 ]
+				** 2. Setting a new pp using a rp 	[ seterk2 ]
+				** 3. Setting a new rp using a pp	[ seterk3 ]
+				*/
+
+				/* This erk set function is only called when setting the recovery phrase using pp [ mode=0, issettingrecoveryphrase ]*/
+				var seterk3 = function(ppdata /* this is the ppdata, data is rpdata */) {
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					ppdata = JSON.parse(ppdata.data);
+
+					var ppsalt1 = fromhex_chksum(ppdata.salt1);
+					// no need to decrypt the old erk because were setting a new recovery phrase so we already have the erk
+					data.erk =
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						secret, /* the recovery key */
+						nonce,
+						/* 32byte secret key */
+						sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+							oldphrase,
+							ppsalt1,
+							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+						/* end secret key */
+					'hex')));
+
+					commit(data, "rpdata", successfunc, failurefunc);
+				}
+
+
+
+				/* This erk set function is only called when setting the pp using rp  [ mode=1, !issettingrecoveryphrase ] */
+				var seterk2 = function(rpdata) {
+
+					if (rpdata.data == undefined) {
+						commit(data, "ppdata", successfunc, failurefunc);
+						return;
+					} 
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					rpdata = JSON.parse(rpdata.data);
+
+					var rpsalt1 = fromhex_chksum(rpdata.salt1);
+
+					// we have the recovery phrase (oldphrase) so we just need to generate the recovery key from it
+					// and encrypt it using the 32byte secretkey
+
+					var recoverykey = sodium.crypto_pwhash_scryptsalsa208sha256(16,
+                                                        oldphrase,
+                                                        rpsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+					rpdata.erk = 
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						recoverykey, /* the recovery key */
+						nonce,
+						/* 32 byte secret key */
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        newphrase,
+                                                        newsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),					
+						/* end secret key */
+					'hex')));
+
+					commit(data, "ppdata", function() {
+						commit(rpdata, "rpdata", successfunc, 
+							function() {
+								// if rpdata fails to set then we need to rollback ppdata
+								commit(backupdata, "ppdata", failurefunc, failurefunc);
+							}
+						);
+					}, failurefunc);
+				}
+
+
+
+				/* This erk set function is only called when setting the pp using old pp  [ mode=0, !issettingrecoveryphrase ] */
+				var seterk1 = function(rpdata) {
+
+					if (rpdata.data == undefined) {
+						commit(data, "ppdata", successfunc, failurefunc);
+						return;
+					} 
+
+					var nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+					rpdata = JSON.parse(rpdata.data);
+
+					var rpsalt1 = fromhex_chksum(rpdata.salt1);
+
+					/* this is the most complicated of the seterk functions, we must first decrypt the existing erk */
+
+                                        // generate old 32byte secret key
+                                        var old32secret =
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        oldphrase,
+                                                        oldsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+                                        // decrypt the old erk
+                                        olderk = fromhex_chksum(rpdata.erk);
+                                        var oldnonce = olderk.slice(0, sodium.crypto_box_NONCEBYTES);
+                                        olderk = olderk.slice(sodium.crypto_box_NONCEBYTES);
+                                        var recoverykey = sodium.crypto_secretbox_open_easy(olderk, oldnonce, old32secret);
+
+					// now re-encrypt it with the new 32byte secret key
+					rpdata.erk = 
+					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
+						recoverykey, /* the recovery key */
+						nonce,
+                                                /* 32 byte secret key */
+                                                sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
+                                                        newphrase,
+                                                        newsalt1,
+                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                                                /* end secret key */
+					
+					'hex')));
+
+					commit(data, "ppdata", function() {
+						commit(rpdata, "rpdata", successfunc, 
+							function() {
+								// if rpdata fails to set then we need to rollback ppdata
+								commit(backupdata, "ppdata", failurefunc, failurefunc);
+							}
+						);
+					}, failurefunc);
+				}
+
+
+				if (issettingrecoveryphrase) {
+					db.get("ppdata").then(seterk3).catch(seterk3);
+				} else if (mode == 1) {
+					db.get("rpdata").then(seterk2).catch(seterk2);
+				} else {
+					db.get("rpdata").then(seterk1).catch(seterk1);
+				} 
+
 			}
 
 			//A
 
-			var updateSecrets = function(secrets) {
+			var updateAccounts = function(accounts) { try {
 			
-				if (secrets.data == undefined || mode == 2) {
+				if (accounts.data == undefined || accounts.data == "") {
 					// no account secrets exist so we're done with part A
-					return updatePpdata();
+					return updateData();
 				}
 				
 				// now we need to decode all the existing secrets
 				// and re-encode them with the new secret
 				
-				backupsecrets = JSON.parse(secrets.data);
-				secrets = JSON.parse(secrets.data);
+				backupaccounts = JSON.parse(accounts.data);
+				accounts = JSON.parse(accounts.data);
 
-				for (var public_addr in secrets) {
-					var ppsalt;
-					var ppciphertext;
+				for (var public_addr in accounts) {
+					var oldppsalt;
+					var oldppciphertext;
 					if (mode == 0) { // get secret using passphrase
-						ppsalt = secrets[public_addr].ppsalt;
-						ppciphertext = sodium.from_hex(secrets[public_addr].ppsecret);
+						oldppsalt = fromhex_chksum(accounts[public_addr].ppsalt);
+						oldppciphertext = fromhex_chksum(accounts[public_addr].ppsecret);
 					} else if (mode == 1) { // get secret using recovery phrase
-						ppsalt = secrets[public_addr].rpsalt;
-						ppciphertext = sodium.from_hex(secrets[public_addr].rpsecret);
+						oldppsalt = fromhex_chksum(accounts[public_addr].rpsalt);
+						oldppciphertext = fromhex_chksum(accounts[public_addr].rpsecret);
 					}
 
 
-					var nonce = ppciphertext.slice(0, sodium.crypto_box_NONCEBYTES);
-					var ppciphertext = ppciphertext.slice(sodium.crypto_box_NONCEBYTES);					
+					var oldnonce = oldppciphertext.slice(0, sodium.crypto_box_NONCEBYTES);
+					var oldppciphertext = oldppciphertext.slice(sodium.crypto_box_NONCEBYTES);					
 
 					var newnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 					var newppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-					var newppciphertext = sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
-						/* this is the plaintext */
-						sodium.crypto_secretbox_open_easy(ciphertext, nonce, 
-							/* this is the old key to unlock the cipher text */
-							sodium.crypto_pwhash_scryptsalsa208sha256(16,  
+
+					var oldsecret32key = sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
-                                                                	oldpassphrase,
+                                                                	oldphrase,
 	                                                                oldsalt1,
         	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                 	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
-                        	                                ppsalt,
+                        	                                oldppsalt,
                                 	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE), 
-							/* end of key */
-							'text'),
-						/* end of plaintext */
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+
+					var newsecret32key = sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
+								sodium.crypto_pwhash_scryptsalsa208sha256(16,
+                                                                	newphrase,
+	                                                                newsalt1,
+        	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                        	                                newppsalt,
+                                	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					
+					var secret = sodium.crypto_secretbox_open_easy(oldppciphertext, oldnonce, oldsecret32key);
+				
+					oldsecret32key = "";
+
+					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
+						secret,
 						newnonce,
-						newppsalt,
-						'hex');
+						newsecret32key,
+						'hex'))
+					);
+
+
+					secret = "";
+
+					newsecret32key = "";
 
 					if (issettingrecoveryphrase) {
-						secrets[public_addr].rpsalt = sodium.to_hex(newppsalt);
-						secrets[public_addr].rpsecret = newppciphertext;
+						accounts[public_addr].rpsalt = tohex_chksum(newppsalt);
+						accounts[public_addr].rpsecret = newppciphertext;
 					} else {
-						secrets[public_addr].ppsalt = sodium.to_hex(newppsalt);
-						secrets[public_addr].ppsecret = newppciphertext;
+						accounts[public_addr].ppsalt = tohex_chksum(newppsalt);
+						accounts[public_addr].ppsecret = newppciphertext;
 					}
 				}
 
-				/* at this point the data structure for the accounts (`secrets`) now contains fully updated
+				/* at this point the data structure for the accounts now contains fully updated
 				** ciphertext and salts, so we can do a db.upsert then move to part B */
 
-				db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-					updatePpdata(backupsecrets);
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+					updateData(backupaccounts);
 				}).catch(function(x){
 					failurefunc();
-				});
+				}); 
 					
-			}
-			db.get("accounts").then(updateSecrets).catch(updateSecrets);
+			} catch(e) { handle_error(e); } }
+			db.get("accounts").then(updateAccounts).catch(updateAccounts);
 			
-		}
+		} catch(e) { handle_error(e); } }
 
 		db.get(storagekey).then(doupdate).catch(doupdate);
 		
@@ -1321,10 +2500,12 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 	// this code checks if the supplied oldpassphrase is either their current passphrase or the 
 	// recovery phrase, and returns to the above function accordingly, or if the current phrase is unset.
-	validatePassphrase(oldpassphrase, false, 
+	validatePassphrase(oldphrase, false, 
 		function() {passPhraseUpdate(0);}, 
 		function() {
-			validatePassphrase(oldpassphrase, true, 
+			// a recovery phrase cannot be used to set a recovery phrase.
+			if (issettingrecoveryphrase) return failurefunc();
+			validatePassphrase(oldphrase, true, 
 				function(){passPhraseUpdate(1);}, 
 				failurefunc, 
 				function(){passPhraseUpdate(2);}
@@ -1334,55 +2515,35 @@ function setPassphrase(newpassphrase, oldpassphrase, issettingrecoveryphrase, su
 
 }
 
-function removeSecret(address, successfun, failfun) {
-	var f = function(secrets) {
-		if (secrets.data == undefined) {
-			secrets = {};
-		} else {
-			secrets = JSON.parse(secrets.data);
-		}
+function removeSecret(address, successfunc, failurefunc) {
+	var f = function(accounts) { try {
+		if (accounts.data == undefined || accounts.data == "") 
+			return failurefunc();
 
-		if (secrets[address] != undefined) delete secrets[address];
-		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-				navigator.notification.alert("Ripple address removed successfully.", function(){}, "Success", "OK");
-				successfun();
-				}).catch(function(x){
-					navigator.notification.alert("Failed to remove address.", function(){}, "Error", "OK");
-					failfun();
-					});
+		accounts = JSON.parse(accounts.data);
+		
 
-	}
+		if (accounts[address] == undefined)
+			return failurefunc();
 
-	db.get("accounts").then(f).catch(f);
+		delete accounts[address];
 
+		db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+			successfunc();
+		}).catch(function(x){
+			failurefunc();
+		});
 
-}
-function addSecret(address, secretdata, successfun, failfun) {
-
-	var f = function(secrets) {
-		if (secrets.data == undefined) {
-			secrets = {};
-		} else {
-			secrets = JSON.parse(secrets.data);
-		}
-		secrets[(address != "" ? address : result.address)] = secretdata;
-
-		db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-				navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
-				successfun();
-				}).catch(function(x){
-					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
-					failfun();
-					});
-
-	}
+	} catch(e) { handle_error(e); } }
 
 	db.get("accounts").then(f).catch(f);
-
 }
 
 
-function generateAddress(secret, passphrase, nickname) {
+/* Generates a ripple address keypair, returned as json {secret:.., address:..}
+*  If a secret is provided it will generate the public key for that secret
+*/
+function generateAddress(secret) {
 	if (secret != undefined && secret != "") {
 		secret = ripple.Seed.from_json(secret);
 	} else {
@@ -1391,22 +2552,36 @@ function generateAddress(secret, passphrase, nickname) {
 
 	
 	return {
-secret: secret.to_json(),
+		secret: secret.to_json(),
 		address: secret.get_key().get_address().to_json()
 	};
+}
+
+function checkConnection(connectedfunc) {
+	if (navigator.connection.type == 'Connection.NONE') {
+		navigator.notification.alert('Internet Connection Lost.', 
+			function() {
+				showTab('#tablogin');
+				normalboot();
+			},
+			'Connection Lost',
+			'OK'
+		);
+	} else {
+		connectedfunc();
+	}
 }
 
 function connectToRipple(funcsuccess) {
 	remote.connect(function(err, res) {
 			if (err) {
-			console.log(err);
-//			$("#loaderror").innerText = err;			
 				connectToRipple(funcsuccess);
 			} else {
 				hideSpinner();
+				
 				funcsuccess();
 			}
-			});
+	});
 }
 
 var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
@@ -1442,106 +2617,127 @@ function redefineSigningToAlwaysUseSecret(secret) {
 	}
 }
 
-var lastsend = 0;
-function sendXRP(fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfun, failfun) {
-
-	var timenow = $.now();
-	if (timenow - lastsend < 100) return;
-	lastsend = timenow;
+/* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
+** before calling.
+*/
+function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
 
 	showSpinner();
-
-	getAccounts(function(secrets) {
-			if (secrets[fromacc] !== undefined) {
-
-			//todo: decode secret here
-			remote.setSecret(fromacc, secrets[fromacc]);
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+			
+			remote.setSecret(fromacc, secret);
 
 			redefineSigningToAlwaysUseSecret(false);
 
 			var transaction = remote.createTransaction("Payment", {
-account: fromacc,
-destination: destination,
-amount: xrpAmount * 1000000
-});
+				account: fromacc,
+				destination: destination,
+				amount: xrpAmount * 1000000
+			});
 			transaction.destinationTag(parseInt(destTag));
 			transaction.sourceTag(parseInt(sourceTag));
 			transaction.invoiceID(invoiceID);
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
-				navigator.notification.alert("Payment failed most likely due to lack of funds in " + fromacc, failfun, "Failure", "OK");
-				hideSpinner();
-				failfun();
+					hideSpinner();
+					failurefunc();
 				} else if ( (res != undefined && res != null || res.engine_result == 'tesSUCCESS') ) {
-				navigator.notification.alert("Payment successful.", successfun, "Success", "OK");
-				$("#toaddress").val("");
-				$("#desttag").val("");
-				$("#invoiceid").val("");
-				$("#payamount").val("");
-				hideSpinner();
-				successfun();
+					hideSpinner();
+					successfunc();
 				} else {
-				navigator.notification.alert("Payment failed for an unknown reason.", failfun, "Failure", "OK");
-				hideSpinner();
-				failfun();
+					hideSpinner();
+					failurefunc();
 				}
-				});
-} else {
-	navigator.notification.alert("Invalid account selected.", failfun, "Error", "OK");
-}
-});
+			});
+		},
+		function() {
+			hideSpinner();
+			failurefunc();
+		});
 
 }
 
 
-var validate = {
-number: function(x) {
-		return x!=="" && !isNaN(x);
-	},
-address: function(x) {
-		 return ripple.UInt160.is_valid(x);
-	 },
-currency: function(x) {
-		  return x.length===3 && x.toUpperCase()===x;
-	  },
-integer: function(x) {
-		 // Allow x==="" because "integer" is only used on optional fields
-		 return x==="" || (!isNaN(x) && parseInt(x)===parseFloat(x));
-	 },
-	 "hex string": function(x) {
-		 // Allow x==="" because "hex string" is only used on optional fields
-		 return /^[0-9A-Fa-f]*$/.test(x) && x.length<=64;
-	 },
-secret: function(x) {
-		return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
-	},
-encryptedSecret: function(x) {
-			 return !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_ORDINARY, x)) ||
-				 !isNaN(ripple.Base.decode_check(VER_ENCRYPTED_REKEYED, x))
-		 },
-		 "currency/issuer pair": function(x) {
-			 var s = x.split("/");
-			 if (s.length === 1 && s[0] === "XRP") {
-				 return true;
-			 } else {
-				 return (s.length === 2 &&
-						 validate.currency(s[0]) &&
-						 validate.address(s[1])
-					);
-			 }
-		 },
-ALLOW_ALL: function(x) {
-		   return true;
-	   }
-};
+function validateSecret(x) {
+	return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
+}
 
 
+function doGetTransactions(address, marker) {
+	if (debug) console.log("doGetTransactions");
+	blockInput();
+	$.ajax({
+		url: 'https://data.ripple.com/v2/accounts/' + 
+		address + '/payments?currency=XRP&limit=10&descending=true&marker=' +
+		marker
+	}).done(function(x){
+		console.log(x);
+		var root = $('#accdetailstransactiondetails');
+		root.empty();
+		var tx = "";
+		var count = 0;
+		if (x.payments != undefined) {
+			for (var i in x.payments) {
+				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'">';
+				if (x.payments[i].source == address) {
+					// outgoing payment
+					tx += '<span><i class="fa fa-paper-plane-o" aria-hidden="true"></i>';
+					tx += x.payments[i].destination + '</span>';
+					tx += '<span>' + x.payments[i].amount + '</span>';
 
-
+				} else {
+					// incoming payment
+					tx += '<span><i class="fa fa-inbox" aria-hidden="true"></i>';
+					tx += x.payments[i].source + '</span>';
+					tx += '<span>' + x.payments[i].amount + '</span>';
+				}
+				tx += '</li>'
+				count++;
+			}
+		}
+		if (count == 0) {
+			tx = '<li style="color:black;"><center><i>No transactions found</i></center></li>';
+		}
+		root.append('<ul class="transactionlist">'+tx+'</ul>');
+		if (x.marker != undefined && count > 0) {
+			root.append('<button type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
+		} else if (count > 0) {
+			root.append('<button type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
+		}
+		unblockInput();
+	});
+}
 
 </script>
 
 
+<script>
+
+
+
+$(".toggleswitch").bind('touchstart',function() {
+	var ele = $($(this).children()[0]);
+	if (ele.hasClass("fa-toggle-off")) {
+		ele.removeClass("fa-toggle-off");
+		ele.addClass("fa-toggle-on");
+		$(this).data("checked", "true");
+	} else {
+		ele.removeClass("fa-toggle-on");
+		ele.addClass("fa-toggle-off");
+		$(this).data("checked", "false");
+	}
+});
+/*
+	$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
+	$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
+	$('.btn').on('cut copy paste',function(e){e.preventDefault();});
+	$('label').on('cut copy paste',function(e){e.preventDefault();});
+	$('#accountdetailsselector').on('cut copy paste',function(e){e.preventDefault();});
+	$('.fa').on('cut copy paste',function(e){e.preventDefault();});
+*/
+</script>
 </body>
 </html>

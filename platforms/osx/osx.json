@@ -96,6 +96,9 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.verso.cordova.clipboard": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
     "dependent_plugins": {},
@@ -599,6 +602,14 @@
             "pluginId": "phonegap-plugin-barcodescanner",
             "clobbers": [
                 "cordova.plugins.barcodeScanner"
+            ]
+        },
+        {
+            "file": "plugins/com.verso.cordova.clipboard/www/clipboard.js",
+            "id": "com.verso.cordova.clipboard.Clipboard",
+            "pluginId": "com.verso.cordova.clipboard",
+            "clobbers": [
+                "cordova.plugins.clipboard"
             ]
         }
     ]

@@ -539,6 +539,14 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.screenorientation"
         ]
+    },
+    {
+        "id": "com.verso.cordova.clipboard.Clipboard",
+        "file": "plugins/com.verso.cordova.clipboard/www/clipboard.js",
+        "pluginId": "com.verso.cordova.clipboard",
+        "clobbers": [
+            "cordova.plugins.clipboard"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -568,7 +576,8 @@ module.exports.metadata =
     "cordova-plugin-sqlite-2": "1.0.4",
     "es6-promise-plugin": "4.1.0",
     "cordova-plugin-screen-orientation": "2.0.1",
-    "cordova-plugin-crosswalk-webview": "2.3.0"
+    "cordova-plugin-crosswalk-webview": "2.3.0",
+    "com.verso.cordova.clipboard": "0.1.0"
 };
 // BOTTOM OF METADATA
 });

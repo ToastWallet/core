@@ -10,14 +10,10 @@
     <content src="index.html" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="16" />
-    <plugin name="cordova-plugin-battery-status" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
-    <plugin name="cordova-plugin-media-capture" source="npm" spec="~1.2.0" />
-    <plugin name="cordova-plugin-contacts" source="npm" spec="~2.0.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-orientation" source="npm" spec="~1.0.2" />
     <plugin name="cordova-plugin-dialogs" source="npm" spec="~1.2.0" />
-    <plugin name="cordova-plugin-media" source="npm" spec="~2.2.0" />
     <plugin name="cordova-plugin-network-information" source="npm" spec="~1.2.0" />
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
@@ -117,4 +113,5 @@
         <variable name="XWALK_MODE" value="embedded" />
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
+    <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
 </widget>

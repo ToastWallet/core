@@ -119,6 +119,10 @@
                         {
                             "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Clipboard\"><param name=\"android-package\" value=\"com.verso.cordova.clipboard.Clipboard\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -296,6 +300,9 @@
             "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "com.verso.cordova.clipboard": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
         }
     },
@@ -840,6 +847,14 @@
             "clobbers": [
                 "cordova.plugins.screenorientation"
             ]
+        },
+        {
+            "id": "com.verso.cordova.clipboard.Clipboard",
+            "file": "plugins/com.verso.cordova.clipboard/www/clipboard.js",
+            "pluginId": "com.verso.cordova.clipboard",
+            "clobbers": [
+                "cordova.plugins.clipboard"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -867,6 +882,7 @@
         "cordova-plugin-sqlite-2": "1.0.4",
         "es6-promise-plugin": "4.1.0",
         "cordova-plugin-screen-orientation": "2.0.1",
-        "cordova-plugin-crosswalk-webview": "2.3.0"
+        "cordova-plugin-crosswalk-webview": "2.3.0",
+        "com.verso.cordova.clipboard": "0.1.0"
     }
 }
