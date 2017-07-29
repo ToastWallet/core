@@ -48,6 +48,73 @@ body {
 }
 
 
+.accountdetailsselector {
+    background: rgb(0, 81, 185);
+    margin-top: -1em;
+    padding: 0;
+    position: fixed;
+    margin-left: -1em;
+    margin-right: -1em;
+    overflow: hidden;
+    border: none;
+    margin-bottom: 0px;
+}
+
+.accountdetailsselector > * {
+    display: inline-block;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    padding-top: 0.5em;
+    width: 50vw;
+    padding-bottom: 0.5em;
+}
+
+.accountdetailsselector > .accdetailsinnertabselected {
+    background-color: white;
+    color: #0051b9;
+}
+
+.txrow {
+    color: black;
+}
+
+.transactionlist {
+    list-style: none !important;
+}
+
+.txrow>span:first-of-type {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    max-width: 60vw;
+    vertical-align: middle;
+}
+
+.txrow>span:last-of-type {
+    float: right;
+}
+
+.txrow>i {
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+
+.txrow * {
+    display: inline;
+}
+
+.txrow fa {
+}
+
+.txrow i {
+    margin-right: 1em;
+    vertical-align: middle;
+}
+
+.txrow {
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+}
 
 #navheader div:before {
     content: "WARNING -- TESTNET ALPHA. DO NOT USE REAL XRP.";
@@ -368,6 +435,10 @@ ul.iosheader > li > * {
 
 .darkbackground {
     background: linear-gradient(45deg, #1959ab, #317fe2),  #1959ab;
+    background-repeat: no-repeat;
+}
+.darkbackground2 {
+    background: linear-gradient(45deg, #19ab4c, #317fe2), #1959ab;
     background-repeat: no-repeat;
 }
 

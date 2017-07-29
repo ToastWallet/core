@@ -23,7 +23,6 @@
 <div id="inputblocker" style="display:none">&nbsp;</div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
-	$('body').on('cut copy paste',function(e){e.preventDefault();});
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$("#morecontentindicator").hide();
@@ -89,14 +88,23 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
-	<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-	<center><div id="accdetailsaddress" ></div></center>
-	<center><div id="accdetailsqr"></div></center>
-	<center>
-		<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
-		&nbsp;
-		<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
-	</center>
+	<ul class="accountdetailsselector">
+		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
+		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); getTransactions($('#accdetailsaddress')[0].innerText, '');" class="">Transactions</li>
+	</ul>
+<ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
+	<div id="accdetailsaddressdetails" class="innertab">
+		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+		<center><div id="accdetailsaddress" ontouchstart="copyInnerHTMLToClipboard(this);" ></div></center>
+		<center><div id="accdetailsqr"></div></center>
+		<center>
+			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
+			&nbsp;
+			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
+		</center>
+	</div>
+	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
+	</div>
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
@@ -162,7 +170,7 @@ Never share your recovery phrase with anyone.</p>
     
 </div>
 
-<div id="tabpinset1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Set New PIN"  data-dark="true" data-recovery="true" style="display: block;">
+<div id="tabpinset1" class="screentab" data-primarytab="false" data-title="Set New PIN"  data-dark="2" data-noright="true" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -192,7 +200,7 @@ Never share your recovery phrase with anyone.</p>
     
 </div>
 
-<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="true" data-recovery="true" data-title="Repeat New PIN" style="display: block;">
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-recovery="true" data-title="Repeat New PIN" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -252,9 +260,10 @@ Never share your recovery phrase with anyone.</p>
 	<div>
 		<input type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
-	<div>
+	<br>
+	<center>
 		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
-	</div>
+	</center>
 </div>
 
 
@@ -345,12 +354,12 @@ Never share your recovery phrase with anyone.</p>
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase">Change Passphrase</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
 </div>
 
-<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-recovery="true" style="display: block;">  
+<div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: block;">  
     <div>
 	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
@@ -512,30 +521,35 @@ function doFinishSetup() {
 	showTab("#tabaccounts");
 }
 
-function doResetPin(recoveryphrase, successfunc, failfunc) {
-	//todo: check recovery phrase here 
+function doResetPin(passphrase, successfunc, failfunc) {
+	validatePassphaseOrRecovery(recoveryphrase,
+		function() {
 
-
-	var f;
-	runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
-		// there is no way to fail validation on this screen.
-		return true;
-	}, f = function(pin1) {
-	
-		runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
-			return currenttab == '#tabpinset1' || pin1 == pin2;
-		}, function(pin2) {
-			if (currenttab == '#tabpinset1') return f(pin2);
-			if (currenttab == '#tablogin') return;
-			setPin(pin2, successfunc, function() {
-				navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
-			});
-		}, function(pin2) {
-			if (currenttab == '#tablogin') return;
-			navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
-		});
-	
-	}, function(){});
+			var f;
+			runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
+				// there is no way to fail validation on this screen.
+				return true;
+			}, f = function(pin1) {
+			
+				runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
+					return currenttab == '#tabpinset1' || pin1 == pin2;
+				}, function(pin2) {
+					if (currenttab == '#tabpinset1') return f(pin2);
+					if (currenttab == '#tablogin') return;
+					setPin(pin2, successfunc, function() {
+						navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
+					});
+				}, function(pin2) {
+					if (currenttab == '#tablogin') return;
+					navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
+				});
+			
+			}, function(){});
+		},
+		function() {
+			navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
+		}
+	);
 }
 
 
@@ -951,6 +965,11 @@ function checkPin(pin) {
 	return false;
 }
 
+function copyInnerHTMLToClipboard(element) {
+	cordova.plugins.clipboard.copy(element.innerHTML);
+//	navigator.notification.alert("Copied to clipboard", function(){}, "Clipboard", "OK");
+}
+
 function showTab(tab) {
 
 	$(".pinpad").removeClass("shake");
@@ -1004,8 +1023,12 @@ function showTab(tab) {
 		$("#tabaccountsecret label").show();
 		$("#tabaccountsecret button").show();
 		$("#tabaccountsecret input[type='password']").show();
+	} else if (tab == '#tabaccountdetails') {
+		$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); 
+		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
+		$('#accdetailstransactiondetails').hide(); 
+		$('#accdetailsaddressdetails').show();
 	}
-
 	var tabs = $(".screentab");
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
@@ -1056,8 +1079,14 @@ function showTab(tab) {
 
 
 	$("body").removeClass("darkbackground");
+	$("body").removeClass("darkbackground2");
 	if ($(tab).data('dark')) { // dark background
-		$("body").addClass("darkbackground");
+		if ($(tab).data('dark') == '2') {
+
+			$("body").addClass("darkbackground2");
+		} else {
+			$("body").addClass("darkbackground");
+		}
 	} else {
 		$("#morecontentindicator").addClass("moreindicatordark");
 	}
@@ -2059,9 +2088,9 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 			//A
 
-			var updateSecrets = function(secrets) { try {
+			var updateAccounts = function(accounts) { try {
 			
-				if (secrets.data == undefined || secrets.data == "") {
+				if (accounts.data == undefined || accounts.data == "") {
 					// no account secrets exist so we're done with part A
 					return updateData();
 				}
@@ -2069,18 +2098,18 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 				// now we need to decode all the existing secrets
 				// and re-encode them with the new secret
 				
-				backupsecrets = JSON.parse(secrets.data);
-				secrets = JSON.parse(secrets.data);
+				backupaccounts = JSON.parse(accounts.data);
+				accounts = JSON.parse(accounts.data);
 
-				for (var public_addr in secrets) {
+				for (var public_addr in accounts) {
 					var ppsalt;
 					var ppciphertext;
 					if (mode == 0) { // get secret using passphrase
-						ppsalt = secrets[public_addr].ppsalt;
-						ppciphertext = fromhex_chksum(secrets[public_addr].ppsecret, 'string');
+						ppsalt = fromhex_chksum(accounts[public_addr].ppsalt);
+						ppciphertext = fromhex_chksum(accounts[public_addr].ppsecret);
 					} else if (mode == 1) { // get secret using recovery phrase
-						ppsalt = secrets[public_addr].rpsalt;
-						ppciphertext = fromhex_chksum(secrets[public_addr].rpsecret, 'string');
+						ppsalt = fromhex_chksum(accounts[public_addr].rpsalt);
+						ppciphertext = fromhex_chksum(accounts[public_addr].rpsecret);
 					}
 
 
@@ -2091,9 +2120,9 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 					var newppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
 					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
 						/* this is the plaintext */
-						sodium.crypto_secretbox_open_easy(ciphertext, nonce, 
+						sodium.crypto_secretbox_open_easy(ppciphertext, nonce, 
 							/* this is the old key to unlock the cipher text */
-							sodium.crypto_pwhash_scryptsalsa208sha256(16,  
+							sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
                                                                 	oldphrase,
 	                                                                oldsalt1,
@@ -2101,34 +2130,34 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                 	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
                         	                                ppsalt,
                                 	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE), 
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE) 
 							/* end of key */
-							'text'),
+							),
 						/* end of plaintext */
 						newnonce,
 						newppsalt,
 						'hex')));
 
 					if (issettingrecoveryphrase) {
-						secrets[public_addr].rpsalt = tohex_chksum(newppsalt);
-						secrets[public_addr].rpsecret = newppciphertext;
+						accounts[public_addr].rpsalt = tohex_chksum(newppsalt);
+						accounts[public_addr].rpsecret = newppciphertext;
 					} else {
-						secrets[public_addr].ppsalt = tohex_chksum(newppsalt);
-						secrets[public_addr].ppsecret = newppciphertext;
+						accounts[public_addr].ppsalt = tohex_chksum(newppsalt);
+						accounts[public_addr].ppsecret = newppciphertext;
 					}
 				}
 
 				/* at this point the data structure for the accounts now contains fully updated
 				** ciphertext and salts, so we can do a db.upsert then move to part B */
 
-				db.upsert("accounts", function(doc) { return { data: JSON.stringify(secrets)}; }).then(function(x){
-					updateData(backupsecrets);
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+					updateData(backupaccounts);
 				}).catch(function(x){
 					failurefunc();
 				}); 
 					
 			} catch(e) { handle_error(e); } }
-			db.get("accounts").then(updateSecrets).catch(updateSecrets);
+			db.get("accounts").then(updateAccounts).catch(updateAccounts);
 			
 		} catch(e) { handle_error(e); } }
 
@@ -2290,8 +2319,47 @@ function validateSecret(x) {
 }
 
 
+function getTransactions(address, marker) {
+	$.ajax({
+		url: 'https://data.ripple.com/v2/accounts/' + 
+		address + '/payments?currency=XRP&limit=10&descending=true&marker=' +
+		marker
+	}).done(function(x){
+		console.log(x);
+		var root = $('#accdetailstransactiondetails');
+		root.empty();
+		var tx = "";
+		var count = 0;
+		if (x.payments != undefined) {
+			for (var i in x.payments) {
+				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'">';
+				if (x.payments[i].source == address) {
+					// outgoing payment
+					tx += '<span><i class="fa fa-paper-plane-o" aria-hidden="true"></i>';
+					tx += x.payments[i].destination + '</span>';
+					tx += '<span>' + x.payments[i].amount + '</span>';
 
-
+				} else {
+					// incoming payment
+					tx += '<span><i class="fa fa-inbox" aria-hidden="true"></i>';
+					tx += x.payments[i].source + '</span>';
+					tx += '<span>' + x.payments[i].amount + '</span>';
+				}
+				tx += '</li>'
+				count++;
+			}
+		}
+		if (count == 0) {
+			tx = '<li style="color:black;"><center><i>No transactions found</i></center></li>';
+		}
+		root.append('<ul class="transactionlist">'+tx+'</ul>');
+		if (x.marker != undefined && count > 0) {
+			root.append('<button type="button" class="btn btn-primary" ontouchstart="getTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
+		} else if (count > 0) {
+			root.append('<button type="button" class="btn btn-primary" ontouchstart="getTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
+		}
+	});
+}
 
 </script>
 
@@ -2309,6 +2377,13 @@ $(".toggleswitch").bind('touchstart',function() {
 		$(this).data("checked", "false");
 	}
 });
+
+	$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
+	$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
+	$('.btn').on('cut copy paste',function(e){e.preventDefault();});
+	$('label').on('cut copy paste',function(e){e.preventDefault();});
+	$('#accountdetailsselector').on('cut copy paste',function(e){e.preventDefault();});
+	$('.fa').on('cut copy paste',function(e){e.preventDefault();});
 </script>
 </body>
 </html>
