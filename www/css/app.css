@@ -6,9 +6,30 @@ body {
 	color:white;
 	font-size: 1.5em;
 }
+
+#walletbackup {
+    max-width: 90vw;
+    overflow-wrap: break-word;
+    font-size: 0.7em;
+    width: 100%;
+    height: calc(100vh - 27em);
+    overflow-y: scroll;
+}
+
+#restorebackup {
+    width: 100%;
+    min-height: 8em;
+    font-size:0.6em;
+    color:black;
+}
+
+#tabbackup2 h3 {
+    margin-top: 0;
+}
 #tabsettings button, #tabaddaccount button, #tabgenaccount button, 
 #tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, 
-#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport, #tabpaymentconfirm button {
+#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport, #tabpaymentconfirm button,
+#tabrestore button {
     min-width: 20em;
     margin-bottom: 1em;
 }
@@ -118,14 +139,15 @@ body {
 
 #navheader div:before {
     content: "WARNING -- TESTNET ALPHA. DO NOT USE REAL XRP.";
-    background: red;
-    display: inline-block;
+    background: orange;
+    display: none;
     position: fixed;
-    bottom: 0;
+    top: 4em;
     left: 0;
     width: 100vw;
     text-align: center;
-    font-size: 0.5em;
+    font-size: 0.8em;
+    z-index: 9999999999999999;
 }
 
 #showrecoveryphrase {
@@ -186,16 +208,16 @@ body {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    position: absolute;
+    position: fixed;
     left: calc(50% - 0.5em);
     top: calc(50% - 0.5em);
 }
 .loading:after {
-    position: absolute;
+    position: fixed;
     display: block;
     background: white;
     content: " ";
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     top: 0px;
     left: 0px;

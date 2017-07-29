@@ -18,6 +18,7 @@
 	<script src="cordova.js"></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
+	<script src="js/clipboard.min.js"></script>
 </head>
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
@@ -38,7 +39,41 @@
 	});
 </script>
 
+<div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: block;">
+    <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
+	<center>
+	<div>
+		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info" ontouchstart="doCopyBackup();">Copy</button>
+	</div>
+	</center><br>
+	<textarea style="color:black;" id="walletbackup"></textarea>
+	<script>new Clipboard('#btncopywallet');</script>
+</div>
 
+<div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: block;">  
+    <div>
+	<label for="backuppassword">Passphrase or Recovery Phrase</label><input type="password" id="backuppassword" class="form-control" placeholder="">
+    </div>
+    <br>
+    <div align="right"><button class="btn btn-primary" ontouchstart="onGenerateBackup();">Generate Backup</button></div>
+</div>
+
+<div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: block;">  
+    <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
+
+    <textarea id="restorebackup"></textarea>
+    <br>
+    <div>
+	<label for="restorepassword">Passphrase or Recovery Phrase</label><input type="password" id="restorepassword" class="form-control" placeholder="">
+    </div>
+    <br>
+    <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
+    
+    <div align="center">
+    
+    
+    <button class="btn btn-danger" ontouchstart="onRestoreBackup();">Restore Backup</button></div>
+</div>
 <div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: block;">
     <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
 
@@ -51,7 +86,8 @@ Never share your recovery phrase with anyone.</p>
 <u style="font-size:1.1em;"><u>
     </u></u>
 <div id="showrecoveryphrase">
-</div><br><p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
+</div><br>
+<p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
 <center><button class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
 
 
@@ -90,7 +126,7 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
 		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
-		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); getTransactions($('#accdetailsaddress')[0].innerText, '');" class="">Transactions</li>
+		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){getTransactions($('#accdetailsaddress')[0].innerText, '');});" class="">Transactions</li>
 	</ul>
 <ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
@@ -356,8 +392,8 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" ontouchstart="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: block;">  
@@ -505,7 +541,23 @@ function unblockInput() {
 	$("#inputblocker").hide();
 }
 
-
+function onGenerateBackup() {
+	validatePassphrase(
+		$('#backuppassword').val(), false,
+		function(){
+			exportWallet(
+				function(data){
+					$('#walletbackup').val( data ); 
+					showTab('#tabbackup2');
+				}
+			)
+		}, 
+		function(){
+			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', function(){}, 'Error', 'OK');
+		}, 
+		function(){}
+	);
+}
 
 function doFinishSetup() {
 	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
@@ -1158,21 +1210,25 @@ function onPressConfirmPay(passphrase) {
 
 
 
-			sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
+			checkConnection(
 				function(){
-					navigator.notification.alert("Your payment was successfully sent.", 
+					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
 						function(){
-							clearPaymentScreen();
-							showTab("#tabaccounts");
-						}, "Success", "OK"); 
-				}, 
-				function() {
-					navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
-					function(){
-						lastpaidnonce = "";
-						showTab(-1);
-					}, 
-					"Error", "OK");
+							navigator.notification.alert("Your payment was successfully sent.", 
+								function(){
+									clearPaymentScreen();
+									showTab("#tabaccounts");
+								}, "Success", "OK"); 
+						}, 
+						function() {
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
+							function(){
+								lastpaidnonce = "";
+								showTab(-1);
+							}, 
+							"Error", "OK");
+						}
+					);
 				}
 			);
 		},
@@ -1270,6 +1326,37 @@ function hideSpinner() {
 var db;
 var walletsalt;
 
+
+function exportWallet(exportfunc) {
+
+	db.get("pindata").then(function(pindata) {
+		db.get("ppdata").then(function(ppdata) {
+			db.get("rpdata").then(function(rpdata) {
+				db.get("accounts").then(function(accounts) {
+		
+					var exp = {walletversion: "1.0"};
+					if (pindata.data != undefined) { exp['pindata'] = JSON.parse(pindata.data); }
+					if (ppdata.data != undefined) { exp['ppdata'] = JSON.parse(ppdata.data); }
+					if (rpdata.data != undefined) { exp['rpdata'] = JSON.parse(rpdata.data); }
+					if (accounts.data != undefined) { exp['accounts'] = JSON.parse(accounts.data); }
+
+					var json =  JSON.stringify(exp);
+					exportfunc(sodium.crypto_generichash(4, json, '', 'hex') + json);
+				});
+			});
+		});
+	});
+}
+
+function doCopyBackup() {
+	 $('#restorebackup').val(cordova.plugins.clipboard.paste(
+		function() {
+		},
+		function() {
+		}
+	));
+
+}
 
 function dbgdumpdata() {
 	var f = function(x) {console.log(x);}
@@ -2243,17 +2330,31 @@ function generateAddress(secret) {
 	};
 }
 
+function checkConnection(connectedfunc) {
+	if (navigator.connection.type == 'Connection.NONE') {
+		navigator.notification.alert('Internet Connection Lost.', 
+			function() {
+				showTab('#tablogin');
+				normalboot();
+			},
+			'Connection Lost',
+			'OK'
+		);
+	} else {
+		connectedfunc();
+	}
+}
+
 function connectToRipple(funcsuccess) {
 	remote.connect(function(err, res) {
 			if (err) {
-			console.log(err);
-//			$("#loaderror").innerText = err;			
 				connectToRipple(funcsuccess);
 			} else {
 				hideSpinner();
+				
 				funcsuccess();
 			}
-			});
+	});
 }
 
 var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
@@ -2384,6 +2485,9 @@ function getTransactions(address, marker) {
 
 
 <script>
+
+
+
 $(".toggleswitch").bind('touchstart',function() {
 	var ele = $($(this).children()[0]);
 	if (ele.hasClass("fa-toggle-off")) {
@@ -2396,13 +2500,14 @@ $(".toggleswitch").bind('touchstart',function() {
 		$(this).data("checked", "false");
 	}
 });
-
+/*
 	$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
 	$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
 	$('.btn').on('cut copy paste',function(e){e.preventDefault();});
 	$('label').on('cut copy paste',function(e){e.preventDefault();});
 	$('#accountdetailsselector').on('cut copy paste',function(e){e.preventDefault();});
 	$('.fa').on('cut copy paste',function(e){e.preventDefault();});
+*/
 </script>
 </body>
 </html>
