@@ -280,7 +280,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
 	<br>
 	<center>
-		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
+		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
 	</center>
 </div>
 
@@ -595,6 +595,7 @@ function doFinishSetup() {
 }
 
 function doResetPin(passphrase, successfunc, failfunc) {
+	unblockInput();
 
 	var s;
 	validatePassphaseOrRecovery(passphrase,
@@ -631,6 +632,8 @@ function doResetPin(passphrase, successfunc, failfunc) {
 
 function setAndShowNewRecoveryPhrase(passphrase) {
 
+	blockInput();
+
 	var randomWord = function() {
 		var vowels = ['a', 'e', 'i', 'o', 'u'];
 		var consts =  ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'qu', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'tt', 'ch', 'sh'];
@@ -657,10 +660,14 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 	setPassphrase(rp, passphrase, true, 
 		function(){ 
 			showTab("#tabshowrecovery"); 
+			unblockInput();
 		}, 
 		function() {
 			navigator.notification.alert('Unable to setup your recovery phrase, possibly due to a device error or out of storage. Toast Wallet cannot proceed and will now restart.', 
-			function(){ restart(); }, 'Fatal Error', "OK");
+			function(){ 
+				restart(); 
+				unblockInput(); 
+			}, 'Fatal Error', "OK");
 	});
 
 }
