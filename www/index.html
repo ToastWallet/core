@@ -24,6 +24,7 @@
 <div id="inputblocker" style="display:none">&nbsp;</div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
+	var debug = true;
 	$('body').on('cut copy paste',function(e){e.preventDefault();});
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -581,6 +582,7 @@ function unblockInput() {
 
 
 function doGenerateBackup() {
+	if (debug) console.log("doGenerateBackup");
 	blockInput();
 	validatePassphrase(
 		$('#backuppassword').val(), false,
@@ -609,6 +611,7 @@ function doGenerateBackup() {
 }
 
 function doFinishSetup() {
+	if (debug) console.log("doFinishSetup");
 	blockInput();
 	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
 		navigator.notification.alert("You must write your recovery phrase down.", 
@@ -630,18 +633,18 @@ function doFinishSetup() {
 }
 
 function doResetPin(passphrase, successfunc, failfunc) {
-	unblockInput();
+	if (debug) console.log("doResetPin");
+	blockInput();
 
 	var s;
 	validatePassphaseOrRecovery(passphrase,
 		s = function() {
-
+			unblockInput();
 			var f;
 			runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
 				// there is no way to fail validation on this screen.
 				return true;
 			}, f = function(pin1) {
-			
 				runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
 					return currenttab == '#tabpinset1' || pin1 == pin2;
 				}, function(pin2) {
@@ -658,6 +661,7 @@ function doResetPin(passphrase, successfunc, failfunc) {
 			}, function(){});
 		},
 		function() {
+			unblockInput();
 			navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
 		},
 		s
@@ -725,6 +729,7 @@ function passphraseComplexityCheck(pp){
 	return msg;
 }
 function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
+	if (debug) console.log("doResetPassphrase");
 	blockInput();
 	if (pp1 != pp2) {
 		navigator.notification.alert("The passphrases do not match.", 
@@ -809,6 +814,7 @@ function scanQR(intofield, returntab) {
 }
 
 function doSelectAccount(accselected, nickname) {
+	if (debug) console.log("doSelectAccount");
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {	
 		acc.removeClass("active");
@@ -875,6 +881,7 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 }
 
 function doDeleteAccount(passphrase, address, toggle) {
+	if (debug) console.log("doDeleteAccount");
 	blockInput();
         if (!toggle) {
                 navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
@@ -928,6 +935,7 @@ function doDeleteAccount(passphrase, address, toggle) {
 }
 
 function doRevealRippleSecret(passphrase, address) {
+	if (debug) console.log("doRevealRippleSecret");
 	blockInput();
         validatePassphrase(passphrase, false,
                 function() {
@@ -1041,6 +1049,7 @@ var pinpadfailure = function() {}
 
 
 function runPinPad(tab, validationfunc, successfunc, failurefunc) {
+	if (debug) console.log("runPinPad");
 	pinpadvalidate = validationfunc;
 	pinpadsuccess = successfunc;
 	pinpadfailure = failurefunc;
@@ -1056,6 +1065,7 @@ function runPinPad(tab, validationfunc, successfunc, failurefunc) {
  * secrets.
 **/
 function doShowLogin() {
+	if (debug) console.log("doShowLogin");
 	runPinPad("#tablogin", function(pin) {
 		validatePin(pin, function() {
 			$("#btnbootstrapsequence").hide();
@@ -1095,6 +1105,7 @@ function shakeandclearpinpad(afterfunc) {
 var enteredpin = "";
 var PIN_MAX = 6;
 function doPinPad(x) {
+	if (debug) console.log("doPinPad");
 	var val = x.trim();
 	if ((val == "" || val == undefined) && enteredpin != "") {
 		enteredpin = enteredpin.slice(0,-1);
@@ -1146,6 +1157,8 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 
 function showTab(tab) {
+
+	if (debug) console.log("showTab(" + tab + ")");
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
@@ -1272,6 +1285,7 @@ function showTab(tab) {
 
 var generatedAccount = {};
 function doShowAndGenerateAccount() {
+	if (debug) console.log("doShowAndGenerateAccount");
 	blockInput();
 	generatedAccount = generateAddress();
 	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
@@ -1281,11 +1295,13 @@ function doShowAndGenerateAccount() {
 
 
 function doImportExistingAccount(passphrase, nickname, secret) {
+	if (debug) console.log("doImportExistingAccount");
 	generatedAccount.secret = secret;
 	doImportGeneratedAccount(passphrase, nickname);
 }
 
 function doImportGeneratedAccount(passphrase, nickname) {
+	if (debug) console.log("doImportGeneratedAccount");
 	blockInput();
 	if (nickname == undefined) nickname = "";
 	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
@@ -1334,6 +1350,7 @@ function clearPaymentScreen() {
 }
 
 function doConfirmPay(passphrase) {
+	if (debug) console.log("doConfirmPay");
 	if (confirmpay.nonce == lastpaidnonce) {
 		// this is an accidental double tap
 		return;
@@ -1408,7 +1425,7 @@ var confirmpay = {};
 var confirmpayhash = "";
 var lastpaidnonce;
 function doPay(nonce) {
-
+	if (debug) console.log("doPay");
 	blockInput();
 
 	var payfrom = $("#payfromaccount").find(":selected").text();
@@ -1529,6 +1546,7 @@ function exportWallet(exportfunc) {
 }
 
 function doCopyBackup() {
+	if (debug) console.log("doCopyBackup");
 	blockInput();
 	$('#restorebackup').val(cordova.plugins.clipboard.paste(
 		function() {
@@ -1745,7 +1763,7 @@ function __freshinstall() {
 
 
 function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, recoveryphraseverified) {
-
+	if (debug) console.log("doDataCorruptionRecovery");
 	blockInput();
 
 	var freshinstall = __freshinstall;
@@ -2114,10 +2132,12 @@ function _validatePassphraseCacheHit(passphrase) {
 
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
 
+	if (debug) console.log("validatePassphrase");
 	if (!isrecoveryphrase && _validatePassphraseCacheHit(passphrase)) return true;
 
         var f = function(ppdata) { try {
                 if (ppdata.data == undefined || ppdata.data == "") {
+			if (debug) console.log("validatePassphrase - no passphrase set");
                         return nopassphrasefunc();
                 } else {
                         ppdata = JSON.parse(ppdata.data);
@@ -2132,12 +2152,14 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 
 			pphash = tohex_chksum(pphash);
                         if (pphash == ppdata.hash) {
+				if (debug) console.log("validatePassphrase - correct");
 				if (!isrecoveryphrase) {
 					validatePassphraseCache.salt = sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES);
 					validatePassphraseCache.hash = sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');
 				}
                                 return successfunc();
 			}
+			if (debug) console.log("validatePassphrase - incorrect");
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
 
@@ -2638,6 +2660,7 @@ function validateSecret(x) {
 
 
 function doGetTransactions(address, marker) {
+	if (debug) console.log("doGetTransactions");
 	blockInput();
 	$.ajax({
 		url: 'https://data.ripple.com/v2/accounts/' + 
