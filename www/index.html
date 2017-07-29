@@ -146,7 +146,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button type="button" class="btn btn-primary" ontouchstart="showAndGenAccount();">Generate New Address</button><br />
+		<button type="button" class="btn btn-primary" ontouchstart="doShowAndGenerateAccount();">Generate New Address</button><br />
 		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
@@ -166,7 +166,7 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="importExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
@@ -546,6 +546,7 @@ function unblockInput() {
 
 
 function doGenerateBackup() {
+	blockInput();
 	validatePassphrase(
 		$('#backuppassword').val(), false,
 		function(){
@@ -553,19 +554,35 @@ function doGenerateBackup() {
 				function(data){
 					$('#walletbackup').val( data ); 
 					showTab('#tabbackup2');
+					unblockInput();
 				}
 			)
 		}, 
 		function(){
-			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', function(){}, 'Error', 'OK');
+			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', 
+				function(){
+					unblockInput();
+				}, 
+				'Error', 
+				'OK'
+			);
 		}, 
-		function(){}
+		function(){
+			unblockInput();
+		}
 	);
 }
 
 function doFinishSetup() {
+	blockInput();
 	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
-		navigator.notification.alert("You must write your recovery phrase down.", function(){}, "STOP", "OK");
+		navigator.notification.alert("You must write your recovery phrase down.", 
+			function(){
+				unblockInput();
+			}, 
+			"STOP", 
+			"OK"
+		);
 		return;
 	}
 
@@ -574,9 +591,11 @@ function doFinishSetup() {
 
 	// we're all done
 	showTab("#tabaccounts");
+	unblockInput();
 }
 
 function doResetPin(passphrase, successfunc, failfunc) {
+
 	var s;
 	validatePassphaseOrRecovery(passphrase,
 		s = function() {
@@ -664,14 +683,27 @@ function passphraseComplexityCheck(pp){
 	return msg;
 }
 function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
+	blockInput();
 	if (pp1 != pp2) {
-		navigator.notification.alert("The passphrases do not match.", function(){}, "Error", "OK");
+		navigator.notification.alert("The passphrases do not match.", 
+			function(){
+				unblockInput();
+			}, 
+			"Error", 
+			"OK"
+		);
 		return;
 	}
 
 	var complexity = passphraseComplexityCheck(pp1);
 	if (complexity != "") {
-		navigator.notification.alert("The passphrase must " + complexity, function(){},  "Error", "OK");
+		navigator.notification.alert("The passphrase must " + complexity, 
+			function(){
+				unblockInput();
+			},  
+			"Error", 
+			"OK"
+		);
 		return;
 	}
 	
@@ -682,10 +714,17 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
 			navigator.notification.alert("Your new passphrase has been set", 
 				function(){
 					successfunc();
+					unblockInput();
 				}, "Success", "OK");
 		}, function() {
 			//failure
-			navigator.notification.alert("Old passphrase is incorrect.", function(){}, "Failure", "OK");
+			navigator.notification.alert("Old passphrase is incorrect.", 
+				function(){
+					unblockInput();
+				}, 
+				"Failure", 
+				"OK"
+			);
 		}
 	);
 }
@@ -794,6 +833,7 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 }
 
 function doDeleteAccount(passphrase, address, toggle) {
+	blockInput();
         if (!toggle) {
                 navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
                 return;
@@ -803,24 +843,50 @@ function doDeleteAccount(passphrase, address, toggle) {
 		function() {
 			removeSecret(address, 
 				function() { 
-					navigator.notification.alert("Account deleted successfully", function(){showTab("#tabaccounts");}, "Success", "OK");
+					navigator.notification.alert("Account deleted successfully", 
+						function(){
+							showTab("#tabaccounts");
+							unblockInput();
+						}, 
+						"Success", 
+						"OK"
+					);
 				}, 
 				function() {
-					navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", function(){}, "Failure", "OK");
+					navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", 
+						function(){
+							unblockInput();
+						}, 
+						"Failure", 
+						"OK"
+					);
 				}
 			);
 		},
 		function() {
-			navigator.notification.alert("Your passphrase is incorrect. Recovery phrase cannot be used here.", function(){}, "Error", "OK");
+			navigator.notification.alert("Your passphrase is incorrect. Recovery phrase cannot be used here.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
 		},
 		function() {
-			navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", function(){}, "Failure", "OK");
+			navigator.notification.alert("Account deletion failed. Your wallet may be corrupted. We recommend making a backup.", 
+				function(){
+					unblockInput();
+				}, 
+				"Failure", 
+				"OK"
+			);
 		}
 	);
 	
 }
 
 function doRevealRippleSecret(passphrase, address) {
+	blockInput();
         validatePassphrase(passphrase, false,
                 function() {
 			getSecretForAccount(passphrase, address, function(secret) {
@@ -829,16 +895,36 @@ function doRevealRippleSecret(passphrase, address) {
 				$("#tabaccountsecret input[type='password']").hide();
         	                $("#accsecret").append(secret);
                 	        $("#accsecretqr").append(kjua({text: secret}));				
+				unblockInput();
 			}, function() {
-                        	navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+                        	navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+					function(){
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
 			});
 
                 },
                 function() {
-                        navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", function(){$("#genaccpassword").focus();}, "Error", "OK");
+                        navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
+				function(){
+					$("#genaccpassword").focus();
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
                 },
                 function() {
-                        navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+                        navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
                 }
         );
 
@@ -1143,19 +1229,22 @@ function showTab(tab) {
 }
 
 var generatedAccount = {};
-function showAndGenAccount() {
+function doShowAndGenerateAccount() {
+	blockInput();
 	generatedAccount = generateAddress();
 	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
 	showTab("#tabgenaccount");	
+	unblockInput();
 }
 
 
-function importExistingAccount(passphrase, nickname, secret) {
+function doImportExistingAccount(passphrase, nickname, secret) {
 	generatedAccount.secret = secret;
 	doImportGeneratedAccount(passphrase, nickname);
 }
 
 function doImportGeneratedAccount(passphrase, nickname) {
+	blockInput();
 	if (nickname == undefined) nickname = "";
 	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
 	validatePassphrase(passphrase, false, 
@@ -1165,20 +1254,34 @@ function doImportGeneratedAccount(passphrase, nickname) {
 					// success
 					generatedAccount = {};
 					showTab('#tabaccounts'); 
+					unblockInput();
 				},
 				function() {
 					// import failure will produce its own message 
+					unblockInput();
 				}
 			);
 		},
 		function() {
-			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", function(){$("#genaccpassword").focus();}, "Error", "OK");
+			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
+				function(){
+					$("#genaccpassword").focus();
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
 		},
 		function() {
-			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", function(){}, "Error", "OK");
+			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
 		}
 	);
-
 }
 
 function clearPaymentScreen() {
@@ -1193,12 +1296,20 @@ function doConfirmPay(passphrase) {
 		// this is an accidental double tap
 		return;
 	} 
+	blockInput();
 
 	lastpaidnonce = confirmpay.nonce;
 	validatePassphrase(passphrase, false,
 		function() {
 			if (confirmpay == undefined || confirmpay.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+confirmpay.nonce, 'hex') != confirmpayhash ) {
-				navigator.notification.alert("An error occured when trying to make your payment. No payment was made.", function(){showTab(-1);}, "Error", "OK");
+				navigator.notification.alert("An error occured when trying to make your payment. No payment was made.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
 				return;
 			}
 
@@ -1212,6 +1323,7 @@ function doConfirmPay(passphrase) {
 								function(){
 									clearPaymentScreen();
 									showTab("#tabaccounts");
+									unblockInput();
 								}, "Success", "OK"); 
 						}, 
 						function() {
@@ -1219,6 +1331,7 @@ function doConfirmPay(passphrase) {
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
+								unblockInput();
 							}, 
 							"Error", "OK");
 						}
@@ -1230,16 +1343,22 @@ function doConfirmPay(passphrase) {
 			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
 				function(){
 					lastpaidnonce = "";
+					unblockInput();
 				},				
 				"Error", "OK"
 			);
 		},
 		function() { 
-			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", function(){lastpaidnonce = "";}, "Error", "OK");
+			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lastpaidnonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
 		}
 	);
-
-
 }
 
 
@@ -1247,6 +1366,8 @@ var confirmpay = {};
 var confirmpayhash = "";
 var lastpaidnonce;
 function doPay(nonce) {
+
+	blockInput();
 
 	var payfrom = $("#payfromaccount").find(":selected").text();
 	var payto = $("#toaddress").val();
@@ -1259,19 +1380,40 @@ function doPay(nonce) {
 	if (dest == "") dest = 0;
 
 	if (payfrom == "") {
-		navigator.notification.alert("You must select an account to pay from", function(){$("#payfromaccount").focus();}, "Select a from account", "OK");
+		navigator.notification.alert("You must select an account to pay from", 
+			function(){
+				$("#payfromaccount").focus();
+				unblockInput();
+			}, 
+			"Select a from account", 
+			"OK"
+		);
 		return;
 	}
 
 
 	if (payto == "") {
-		navigator.notification.alert("You must select an address to pay to", function(){$("#toaddress").focus();}, "Select a to address", "OK");
+		navigator.notification.alert("You must select an address to pay to", 
+			function(){
+				$("#toaddress").focus();
+				unblockInput();
+			}, 
+			"Select a to address", 
+			"OK"
+		);
 		return;
 	}
 
 
 	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
-		navigator.notification.alert("You must select a valid amount to send", function(){$("#payamount").focus();}, "Select a payment amount", "OK");
+		navigator.notification.alert("You must select a valid amount to send", 
+			function(){
+				$("#payamount").focus();
+				unblockInput();
+			}, 
+			"Select a payment amount", 
+			"OK"
+		);
 		return;
 	}
 
@@ -1293,6 +1435,8 @@ function doPay(nonce) {
 	$('#confirmpayamount')[0].innerText = amount + " XRP";
 
 	showTab("#tabpaymentconfirm");
+	
+	unblockInput();
 }
 
 
@@ -1343,10 +1487,13 @@ function exportWallet(exportfunc) {
 }
 
 function doCopyBackup() {
-	 $('#restorebackup').val(cordova.plugins.clipboard.paste(
+	blockInput();
+	$('#restorebackup').val(cordova.plugins.clipboard.paste(
 		function() {
+			unblockInput();
 		},
 		function() {
+			unblockInput();
 		}
 	));
 
@@ -1557,6 +1704,8 @@ function __freshinstall() {
 
 function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, recoveryphraseverified) {
 
+	blockInput();
+
 	var freshinstall = __freshinstall;
 
 	if (passphrase == undefined) passphraseverified = false;
@@ -1565,9 +1714,9 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 	if (c.ppdata == 'ok' && passphrase != undefined && passphraseverified == undefined) {
 		// validate the passphrase provided
 		validatePassphrase(passphrase, false, 
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, true, recoveryphraseverified); },
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); },
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); }
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, true, recoveryphraseverified); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, false, recoveryphraseverified); }
 		);
 		return;
 	} else passphraseverified = false;
@@ -1575,9 +1724,9 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 	if (c.rpdata == 'ok' && recoveryphrase != undefined && recoveryphraseverified == undefined) {
 		// validate the recoveryphrase provided
 		validatePassphrase(passphrase, true, 
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, true); },
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); },
-			function() { doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); }
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, true); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); },
+			function() { unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverified, false); }
 		);
 		return;
 	} else passphraseverified = false;
@@ -1621,9 +1770,9 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 
 			navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", function() {
 				c.accounts = 'ok';
-				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){ doDataCorruptionRecovery(c, passphrase, recoveryphrase); }).catch(function(x){ 
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){ unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase); }).catch(function(x){ 
 					navigator.notification.alert("Recovery process could not write to your device's storage. Please free up some space or grant the correct permissions and try again.",
-						function(){}, "Fatal Error", "OK"
+						function(){unblockInput();}, "Fatal Error", "OK"
 					);
 				});
 			}, "Recovery", "OK");
@@ -1654,7 +1803,7 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 
 				//todo: verify credentials from an account
 				console.log("todo: verify credentials from an account");
-				
+				unblockInput(); 
 			}
 
 			db.get("accounts").then(i).catch(i);
@@ -1664,6 +1813,7 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 
 			//todo: prompt for recovery phrase to reset passphrase
 			console.log("todo: prompt for recovery phrase to reset passphrase");
+			unblockInput(); 
 			return freshinstall();
 		}
 		
@@ -1672,12 +1822,20 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 	if (c.rpdata != 'ok') {
 		//todo: issue new recovery phrase here
 		console.log("todo: issue new recovery phrase here");
+		unblockInput(); 
 		return normalboot(); //todo: remove this when above todo is finished
 	}
 
 	if (c.pindata != 'ok') {
 		// pin recovery is nice and easy just show the pin recovery tab
-		navigator.notification.alert("Your PIN data is corrupt please set a new PIN using your passphrase or recovery phrase.", function(){showTab("#tabrecovery");}, "Change PIN", "OK");
+		navigator.notification.alert("Your PIN data is corrupt please set a new PIN using your passphrase or recovery phrase.", 
+			function(){
+				unblockInput(); 
+				showTab("#tabrecovery");
+			}, 
+			"Change PIN", 
+			"OK"
+		);
 		return;
 	}
 
@@ -2434,6 +2592,7 @@ function validateSecret(x) {
 
 
 function doGetTransactions(address, marker) {
+	blockInput();
 	$.ajax({
 		url: 'https://data.ripple.com/v2/accounts/' + 
 		address + '/payments?currency=XRP&limit=10&descending=true&marker=' +
@@ -2472,6 +2631,7 @@ function doGetTransactions(address, marker) {
 		} else if (count > 0) {
 			root.append('<button type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
 		}
+		unblockInput();
 	});
 }
 
