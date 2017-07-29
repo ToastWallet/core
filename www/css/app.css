@@ -195,7 +195,6 @@ body {
     display: block;
     animation: fa-spin 2s infinite linear;
     z-index: 99999999999;
-    background: white;
     content: "\f021";
     color: #307ee0;
     font: normal normal normal 4em/1 FontAwesome;
