@@ -42,13 +42,17 @@
 
 
 	function afterCordovaLoad()  {
+		if (debug) console.log("afterCordovaLoad");
 		if (Keyboard != undefined) { try {
 			Keyboard.shrinkView(true);
 			Keyboard.hideFormAccessoryBar(true);
 			Keyboard.disableScrollingInShrinkView(true);
 		} catch(e) { handle_error(e); } }
 
+		if (debug) console.log("afterCordovaLoad:2");
+
 		document.addEventListener("pause", function(){
+			if (debug) console.log("onPause");
 			if (
 				currenttab != "#tabpinset1" && 
 				currenttab != "#tabpinset2"  && 
@@ -58,6 +62,8 @@
 				currenttab != "tablicense" &&
 				currenttab != "tabshowrecovery"
 			) {
+				if (debug) console.log("onPause - show login");
+				unblockInput();
 				showTab("#tablogin");
 			}
 		}, false);
@@ -2127,7 +2133,8 @@ function validatePassphaseOrRecovery(passphrase, successfunc, failurefunc, nopas
 */
 var validatePassphraseCache = {};
 function _validatePassphraseCacheHit(passphrase) {
-    return validatePassphraseCache.hash == sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');	
+	
+    return validatePassphraseCache.salt != undefined && validatePassphraseCache.hash == sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');	
 }
 
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
