@@ -200,7 +200,7 @@ Never share your recovery phrase with anyone.</p>
     
 </div>
 
-<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-recovery="true" data-title="Repeat New PIN" style="display: block;">
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-noright="true" data-title="Repeat New PIN" style="display: block;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -354,6 +354,7 @@ Never share your recovery phrase with anyone.</p>
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsbackupwallet">Backup Wallet</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup">Restore Wallet</button></center></div>
@@ -484,14 +485,12 @@ NO WARRANTY
 <ul id="navfooter" style="display:none">
 	<li id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></li>
 	<li id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fa fa-usd" aria-hidden="true"></i></li>
-	<li id="navreceive"  ontouchstart="showTab('#tabreceive');" ><i class="fa fa-inbox" aria-hidden="true"></i></li>
 	<li id="navsettings" ontouchstart="showTab('#tabsettings');"><i class="fa fa-cog" aria-hidden="true"></i></li>
 </ul>
 
 <ul id="dummyfooter">
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
-	<li><i class="fa fa-inbox" aria-hidden="true"></i></li>
 	<li><i class="fa fa-home" aria-hidden="true"></i></li>
 </ul>
 
@@ -522,8 +521,9 @@ function doFinishSetup() {
 }
 
 function doResetPin(passphrase, successfunc, failfunc) {
-	validatePassphaseOrRecovery(recoveryphrase,
-		function() {
+	var s;
+	validatePassphaseOrRecovery(passphrase,
+		s = function() {
 
 			var f;
 			runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
@@ -548,7 +548,8 @@ function doResetPin(passphrase, successfunc, failfunc) {
 		},
 		function() {
 			navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
-		}
+		},
+		s
 	);
 }
 
@@ -1817,7 +1818,7 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 
 }
 
-function validatePassphaseOrRecovery(passphrase, succesfunc, failurefunc, nopassphrasefunc) {
+function validatePassphaseOrRecovery(passphrase, successfunc, failurefunc, nopassphrasefunc) {
         validatePassphrase(passphrase, false,
 		successfunc,
                 function() {
@@ -2040,7 +2041,7 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                         var old32secret =
                                                 sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
                                                         oldphrase,
-                                                        ppsalt1,
+                                                        oldsalt1,
                                                         sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                                                         sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
 
@@ -2102,41 +2103,59 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 				accounts = JSON.parse(accounts.data);
 
 				for (var public_addr in accounts) {
-					var ppsalt;
-					var ppciphertext;
+					var oldppsalt;
+					var oldppciphertext;
 					if (mode == 0) { // get secret using passphrase
-						ppsalt = fromhex_chksum(accounts[public_addr].ppsalt);
-						ppciphertext = fromhex_chksum(accounts[public_addr].ppsecret);
+						oldppsalt = fromhex_chksum(accounts[public_addr].ppsalt);
+						oldppciphertext = fromhex_chksum(accounts[public_addr].ppsecret);
 					} else if (mode == 1) { // get secret using recovery phrase
-						ppsalt = fromhex_chksum(accounts[public_addr].rpsalt);
-						ppciphertext = fromhex_chksum(accounts[public_addr].rpsecret);
+						oldppsalt = fromhex_chksum(accounts[public_addr].rpsalt);
+						oldppciphertext = fromhex_chksum(accounts[public_addr].rpsecret);
 					}
 
 
-					var nonce = ppciphertext.slice(0, sodium.crypto_box_NONCEBYTES);
-					var ppciphertext = ppciphertext.slice(sodium.crypto_box_NONCEBYTES);					
+					var oldnonce = oldppciphertext.slice(0, sodium.crypto_box_NONCEBYTES);
+					var oldppciphertext = oldppciphertext.slice(sodium.crypto_box_NONCEBYTES);					
 
 					var newnonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
 					var newppsalt = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
-						/* this is the plaintext */
-						sodium.crypto_secretbox_open_easy(ppciphertext, nonce, 
-							/* this is the old key to unlock the cipher text */
-							sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
+
+					var oldsecret32key = sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
                                                                 	oldphrase,
 	                                                                oldsalt1,
         	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                 	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
-                        	                                ppsalt,
+                        	                                oldppsalt,
                                 	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE) 
-							/* end of key */
-							),
-						/* end of plaintext */
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+
+
+					var newsecret32key = sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
+								sodium.crypto_pwhash_scryptsalsa208sha256(16,
+                                                                	newphrase,
+	                                                                newsalt1,
+        	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                        	                                newppsalt,
+                                	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					
+					var secret = sodium.crypto_secretbox_open_easy(oldppciphertext, oldnonce, oldsecret32key);
+				
+					oldsecret32key = "";
+
+					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
+						secret,
 						newnonce,
-						newppsalt,
-						'hex')));
+						newsecret32key,
+						'hex'))
+					);
+
+
+					secret = "";
+
+					newsecret32key = "";
 
 					if (issettingrecoveryphrase) {
 						accounts[public_addr].rpsalt = tohex_chksum(newppsalt);
