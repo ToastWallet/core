@@ -1902,10 +1902,7 @@ bindEvents: function() {
 	    // function, we must explicitly call 'app.receivedEvent(...);'
 onDeviceReady: function() {
 		       	db = new PouchDB('toastwallet');
-			afterCordovaLoad();
-
-
-			dbgdumpdata();
+			setTimeout(afterCordovaLoad(), 0);
 
 
 
