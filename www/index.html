@@ -38,6 +38,41 @@
 	  $("html, body").animate({ scrollTop: $(document).height() }, "slow");
 	  return false;
 	});
+
+
+	function afterCordovaLoad()  {
+		if (Keyboard != undefined) { try {
+			Keyboard.shrinkView(true);
+			Keyboard.hideFormAccessoryBar(true);
+			Keyboard.disableScrollingInShrinkView(true);
+		} catch(e) { handle_error(e); } }
+
+		document.addEventListener("pause", function(){
+			if (
+				currenttab != "#tabpinset1" && 
+				currenttab != "#tabpinset2"  && 
+				currenttab != "#tabsetpassphrase" && 
+				currenttab != "#tabrecovery" && 
+				currenttab != "tabcorruptionprompt" &&
+				currenttab != "tablicense" &&
+				currenttab != "tabshowrecovery"
+			) {
+				showTab("#tablogin");
+			}
+		}, false);
+	
+	        window.screen.orientation.lock('portrait');
+		/* This is a visual patch for iOS devices where the phone uses a margin at the top
+		** for various status indicators. 
+		*/
+		console.log("device.platform = " + device.platform);
+		if ((device.platform + "").toLowerCase() == 'ios') {
+			$("#navheader").addClass("iosheader");
+			$("body").addClass("iosheader");
+			console.log('added iosheader class');
+
+		}
+	}
 </script>
 
 <div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: block;">
@@ -53,7 +88,7 @@
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: block;">  
     <div>
-	<label for="backuppassword">Passphrase or Recovery Phrase</label><input type="password" id="backuppassword" class="form-control" placeholder="">
+	<label for="backuppassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="backuppassword" class="form-control" placeholder="">
     </div>
     <br>
     <div align="right"><button class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
@@ -65,7 +100,7 @@
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
-	<label for="restorepassword">Passphrase or Recovery Phrase</label><input type="password" id="restorepassword" class="form-control" placeholder="">
+	<label for="restorepassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
@@ -105,7 +140,7 @@ Never share your recovery phrase with anyone.</p>
 	<center><div id="accdetailssecretaddress" style="color:black"></div></center>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input type="password" id="rsecaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress')[0].innerText);">Reveal Ripple Secret</button></div></center>
 	<center><div id="accsecret" style="color:blue"></div></center><br />
@@ -117,7 +152,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:red;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
-                <input type="password" id="delaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 	<center><div id="accsecret" style="color:blue"></div></center><br />
@@ -154,17 +189,17 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
-		<input class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<input ontouchstart="$(this).focus();" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
 	<br>
         <label for="toaccount">Account Nickname (optional)</label>
         <div>
-        <input type="text" id="extaccnick" class="form-control" placeholder="">
+        <input ontouchstart="$(this).focus();" type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input type="password" id="extaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus();" type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
@@ -270,11 +305,11 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
 	<label>Set a Passphrase</label>
 	<div>
-		<input type="password" id="setpassword1" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
 	<br><label>Repeat Passphrase</label>
 	<div>
-		<input type="password" id="setpassword2" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
 	<br>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
@@ -287,15 +322,15 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
 	<div>
-		<input type="password" id="setpassword3" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase</label>
 	<div>
-	<input type="password" id="setpassword4" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="password" id="setpassword4" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase Again</label>
 	<div>
-		<input type="password" id="setpassword5" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus();" type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
 	<br>
 	<center>
@@ -311,11 +346,11 @@ Never share your recovery phrase with anyone.</p>
 	<br />
         <label for="toaccount">Account Nickname (optional)</label>
         <div>
-        <input type="text" id="newaccnick" class="form-control" placeholder="">
+        <input ontouchstart="$(this).focus();" type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input type="password" id="genaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus();" type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
@@ -344,7 +379,7 @@ Never share your recovery phrase with anyone.</p>
     <br>
         <label>Enter your Passphrase</label>
         <div>
-                <input type="password" id="confirmpaypassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus();" type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
@@ -359,7 +394,7 @@ Never share your recovery phrase with anyone.</p>
 
 	<label for="toaccount">To Address</label>
 	<div class="input-group">
-	<input type="text" id="toaddress" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
 	</span>
@@ -369,19 +404,19 @@ Never share your recovery phrase with anyone.</p>
 
 	<label for="desttag">Destination Tag (optional)</label>
 	<div>
-	<input type="text" id="desttag" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="desttag" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="invoiceid">Invoice ID (optional)</label>
 	<div>
-	<input type="text" id="invoiceid" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="invoiceid" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="payamount">Amount</label>
 	<div class="input-group">
-	<input type="text" id="payamount" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus();" type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
@@ -399,7 +434,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: block;">  
     <div>
-	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
     <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
@@ -409,10 +444,10 @@ Never share your recovery phrase with anyone.</p>
     <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
     <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
     <div>
-        <label for="corruptionpp">Passphrase</label><input type="password" id="corruptionpp" class="form-control" placeholder="">
+        <label for="corruptionpp">Passphrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionpp" class="form-control" placeholder="">
     </div>
     <div>
-        <label for="corruptionrp">Recovery Phrase</label><input type="password" id="corruptionrp" class="form-control" placeholder="">
+        <label for="corruptionrp">Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
     <div><center><button type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
@@ -684,7 +719,7 @@ function passphraseComplexityCheck(pp){
 	if (!hascapital) msg += (msg == "" ? "have at least one: " : ", ") + "capital";
 	if (!haslowecase) msg += (msg == "" ? "have at least one: " : ", ") + "lowercase";
 	if (!hasnumber) msg += (msg == "" ? "have at least one: " : ", ") + "number";
-	if (!hasspecialchar) msg += (msg == "" ? "have at least one: " : ", ") + "non-alphanumeric";
+//	if (!hasspecialchar) msg += (msg == "" ? "have at least one: " : ", ") + "non-alphanumeric";
 	if (!islongenough) msg += (msg == "" ? "" : ", and ") + "be at least "+minlen+" long";
 
 	return msg;
@@ -1866,19 +1901,9 @@ bindEvents: function() {
 	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
 	    // function, we must explicitly call 'app.receivedEvent(...);'
 onDeviceReady: function() {
-		       window.screen.orientation.lock('portrait');
-		       db = new PouchDB('toastwallet');
+		       	db = new PouchDB('toastwallet');
+			afterCordovaLoad();
 
-			/* This is a visual patch for iOS devices where the phone uses a margin at the top
-			** for various status indicators. 
-			*/
-			console.log("device.platform = " + device.platform);
-			if ((device.platform + "").toLowerCase() == 'ios') {
-				$("#navheader").addClass("iosheader");
-				$("body").addClass("iosheader");
-				console.log('added iosheader class');
-
-			}
 
 			dbgdumpdata();
 
@@ -2078,9 +2103,21 @@ function validatePassphaseOrRecovery(passphrase, successfunc, failurefunc, nopas
 
 }
 
+
+
+/* Passphrase validation is used only to test if a passphrase is correct or incorrect primarily as a guard
+** for real encryption/decryption routines running elsewhere. It also provides the ability to reset PIN
+** and in general guard against unwanted manipulation of data. To speed up the validation routine the first
+** successful validation will cache as a lightweight hash which will thereafter be used for validation.
+*/
+var validatePassphraseCache = {};
+function _validatePassphraseCacheHit(passphrase) {
+    return validatePassphraseCache.hash == sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');	
+}
+
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
 
-	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
+	if (!isrecoveryphrase && _validatePassphraseCacheHit(passphrase)) return true;
 
         var f = function(ppdata) { try {
                 if (ppdata.data == undefined || ppdata.data == "") {
@@ -2097,8 +2134,13 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 			passphrase=""; 
 
 			pphash = tohex_chksum(pphash);
-                        if (pphash == ppdata.hash)
+                        if (pphash == ppdata.hash) {
+				if (!isrecoveryphrase) {
+					validatePassphraseCache.salt = sodium.randombytes_buf(sodium.crypto_shorthash_KEYBYTES);
+					validatePassphraseCache.hash = sodium.crypto_shorthash(passphrase, validatePassphraseCache.salt, 'hex');
+				}
                                 return successfunc();
+			}
                         return failurefunc();
                 } } catch(e) { handle_error(e); } };
 
