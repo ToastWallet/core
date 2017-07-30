@@ -72,10 +72,10 @@
 				currenttab != "#tabpinset2"  && 
 				currenttab != "#tabsetpassphrase" && 
 				currenttab != "#tabrecovery" && 
-				currenttab != "tabcorruptionprompt" &&
-				currenttab != "tablicense" &&
-				currenttab != "tabshowrecovery" &&
-				currenttab != "tabqrscan" &&
+				currenttab != "#tabcorruptionprompt" &&
+				currenttab != "#tablicense" &&
+				currenttab != "#tabshowrecovery" &&
+				currenttab != "#tabqrscan" &&
 				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
 				if (debug) console.log("onPause - show login");
