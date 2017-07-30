@@ -77,7 +77,7 @@
 			) {
 				if (debug) console.log("onPause - show login");
 				unblockInput();
-				showTab("#tablogin");
+				doShowLogin();
 			}
 		}, false);
 	
@@ -1674,7 +1674,7 @@ function doRestoreBackup() {
 					navigator.notification.alert("Backup restored successfully!", 
 						function() {
 							unblockInput();
-							showTab("#tablogin");
+							doShowLogin();
 						}, 
 						"Success", 
 						"OK"
@@ -2728,7 +2728,7 @@ function checkConnection(connectedfunc) {
 			function() {
 				hideSpinner();
 				unblockInput();
-				showTab('#tablogin');
+				doShowLogin();
 				normalboot();
 			},
 			'Connection Lost',
