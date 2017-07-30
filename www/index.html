@@ -1660,7 +1660,7 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 
                                         } catch(e) { if (accounts.data != "") accountscorrupt = true; handle_error(e); }
 
-					if (pindatapresent && ppdatapresent && rpdatapresent /*&& accountspresent*/ && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && !accountscorrupt) {
+					if (pindatapresent && ppdatapresent && rpdatapresent && !pindatacorrupt && !ppdatacorrupt && !rpdatacorrupt && (!accountscorrupt || !accountspresent)) {
 						funcok();
 					} else if (!pindatapresent && !ppdatapresent && !rpdatapresent && !accountspresent) {
 						funcnodata();
