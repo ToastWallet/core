@@ -406,6 +406,19 @@ div.input-group>span.input-group-btn>button {
     word-wrap: break-word;
     width: 100%;
 }
+.copybtn {
+    max-width: 2.5em;
+    max-height: 2.5em;
+    min-width: 2.5em !important;
+    min-height: 2.5em;
+    padding: 0;
+    margin: 0;
+    color: black;
+    background: rgba(0,0,0,0.1);
+    border: none;
+    position: absolute;
+    right: 1em;
+}
 
 body:before {
     content: "A";
