@@ -2782,6 +2782,7 @@ function connectToRipple(funcsuccess) {
 	});
 }
 
+/* This code is from minimalist wallet by https://github.com/jatchili/ */
 var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
 function redefineSigningToAlwaysUseSecret(secret) {
 	if (!secret) {
@@ -2840,18 +2841,22 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
+					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
 				} else if ( (res != undefined && res.engine_result != undefined && res.engine_result == 'tesSUCCESS') ) {
+					remote.setSecret(null);
 					unblockInput();
 					successfunc();
 				} else {
+					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
 				}
 			});
 		},
 		function() {
+			remote.setSecret(null);
 			unblockInput();
 			failurefunc();
 		});
