@@ -232,7 +232,6 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
-	<div id="qrerror" class="input-group"></div>
 	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
@@ -807,10 +806,11 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 }
 
 var scanner;
+var timesincelastQR = 99999;
 function scanQR(intofield, returntab) {
 
+	showTab("#tabqrscan");
 	if (device.platform == 'browser') {
-		showTab("#tabqrscan");
 		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
 		scanner.addListener('scan', 
 			function (content) {
@@ -822,10 +822,17 @@ function scanQR(intofield, returntab) {
 				if (cameras.length > 0) {
 					scanner.start(cameras[0]);
 				} else {
-					$("#qrerror").innerText = 'Error: No cameras found.';
+					navigator.notification.alert("Could not find a camera on your device", 
+						function(){
+							showTab(returntab);
+						},
+						"Error",
+						"OK"
+					);
 				}
 				}).catch(function (e) {
-					console.error(e);
+					handle_error(e);
+					showTab(returntab);	
 				}
 			);
 	} else {
@@ -837,9 +844,15 @@ function scanQR(intofield, returntab) {
 					showTab(returntab);
 				}
 			},
-			function (error) {
-				showTab("#tabqrscan");
-				$("#qrerror").innerText = 'Error: No access to camera.';
+			function (e) {
+				navigator.notification.alert("Could not find a camera on your device", 
+					function(){
+						handle_error(e);
+						showTab(returntab);
+					},
+					"Error",
+					"OK"
+				);
 			}
 		);
 	}
