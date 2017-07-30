@@ -25,7 +25,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	$('body').on('cut copy paste',function(e){e.preventDefault();});
+	//$('*:not(input):not(textarea)').on('cut copy paste',function(e){e.preventDefault();});
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$("#morecontentindicator").hide();
@@ -109,7 +109,7 @@
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
-	<label for="restorepassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
+	<label for="restorepassword">Passphrase or Recovery Phrase (of current wallet)</label><input ontouchstart="$(this).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
@@ -146,12 +146,12 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
-	<center><div id="accdetailssecretaddress" style="color:black"></div></center>
+	<center><textarea id="accdetailssecretaddress" readonly="readonly" style="color:black"></textarea></center>
         <br><label>Enter your Passphrase</label>
         <div>
                 <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress')[0].innerText);">Reveal Ripple Secret</button></div></center>
+	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><div id="accsecret" style="color:blue"></div></center><br />
 	<center><div id="accsecretqr"></div></center>
 </div>
@@ -176,10 +176,10 @@ Never share your recovery phrase with anyone.</p>
 <ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-		<center><div id="accdetailsaddress"></div></center>
+		<center><textarea readonly="readonly" id="accdetailsaddress"></textarea></center>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountsecret');">Secret</button>
+			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
 			&nbsp;
 			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
 		</center>
@@ -1555,6 +1555,139 @@ function exportWallet(exportfunc) {
 	});
 }
 
+function importWallet(wallet, successfunc, failurefunc) {
+	if (debug) console.log("importWallet");
+	if (wallet.length < 8) return failurefunc();
+
+	var hash = wallet.slice(0, 8);
+	wallet = wallet.slice(8);
+
+	if (hash != sodium.crypto_generichash(4, wallet, '', 'hex')) return failurefunc();
+
+	try {
+		wallet = JSON.parse(wallet);
+	} catch(e) { handle_error(e); return failurefunc(); }
+
+	if (wallet.pindata == undefined || wallet.ppdata == undefined || wallet.rpdata == undefined || wallet.accounts == undefined) return failurefunc();
+
+
+
+        db.get("pindata").then(function(pindata) {
+                db.get("ppdata").then(function(ppdata) {
+                        db.get("rpdata").then(function(rpdata) {
+                                db.get("accounts").then(function(accounts) {
+
+
+	db.upsert("pindata",
+	function(doc) {
+		return { data: JSON.stringify(wallet.pindata)}; 
+	}).then(function(x){
+		db.upsert("ppdata",
+		function(doc) {
+			return { data: JSON.stringify(wallet.ppdata)}; 
+		}).then(function(x){
+			db.upsert("rpdata",
+			function(doc) {
+				return { data: JSON.stringify(wallet.rpdata)}; 
+			}).then(function(x){
+				db.upsert("accounts",
+				function(doc) {
+					return { data: JSON.stringify(wallet.accounts)}; 
+				}).then(function(x){
+					successfunc();
+				}).catch(function(x){
+					db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+						db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
+							db.upsert("rpdata", function(doc) { return { data: rpdata }; }).then(function() {
+								failurefunc();
+							}).catch(failurefunc);
+						}).catch(failurefunc);
+					}).catch(failurefunc);
+					});
+
+			}).catch(function(x){
+				// wind back pindata and ppdata
+				db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+					db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
+						failurefunc();
+					}).catch(failurefunc);
+				}).catch(failurefunc);
+			});
+
+		}).catch(function(x){
+			// wind back pindata
+			db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+				failurefunc();
+			}).catch(failurefunc);
+		});
+
+	}).catch(function(x){
+		failurefunc();
+	});
+
+                                });
+                        });
+                });
+        });
+
+		
+}
+
+function doRestoreBackup() {
+	if (debug) console.log('doRestoreBackup');
+	blockInput();
+	if ($('#tabrestore .toggleswitch').data('checked') != 'true') {
+		navigator.notification.alert("You must acknowledge that you understand this will DESTROY your current wallet.", 
+			function(){
+				unblockInput();
+			}, 
+			"STOP",
+			"OK"
+		);
+		return;
+	}
+
+	var f;	
+	validatePassphaseOrRecovery(
+		$('#restorepassword').val(),
+		f = function() {
+			importWallet(
+				$('#restorebackup').val(),
+				function() {
+					navigator.notification.alert("Backup restored successfully!", 
+						function() {
+							unblockInput();
+							showTab("#tablogin");
+						}, 
+						"Success", 
+						"OK"
+					);
+				},
+				function() {
+					navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
+						function() {
+							unblockInput();
+						},
+						"Error",
+						"OK"
+					);
+				}
+			);
+		},
+		function() {
+			navigator.notification.alert("Invalid pass/recovery phrase.",
+				function() {
+					unblockInput();
+				},
+				"Error",
+				"OK"
+			);
+		},
+		f // if no passphrase is set then we can restore the wallet
+	);
+
+}
+
 function doCopyBackup() {
 	if (debug) console.log("doCopyBackup");
 	blockInput();
@@ -2122,6 +2255,8 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 }
 
 function validatePassphaseOrRecovery(passphrase, successfunc, failurefunc, nopassphrasefunc) {
+	if (debug) console.log("validatePassphrase");
+	if (passphrase == "") return failurefunc();
         validatePassphrase(passphrase, false,
 		successfunc,
                 function() {
@@ -2151,6 +2286,7 @@ function _validatePassphraseCacheHit(passphrase) {
 function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefunc, nopassphrasefunc) {
 
 	if (debug) console.log("validatePassphrase");
+	if (passphrase == "") return failurefunc();
 	if (!isrecoveryphrase && _validatePassphraseCacheHit(passphrase)) return true;
 
         var f = function(ppdata) { try {

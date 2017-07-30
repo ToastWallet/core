@@ -391,17 +391,20 @@ div.input-group>span.input-group-btn>button {
     padding-bottom: 1em;
 }
 #generatedaddress, #accdetailsaddress, #accdetailssecretaddress {
-	font-size: 1.2em !important; 
-	color:black; 
-	border:1px dashed black; 
-	overflow-wrap:break-word; 
-	padding:0.2em; 
-	display:inline-block; 
-	max-width:100%; 
-	width:auto;
-	overflow:hidden;
-	text-overflow: clip;
-	word-wrap: break-word;
+    font-size: 1.2em !important;
+    color: black;
+    border: 1px dashed black;
+    resize: none;
+    box-shadow: none;
+    text-align: center;
+    overflow-wrap: break-word;
+    padding: 0.2em;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    word-wrap: break-word;
+    width: 100%;
 }
 
 body:before {
