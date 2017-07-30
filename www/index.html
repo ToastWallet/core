@@ -333,7 +333,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
 	<br>
 	<center>
-		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());});">Set Passphrase</button>
+		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);">Set Passphrase</button>
 	</center>
 </div>
 
@@ -564,7 +564,7 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){});">I Understand And Agree To The Above</button></center>
+<center><button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
 <br />
 <p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </div>
@@ -649,40 +649,45 @@ function doFinishSetup() {
 	unblockInput();
 }
 
-function doResetPin(passphrase, successfunc, failfunc) {
+function doResetPin(passphrase, successfunc, failfunc, firstrun) {
 	if (debug) console.log("doResetPin");
 	blockInput();
 
-	var s;
-	validatePassphaseOrRecovery(passphrase,
-		s = function() {
-			unblockInput();
-			var f;
-			runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
-				// there is no way to fail validation on this screen.
-				return true;
-			}, f = function(pin1) {
-				runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
-					return currenttab == '#tabpinset1' || pin1 == pin2;
-				}, function(pin2) {
-					if (currenttab == '#tabpinset1') return f(pin2);
-					if (currenttab == '#tablogin') return;
-					setPin(pin2, successfunc, function() {
-						navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
-					});
-				}, function(pin2) {
-					if (currenttab == '#tablogin') return;
-					navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
+	var s = function() {
+		unblockInput();
+		var f;
+		runPinPad( (currenttab == "#tabpinset1" ? "" : "#tabpinset1"), function(pin) {
+			// there is no way to fail validation on this screen.
+			return true;
+		}, f = function(pin1) {
+			runPinPad( (currenttab == "#tabpinset2" ? "" : "#tabpinset2"), function(pin2) {
+				return currenttab == '#tabpinset1' || pin1 == pin2;
+			}, function(pin2) {
+				if (currenttab == '#tabpinset1') return f(pin2);
+				if (currenttab == '#tablogin') return;
+				setPin(pin2, successfunc, function() {
+					navigator.notification.alert('The PIN failed to set. Please check this app has permission to store data.', failfunc, 'Could not set PIN', 'OK');
 				});
-			
-			}, function(){});
-		},
-		function() {
-			unblockInput();
-			navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
-		},
-		s
-	);
+			}, function(pin2) {
+				if (currenttab == '#tablogin') return;
+				navigator.notification.alert('The PINs do not match.', failfunc, 'Please try again', 'OK');
+			});
+		
+		}, function(){});
+	}
+
+	if (firstrun != undefined && firstrun) {
+		s();
+	} else {
+		validatePassphaseOrRecovery(passphrase,
+			s,
+			function() {
+				unblockInput();
+				navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
+			},
+			s
+		);
+	}
 }
 
 
@@ -745,7 +750,7 @@ function passphraseComplexityCheck(pp){
 
 	return msg;
 }
-function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
+function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 	if (debug) console.log("doResetPassphrase");
 	blockInput();
 	if (pp1 != pp2) {
@@ -789,7 +794,7 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
 				"Failure", 
 				"OK"
 			);
-		}
+		}, firstrun
 	);
 }
 
@@ -1176,6 +1181,8 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 function showTab(tab) {
 
 	if (debug) console.log("showTab(" + tab + ")");
+
+	unblockInput();
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
@@ -2333,10 +2340,8 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
  ** If issettingrecoveryphrase is set then it will write over rpdata.
  ** Oldpassphrase may be either their existing passphrase or the recovery phrase.
  */
-function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfunc, failurefunc) {
-
-	//if (typeof newphrase == 'string') newphrase = sodium.from_string(newphrase);
-	//if (typeof oldphrase == 'string') oldphrase = sodium.from_string(oldphrase);
+function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfunc, failurefunc, firstrun) {
+	if (debug) console.log("setPassphrase");
 
 	var passPhraseUpdate = function(mode) {
 		/* mode 0 - setting a new passphrase/recoveryphrase with valid current passphrase
@@ -2656,19 +2661,22 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 	// this code checks if the supplied oldpassphrase is either their current passphrase or the 
 	// recovery phrase, and returns to the above function accordingly, or if the current phrase is unset.
-	validatePassphrase(oldphrase, false, 
-		function() {passPhraseUpdate(0);}, 
-		function() {
-			// a recovery phrase cannot be used to set a recovery phrase.
-			if (issettingrecoveryphrase) return failurefunc();
-			validatePassphrase(oldphrase, true, 
-				function(){passPhraseUpdate(1);}, 
-				failurefunc, 
-				function(){passPhraseUpdate(2);}
-			);}, 
-		function(){passPhraseUpdate(2);}
-	);
-
+	if (firstrun != undefined && firstrun) {
+		passPhraseUpdate(2);
+	} else {
+		validatePassphrase(oldphrase, false, 
+			function() {passPhraseUpdate(0);}, 
+			function() {
+				// a recovery phrase cannot be used to set a recovery phrase.
+				if (issettingrecoveryphrase) return failurefunc();
+				validatePassphrase(oldphrase, true, 
+					function(){passPhraseUpdate(1);}, 
+					failurefunc, 
+					function(){passPhraseUpdate(2);}
+				);}, 
+			function(){passPhraseUpdate(2);}
+		);
+	}
 }
 
 function removeSecret(address, successfunc, failurefunc) {
