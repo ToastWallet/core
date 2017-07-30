@@ -64,6 +64,9 @@
 
 		if (debug) console.log("afterCordovaLoad:2");
 
+		new Clipboard('.copybtn');
+		new Clipboard('.copybtnnostyle');
+
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
 			if (
@@ -83,13 +86,16 @@
 	
 	}
 </script>
-<div id="testnetwarning" style="position: fixed;
+<div id="testnetwarning" style="
+    position: fixed;
     color: red;
     width: calc(100vw - 2em);
     left: 1em;
     background: white;
-    border: 1px solid black;
-    border-radius: 3px;"><button type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
+    box-shadow: 10px 10px rgba(0,0,0,0.5);
+    border-radius: 5px;
+    z-index: 9999999999999999;
+"><button type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
 <center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
@@ -97,11 +103,10 @@
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
-		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info" ontouchstart="doCopyBackup();">Copy</button>
+		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnnostyle" ontouchstart="">Copy</button>
 	</div>
 	</center><br>
 	<textarea style="color:black;" id="walletbackup"></textarea>
-	<script>new Clipboard('#btncopywallet');</script>
 </div>
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
@@ -156,7 +161,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
 	<center><textarea id="accdetailssecretaddress" readonly="readonly" style="color:black"></textarea></center>
-	<button type="button" class="btn copybtn"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<button type="button" id="btncopysecret" class="btn copybtn" data-clipboard-target="#accdetailssecretaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
         <br><label>Enter your Passphrase</label>
         <div>
                 <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
@@ -168,7 +173,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaccountdelete" class="screentab" data-title="Delete Account" data-hasback="true" style="display:none">
 	<center><div id="accdeleteaddress" style="color:black"></div></center><br>
-	<p style="color:red;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
+	<p style="color:red; text-align:justify; "><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
                 <input ontouchstart="$(this).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
@@ -187,6 +192,7 @@ Never share your recovery phrase with anyone.</p>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 		<center><textarea readonly="readonly" id="accdetailsaddress"></textarea></center>
+		<button type="button" id="btncopyaddress" class="btn copybtn" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
 			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
@@ -588,9 +594,9 @@ NO WARRANTY
 
 <script>
 
-function blockInput() {
+function blockInput(noloading) {
 	$("#inputblocker").show();
-	$('body').addClass('liteloading');
+	if (noloading == undefined || (noloading != undefined && !noloading)) $('body').addClass('liteloading');
 }
 
 function unblockInput() {
@@ -908,6 +914,7 @@ function doDeleteAccount(passphrase, address, toggle) {
 	blockInput();
         if (!toggle) {
                 navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
+		unblockInput();
                 return;
         }
 
@@ -1096,7 +1103,7 @@ function doShowLogin() {
 		}, function() {
 			$("#btnbootstrapsequence").hide();
                         setTimeout(function() {
-                                shakeandclearpinpad( function() { });
+                                doShakeAndClearPinPad( function() { });
                         }, 0);
 		}, function() {
 			$("#btnbootstrapsequence").hide();
@@ -1109,9 +1116,9 @@ function doShowLogin() {
 }
 
 
-function shakeandclearpinpad(afterfunc) {
+function doShakeAndClearPinPad(afterfunc) {
 	$(".pinpad").removeClass("shake");
-	blockInput();
+	blockInput(true);
 	setTimeout(function(){
 		$(".pinpad").addClass("shake");
 		setTimeout(
@@ -1152,7 +1159,7 @@ function doPinPad(x) {
 			renderEnteredPin();
 		} else {
 			setTimeout(function() {
-				shakeandclearpinpad( function() { pinpadfailure(enteredpin); });
+				doShakeAndClearPinPad( function() { pinpadfailure(enteredpin); });
 			}, 0);
 		}
 	}
@@ -1705,10 +1712,10 @@ function doRestoreBackup() {
 
 }
 
-function doCopyBackup() {
-	if (debug) console.log("doCopyBackup");
+function doCopy(id) {
+	if (debug) console.log("doCopy");
 	blockInput();
-	$('#restorebackup').val(cordova.plugins.clipboard.paste(
+	$(id).val(cordova.plugins.clipboard.paste(
 		function() {
 			unblockInput();
 		},
