@@ -43,11 +43,24 @@
 
 	function afterCordovaLoad()  {
 		if (debug) console.log("afterCordovaLoad");
-		if (Keyboard != undefined) { try {
+
+	        window.screen.orientation.lock('portrait');
+		/* This is a visual patch for iOS devices where the phone uses a margin at the top
+		** for various status indicators. 
+		*/
+		console.log("device.platform = " + device.platform);
+		if ((device.platform + "").toLowerCase() == 'ios') {
+			$("#navheader").addClass("iosheader");
+			$("body").addClass("iosheader");
+			console.log('added iosheader class');
+
+		}
+
+		/*if (Keyboard != undefined) { try {
 			Keyboard.shrinkView(true);
 			Keyboard.hideFormAccessoryBar(true);
 			Keyboard.disableScrollingInShrinkView(true);
-		} catch(e) { handle_error(e); } }
+		} catch(e) { handle_error(e); } } */
 
 		if (debug) console.log("afterCordovaLoad:2");
 
@@ -68,17 +81,6 @@
 			}
 		}, false);
 	
-	        window.screen.orientation.lock('portrait');
-		/* This is a visual patch for iOS devices where the phone uses a margin at the top
-		** for various status indicators. 
-		*/
-		console.log("device.platform = " + device.platform);
-		if ((device.platform + "").toLowerCase() == 'ios') {
-			$("#navheader").addClass("iosheader");
-			$("body").addClass("iosheader");
-			console.log('added iosheader class');
-
-		}
 	}
 </script>
 
@@ -1933,10 +1935,11 @@ bindEvents: function() {
 	    // The scope of 'this' is the event. In order to call the 'receivedEvent'
 	    // function, we must explicitly call 'app.receivedEvent(...);'
 onDeviceReady: function() {
+			if (debug) console.log("onDeviceReady:1");
 		       	db = new PouchDB('toastwallet');
-			setTimeout(afterCordovaLoad(), 0);
-
-
+			if (debug) console.log("onDeviceReady:2");
+			setTimeout(afterCordovaLoad, 0);
+			if (debug) console.log("onDeviceReady:3");
 
 			/* There is a possibility the datastores were corrupted somehow, and we need
 			** to know this before bootstrapping the app. This function call will tell us
