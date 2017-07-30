@@ -178,8 +178,6 @@ Never share your recovery phrase with anyone.</p>
                 <input ontouchstart="$(this).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
-	<center><div id="accsecret" style="color:blue"></div></center><br />
-	<center><div id="accsecretqr"></div></center>
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
@@ -1467,7 +1465,7 @@ function doPay(nonce) {
 	if (debug) console.log("doPay");
 	blockInput();
 
-	var payfrom = $("#payfromaccount").find(":selected").text();
+	var payfrom = $("#payfromaccount").find(":selected").data('account');
 	var payto = $("#toaddress").val();
 	var dest = $("#desttag").val();
 	var invid = $("#invoiceid").val();
@@ -2804,7 +2802,7 @@ function redefineSigningToAlwaysUseSecret(secret) {
 */
 function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
 
-	showSpinner();
+	blockInput();
 	
 	getSecretForAccount(passphrase, fromacc, 
 		function(secret) {
@@ -2824,19 +2822,19 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
-					hideSpinner();
+					unblockInput();
 					failurefunc();
-				} else if ( (res != undefined && res != null || res.engine_result == 'tesSUCCESS') ) {
-					hideSpinner();
+				} else if ( (res != undefined && res.engine_result != undefined && res.engine_result == 'tesSUCCESS') ) {
+					unblockInput();
 					successfunc();
 				} else {
-					hideSpinner();
+					unblockInput();
 					failurefunc();
 				}
 			});
 		},
 		function() {
-			hideSpinner();
+			unblockInput();
 			failurefunc();
 		});
 
