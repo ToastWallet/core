@@ -75,7 +75,8 @@
 				currenttab != "tabcorruptionprompt" &&
 				currenttab != "tablicense" &&
 				currenttab != "tabshowrecovery" &&
-				currenttab != "tabqrscan"
+				currenttab != "tabqrscan" &&
+				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
 				if (debug) console.log("onPause - show login");
 				unblockInput();
@@ -806,8 +807,10 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 }
 
 var scanner;
-var timesincelastQR = 99999;
+var timeatlastQR = 0;
 function scanQR(intofield, returntab) {
+	if (debug) console.log("scanQR");
+	timeatlastQR = $.now();
 
 	showTab("#tabqrscan");
 	if (device.platform == 'browser') {
@@ -1545,7 +1548,7 @@ function doPay(nonce) {
 	$('#confirmpayfromaccount')[0].innerText = payfrom;
 	$('#confirmpaytoaddress')[0].innerText = payto;
 	$('#confirmdesttag')[0].innerText = dest;
-	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : "");
+	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
 	$('#confirmpayamount')[0].innerText = amount + " XRP";
 
 	showTab("#tabpaymentconfirm");
