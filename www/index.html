@@ -768,8 +768,8 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc) {
 			//success
 			navigator.notification.alert("Your new passphrase has been set", 
 				function(){
-					successfunc();
 					unblockInput();
+					successfunc();
 				}, "Success", "OK");
 		}, function() {
 			//failure
@@ -1669,7 +1669,7 @@ function validateDataStores(funcok, funcnodata, funcdatacorrupt) {
 							pindata : ( !pindatapresent ? "missing" : ( pindatacorrupt ? "corrupt" : "ok" ) ),
 							ppdata : ( !ppdatapresent ? "missing" : ( ppdatacorrupt ? "corrupt" : "ok" ) ),
 							rpdata : ( !rpdatapresent ? "missing" : ( rpdatacorrupt ? "corrupt" : "ok" ) ),
-							accounts : ( !accountspresent ? "missing" : ( accountscorrupt ? "corrupt" : "ok" ) ) });
+							accounts : ( !accountspresent ? "ok" : ( accountscorrupt ? "corrupt" : "ok" ) ) });
 					}
 					
 				}
