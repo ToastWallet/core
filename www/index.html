@@ -25,7 +25,6 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	//$('*:not(input):not(textarea)').on('cut copy paste',function(e){e.preventDefault();});
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$("#morecontentindicator").hide();
@@ -64,8 +63,7 @@
 
 		if (debug) console.log("afterCordovaLoad:2");
 
-		new Clipboard('.copybtn');
-		new Clipboard('.copybtnnostyle');
+		new Clipboard('.copybtnaction');
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
@@ -103,10 +101,10 @@
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
-		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnnostyle" ontouchstart="">Copy</button>
+		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
 	</div>
 	</center><br>
-	<textarea style="color:black;" id="walletbackup"></textarea>
+	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
@@ -160,14 +158,15 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
-	<center><textarea id="accdetailssecretaddress" readonly="readonly" style="color:black"></textarea></center>
-	<button type="button" id="btncopysecret" class="btn copybtn" data-clipboard-target="#accdetailssecretaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<center><textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea></center>
         <br><label>Enter your Passphrase</label>
         <div>
                 <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
-	<center><div id="accsecret" style="color:blue"></div></center><br />
+	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
+	<button style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	</center><br>
 	<center><div id="accsecretqr"></div></center>
 </div>
 
@@ -186,18 +185,18 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
 		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
-		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress')[0].innerText, '');});" class="">Transactions</li>
+		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});" class="">Transactions</li>
 	</ul>
 <ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-		<center><textarea readonly="readonly" id="accdetailsaddress"></textarea></center>
-		<button type="button" id="btncopyaddress" class="btn copybtn" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+		<center><textarea oninput="$(this).val($(this).data('content'));" id="accdetailsaddress"></textarea></center>
+		<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
+			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
 			&nbsp;
-			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress')[0].innerText; showTab('#tabaccountdelete');">Delete</button>
+			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
 		</center>
 	</div>
 	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
@@ -614,6 +613,7 @@ function doGenerateBackup() {
 			exportWallet(
 				function(data){
 					$('#walletbackup').val( data ); 
+					$('#walletbackup').data('content', data);
 					showTab('#tabbackup2');
 					unblockInput();
 				}
@@ -855,7 +855,8 @@ function doSelectAccount(accselected, nickname) {
 
 
 	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
-	$("#accdetailsaddress")[0].innerText = accselected;
+	$("#accdetailsaddress").val( accselected );
+	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
@@ -973,7 +974,10 @@ function doRevealRippleSecret(passphrase, address) {
 				$("#tabaccountsecret label").hide();
 				$("#tabaccountsecret button").hide();
 				$("#tabaccountsecret input[type='password']").hide();
-        	                $("#accsecret").append(secret);
+        	                $("#accsecret").val(secret);
+        	                $("#accsecret").data('content', secret);
+				$("#accsecret").show();
+				$("#btncopysecret").show();
                 	        $("#accsecretqr").append(kjua({text: secret}));				
 				unblockInput();
 			}, function() {
@@ -1198,8 +1202,11 @@ function showTab(tab) {
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
-        $("#accsecret").empty();
+        $("#accsecret").val('');
+        $("#accsecret").data('content', '');
         $("#accsecretqr").empty();
+	$('#btncopysecret').hide();
+	$("#accsecret").hide();
 
 
 	if (tab == -1 && currenttab == "#tabqrscan") {
@@ -2845,6 +2852,7 @@ function doGetTransactions(address, marker) {
 	if (debug) console.log("doGetTransactions");
 	blockInput();
 	$.ajax({
+		complete: function() { unblockInput(); },
 		url: 'https://data.ripple.com/v2/accounts/' + 
 		address + '/payments?currency=XRP&limit=10&descending=true&marker=' +
 		marker
