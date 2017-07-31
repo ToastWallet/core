@@ -9,6 +9,7 @@
     </author>
     <content src="index.html" />
     <preference name="DisallowOverscroll" value="false" />
+    <preference name="KeyboardShrinksView" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
