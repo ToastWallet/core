@@ -4,6 +4,7 @@
 	<meta charset="utf-8" />
 	<meta name="format-detection" content="telephone=no" />
 	<!--meta name="msapplication-tap-highlight" content="no" /-->
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, target-densityDpi=device-dpi" />
 	<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/app.css">
@@ -88,32 +89,35 @@
 			}
 		}, false);
 
-		$('#backuppassword').bind('touchend', function() { $('#backuppassword').focus(); });
-		$('#restorepassword').bind('touchend', function() { $('#restorepassword').focus(); });
-		$('#rsecaccpassword').bind('touchend', function() { $('#rsecaccpassword').focus(); });
-		$('#delaccpassword').bind('touchend', function() { $('#delaccpassword').focus(); });
-		$('#txtsecret').bind('touchend', function() { $('#txtsecret').focus(); });
-		$('#extaccnick').bind('touchend', function() { $('#extaccnick').focus(); });
-		$('#extaccpassword').bind('touchend', function() { $('#extaccpassword').focus(); });
-		$('#setpassword1').bind('touchend', function() { $('#setpassword1').focus(); });
-		$('#setpassword2').bind('touchend', function() { $('#setpassword2').focus(); });
-		$('#setpassword3').bind('touchend', function() { $('#setpassword3').focus(); });
-		$('#setpassword4').bind('touchend', function() { $('#setpassword4').focus(); });
-		$('#setpassword5').bind('touchend', function() { $('#setpassword5').focus(); });
-		$('#newaccnick').bind('touchend', function() { $('#newaccnick').focus(); });
-		$('#genaccpassword').bind('touchend', function() { $('#genaccpassword').focus(); });
-		$('#confirmpaypassword').bind('touchend', function() { $('#confirmpaypassword').focus(); });
-		$('#toaddress').bind('touchend', function() { $('#toaddress').focus(); });
-		$('#desttag').bind('touchend', function() { $('#desttag').focus(); });
-		$('#invoiceid').bind('touchend', function() { $('#invoiceid').focus(); });
-		$('#payamount').bind('touchend', function() { $('#payamount').focus(); });
-		$('#recoverypassword').bind('touchend', function() { $('#recoverypassword').focus(); });
-		$('#corruptionpp').bind('touchend', function() { $('#corruptionpp').focus(); });
-		$('#corruptionrp').bind('touchend', function() { $('#corruptionrp').focus(); });
+		var quickSelectInputLast = 0;
+		var quickSelectInput = function() {
+			if ($.now() - quickSelectInputLast <= 1000) return;
+			quickSelectInputLast = $.now();
+			$('#'+this.id).focus();
+		}
 
-		try {
-	//		cordova.plugins.Keyboard.disableScroll(true);
-		} catch (e) { handle_error(e); }
+		$('#backuppassword').bind('touchstart', quickSelectInput);
+		$('#restorepassword').bind('touchstart', quickSelectInput);
+		$('#rsecaccpassword').bind('touchstart', quickSelectInput);
+		$('#delaccpassword').bind('touchstart', quickSelectInput);
+		$('#txtsecret').bind('touchstart', quickSelectInput);
+		$('#extaccnick').bind('touchstart', quickSelectInput);
+		$('#extaccpassword').bind('touchstart', quickSelectInput);
+		$('#setpassword1').bind('touchstart', quickSelectInput);
+		$('#setpassword2').bind('touchstart', quickSelectInput);
+		$('#setpassword3').bind('touchstart', quickSelectInput);
+		$('#setpassword4').bind('touchstart', quickSelectInput);
+		$('#setpassword5').bind('touchstart', quickSelectInput);
+		$('#newaccnick').bind('touchstart', quickSelectInput);
+		$('#genaccpassword').bind('touchstart', quickSelectInput);
+		$('#confirmpaypassword').bind('touchstart', quickSelectInput);
+		$('#toaddress').bind('touchstart', quickSelectInput);
+		$('#desttag').bind('touchstart', quickSelectInput);
+		$('#invoiceid').bind('touchstart', quickSelectInput);
+		$('#payamount').bind('touchstart', quickSelectInput);
+		$('#recoverypassword').bind('touchstart', quickSelectInput);
+		$('#corruptionpp').bind('touchstart', quickSelectInput);
+		$('#corruptionrp').bind('touchstart', quickSelectInput);
 	}
 </script>
 <div id="testnetwarning" style="
