@@ -9,7 +9,7 @@
     </author>
     <content src="index.html" />
     <preference name="DisallowOverscroll" value="false" />
-    <preference name="KeyboardShrinksView" value="true" />
+    <preference name="KeyboardShrinksView" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="true" />
