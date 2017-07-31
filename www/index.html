@@ -89,28 +89,29 @@
 			}
 		}, false);
 
-		$('#backuppassword').bind('touchstart', function() { $('#backuppassword').focus(); });
-		$('#restorepassword').bind('touchstart', function() { $('#restorepassword').focus(); });
-		$('#rsecaccpassword').bind('touchstart', function() { $('#rsecaccpassword').focus(); });
-		$('#delaccpassword').bind('touchstart', function() { $('#delaccpassword').focus(); });
-		$('#txtsecret').bind('touchstart', function() { $('#txtsecret').focus(); });
-		$('#extaccnick').bind('touchstart', function() { $('#extaccnick').focus(); });
-		$('#extaccpassword').bind('touchstart', function() { $('#extaccpassword').focus(); });
-		$('#setpassword1').bind('touchstart', function() { $('#setpassword1').focus(); });
-		$('#setpassword2').bind('touchstart', function() { $('#setpassword2').focus(); });
-		$('#setpassword3').bind('touchstart', function() { $('#setpassword3').focus(); });
-		$('#setpassword4').bind('touchstart', function() { $('#setpassword4').focus(); });
-		$('#setpassword5').bind('touchstart', function() { $('#setpassword5').focus(); });
-		$('#newaccnick').bind('touchstart', function() { $('#newaccnick').focus(); });
-		$('#genaccpassword').bind('touchstart', function() { $('#genaccpassword').focus(); });
-		$('#confirmpaypassword').bind('touchstart', function() { $('#confirmpaypassword').focus(); });
-		$('#toaddress').bind('touchstart', function() { $('#toaddress').focus(); });
-		$('#desttag').bind('touchstart', function() { $('#desttag').focus(); });
-		$('#invoiceid').bind('touchstart', function() { $('#invoiceid').focus(); });
-		$('#payamount').bind('touchstart', function() { $('#payamount').focus(); });
-		$('#recoverypassword').bind('touchstart', function() { $('#recoverypassword').focus(); });
-		$('#corruptionpp').bind('touchstart', function() { $('#corruptionpp').focus(); });
-		$('#corruptionrp').bind('touchstart', function() { $('#corruptionrp').focus(); });	
+		$('#backuppassword').bind('touchend', function() { $('#backuppassword').focus(); });
+		$('#restorepassword').bind('touchend', function() { $('#restorepassword').focus(); });
+		$('#rsecaccpassword').bind('touchend', function() { $('#rsecaccpassword').focus(); });
+		$('#delaccpassword').bind('touchend', function() { $('#delaccpassword').focus(); });
+		$('#txtsecret').bind('touchend', function() { $('#txtsecret').focus(); });
+		$('#extaccnick').bind('touchend', function() { $('#extaccnick').focus(); });
+		$('#extaccpassword').bind('touchend', function() { $('#extaccpassword').focus(); });
+		$('#setpassword1').bind('touchend', function() { $('#setpassword1').focus(); });
+		$('#setpassword2').bind('touchend', function() { $('#setpassword2').focus(); });
+		$('#setpassword3').bind('touchend', function() { $('#setpassword3').focus(); });
+		$('#setpassword4').bind('touchend', function() { $('#setpassword4').focus(); });
+		$('#setpassword5').bind('touchend', function() { $('#setpassword5').focus(); });
+		$('#newaccnick').bind('touchend', function() { $('#newaccnick').focus(); });
+		$('#genaccpassword').bind('touchend', function() { $('#genaccpassword').focus(); });
+		$('#confirmpaypassword').bind('touchend', function() { $('#confirmpaypassword').focus(); });
+		$('#toaddress').bind('touchend', function() { $('#toaddress').focus(); });
+		$('#desttag').bind('touchend', function() { $('#desttag').focus(); });
+		$('#invoiceid').bind('touchend', function() { $('#invoiceid').focus(); });
+		$('#payamount').bind('touchend', function() { $('#payamount').focus(); });
+		$('#recoverypassword').bind('touchend', function() { $('#recoverypassword').focus(); });
+		$('#corruptionpp').bind('touchend', function() { $('#corruptionpp').focus(); });
+		$('#corruptionrp').bind('touchend', function() { $('#corruptionrp').focus(); });
+
 		try {
 			cordova.plugins.Keyboard.disableScroll(true);
 		} catch (e) { handle_error(e); }
