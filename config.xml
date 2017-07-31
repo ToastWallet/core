@@ -8,10 +8,13 @@
         Toast Wallet
     </author>
     <content src="index.html" />
-        <preference name="HideKeyboardFormAccessoryBar" value="true" />
-        <preference name="KeyboardShrinksView" value="false" />
+        <preference name="HideKeyboardFormAccessoryBar" value="false" />
+        <preference name="KeyboardShrinksView" value="true" />
 	<preference name="webviewbounce" value="false" />
 	<preference name="orientation" value="portrait" />
+	<preference name="BackupWebStorage" value="cloud" />
+	<preference name="SuppressesIncrementalRendering" value="true" />
+	
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
