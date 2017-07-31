@@ -1218,6 +1218,8 @@ function showTab(tab) {
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
 
+	$('.fa-toggle-on').addClass('fa-toggle-off').removeClass('fa-toggle-on');
+
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
@@ -1339,6 +1341,7 @@ function showTab(tab) {
 
 	renderMoreContentIndicator();
 
+	$(currenttab).focus();
 }
 
 var generatedAccount = {};
