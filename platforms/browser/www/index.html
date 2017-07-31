@@ -218,7 +218,7 @@ Never share your recovery phrase with anyone.</p>
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
 		<input ontouchstart="$(this).focus(); return false;" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
+		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret");'>QR</button></span>
 	</div>
 	<br>
         <label for="toaccount">Account Nickname (optional)</label>
@@ -423,7 +423,7 @@ Never share your recovery phrase with anyone.</p>
 	<div class="input-group">
 	<input ontouchstart="$(this).focus(); return false;" type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
+	<button class="btn btn-info" ontouchstart='scanQR("#toaddress");' type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -810,17 +810,17 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 
 var scanner;
 var timeatlastQR = 0;
-function scanQR(intofield, returntab) {
+function scanQR(intofield) {
 	if (debug) console.log("scanQR");
 	timeatlastQR = $.now();
 
-	showTab("#tabqrscan");
 	if (device.platform == 'browser') {
+		showTab("#tabqrscan");
 		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
 		scanner.addListener('scan', 
 			function (content) {
 				$(intofield).val(content);
-				showTab(returntab);
+				showTab(-1);
 		});
 		Instascan.Camera.getCameras().then(
 			function (cameras) {
@@ -829,7 +829,7 @@ function scanQR(intofield, returntab) {
 				} else {
 					navigator.notification.alert("Could not find a camera on your device", 
 						function(){
-							showTab(returntab);
+							showTab(-1);
 						},
 						"Error",
 						"OK"
@@ -837,7 +837,7 @@ function scanQR(intofield, returntab) {
 				}
 				}).catch(function (e) {
 					handle_error(e);
-					showTab(returntab);	
+					showTab(-1);	
 				}
 			);
 	} else {
@@ -846,14 +846,12 @@ function scanQR(intofield, returntab) {
 				if(!result.cancelled)
 				{
 					$(intofield).val(result.text);
-					showTab(returntab);
 				}
 			},
 			function (e) {
 				navigator.notification.alert("Could not find a camera on your device", 
 					function(){
 						handle_error(e);
-						showTab(returntab);
 					},
 					"Error",
 					"OK"
