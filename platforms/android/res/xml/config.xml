@@ -67,10 +67,6 @@
     <feature name="Clipboard">
         <param name="android-package" value="com.verso.cordova.clipboard.Clipboard" />
     </feature>
-    <feature name="Keyboard">
-        <param name="android-package" value="io.ionic.keyboard.IonicKeyboard" />
-        <param name="onload" value="true" />
-    </feature>
     <feature name="SQLitePlugin">
         <param name="android-package" value="com.nolanlawson.cordova.sqlite.SQLitePlugin" />
     </feature>
@@ -115,6 +111,6 @@
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
-    <preference name="DisallowOverscroll" value="true" />
+    <preference name="DisallowOverscroll" value="false" />
     <preference name="android-minSdkVersion" value="16" />
 </widget>

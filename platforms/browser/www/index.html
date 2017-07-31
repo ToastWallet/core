@@ -4,7 +4,6 @@
 	<meta charset="utf-8" />
 	<meta name="format-detection" content="telephone=no" />
 	<!--meta name="msapplication-tap-highlight" content="no" /-->
-	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" />
 	<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/app.css">
@@ -113,7 +112,7 @@
 		$('#corruptionrp').bind('touchend', function() { $('#corruptionrp').focus(); });
 
 		try {
-			cordova.plugins.Keyboard.disableScroll(true);
+	//		cordova.plugins.Keyboard.disableScroll(true);
 		} catch (e) { handle_error(e); }
 	}
 </script>

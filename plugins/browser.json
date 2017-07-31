@@ -75,9 +75,6 @@
         },
         "com.verso.cordova.clipboard": {
             "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
     "dependent_plugins": {

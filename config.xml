@@ -112,5 +112,4 @@
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
-    <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
 </widget>
