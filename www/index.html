@@ -95,29 +95,57 @@
 			quickSelectInputLast = $.now();
 			$('#'+this.id).focus();
 		}
+		$('#backuppassword').bind('touchend', quickSelectInput);
+		$('#restorepassword').bind('touchend', quickSelectInput);
+		$('#rsecaccpassword').bind('touchend', quickSelectInput);
+		$('#delaccpassword').bind('touchend', quickSelectInput);
+		$('#txtsecret').bind('touchend', quickSelectInput);
+		$('#extaccnick').bind('touchend', quickSelectInput);
+		$('#extaccpassword').bind('touchend', quickSelectInput);
+		$('#setpassword1').bind('touchend', quickSelectInput);
+		$('#setpassword2').bind('touchend', quickSelectInput);
+		$('#setpassword3').bind('touchend', quickSelectInput);
+		$('#setpassword4').bind('touchend', quickSelectInput);
+		$('#setpassword5').bind('touchend', quickSelectInput);
+		$('#newaccnick').bind('touchend', quickSelectInput);
+		$('#genaccpassword').bind('touchend', quickSelectInput);
+		$('#confirmpaypassword').bind('touchend', quickSelectInput);
+		$('#toaddress').bind('touchend', quickSelectInput);
+		$('#desttag').bind('touchend', quickSelectInput);
+		$('#invoiceid').bind('touchend', quickSelectInput);
+		$('#payamount').bind('touchend', quickSelectInput);
+		$('#recoverypassword').bind('touchend', quickSelectInput);
+		$('#corruptionpp').bind('touchend', quickSelectInput);
+		$('#corruptionrp').bind('touchend', quickSelectInput);
 
-		$('#backuppassword').bind('touchstart', quickSelectInput);
-		$('#restorepassword').bind('touchstart', quickSelectInput);
-		$('#rsecaccpassword').bind('touchstart', quickSelectInput);
-		$('#delaccpassword').bind('touchstart', quickSelectInput);
-		$('#txtsecret').bind('touchstart', quickSelectInput);
-		$('#extaccnick').bind('touchstart', quickSelectInput);
-		$('#extaccpassword').bind('touchstart', quickSelectInput);
-		$('#setpassword1').bind('touchstart', quickSelectInput);
-		$('#setpassword2').bind('touchstart', quickSelectInput);
-		$('#setpassword3').bind('touchstart', quickSelectInput);
-		$('#setpassword4').bind('touchstart', quickSelectInput);
-		$('#setpassword5').bind('touchstart', quickSelectInput);
-		$('#newaccnick').bind('touchstart', quickSelectInput);
-		$('#genaccpassword').bind('touchstart', quickSelectInput);
-		$('#confirmpaypassword').bind('touchstart', quickSelectInput);
-		$('#toaddress').bind('touchstart', quickSelectInput);
-		$('#desttag').bind('touchstart', quickSelectInput);
-		$('#invoiceid').bind('touchstart', quickSelectInput);
-		$('#payamount').bind('touchstart', quickSelectInput);
-		$('#recoverypassword').bind('touchstart', quickSelectInput);
-		$('#corruptionpp').bind('touchstart', quickSelectInput);
-		$('#corruptionrp').bind('touchstart', quickSelectInput);
+		var stopClickInput = function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+
+		$('#backuppassword').bind('click', stopClickInput);
+		$('#restorepassword').bind('click', stopClickInput);
+		$('#rsecaccpassword').bind('click', stopClickInput);
+		$('#delaccpassword').bind('click', stopClickInput);
+		$('#txtsecret').bind('click', stopClickInput);
+		$('#extaccnick').bind('click', stopClickInput);
+		$('#extaccpassword').bind('click', stopClickInput);
+		$('#setpassword1').bind('click', stopClickInput);
+		$('#setpassword2').bind('click', stopClickInput);
+		$('#setpassword3').bind('click', stopClickInput);
+		$('#setpassword4').bind('click', stopClickInput);
+		$('#setpassword5').bind('click', stopClickInput);
+		$('#newaccnick').bind('click', stopClickInput);
+		$('#genaccpassword').bind('click', stopClickInput);
+		$('#confirmpaypassword').bind('click', stopClickInput);
+		$('#toaddress').bind('click', stopClickInput);
+		$('#desttag').bind('click', stopClickInput);
+		$('#invoiceid').bind('click', stopClickInput);
+		$('#payamount').bind('click', stopClickInput);
+		$('#recoverypassword').bind('click', stopClickInput);
+		$('#corruptionpp').bind('click', stopClickInput);
+		$('#corruptionrp').bind('click', stopClickInput);
+
 	}
 </script>
 <div id="testnetwarning" style="
