@@ -67,25 +67,30 @@
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
+			document.activeElement.blur();
 			if (
 				currenttab != "#tabpinset1" && 
 				currenttab != "#tabpinset2"  && 
 				currenttab != "#tabsetpassphrase" && 
 				currenttab != "#tabrecovery" && 
-				currenttab != "tabcorruptionprompt" &&
-				currenttab != "tablicense" &&
-				currenttab != "tabshowrecovery"
+				currenttab != "#tabcorruptionprompt" &&
+				currenttab != "#tablicense" &&
+				currenttab != "#tabshowrecovery" &&
+				currenttab != "#tabqrscan" &&
+				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
 				if (debug) console.log("onPause - show login");
 				unblockInput();
 				doShowLogin();
 			}
 		}, false);
+
 	
 	}
 </script>
 <div id="testnetwarning" style="
     position: fixed;
+    top: calc(50% - 8em);
     color: red;
     width: calc(100vw - 2em);
     left: 1em;
@@ -93,8 +98,9 @@
     box-shadow: 10px 10px rgba(0,0,0,0.5);
     border-radius: 5px;
     z-index: 9999999999999999;
+    padding: 2em;
 "><button type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
-<center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
+<br><center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
 <div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: none;">
@@ -109,7 +115,7 @@
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <div>
-	<label for="backuppassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="backuppassword" class="form-control" placeholder="">
+	<label for="backuppassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="backuppassword" class="form-control" placeholder="">
     </div>
     <br>
     <div align="right"><button class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
@@ -121,7 +127,7 @@
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
-	<label for="restorepassword">Passphrase or Recovery Phrase (of current wallet)</label><input ontouchstart="$(this).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
+	<label for="restorepassword">Passphrase or Recovery Phrase (of current wallet)</label><input ontouchstart="$(this).focus(); return false;" type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
@@ -161,7 +167,7 @@ Never share your recovery phrase with anyone.</p>
 	<center><textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea></center>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus(); return false;" type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
@@ -175,7 +181,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:red; text-align:justify; "><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
-                <input ontouchstart="$(this).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus(); return false;" type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
@@ -211,17 +217,17 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
 	<label for="secret">Ripple Secret</label>
 	<div class="input-group">
-		<input ontouchstart="$(this).focus();" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<input ontouchstart="$(this).focus(); return false;" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret", -1);'>QR</button></span>
 	</div>
 	<br>
         <label for="toaccount">Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$(this).focus();" type="text" id="extaccnick" class="form-control" placeholder="">
+        <input ontouchstart="$(this).focus(); return false;" type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus();" type="password" id="extaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus(); return false;" type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
@@ -229,7 +235,6 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
-	<div id="qrerror" class="input-group"></div>
 	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
@@ -327,11 +332,11 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
 	<label>Set a Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus();" type="password" id="setpassword1" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
 	<br><label>Repeat Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus();" type="password" id="setpassword2" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
 	<br>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
@@ -344,15 +349,15 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus();" type="password" id="setpassword3" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase</label>
 	<div>
-	<input ontouchstart="$(this).focus();" type="password" id="setpassword4" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword4" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase Again</label>
 	<div>
-		<input ontouchstart="$(this).focus();" type="password" id="setpassword5" class="form-control" placeholder="">
+		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
 	<br>
 	<center>
@@ -368,11 +373,11 @@ Never share your recovery phrase with anyone.</p>
 	<br />
         <label for="toaccount">Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$(this).focus();" type="text" id="newaccnick" class="form-control" placeholder="">
+        <input ontouchstart="$(this).focus(); return false;" type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus();" type="password" id="genaccpassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus(); return false;" type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
@@ -401,7 +406,7 @@ Never share your recovery phrase with anyone.</p>
     <br>
         <label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus();" type="password" id="confirmpaypassword" class="form-control" placeholder="">
+                <input ontouchstart="$(this).focus(); return false;" type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
@@ -416,7 +421,7 @@ Never share your recovery phrase with anyone.</p>
 
 	<label for="toaccount">To Address</label>
 	<div class="input-group">
-	<input ontouchstart="$(this).focus();" type="text" id="toaddress" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus(); return false;" type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button class="btn btn-info" ontouchstart='scanQR("#toaddress", -1);' type="button">QR</button>
 	</span>
@@ -426,19 +431,19 @@ Never share your recovery phrase with anyone.</p>
 
 	<label for="desttag">Destination Tag (optional)</label>
 	<div>
-	<input ontouchstart="$(this).focus();" type="text" id="desttag" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus(); return false;" type="text" id="desttag" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="invoiceid">Invoice ID (optional)</label>
 	<div>
-	<input ontouchstart="$(this).focus();" type="text" id="invoiceid" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus(); return false;" type="text" id="invoiceid" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label for="payamount">Amount</label>
 	<div class="input-group">
-	<input ontouchstart="$(this).focus();" type="text" id="payamount" class="form-control" placeholder="">
+	<input ontouchstart="$(this).focus(); return false;" type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
@@ -456,7 +461,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
-	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
     <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
@@ -466,10 +471,10 @@ Never share your recovery phrase with anyone.</p>
     <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
     <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
     <div>
-        <label for="corruptionpp">Passphrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionpp" class="form-control" placeholder="">
+        <label for="corruptionpp">Passphrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="corruptionpp" class="form-control" placeholder="">
     </div>
     <div>
-        <label for="corruptionrp">Recovery Phrase</label><input ontouchstart="$(this).focus();" type="password" id="corruptionrp" class="form-control" placeholder="">
+        <label for="corruptionrp">Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
     <div><center><button type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
@@ -804,39 +809,57 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 }
 
 var scanner;
+var timeatlastQR = 0;
 function scanQR(intofield, returntab) {
+	if (debug) console.log("scanQR");
+	timeatlastQR = $.now();
 
+	showTab("#tabqrscan");
 	if (device.platform == 'browser') {
-		showTab("#tabqrscan");
 		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
-		scanner.addListener('scan', function (content) {
+		scanner.addListener('scan', 
+			function (content) {
 				$(intofield).val(content);
 				showTab(returntab);
-				});
-		Instascan.Camera.getCameras().then(function (cameras) {
+		});
+		Instascan.Camera.getCameras().then(
+			function (cameras) {
 				if (cameras.length > 0) {
-				scanner.start(cameras[0]);
+					scanner.start(cameras[0]);
 				} else {
-				$("#qrerror").innerText = 'Error: No cameras found.';
+					navigator.notification.alert("Could not find a camera on your device", 
+						function(){
+							showTab(returntab);
+						},
+						"Error",
+						"OK"
+					);
 				}
 				}).catch(function (e) {
-
-					console.error(e);
-					});
+					handle_error(e);
+					showTab(returntab);	
+				}
+			);
 	} else {
 		cordova.plugins.barcodeScanner.scan(
-				function (result) {
+			function (result) {
 				if(!result.cancelled)
 				{
-				$(intofield).val(result.text);
-				showtab(returntab);
+					$(intofield).val(result.text);
+					showTab(returntab);
 				}
-				},
-				function (error) {
-				showTab("#tabqrscan");
-				$("#qrerror").innerText = 'Error: No access to camera.';
-				}
+			},
+			function (e) {
+				navigator.notification.alert("Could not find a camera on your device", 
+					function(){
+						handle_error(e);
+						showTab(returntab);
+					},
+					"Error",
+					"OK"
 				);
+			}
+		);
 	}
 }
 
@@ -1192,10 +1215,14 @@ function showTab(tab) {
 
 	if (debug) console.log("showTab(" + tab + ")");
 
+	document.activeElement.blur();
+
 	unblockInput();
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
+
+	$('.fa-toggle-on').addClass('fa-toggle-off').removeClass('fa-toggle-on');
 
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
@@ -1318,6 +1345,7 @@ function showTab(tab) {
 
 	renderMoreContentIndicator();
 
+	$(currenttab).focus();
 }
 
 var generatedAccount = {};
@@ -1527,7 +1555,7 @@ function doPay(nonce) {
 	$('#confirmpayfromaccount')[0].innerText = payfrom;
 	$('#confirmpaytoaddress')[0].innerText = payto;
 	$('#confirmdesttag')[0].innerText = dest;
-	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : "");
+	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
 	$('#confirmpayamount')[0].innerText = amount + " XRP";
 
 	showTab("#tabpaymentconfirm");
@@ -2764,6 +2792,7 @@ function connectToRipple(funcsuccess) {
 	});
 }
 
+/* This code is from minimalist wallet by https://github.com/jatchili/ */
 var NORMAL_SIGNING_FUNCTION = ripple.Transaction.prototype.sign;
 function redefineSigningToAlwaysUseSecret(secret) {
 	if (!secret) {
@@ -2822,18 +2851,22 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
+					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
 				} else if ( (res != undefined && res.engine_result != undefined && res.engine_result == 'tesSUCCESS') ) {
+					remote.setSecret(null);
 					unblockInput();
 					successfunc();
 				} else {
+					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
 				}
 			});
 		},
 		function() {
+			remote.setSecret(null);
 			unblockInput();
 			failurefunc();
 		});

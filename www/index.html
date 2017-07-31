@@ -67,6 +67,7 @@
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
+			document.activeElement.blur();
 			if (
 				currenttab != "#tabpinset1" && 
 				currenttab != "#tabpinset2"  && 
@@ -83,6 +84,7 @@
 				doShowLogin();
 			}
 		}, false);
+
 	
 	}
 </script>
@@ -1212,6 +1214,8 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 function showTab(tab) {
 
 	if (debug) console.log("showTab(" + tab + ")");
+
+	document.activeElement.blur();
 
 	unblockInput();
 
