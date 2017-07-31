@@ -119,7 +119,7 @@
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <div>
-	<label >Passphrase or Recovery Phrase</label><input ontouchstart="$('#'+this.id).focus();" type="password" id="backuppassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase</label><input  type="password" id="backuppassword" class="form-control" placeholder="">
     </div>
     <br>
     <div align="right"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
@@ -131,7 +131,7 @@
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
-	<label >Passphrase or Recovery Phrase (of current wallet)</label><input ontouchstart="$('#'+this.id).focus();" type="password" id="restorepassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase (of current wallet)</label><input  type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
@@ -171,7 +171,7 @@ Never share your recovery phrase with anyone.</p>
 	<center><textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea></center>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$('#'+this.id).focus();" type="password" id="rsecaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
@@ -185,7 +185,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:red; text-align:justify; "><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
-                <input ontouchstart="$('#'+this.id).focus();" type="password" id="delaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
@@ -221,17 +221,17 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
 	<label >Ripple Secret</label>
 	<div class="input-group">
-		<input ontouchstart="$('#'+this.id).focus();" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret");'>QR</button></span>
 	</div>
 	<br>
         <label >Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$('#'+this.id).focus();" type="text" id="extaccnick" class="form-control" placeholder="">
+        <input  type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$('#'+this.id).focus();" type="password" id="extaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
@@ -336,11 +336,11 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
 	<label>Set a Passphrase</label>
 	<div>
-		<input ontouchstart="$('#'+this.id).focus();" type="password" id="setpassword1" class="form-control" placeholder="">
+		<input  type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
 	<br><label>Repeat Passphrase</label>
 	<div>
-		<input ontouchstart="$('#'+this.id).focus();" type="password" id="setpassword2" class="form-control" placeholder="">
+		<input  type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
 	<br>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
@@ -353,15 +353,15 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
 	<div>
-		<input ontouchstart="$('#'+this.id).focus();" type="password" id="setpassword3" class="form-control" placeholder="">
+		<input  type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase</label>
 	<div>
-	<input ontouchstart="$('#'+this.id).focus();" type="password" id="setpassword4" class="form-control" placeholder="">
+	<input  type="password" id="setpassword4" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase Again</label>
 	<div>
-		<input ontouchstart="$('#'+this.id).focus();" type="password" id="setpassword5" class="form-control" placeholder="">
+		<input  type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
 	<br>
 	<center>
@@ -377,11 +377,11 @@ Never share your recovery phrase with anyone.</p>
 	<br />
         <label >Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$('#'+this.id).focus();" type="text" id="newaccnick" class="form-control" placeholder="">
+        <input  type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$('#'+this.id).focus();" type="password" id="genaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
@@ -410,7 +410,7 @@ Never share your recovery phrase with anyone.</p>
     <br>
         <label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$('#'+this.id).focus();" type="password" id="confirmpaypassword" class="form-control" placeholder="">
+                <input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
@@ -425,7 +425,7 @@ Never share your recovery phrase with anyone.</p>
 
 	<label >To Address</label>
 	<div class="input-group">
-	<input ontouchstart="$('#'+this.id).focus();" type="text" id="toaddress" class="form-control" placeholder="">
+	<input  type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button ontouchend="document.activeElement.blur();" class="btn btn-info" ontouchstart='scanQR("#toaddress");' type="button">QR</button>
 	</span>
@@ -435,19 +435,19 @@ Never share your recovery phrase with anyone.</p>
 
 	<label >Destination Tag (optional)</label>
 	<div>
-	<input ontouchstart="$('#'+this.id).focus();" type="text" id="desttag" class="form-control" placeholder="">
+	<input  type="text" id="desttag" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label >Invoice ID (optional)</label>
 	<div>
-	<input ontouchstart="$('#'+this.id).focus();" type="text" id="invoiceid" class="form-control" placeholder="">
+	<input  type="text" id="invoiceid" class="form-control" placeholder="">
 	</div>
 	<br />
 
 	<label >Amount</label>
 	<div class="input-group">
-	<input ontouchstart="$('#'+this.id).focus();" type="text" id="payamount" class="form-control" placeholder="">
+	<input  type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
 	<button ontouchend="document.activeElement.blur();" class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
@@ -465,7 +465,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
-	<label >Passphrase or Recovery Phrase</label><input ontouchstart="$('#'+this.id).focus();" type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase</label><input  type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
     <div align="right"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
@@ -475,10 +475,10 @@ Never share your recovery phrase with anyone.</p>
     <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
     <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
     <div>
-        <label >Passphrase</label><input ontouchstart="$('#'+this.id).focus();" type="password" id="corruptionpp" class="form-control" placeholder="">
+        <label >Passphrase</label><input  type="password" id="corruptionpp" class="form-control" placeholder="">
     </div>
     <div>
-        <label >Recovery Phrase</label><input ontouchstart="$('#'+this.id).focus();" type="password" id="corruptionrp" class="form-control" placeholder="">
+        <label >Recovery Phrase</label><input  type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
     <div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
