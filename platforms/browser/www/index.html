@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="css/app.css">
 	<link rel="stylesheet" href="css/font-awesome.css">
 	<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
-	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<!--script src="js/bootstrap.min.js" type="text/javascript"></script-->
 	<script src="js/ripple-0.12.5-rc2-min.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/pouchdb.min.js"></script>
@@ -43,7 +43,11 @@
 	function afterCordovaLoad()  {
 		if (debug) console.log("afterCordovaLoad");
 
+
 	        window.screen.orientation.lock('portrait');
+	
+		
+
 		/* This is a visual patch for iOS devices where the phone uses a margin at the top
 		** for various status indicators. 
 		*/
@@ -85,7 +89,28 @@
 			}
 		}, false);
 
-	
+		$('#backuppassword').bind('touchstart', function() { $('#backuppassword').focus(); });
+		$('#restorepassword').bind('touchstart', function() { $('#restorepassword').focus(); });
+		$('#rsecaccpassword').bind('touchstart', function() { $('#rsecaccpassword').focus(); });
+		$('#delaccpassword').bind('touchstart', function() { $('#delaccpassword').focus(); });
+		$('#txtsecret').bind('touchstart', function() { $('#txtsecret').focus(); });
+		$('#extaccnick').bind('touchstart', function() { $('#extaccnick').focus(); });
+		$('#extaccpassword').bind('touchstart', function() { $('#extaccpassword').focus(); });
+		$('#setpassword1').bind('touchstart', function() { $('#setpassword1').focus(); });
+		$('#setpassword2').bind('touchstart', function() { $('#setpassword2').focus(); });
+		$('#setpassword3').bind('touchstart', function() { $('#setpassword3').focus(); });
+		$('#setpassword4').bind('touchstart', function() { $('#setpassword4').focus(); });
+		$('#setpassword5').bind('touchstart', function() { $('#setpassword5').focus(); });
+		$('#newaccnick').bind('touchstart', function() { $('#newaccnick').focus(); });
+		$('#genaccpassword').bind('touchstart', function() { $('#genaccpassword').focus(); });
+		$('#confirmpaypassword').bind('touchstart', function() { $('#confirmpaypassword').focus(); });
+		$('#toaddress').bind('touchstart', function() { $('#toaddress').focus(); });
+		$('#desttag').bind('touchstart', function() { $('#desttag').focus(); });
+		$('#invoiceid').bind('touchstart', function() { $('#invoiceid').focus(); });
+		$('#payamount').bind('touchstart', function() { $('#payamount').focus(); });
+		$('#recoverypassword').bind('touchstart', function() { $('#recoverypassword').focus(); });
+		$('#corruptionpp').bind('touchstart', function() { $('#corruptionpp').focus(); });
+		$('#corruptionrp').bind('touchstart', function() { $('#corruptionrp').focus(); });	
 	}
 </script>
 <div id="testnetwarning" style="
@@ -99,7 +124,7 @@
     border-radius: 5px;
     z-index: 9999999999999999;
     padding: 2em;
-"><button type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
+"><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
 <br><center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
@@ -107,7 +132,7 @@
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
-		<button id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
+		<button ontouchend="document.activeElement.blur();" id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
 	</div>
 	</center><br>
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
@@ -115,10 +140,10 @@
 
 <div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <div>
-	<label for="backuppassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="backuppassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase</label><input  type="password" id="backuppassword" class="form-control" placeholder="">
     </div>
     <br>
-    <div align="right"><button class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
+    <div align="right"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
 </div>
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
@@ -127,7 +152,7 @@
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
-	<label for="restorepassword">Passphrase or Recovery Phrase (of current wallet)</label><input ontouchstart="$(this).focus(); return false;" type="password" id="restorepassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase (of current wallet)</label><input  type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
@@ -135,7 +160,7 @@
     <div align="center">
     
     
-    <button class="btn btn-danger" ontouchstart="doRestoreBackup();">Restore Backup</button></div>
+    <button ontouchend="document.activeElement.blur();" class="btn btn-danger" ontouchstart="doRestoreBackup();">Restore Backup</button></div>
 </div>
 <div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: none;">
     <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
@@ -151,7 +176,7 @@ Never share your recovery phrase with anyone.</p>
 <div id="showrecoveryphrase">
 </div><br>
 <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
-<center><button class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
+<center><button ontouchend="document.activeElement.blur();" class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
 
 
 </div>
@@ -167,11 +192,11 @@ Never share your recovery phrase with anyone.</p>
 	<center><textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea></center>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus(); return false;" type="password" id="rsecaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
+	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
-	<button style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<button ontouchend="document.activeElement.blur();" style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	</center><br>
 	<center><div id="accsecretqr"></div></center>
 </div>
@@ -181,9 +206,9 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:red; text-align:justify; "><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
-                <input ontouchstart="$(this).focus(); return false;" type="password" id="delaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
+	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
@@ -195,12 +220,12 @@ Never share your recovery phrase with anyone.</p>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 		<center><textarea oninput="$(this).val($(this).data('content'));" id="accdetailsaddress"></textarea></center>
-		<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+		<button ontouchend="document.activeElement.blur();" type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
+			<button ontouchend="document.activeElement.blur();" id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
 			&nbsp;
-			<button type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
+			<button ontouchend="document.activeElement.blur();" type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
 		</center>
 	</div>
 	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
@@ -209,33 +234,33 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button type="button" class="btn btn-primary" ontouchstart="doShowAndGenerateAccount();">Generate New Address</button><br />
-		<button type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
+		<button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="doShowAndGenerateAccount();">Generate New Address</button><br />
+		<button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
-	<label for="secret">Ripple Secret</label>
+	<label >Ripple Secret</label>
 	<div class="input-group">
-		<input ontouchstart="$(this).focus(); return false;" class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret");'>QR</button></span>
+		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
+		<span class="input-group-btn"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret");'>QR</button></span>
 	</div>
 	<br>
-        <label for="toaccount">Account Nickname (optional)</label>
+        <label >Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$(this).focus(); return false;" type="text" id="extaccnick" class="form-control" placeholder="">
+        <input  type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus(); return false;" type="password" id="extaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
+	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
-	<div class="input-group"><center><button type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
+	<div class="input-group"><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
 </div>
 
 
@@ -252,18 +277,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
-	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -282,18 +307,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -312,18 +337,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
+	<button ontouchend="document.activeElement.blur();" ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -332,36 +357,36 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabsetpassphrase" class="screentab" data-primarytab="true" data-title="Set Passphrase" data-noright="true" style="display:none">
 	<label>Set a Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword1" class="form-control" placeholder="">
+		<input  type="password" id="setpassword1" class="form-control" placeholder="">
 	</div>
 	<br><label>Repeat Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword2" class="form-control" placeholder="">
+		<input  type="password" id="setpassword2" class="form-control" placeholder="">
 	</div>
 	<br>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
 	<br>
 	<center>
-		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);">Set Passphrase</button>
+		<button ontouchend="document.activeElement.blur();" class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);">Set Passphrase</button>
 	</center>
 </div>
 
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase</label>
 	<div>
-		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword3" class="form-control" placeholder="">
+		<input  type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase</label>
 	<div>
-	<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword4" class="form-control" placeholder="">
+	<input  type="password" id="setpassword4" class="form-control" placeholder="">
 	</div>
 	<br><label>New Passphrase Again</label>
 	<div>
-		<input ontouchstart="$(this).focus(); return false;" type="password" id="setpassword5" class="form-control" placeholder="">
+		<input  type="password" id="setpassword5" class="form-control" placeholder="">
 	</div>
 	<br>
 	<center>
-		<button class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
+		<button ontouchend="document.activeElement.blur();" class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
 	</center>
 </div>
 
@@ -371,15 +396,15 @@ Never share your recovery phrase with anyone.</p>
 	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
-        <label for="toaccount">Account Nickname (optional)</label>
+        <label >Account Nickname (optional)</label>
         <div>
-        <input ontouchstart="$(this).focus(); return false;" type="text" id="newaccnick" class="form-control" placeholder="">
+        <input  type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus(); return false;" type="password" id="genaccpassword" class="form-control" placeholder="">
+                <input  type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
+	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
@@ -406,46 +431,46 @@ Never share your recovery phrase with anyone.</p>
     <br>
         <label>Enter your Passphrase</label>
         <div>
-                <input ontouchstart="$(this).focus(); return false;" type="password" id="confirmpaypassword" class="form-control" placeholder="">
+                <input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
+	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
-	<label for="payfromaccount">From Account</label>
+	<label >From Account</label>
 	<div>
 	<select id="payfromaccount" class="form-control">
 	</select>
 	</div>
 	<br />
 
-	<label for="toaccount">To Address</label>
+	<label >To Address</label>
 	<div class="input-group">
-	<input ontouchstart="$(this).focus(); return false;" type="text" id="toaddress" class="form-control" placeholder="">
+	<input  type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-info" ontouchstart='scanQR("#toaddress");' type="button">QR</button>
+	<button ontouchend="document.activeElement.blur();" class="btn btn-info" ontouchstart='scanQR("#toaddress");' type="button">QR</button>
 	</span>
 	</div>
 	<br />
 
 
-	<label for="desttag">Destination Tag (optional)</label>
+	<label >Destination Tag (optional)</label>
 	<div>
-	<input ontouchstart="$(this).focus(); return false;" type="text" id="desttag" class="form-control" placeholder="">
+	<input  type="text" id="desttag" class="form-control" placeholder="">
 	</div>
 	<br />
 
-	<label for="invoiceid">Invoice ID (optional)</label>
+	<label >Invoice ID (optional)</label>
 	<div>
-	<input ontouchstart="$(this).focus(); return false;" type="text" id="invoiceid" class="form-control" placeholder="">
+	<input  type="text" id="invoiceid" class="form-control" placeholder="">
 	</div>
 	<br />
 
-	<label for="payamount">Amount</label>
+	<label >Amount</label>
 	<div class="input-group">
-	<input ontouchstart="$(this).focus(); return false;" type="text" id="payamount" class="form-control" placeholder="">
+	<input  type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
+	<button ontouchend="document.activeElement.blur();" class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
 	</div>
 
@@ -453,30 +478,30 @@ Never share your recovery phrase with anyone.</p>
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" ontouchstart="showTab('#tabbackup1');">Backup Wallet</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="showTab('#tabrestore');">Restore Wallet</button></center></div>
+	<div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
+	<div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
+	<div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
-	<label for="recoverypassword">Passphrase or Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase</label><input  type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
-    <div align="right"><button class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
+    <div align="right"><button ontouchend="document.activeElement.blur();" class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
 </div>
 
 <div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: none;">
     <p style="color:red; text-align:justify;">Toast Wallet may be able to recover some of your data, please enter your passphrase and recovery phrase <u>if you know them</u>. If you only know one only then enter the one you know. If you don't know either then don't enter either. <b>Warning entering these incorrectly may result in further corruption.</b></p>
     <p style="color:black; text-align:justify;">A valid alternative, if you have a backup, is simply to reinstall the app and restore your backup from the settings menu.</p>
     <div>
-        <label for="corruptionpp">Passphrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="corruptionpp" class="form-control" placeholder="">
+        <label >Passphrase</label><input  type="password" id="corruptionpp" class="form-control" placeholder="">
     </div>
     <div>
-        <label for="corruptionrp">Recovery Phrase</label><input ontouchstart="$(this).focus(); return false;" type="password" id="corruptionrp" class="form-control" placeholder="">
+        <label >Recovery Phrase</label><input  type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
-    <div><center><button type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
+    <div><center><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
 
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
@@ -573,7 +598,7 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
+<center><button ontouchend="document.activeElement.blur();" class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
 <br />
 <p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </div>
@@ -2915,9 +2940,9 @@ function doGetTransactions(address, marker) {
 		}
 		root.append('<ul class="transactionlist">'+tx+'</ul>');
 		if (x.marker != undefined && count > 0) {
-			root.append('<button type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
+			root.append('<button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
 		} else if (count > 0) {
-			root.append('<button type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
+			root.append('<button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
 		}
 		unblockInput();
 	});
