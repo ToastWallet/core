@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="css/app.css">
 	<link rel="stylesheet" href="css/font-awesome.css">
 	<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
-	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<!--script src="js/bootstrap.min.js" type="text/javascript"></script-->
 	<script src="js/ripple-0.12.5-rc2-min.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/pouchdb.min.js"></script>
@@ -43,7 +43,11 @@
 	function afterCordovaLoad()  {
 		if (debug) console.log("afterCordovaLoad");
 
+
 	        window.screen.orientation.lock('portrait');
+	
+		
+
 		/* This is a visual patch for iOS devices where the phone uses a margin at the top
 		** for various status indicators. 
 		*/
