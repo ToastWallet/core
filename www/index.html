@@ -25,6 +25,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
+	var ontestnet = false;
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$("#morecontentindicator").hide();
@@ -146,9 +147,12 @@
 		$('#corruptionpp').bind('click', stopClickInput);
 		$('#corruptionrp').bind('click', stopClickInput);
 
+		if (ontestnet) $('#testnetwarning').show();
+
 	}
 </script>
 <div id="testnetwarning" style="
+    display: none;
     position: fixed;
     top: calc(50% - 8em);
     color: red;
@@ -231,8 +235,9 @@ Never share your recovery phrase with anyone.</p>
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
-	<button ontouchend="document.activeElement.blur();" style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	</center><br>
+	<button ontouchend="document.activeElement.blur();" style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<br>
 	<center><div id="accsecretqr"></div></center>
 </div>
 
@@ -1622,13 +1627,21 @@ function doPay(nonce) {
 }
 
 
-var remote = new ripple.Remote({
-servers: [
-/*"wss://s-west.ripple.com:443",
-  "wss://s-east.ripple.com:443"*/
-"wss://s.altnet.rippletest.net:51233"
-]
-});
+var remote;
+if (ontestnet) {
+	remote = new ripple.Remote({
+		servers: [
+			"wss://s.altnet.rippletest.net:51233"
+		]
+	});
+} else {
+	remote = new ripple.Remote({
+		servers: [
+			"wss://s-west.ripple.com:443",
+			"wss://s-east.ripple.com:443"
+		]
+	});
+}
 
 var VER_REKEYED = 220;
 var VER_ENCRYPTED_ORDINARY = 160;

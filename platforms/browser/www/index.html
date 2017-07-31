@@ -4,6 +4,7 @@
 	<meta charset="utf-8" />
 	<meta name="format-detection" content="telephone=no" />
 	<!--meta name="msapplication-tap-highlight" content="no" /-->
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, target-densityDpi=device-dpi" />
 	<link rel="stylesheet" href="css/jquery-ui-1.10.0.custom.css">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/app.css">
@@ -24,6 +25,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
+	var ontestnet = false;
 	function renderMoreContentIndicator() {
 		if($(window).scrollTop() + $(window).height() == $(document).height()) {
 			$("#morecontentindicator").hide();
@@ -88,35 +90,69 @@
 			}
 		}, false);
 
-		$('#backuppassword').bind('touchend', function() { $('#backuppassword').focus(); });
-		$('#restorepassword').bind('touchend', function() { $('#restorepassword').focus(); });
-		$('#rsecaccpassword').bind('touchend', function() { $('#rsecaccpassword').focus(); });
-		$('#delaccpassword').bind('touchend', function() { $('#delaccpassword').focus(); });
-		$('#txtsecret').bind('touchend', function() { $('#txtsecret').focus(); });
-		$('#extaccnick').bind('touchend', function() { $('#extaccnick').focus(); });
-		$('#extaccpassword').bind('touchend', function() { $('#extaccpassword').focus(); });
-		$('#setpassword1').bind('touchend', function() { $('#setpassword1').focus(); });
-		$('#setpassword2').bind('touchend', function() { $('#setpassword2').focus(); });
-		$('#setpassword3').bind('touchend', function() { $('#setpassword3').focus(); });
-		$('#setpassword4').bind('touchend', function() { $('#setpassword4').focus(); });
-		$('#setpassword5').bind('touchend', function() { $('#setpassword5').focus(); });
-		$('#newaccnick').bind('touchend', function() { $('#newaccnick').focus(); });
-		$('#genaccpassword').bind('touchend', function() { $('#genaccpassword').focus(); });
-		$('#confirmpaypassword').bind('touchend', function() { $('#confirmpaypassword').focus(); });
-		$('#toaddress').bind('touchend', function() { $('#toaddress').focus(); });
-		$('#desttag').bind('touchend', function() { $('#desttag').focus(); });
-		$('#invoiceid').bind('touchend', function() { $('#invoiceid').focus(); });
-		$('#payamount').bind('touchend', function() { $('#payamount').focus(); });
-		$('#recoverypassword').bind('touchend', function() { $('#recoverypassword').focus(); });
-		$('#corruptionpp').bind('touchend', function() { $('#corruptionpp').focus(); });
-		$('#corruptionrp').bind('touchend', function() { $('#corruptionrp').focus(); });
+		var quickSelectInputLast = 0;
+		var quickSelectInput = function() {
+			if ($.now() - quickSelectInputLast <= 1000) return;
+			quickSelectInputLast = $.now();
+			$('#'+this.id).focus();
+		}
+		$('#backuppassword').bind('touchend', quickSelectInput);
+		$('#restorepassword').bind('touchend', quickSelectInput);
+		$('#rsecaccpassword').bind('touchend', quickSelectInput);
+		$('#delaccpassword').bind('touchend', quickSelectInput);
+		$('#txtsecret').bind('touchend', quickSelectInput);
+		$('#extaccnick').bind('touchend', quickSelectInput);
+		$('#extaccpassword').bind('touchend', quickSelectInput);
+		$('#setpassword1').bind('touchend', quickSelectInput);
+		$('#setpassword2').bind('touchend', quickSelectInput);
+		$('#setpassword3').bind('touchend', quickSelectInput);
+		$('#setpassword4').bind('touchend', quickSelectInput);
+		$('#setpassword5').bind('touchend', quickSelectInput);
+		$('#newaccnick').bind('touchend', quickSelectInput);
+		$('#genaccpassword').bind('touchend', quickSelectInput);
+		$('#confirmpaypassword').bind('touchend', quickSelectInput);
+		$('#toaddress').bind('touchend', quickSelectInput);
+		$('#desttag').bind('touchend', quickSelectInput);
+		$('#invoiceid').bind('touchend', quickSelectInput);
+		$('#payamount').bind('touchend', quickSelectInput);
+		$('#recoverypassword').bind('touchend', quickSelectInput);
+		$('#corruptionpp').bind('touchend', quickSelectInput);
+		$('#corruptionrp').bind('touchend', quickSelectInput);
 
-		try {
-	//		cordova.plugins.Keyboard.disableScroll(true);
-		} catch (e) { handle_error(e); }
+		var stopClickInput = function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+
+		$('#backuppassword').bind('click', stopClickInput);
+		$('#restorepassword').bind('click', stopClickInput);
+		$('#rsecaccpassword').bind('click', stopClickInput);
+		$('#delaccpassword').bind('click', stopClickInput);
+		$('#txtsecret').bind('click', stopClickInput);
+		$('#extaccnick').bind('click', stopClickInput);
+		$('#extaccpassword').bind('click', stopClickInput);
+		$('#setpassword1').bind('click', stopClickInput);
+		$('#setpassword2').bind('click', stopClickInput);
+		$('#setpassword3').bind('click', stopClickInput);
+		$('#setpassword4').bind('click', stopClickInput);
+		$('#setpassword5').bind('click', stopClickInput);
+		$('#newaccnick').bind('click', stopClickInput);
+		$('#genaccpassword').bind('click', stopClickInput);
+		$('#confirmpaypassword').bind('click', stopClickInput);
+		$('#toaddress').bind('click', stopClickInput);
+		$('#desttag').bind('click', stopClickInput);
+		$('#invoiceid').bind('click', stopClickInput);
+		$('#payamount').bind('click', stopClickInput);
+		$('#recoverypassword').bind('click', stopClickInput);
+		$('#corruptionpp').bind('click', stopClickInput);
+		$('#corruptionrp').bind('click', stopClickInput);
+
+		if (ontestnet) $('#testnetwarning').show();
+
 	}
 </script>
 <div id="testnetwarning" style="
+    display: none;
     position: fixed;
     top: calc(50% - 8em);
     color: red;
@@ -199,8 +235,9 @@ Never share your recovery phrase with anyone.</p>
         </div><br>
 	<center><div><button ontouchend="document.activeElement.blur();" type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
-	<button ontouchend="document.activeElement.blur();" style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	</center><br>
+	<button ontouchend="document.activeElement.blur();" style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<br>
 	<center><div id="accsecretqr"></div></center>
 </div>
 
@@ -1590,13 +1627,21 @@ function doPay(nonce) {
 }
 
 
-var remote = new ripple.Remote({
-servers: [
-/*"wss://s-west.ripple.com:443",
-  "wss://s-east.ripple.com:443"*/
-"wss://s.altnet.rippletest.net:51233"
-]
-});
+var remote;
+if (ontestnet) {
+	remote = new ripple.Remote({
+		servers: [
+			"wss://s.altnet.rippletest.net:51233"
+		]
+	});
+} else {
+	remote = new ripple.Remote({
+		servers: [
+			"wss://s-west.ripple.com:443",
+			"wss://s-east.ripple.com:443"
+		]
+	});
+}
 
 var VER_REKEYED = 220;
 var VER_ENCRYPTED_ORDINARY = 160;
