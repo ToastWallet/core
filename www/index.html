@@ -2165,18 +2165,26 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 
 					if (rpok && ppok) continue;
 
-					//todo: add attempted recovery when only ppok or only rpok
-					console.log('todo: add attempted recovery when only ppok or only rpok');
-					delete accounts[i];
+					//future version todo: if only rpok or ppok then we can still recover the account potentially
 
+					delete accounts[i];
 				}
 
 			} catch(e) { accounts = {} }
 
-			navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", function() {
+			
+
+			navigator.notification.alert("We have attempted recovery on your accounts. You may still need to restore a backup from the settings menu.", 
+			function() {
 				c.accounts = 'ok';
-				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){ unblockInput(); doDataCorruptionRecovery(c, passphrase, recoveryphrase); }).catch(function(x){ 
-					navigator.notification.alert("Recovery process could not write to your device's storage. Please free up some space or grant the correct permissions and try again.",
+				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(
+					function(x){
+						unblockInput(); 
+						doDataCorruptionRecovery(c, passphrase, recoveryphrase); 
+					}
+				).catch(
+					function(x){ 
+						navigator.notification.alert("Recovery process could not write to your device's storage. Please free up some space or grant the correct permissions and try again.",
 						function(){unblockInput();}, "Fatal Error", "OK"
 					);
 				});
@@ -2188,47 +2196,42 @@ function doDataCorruptionRecovery(c, passphrase, recoveryphrase, passphraseverif
 	}
 
 
-	if (c.ppdata != 'ok') {
-		
-		if (c.rpdata != 'ok') {
+	if (c.ppdata != 'ok' && c.rpdata != 'ok') {
 
-			//attempt partial decryption of account secrets, match to public key
-	                var i = function(accounts) {
-        	                try {
-                	                accounts = JSON.parse(accounts.data);
-				} catch(e) { accounts = {} }
-				var count = 0;
-				for (i in accounts) count++;
-
-				// cannot perform any recovery if there are no accounts. fresh install required
-				if (count == 0) {
-					freshinstall();
-					return;
-				}
-
-				//todo: verify credentials from an account
-				console.log("todo: verify credentials from an account");
-				unblockInput(); 
-			}
-
-			db.get("accounts").then(i).catch(i);
-
+			/* Originally it was planned that in this scenario the account secrets might be used to recover
+			** the passphrase / recoveryphrase data, however this is actually impossible due to the loss of the
+			** salts. So in this case the only thing we can do is initiate a fresh install and hope they have a backup. 
+			** For the sake of absolute clarity: even if we were to accept a new passphrase and recovery phrase
+			** from the user which were identical to the old ones, the salts WOULD NOT BE identical to the old salts
+			** and therefore the account data is completely useless. At least one salt from either passphrase or
+			** recovery phrase is required to perform a recovery. 
+			*/
+			unblockInput();
+			freshinstall();
 			return;
-		} else {
 
-			//todo: prompt for recovery phrase to reset passphrase
-			console.log("todo: prompt for recovery phrase to reset passphrase");
-			unblockInput(); 
-			return freshinstall();
-		}
-		
-	}
-
-	if (c.rpdata != 'ok') {
-		//todo: issue new recovery phrase here
-		console.log("todo: issue new recovery phrase here");
-		unblockInput(); 
-		return normalboot(); //todo: remove this when above todo is finished
+	} else if (c.ppdata == 'ok' && passphraseverified && c.rpdata != 'ok') {
+		// issue and set new recovery phrase to the user then proceed to nromal boot
+		return setAndShowNewRecoveryPhrase(passphrase);
+	} else if (c.rpdata == 'ok' && recoveryphraseverified && c.ppdata != 'ok') {
+		// reset the passphrase here then proeceed to a normal boot
+		showTab('#tabsettings');
+		showTab('#tabchangepassphrase');
+		$('#setpassword3').val(recoveryphrase);
+		recoveryphrase = "";
+		$('#setpassword4').focus();
+		navigator.notification.alert("Your recovery phrase appears to be correct. You can recovery your wallet by entering and setting a new passphrase. Please do this immediately on the screen provided.",
+			function() {
+				unblockInput();
+			},
+			"Recovery",
+			"OK"
+		);
+		return;
+	} else {
+		unblockInput();
+		freshinstall();
+		return;
 	}
 
 	if (c.pindata != 'ok') {
