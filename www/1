@@ -78,7 +78,6 @@
 					$('.screentab').css('padding-bottom', screentabpaddingbottom + 'em');
 					if (currenttab != "") 
 						$(currenttab).scrollTop(prekeyboardscrollpos);
-					unblockInput();
 				}
 			);
 		}
@@ -128,28 +127,8 @@
 			}
 		}, false);
 
-		$('#backuppassword').bind('touchstart', quickSelectInput);
-		$('#restorepassword').bind('touchstart', quickSelectInput);
-		$('#rsecaccpassword').bind('touchstart', quickSelectInput);
-		$('#delaccpassword').bind('touchstart', quickSelectInput);
-		$('#txtsecret').bind('touchstart', quickSelectInput);
-		$('#extaccnick').bind('touchstart', quickSelectInput);
-		$('#extaccpassword').bind('touchstart', quickSelectInput);
-		$('#setpassword1').bind('touchstart', quickSelectInput);
-		$('#setpassword2').bind('touchstart', quickSelectInput);
-		$('#setpassword3').bind('touchstart', quickSelectInput);
-		$('#setpassword4').bind('touchstart', quickSelectInput);
-		$('#setpassword5').bind('touchstart', quickSelectInput);
-		$('#newaccnick').bind('touchstart', quickSelectInput);
-		$('#genaccpassword').bind('touchstart', quickSelectInput);
-		$('#confirmpaypassword').bind('touchstart', quickSelectInput);
-		$('#toaddress').bind('touchstart', quickSelectInput);
-		$('#desttag').bind('touchstart', quickSelectInput);
-		$('#invoiceid').bind('touchstart', quickSelectInput);
-		$('#payamount').bind('touchstart', quickSelectInput);
-		$('#recoverypassword').bind('touchstart', quickSelectInput);
-		$('#corruptionpp').bind('touchstart', quickSelectInput);
-		$('#corruptionrp').bind('touchstart', quickSelectInput);
+
+		$('input').bind('touchstart', quickSelectInput);
 
 		$('button').bind('touchend', 
 			function() {
@@ -161,7 +140,6 @@
 
 		var quickSelectInput = function() {
 			$('#'+this.id).focus();
-			if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
 		}
 
 
