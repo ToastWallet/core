@@ -665,7 +665,8 @@ module.exports.metadata =
     "cordova-plugin-screen-orientation": "2.0.1",
     "cordova-plugin-crosswalk-webview": "2.3.0",
     "com.verso.cordova.clipboard": "0.1.0",
-    "ionic-plugin-keyboard": "2.2.1"
+    "ionic-plugin-keyboard": "2.2.1",
+    "org.apache.cordova.plugin.redraw": "1.0.0"
 }
 // BOTTOM OF METADATA
 });

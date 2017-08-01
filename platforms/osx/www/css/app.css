@@ -230,6 +230,7 @@ body {
     position: fixed;
     left: calc(50% - 0.5em);
     top: calc(50% - 0.5em);
+    z-index: 104;
 }
 .loading:after {
     position: fixed;
@@ -329,6 +330,20 @@ label {
     margin-right: 1em;
     padding-top: 0.5em;
     padding-bottom: 4em;
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+* {
+    transform: translateZ(0);  /* this patches buggy ios display */
+}
+
+
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
 }
 
 div.input-group>span.input-group-btn>button {
@@ -366,8 +381,8 @@ div.input-group>span.input-group-btn>button {
     padding-top: 1em;
     padding-bottom: 1em;
 }
-button:focus{
-    outline: none;
+button, button:focus, button:active, button:hover {
+    outline: none !important;
 }
 
 #generatedaddress, #accdetailsaddress, #accdetailssecretaddress, #accsecret {
@@ -531,23 +546,32 @@ ul.iosheader > li > * {
 }
 
 
-* {
-/* -webkit-user-select: none;
- -khtml-user-select: none;
- -moz-user-select: none;
- -ms-user-select: none;
- user-select: none;*/
- font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+button, label, .screendiv > *, #navheader *, #navfooter * {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 
- }
+* {
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+* {
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
 
 input
 {
-/*-webkit-user-select: auto !important;
--khtml-user-select: auto !important;
--moz-user-select: auto !important;
--ms-user-select: auto !important;
-user-select: auto !important; */
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }
 
 #tabrecovery div {

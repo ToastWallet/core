@@ -120,4 +120,5 @@
     </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
+    <plugin name="org.apache.cordova.plugin.redraw" spec="https://github.com/woodyza/RedrawPlugin.git" />
 </widget>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.plugin.redraw"
+    version="1.0.0">
+
+    <name>Redraw</name>
+    <description>
+        This plugin will force a webview invalidation and redraw. It's a workaround for the android issue that can 
+        sometimes occur with a full screen webview where dynamically altering the HTML/CSS content in the page does not 
+        trigger a redraw of the altered elements.
+    </description>
+    <license>MIT</license>
+
+    <engines>
+        <!--
+            Cordova 3.2.0 is all I have tested on - it should work fine with earlier versions.
+        -->
+        <engine name="cordova" version=">=3.2.0" />
+    </engines>
+
+    <!-- android -->
+    <platform name="android">
+
+        <js-module src="www/redraw-plugin.js" name='Redraw'>
+            <clobbers target="cordova.plugins.Redraw" />
+        </js-module>
+
+        <source-file src="src/android/Redraw.java" target-dir="src/org/apache/cordova/plugin/redraw" />
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Redraw">
+                <param name="android-package" value="org.apache.cordova.plugin.redraw.Redraw" />
+            </feature>
+        </config-file>
+        
+    </platform>
+</plugin>

@@ -334,6 +334,9 @@ label {
     -ms-touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+}
+
+* {
     transform: translateZ(0);  /* this patches buggy ios display */
 }
 
