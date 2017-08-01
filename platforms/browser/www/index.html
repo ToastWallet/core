@@ -115,6 +115,12 @@
 
 		new Clipboard('.copybtnaction');
 
+		$('.copybtn').on('touchend', function() {
+                        if (cordova.plugins.Redraw != undefined) {
+				cordova.plugins.Redraw.invalidateWebView();
+                        }
+		});
+
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
 			document.activeElement.blur();
@@ -203,6 +209,9 @@
 				ele.removeClass("fa-toggle-on");
 				ele.addClass("fa-toggle-off");
 				$(this).data("checked", "false");
+			}
+			if (cordova.plugins.Redraw != undefined) {
+				cordova.plugins.Redraw.invalidateWebView();
 			}
 		});
 		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
@@ -1771,7 +1780,7 @@ function importWallet(wallet, successfunc, failurefunc) {
         db.get("pindata").then(function(pindata) {
                 db.get("ppdata").then(function(ppdata) {
                         db.get("rpdata").then(function(rpdata) {
-                                db.get("accounts").then(function(accounts) {
+         /*                       db.get("accounts").then(function(accounts) { */
 
 
 	db.upsert("pindata",
@@ -1821,7 +1830,7 @@ function importWallet(wallet, successfunc, failurefunc) {
 		failurefunc();
 	});
 
-                                });
+/*                                }); */
                         });
                 });
         });

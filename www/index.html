@@ -1330,6 +1330,10 @@ function renderEnteredPin() {
 
 		}
 	}
+	if (cordova.plugins.Redraw != undefined) {
+		cordova.plugins.Redraw.invalidateWebView();
+	}
+
 }
 
 var currenttab = "";

@@ -336,9 +336,6 @@ label {
     scroll-behavior: smooth;
 }
 
-* {
-    transform: translateZ(0);  /* this patches buggy ios display */
-}
 
 
 ::-webkit-scrollbar {
