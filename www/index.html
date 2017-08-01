@@ -60,9 +60,17 @@
 						prekeyboardscrollpos=$(currenttab).scrollTop();
 
 						var ele = $(document.activeElement);
-						while (ele != undefined && ele.prev("label").length == 0) ele = ele.parent();
-						if (ele != undefined) ele = ele.prev("label");
-						if (ele == undefined || ele.length == 0) ele = $(document.activeElement);
+						var count = 0;
+						while (ele != undefined && ele.prev("label").length == 0 && count < 10){
+							ele = ele.parent();
+							count++;
+						}
+						if (count < 10) {
+							ele = $(document.activeElement);
+						} else {
+							if (ele != undefined) ele = ele.prev("label");
+							if (ele == undefined || ele.length == 0) ele = $(document.activeElement);
+						}
 
 						var offset = ele.offset().top - $(currenttab).offset().top + $(currenttab).scrollTop()
 
