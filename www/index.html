@@ -65,7 +65,7 @@
 							ele = ele.parent();
 							count++;
 						}
-						if (count < 10) {
+						if (count >= 10) {
 							ele = $(document.activeElement);
 						} else {
 							if (ele != undefined) ele = ele.prev("label");
