@@ -626,6 +626,15 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.clipboard"
         ]
+    },
+    {
+        "file": "plugins/ionic-plugin-keyboard/www/browser/keyboard.js",
+        "id": "ionic-plugin-keyboard.keyboard",
+        "pluginId": "ionic-plugin-keyboard",
+        "clobbers": [
+            "cordova.plugins.Keyboard"
+        ],
+        "runs": true
     }
 ];
 module.exports.metadata = 
@@ -655,7 +664,8 @@ module.exports.metadata =
     "cordova-plugin-sqlite-2": "1.0.4",
     "cordova-plugin-screen-orientation": "2.0.1",
     "cordova-plugin-crosswalk-webview": "2.3.0",
-    "com.verso.cordova.clipboard": "0.1.0"
+    "com.verso.cordova.clipboard": "0.1.0",
+    "ionic-plugin-keyboard": "2.2.1"
 }
 // BOTTOM OF METADATA
 });

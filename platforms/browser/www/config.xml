@@ -24,6 +24,12 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <preference name="DisallowOverscroll" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="KeyboardShrinksView" value="true" />
+    <preference name="BackupWebStorage" value="cloud" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="SuppressesIncrementalRendering" value="true" />
+    <preference name="EnableViewportScale" value="true" />
+    <preference name="Fullscreen" value="true" />
     <preference name="android-minSdkVersion" value="16" />
 </widget>

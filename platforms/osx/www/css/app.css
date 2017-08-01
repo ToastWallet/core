@@ -1,8 +1,15 @@
+
+html {
+	height: 100vh;
+	min-height: 100vh;
+	max-height: 100vh;
+	width: 100vw;
+	min-width: 100vw;
+	max-height: 100vw;
+}
 body {
 	font-family: sans-serif;
-    margin: 0em 1em 0em 1em;
     font-family: sans-serif;
-    height: 100vh;
 	color:white;
 	font-size: 1.5em;
 }
@@ -80,6 +87,7 @@ body {
     overflow: hidden;
     border: none;
     margin-bottom: 0px;
+    z-index:90;
 }
 
 .accountdetailsselector > * {
@@ -90,11 +98,13 @@ body {
     padding-top: 0.5em;
     width: 50vw;
     padding-bottom: 0.5em;
+    z-index:90;
 }
 
 .accountdetailsselector > .accdetailsinnertabselected {
     background-color: white;
     color: #0051b9;
+    z-index:90;
 }
 
 .txrow {
@@ -138,18 +148,6 @@ body {
     border-bottom: 1px solid rgba(0,0,0,0.2);
 }
 
-#navheader div:before {
-    content: "WARNING -- TESTNET ALPHA. DO NOT USE REAL XRP.";
-    background: orange;
-    display: none;
-    position: fixed;
-    top: 4em;
-    left: 0;
-    width: 100vw;
-    text-align: center;
-    font-size: 0.8em;
-    z-index: 9999999999999999;
-}
 
 #showrecoveryphrase {
     color: blue;
@@ -182,7 +180,7 @@ body {
 }
 #inputblocker {
     position: fixed;
-    z-index: 9999999999999;
+    z-index: 100;
     opacity: 0;
     left: 0;
     top: 0;
@@ -195,7 +193,7 @@ body {
 .liteloading:after {
     display: block;
     animation: fa-spin 2s infinite linear;
-    z-index: 99999999999;
+    z-index: 101;
     content: "\f021";
     color: #307ee0;
     font: normal normal normal 4em/1 FontAwesome;
@@ -215,7 +213,7 @@ body {
 .loading:before {
     display: block;
     animation: fa-spin 2s infinite linear;
-    z-index: 99999999999;
+    z-index: 102;
     background: white;
     content: "\f110";
     color: #307ee0;
@@ -242,7 +240,7 @@ body {
     height: 100vh;
     top: 0px;
     left: 0px;
-    z-index: 999999998;
+    z-index: 103;
 }
 button:not(.varsize) {
     min-width: 6em;
@@ -280,36 +278,6 @@ ul.verticalform > li {
     height: 100%;
 }
 
-.hr:before {
-    width: calc(50% - 2em);
-    height: 1px;
-    display: block;
-    position: absolute;
-    background: #adadad;
-    content: " ";
-    left: 0;
-    top: 0.5em;
-    z-index: 10;
-}
-
-.hr {
-    font-size: 1em;
-    text-align: center;
-    z-index: 11;
-    position: relative;
-}
-
-.hr:after {
-    width: calc(50% - 2em);
-    height: 1px;
-    display: block;
-    position: absolute;
-    right: 0px;
-    top: 0.5em;
-    background: #adadad;
-    content: " ";
-    z-index: 10;
-}
 
 .address {
     text-overflow: ellipsis;
@@ -348,8 +316,19 @@ label {
 #fromaccountslist {
     margin-bottom: 0 !important;
 }
+
 .screentab {
-	display:none;
+    overflow-y: scroll;
+    margin-top: 4.0em;
+    height: calc(100vh - 4em);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100vw - 2em);
+    margin-left: 1em;
+    margin-right: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 4em;
 }
 
 div.input-group>span.input-group-btn>button {
@@ -357,35 +336,31 @@ div.input-group>span.input-group-btn>button {
 }
 
 #navfooter {
-    position: fixed;
+    position: absolute;
     bottom: 0;
-    width: 100%;
+    width: 100vw;
     left: 0;
-/*    background: hsla(214, 50%, 50%, 1);*/
     background: linear-gradient(45deg, #1959ab, #317fe2);
     list-style: none;
     margin: 0;
     text-align: center;
-    z-index: 99999;
+    z-index: 90;
     border-top: 1px solid hsla(214, 50%, 25%, 0.25);
+    height: 3.5em !important;
 }
 
-#dummyfooter {
- /*   padding: 0.5em 0.5em 0.5em 0.5em;*/
-    padding: 1em 0.5em 0.75em 0.5em;
-    margin: 0;
-}
 
 #navheader {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100vw;
     background: linear-gradient(45deg, #1959ab, #317fe2);
     margin: 0;
     list-style: none;
-    z-index: 99999;
+    z-index: 90;
     border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
+    height: 4em !important;
 }
 #accdetailsqr {
     padding-top: 1em;
@@ -425,13 +400,6 @@ button:focus{
     right: 1em;
 }
 
-body:before {
-    content: "A";
-    display: inline-block;
-/*    padding: 1em 1em 1em 1em;*/
-
-    padding: 1.5em 0.5em 2.0em 0.5em;
-}
 #navheader > li {
     vertical-align: middle;
     margin: 0;
@@ -463,7 +431,7 @@ ul.iosheader > li > * {
     width: 50%;
     text-align: center;
 }
-#navfooter > li, #dummyfooter > li {
+#navfooter > li {
     text-align: center;
     vertical-align: top;
     position: relative;
@@ -514,6 +482,7 @@ ul.iosheader > li > * {
     bottom: 10px;
     right: 10px;
     opacity: 0.5;
+    z-index: 91;
     font-size: 2em !important;
 }
 .pinnumber {

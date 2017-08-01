@@ -8,13 +8,13 @@
         Toast Wallet
     </author>
     <content src="index.html" />
-    <preference name="DisallowOverscroll" value="false" />
-    <preference name="KeyboardShrinksView" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="KeyboardShrinksView" value="true" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="true" />
     <preference name="EnableViewportScale" value="true" />
-
+    <preference name="Fullscreen" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
@@ -118,4 +118,5 @@
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
+    <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
 </widget>

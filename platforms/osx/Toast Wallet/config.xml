@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.toastwallet.core" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="true" />
-    <preference name="BackupWebStorage" value="cloud" />
+    <preference name="DisallowOverscroll" value="false" />
     <preference name="EnableViewportScale" value="false" />
     <preference name="KeyboardDisplayRequiresUserAction" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
@@ -23,7 +23,13 @@
         Toast Wallet
     </author>
     <content src="index.html" />
-    <preference name="DisallowOverscroll" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="KeyboardShrinksView" value="true" />
+    <preference name="BackupWebStorage" value="cloud" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="SuppressesIncrementalRendering" value="true" />
+    <preference name="EnableViewportScale" value="true" />
+    <preference name="Fullscreen" value="true" />
     <preference name="android-minSdkVersion" value="16" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
