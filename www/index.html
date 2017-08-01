@@ -36,6 +36,7 @@
 		}
 	}
 
+	var prekeyboardscrollpos = 0;
 	function afterCordovaLoad()  {
 		if (debug) console.log("afterCordovaLoad");
 
@@ -50,6 +51,23 @@
 		if (window.cordova.plugins.Keyboard != undefined) {
 			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
 			cordova.plugins.Keyboard.disableScroll(true);	
+
+			window.addEventListener('native.keyboardshow', 
+				function(e) {
+					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em)');
+					if (currenttab != "") 
+						$(currenttab).scrollTop( (prekeyboardscrollpos=$(currenttab).scrollTop()) + e.keyboardHeight);
+				}
+			);
+
+
+			window.addEventListener('native.keyboardhide', 
+				function(e) {
+					$('.screentab').css('padding-bottom', screentabpaddingbottom + 'em');
+					if (currenttab != "") 
+						$(currenttab).scrollTop(prekeyboardscrollpos);
+				}
+			);
 		}
 
 		$(".screentab").scroll(renderMoreContentIndicator);
@@ -103,10 +121,7 @@
 			}
 		}, false);
 
-		var quickSelectInputLast = 0;
 		var quickSelectInput = function() {
-			if ($.now() - quickSelectInputLast <= 1000) return;
-			quickSelectInputLast = $.now();
 			$('#'+this.id).focus();
 		}
 		$('#backuppassword').bind('touchstart', quickSelectInput);
@@ -1280,7 +1295,7 @@ var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
-
+var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab) {
 
 	if (debug) console.log("showTab(" + tab + ")");
@@ -1380,6 +1395,7 @@ function showTab(tab) {
 		$(".headerright").show();
                 $("#navfooter").hide();
 		$('.screentab').css('padding-bottom', '0em');
+		screentabpaddingbottom = 0;
                 $("#dummyfooter").hide();
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
@@ -1389,11 +1405,13 @@ function showTab(tab) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
 		$('.screentab').css('padding-bottom', '0em');
+		screentabpaddingbottom = 0;
                 $("#dummyfooter").hide();
         } else { // set logout icon for logged in tabs
 		$(".headerright").show();
                 $("#navfooter").show();
 		$('.screentab').css('padding-bottom', '4em');
+		screentabpaddingbottom = 4;
                 $("#dummyfooter").show();
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
