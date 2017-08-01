@@ -344,6 +344,11 @@ label {
 
 }
 
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+
 div.input-group>span.input-group-btn>button {
     min-width: 5em;
 }

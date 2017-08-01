@@ -160,9 +160,38 @@
 
 
 		var quickSelectInput = function() {
-			$('#'+this.id).focus();
+			$(this).focus();
 			//if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
 		}
+
+		var stopClick = function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+
+		$('#backuppassword').bind('click', stopClick);
+		$('#restorepassword').bind('click', stopClick);
+		$('#rsecaccpassword').bind('click', stopClick);
+		$('#delaccpassword').bind('click', stopClick);
+		$('#txtsecret').bind('click', stopClick);
+		$('#extaccnick').bind('click', stopClick);
+		$('#extaccpassword').bind('click', stopClick);
+		$('#setpassword1').bind('click', stopClick);
+		$('#setpassword2').bind('click', stopClick);
+		$('#setpassword3').bind('click', stopClick);
+		$('#setpassword4').bind('click', stopClick);
+		$('#setpassword5').bind('click', stopClick);
+		$('#newaccnick').bind('click', stopClick);
+		$('#genaccpassword').bind('click', stopClick);
+		$('#confirmpaypassword').bind('click', stopClick);
+		$('#toaddress').bind('click', stopClick);
+		$('#desttag').bind('click', stopClick);
+		$('#invoiceid').bind('click', stopClick);
+		$('#payamount').bind('click', stopClick);
+		$('#recoverypassword').bind('click', stopClick);
+		$('#corruptionpp').bind('click', stopClick);
+		$('#corruptionrp').bind('click', stopClick);		
 
 
 		if (ontestnet) $('#testnetwarning').show();
@@ -1289,11 +1318,12 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab) {
 
+	blockInput(true);
+
 	if (debug) console.log("showTab(" + tab + ")");
 
 	document.activeElement.blur();
 
-	unblockInput();
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
@@ -1426,6 +1456,8 @@ function showTab(tab) {
 	renderMoreContentIndicator();
 
 	$(currenttab).focus();
+
+	setTimeout(unblockInput, 200);
 }
 
 var generatedAccount = {};
