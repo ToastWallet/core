@@ -25,7 +25,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	var ontestnet = true;
+	var ontestnet = false;
 
 	function renderMoreContentIndicator() {
 		if (currenttab == "") return;
@@ -65,7 +65,7 @@
 							ele = ele.parent();
 							count++;
 						}
-						if (count < 10) {
+						if (count >= 10) {
 							ele = $(document.activeElement);
 						} else {
 							if (ele != undefined) ele = ele.prev("label");
@@ -91,7 +91,7 @@
 		}
 
 		$(".screentab").scroll(renderMoreContentIndicator);
-		$("#morecontentindicator").click(function() {
+		$("#morecontentindicator").on("touchstart", function() {
 			if (currenttab == "") return;
 			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "fast");
 			renderMoreContentIndicator();
@@ -104,7 +104,7 @@
 		** for various status indicators. 
 		*/
 		console.log("device.platform = " + device.platform);
-		if ((device.platform + "").toLowerCase() == 'ios') {
+		if ((device.platform + "").toLowerCase() != 'browser') {
 			$("#navheader").addClass("iosheader");
 			$("body").addClass("iosheader");
 			console.log('added iosheader class');
@@ -135,35 +135,78 @@
 			}
 		}, false);
 
-		$('#backuppassword').bind('touchstart', quickSelectInput);
-		$('#restorepassword').bind('touchstart', quickSelectInput);
-		$('#rsecaccpassword').bind('touchstart', quickSelectInput);
-		$('#delaccpassword').bind('touchstart', quickSelectInput);
-		$('#txtsecret').bind('touchstart', quickSelectInput);
-		$('#extaccnick').bind('touchstart', quickSelectInput);
-		$('#extaccpassword').bind('touchstart', quickSelectInput);
-		$('#setpassword1').bind('touchstart', quickSelectInput);
-		$('#setpassword2').bind('touchstart', quickSelectInput);
-		$('#setpassword3').bind('touchstart', quickSelectInput);
-		$('#setpassword4').bind('touchstart', quickSelectInput);
-		$('#setpassword5').bind('touchstart', quickSelectInput);
-		$('#newaccnick').bind('touchstart', quickSelectInput);
-		$('#genaccpassword').bind('touchstart', quickSelectInput);
-		$('#confirmpaypassword').bind('touchstart', quickSelectInput);
-		$('#toaddress').bind('touchstart', quickSelectInput);
-		$('#desttag').bind('touchstart', quickSelectInput);
-		$('#invoiceid').bind('touchstart', quickSelectInput);
-		$('#payamount').bind('touchstart', quickSelectInput);
-		$('#recoverypassword').bind('touchstart', quickSelectInput);
-		$('#corruptionpp').bind('touchstart', quickSelectInput);
-		$('#corruptionrp').bind('touchstart', quickSelectInput);
+		$('#backuppassword').on('touchend', quickSelectInput);
+		$('#restorepassword').on('touchend', quickSelectInput);
+		$('#rsecaccpassword').on('touchend', quickSelectInput);
+		$('#delaccpassword').on('touchend', quickSelectInput);
+		$('#txtsecret').on('touchend', quickSelectInput);
+		$('#extaccnick').on('touchend', quickSelectInput);
+		$('#extaccpassword').on('touchend', quickSelectInput);
+		$('#setpassword1').on('touchend', quickSelectInput);
+		$('#setpassword2').on('touchend', quickSelectInput);
+		$('#setpassword3').on('touchend', quickSelectInput);
+		$('#setpassword4').on('touchend', quickSelectInput);
+		$('#setpassword5').on('touchend', quickSelectInput);
+		$('#newaccnick').on('touchend', quickSelectInput);
+		$('#genaccpassword').on('touchend', quickSelectInput);
+		$('#confirmpaypassword').on('touchend', quickSelectInput);
+		$('#toaddress').on('touchend', quickSelectInput);
+		$('#desttag').on('touchend', quickSelectInput);
+		$('#invoiceid').on('touchend', quickSelectInput);
+		$('#payamount').on('touchend', quickSelectInput);
+		$('#recoverypassword').on('touchend', quickSelectInput);
+		$('#corruptionpp').on('touchend', quickSelectInput);
+		$('#corruptionrp').on('touchend', quickSelectInput);
 
 
 		var quickSelectInput = function() {
-			$('#'+this.id).focus();
+			$(this).focus();
 			//if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
 		}
 
+		var stopClick = function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}
+
+		$('#backuppassword').on('click', stopClick);
+		$('#restorepassword').on('click', stopClick);
+		$('#rsecaccpassword').on('click', stopClick);
+		$('#delaccpassword').on('click', stopClick);
+		$('#txtsecret').on('click', stopClick);
+		$('#extaccnick').on('click', stopClick);
+		$('#extaccpassword').on('click', stopClick);
+		$('#setpassword1').on('click', stopClick);
+		$('#setpassword2').on('click', stopClick);
+		$('#setpassword3').on('click', stopClick);
+		$('#setpassword4').on('click', stopClick);
+		$('#setpassword5').on('click', stopClick);
+		$('#newaccnick').on('click', stopClick);
+		$('#genaccpassword').on('click', stopClick);
+		$('#confirmpaypassword').on('click', stopClick);
+		$('#toaddress').on('click', stopClick);
+		$('#desttag').on('click', stopClick);
+		$('#invoiceid').on('click', stopClick);
+		$('#payamount').on('click', stopClick);
+		$('#recoverypassword').on('click', stopClick);
+		$('#corruptionpp').on('click', stopClick);
+		$('#corruptionrp').on('click', stopClick);		
+
+		$(".toggleswitch").on('touchend',function() {
+			var ele = $($(this).children()[0]);
+			if (ele.hasClass("fa-toggle-off")) {
+				ele.removeClass("fa-toggle-off");
+				ele.addClass("fa-toggle-on");
+				$(this).data("checked", "true");
+			} else {
+				ele.removeClass("fa-toggle-on");
+				ele.addClass("fa-toggle-off");
+				$(this).data("checked", "false");
+			}
+		});
+		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
+		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
 
 		if (ontestnet) $('#testnetwarning').show();
 
@@ -181,7 +224,7 @@
     border-radius: 5px;
     z-index: 9999999999999999;
     padding: 2em;
-"><button  type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchstart="$('#testnetwarning').hide();">X</button>
+"><button  type="button" class="btn btn-danger" style="float:right; max-width:3em; min-width:3em !important; max-height:3em; " ontouchend="$('#testnetwarning').hide();">X</button>
 <br><center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
@@ -189,7 +232,7 @@
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
-		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
+		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchend="">Copy</button>
 	</div>
 	</center><br>
 	<label>Your backup</label>
@@ -201,7 +244,7 @@
 	<label >Passphrase or Recovery Phrase</label><input  type="password" id="backuppassword" class="form-control" placeholder="">
     </div>
     <br>
-    <div align="right"><button  class="btn btn-primary" ontouchstart="doGenerateBackup();">Generate Backup</button></div>
+    <div align="right"><button  class="btn btn-primary" ontouchend="doGenerateBackup();">Generate Backup</button></div>
 </div>
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
@@ -218,7 +261,7 @@
     <div align="center">
     
     
-    <button  class="btn btn-danger" ontouchstart="doRestoreBackup();">Restore Backup</button></div>
+    <button  class="btn btn-danger" ontouchend="doRestoreBackup();">Restore Backup</button></div>
 </div>
 <div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: none;">
     <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
@@ -234,7 +277,7 @@ Never share your recovery phrase with anyone.</p>
 <div id="showrecoveryphrase">
 </div><br>
 <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
-<center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchstart="doFinishSetup();">Finish Setup</button></center>
+<center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
 
 </div>
@@ -242,7 +285,7 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchend="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 	</ul>
 </div>
 
@@ -252,7 +295,7 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchstart="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
+	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
 	</center><br>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
@@ -267,13 +310,13 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="delaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-danger" id="btnimport" ontouchstart="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
+	<center><div><button  type="button" class="btn btn-danger" id="btnimport" ontouchend="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
-		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
-		<li id="btnaccdetailsselecttransactions" ontouchstart="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});" class="">Transactions</li>
+		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
+		<li id="btnaccdetailsselecttransactions" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});" class="">Transactions</li>
 	</ul>
 <ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
@@ -282,9 +325,9 @@ Never share your recovery phrase with anyone.</p>
 		<button  type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchstart="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
+			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
 			&nbsp;
-			<button  type="button" class="btn btn-danger" ontouchstart="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
+			<button  type="button" class="btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
 		</center>
 	</div>
 	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
@@ -293,8 +336,8 @@ Never share your recovery phrase with anyone.</p>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
-		<button  type="button" class="btn btn-primary" ontouchstart="doShowAndGenerateAccount();">Generate New Address</button><br />
-		<button  type="button" class="btn btn-primary" ontouchstart="showTab('#tabaddexistingaccount');">Add Existing Address</button>
+		<button  type="button" class="btn btn-primary" ontouchend="doShowAndGenerateAccount();">Generate New Address</button><br />
+		<button  type="button" class="btn btn-primary" ontouchend="showTab('#tabaddexistingaccount');">Add Existing Address</button>
 	</center>
 </div>
 
@@ -302,7 +345,7 @@ Never share your recovery phrase with anyone.</p>
 	<label >Ripple Secret</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart='scanQR("#txtsecret");'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret");'>QR</button></span>
 	</div>
 	<br>
         <label >Account Nickname (optional)</label>
@@ -313,13 +356,13 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="extaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchstart="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
+	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchend="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val());">Import Account</button></div></center>
 </div>
 
 <div id="tabqrscan" class="screentab" data-hasback="true" data-title="Scan QR Key" style="display:none">
 	<div class="input-group"><video id="qrpreview"></video></div>
 	<br />
-	<div class="input-group"><center><button  type="button" class="btn btn-primary" ontouchstart="showTab(-1);">Cancel</button></center></div>
+	<div class="input-group"><center><button  type="button" class="btn btn-primary" ontouchend="showTab(-1);">Cancel</button></center></div>
 </div>
 
 
@@ -336,18 +379,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button  ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button  ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button  ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button  ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button  ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button  ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button  ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button  ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button  ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button  ontouchstart="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
-	<button  ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button  ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2</div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4</div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5</div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7</div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8</div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button  ontouchend="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -366,18 +409,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button  ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button  ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button  ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button  ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button  ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button  ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button  ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button  ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button  ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button  ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button  ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button  ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2</div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4</div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5</div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7</div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8</div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button  ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -396,18 +439,18 @@ Never share your recovery phrase with anyone.</p>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button  ontouchstart="doPinPad('1'); return false;"><div>1</div></button>
-	<button  ontouchstart="doPinPad('2'); return false;"><div>2</div></button>
-	<button  ontouchstart="doPinPad('3'); return false;"><div>3</div></button><br>
-	<button  ontouchstart="doPinPad('4'); return false;"><div>4</div></button>
-	<button  ontouchstart="doPinPad('5'); return false;"><div>5</div></button>
-	<button  ontouchstart="doPinPad('6'); return false;"><div>6</div></button><br>
-	<button  ontouchstart="doPinPad('7'); return false;"><div>7</div></button>
-	<button  ontouchstart="doPinPad('8'); return false;"><div>8</div></button>
-	<button  ontouchstart="doPinPad('9'); return false;"><div>9</div></button><br>
-	<button  ontouchstart="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button  ontouchstart="doPinPad('0'); return false;"><div>0</div></button>
-	<button  ontouchstart="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2</div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3</div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4</div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5</div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6</div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7</div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8</div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9</div></button><br>
+	<button  ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -426,7 +469,7 @@ Never share your recovery phrase with anyone.</p>
 	<p style="color:black; text-align: justify;">Your passphrase will be used to encrypt your wallet. You will only enter it when you wish to send XRP. It should be long and strong. Never share it with anyone.</p>
 	<br>
 	<center>
-		<button  class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);">Set Passphrase</button>
+		<button  class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchend="doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);">Set Passphrase</button>
 	</center>
 </div>
 
@@ -445,7 +488,7 @@ Never share your recovery phrase with anyone.</p>
 	</div>
 	<br>
 	<center>
-		<button  class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
+		<button  class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchend="doResetPassphrase($('#setpassword4').val(), $('#setpassword5').val(), $('#setpassword3').val(), function(){showTab('#tabaccounts');});">Set Passphrase</button>
 	</center>
 </div>
 
@@ -463,7 +506,7 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" ontouchstart="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
+	<center><div><button  type="button" class="btn btn-primary" ontouchend="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
@@ -492,7 +535,7 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-success" ontouchstart="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
+	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -507,7 +550,7 @@ Never share your recovery phrase with anyone.</p>
 	<div class="input-group">
 	<input  type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button  class="btn btn-info" ontouchstart='scanQR("#toaddress");' type="button">QR</button>
+	<button  class="btn btn-info" ontouchend='scanQR("#toaddress");' type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -529,7 +572,7 @@ Never share your recovery phrase with anyone.</p>
 	<div class="input-group">
 	<input  type="text" id="payamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button  class="btn btn-success" id="btnpay" ontouchstart="doPay(sodium.randombytes_random());" type="button">Pay</button>
+	<button  class="btn btn-success" id="btnpay" ontouchend="doPay(sodium.randombytes_random());" type="button">Pay</button>
 	</span>
 	</div>
 
@@ -537,10 +580,10 @@ Never share your recovery phrase with anyone.</p>
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabrecovery');">Change PIN</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" ontouchstart="showTab('#tabbackup1');">Backup Wallet</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="showTab('#tabrestore');">Restore Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabrecovery');">Change PIN</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -548,7 +591,7 @@ Never share your recovery phrase with anyone.</p>
 	<label >Passphrase or Recovery Phrase</label><input  type="password" id="recoverypassword" class="form-control" placeholder="">
     </div>
 
-    <div align="right"><button  class="btn btn-primary" ontouchstart="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
+    <div align="right"><button  class="btn btn-primary" ontouchend="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
 </div>
 
 <div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: none;">
@@ -560,7 +603,7 @@ Never share your recovery phrase with anyone.</p>
     <div>
         <label >Recovery Phrase</label><input  type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
-    <div><center><button  type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchstart="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
+    <div><center><button  type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchend="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
 
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
@@ -657,7 +700,7 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button  class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchstart="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
+<center><button  class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
 <br />
 <p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </div>
@@ -1136,7 +1179,7 @@ function refreshAccounts() {
 			accountbalances = {};
 			for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchstart="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
@@ -1289,11 +1332,14 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab) {
 
+	if (tab == currenttab) return;
+
+	blockInput(true);
+
 	if (debug) console.log("showTab(" + tab + ")");
 
 	document.activeElement.blur();
 
-	unblockInput();
 
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
@@ -1321,13 +1367,15 @@ function showTab(tab) {
 	$("#navheader").show();
 
 
-	if (tab == currenttab) return;
 	
 
 	if (tab == -1) {
 		// unwind mode
 
-		if (previoustabs.length == 0) return; // cannot unwind so do nothing
+		if (previoustabs.length == 0) {
+			unblockInput();
+			return; // cannot unwind so do nothing
+		}
 
 		tab = currenttab = previoustabs.pop();
 
@@ -1365,12 +1413,12 @@ function showTab(tab) {
 	if ($(tab).data('hasback')) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").off();
-		$(".headerleft").bind('touchstart', function() {showTab(-1);});
+		$(".headerleft").on('touchstart', function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
 		$(".headerleft").off();
-		$(".headerleft").bind('touchstart', function() {});
+		$(".headerleft").on('touchstart', function() {});
 	}
 
 	if ($(tab).data('title')) {
@@ -1389,7 +1437,7 @@ function showTab(tab) {
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
-                $(".headerright").bind('touchstart', function(){ showTab("#tabrecovery"); });
+                $(".headerright").on('touchend', function(){ showTab("#tabrecovery"); });
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
@@ -1405,7 +1453,7 @@ function showTab(tab) {
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
-                $(".headerright").bind('touchstart', function(){ doShowLogin(); });
+                $(".headerright").on('touchend', function(){ doShowLogin(); });
 	        $("#morecontentindicator").addClass("moreindicatorabovenav");
         }	
 
@@ -1426,6 +1474,8 @@ function showTab(tab) {
 	renderMoreContentIndicator();
 
 	$(currenttab).focus();
+
+	setTimeout(unblockInput, 200);
 }
 
 var generatedAccount = {};
@@ -1488,10 +1538,12 @@ function doImportGeneratedAccount(passphrase, nickname) {
 }
 
 function clearPaymentScreen() {
-	$("#toaddress").val("");
-	$("#desttag").val("");
-	$("#invoiceid").val("");
-	$("#payamount").val("");
+	try {
+		$("#toaddress").val("");
+		$("#desttag").val("");
+		$("#invoiceid").val("");
+		$("#payamount").val("");
+	} catch(e) {handle_error(e);}
 }
 
 function doConfirmPay(passphrase) {
@@ -1580,10 +1632,9 @@ function doPay(nonce) {
 	var amount = $("#payamount").val();
 
 
-
 	if (dest == "") dest = 0;
 
-	if (payfrom == "") {
+	if (payfrom == undefined || payfrom == "") {
 		navigator.notification.alert("You must select an account to pay from", 
 			function(){
 				$("#payfromaccount").focus();
@@ -3005,9 +3056,9 @@ function doGetTransactions(address, marker) {
 		}
 		root.append('<ul class="transactionlist">'+tx+'</ul>');
 		if (x.marker != undefined && count > 0) {
-			root.append('<button  type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
+			root.append('<button  type="button" class="btn btn-primary" ontouchend="doGetTransactions(\'' + address + '\', \'' + x.marker + '\')">More</button>');
 		} else if (count > 0) {
-			root.append('<button  type="button" class="btn btn-primary" ontouchstart="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
+			root.append('<button  type="button" class="btn btn-primary" ontouchend="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
 		}
 		unblockInput();
 	});
@@ -3016,30 +3067,5 @@ function doGetTransactions(address, marker) {
 </script>
 
 
-<script>
-
-
-
-$(".toggleswitch").bind('touchstart',function() {
-	var ele = $($(this).children()[0]);
-	if (ele.hasClass("fa-toggle-off")) {
-		ele.removeClass("fa-toggle-off");
-		ele.addClass("fa-toggle-on");
-		$(this).data("checked", "true");
-	} else {
-		ele.removeClass("fa-toggle-on");
-		ele.addClass("fa-toggle-off");
-		$(this).data("checked", "false");
-	}
-});
-/*
-	$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
-	$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
-	$('.btn').on('cut copy paste',function(e){e.preventDefault();});
-	$('label').on('cut copy paste',function(e){e.preventDefault();});
-	$('#accountdetailsselector').on('cut copy paste',function(e){e.preventDefault();});
-	$('.fa').on('cut copy paste',function(e){e.preventDefault();});
-*/
-</script>
 </body>
 </html>
