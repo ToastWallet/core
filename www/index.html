@@ -54,9 +54,15 @@
 
 			window.addEventListener('native.keyboardshow', 
 				function(e) {
+					blockInput(true);
 					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em)');
-					if (currenttab != "") 
-						$(currenttab).scrollTop( (prekeyboardscrollpos=$(currenttab).scrollTop()) + e.keyboardHeight);
+					if (currenttab != "") {
+						$(currenttab).animate({ scrollTop: (prekeyboardscrollpos=$(currenttab).scrollTop()) + e.keyboardHeight }, "fast",
+							function() {
+								unblockInput();
+							}
+						);
+					}
 				}
 			);
 
@@ -73,7 +79,7 @@
 		$(".screentab").scroll(renderMoreContentIndicator);
 		$("#morecontentindicator").click(function() {
 			if (currenttab == "") return;
-			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "slow");
+			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "fast");
 			renderMoreContentIndicator();
 			return false;
 		});
@@ -121,31 +127,32 @@
 			}
 		}, false);
 
+		$('#backuppassword').bind('touchend', quickSelectInput);
+		$('#restorepassword').bind('touchend', quickSelectInput);
+		$('#rsecaccpassword').bind('touchend', quickSelectInput);
+		$('#delaccpassword').bind('touchend', quickSelectInput);
+		$('#txtsecret').bind('touchend', quickSelectInput);
+		$('#extaccnick').bind('touchend', quickSelectInput);
+		$('#extaccpassword').bind('touchend', quickSelectInput);
+		$('#setpassword1').bind('touchend', quickSelectInput);
+		$('#setpassword2').bind('touchend', quickSelectInput);
+		$('#setpassword3').bind('touchend', quickSelectInput);
+		$('#setpassword4').bind('touchend', quickSelectInput);
+		$('#setpassword5').bind('touchend', quickSelectInput);
+		$('#newaccnick').bind('touchend', quickSelectInput);
+		$('#genaccpassword').bind('touchend', quickSelectInput);
+		$('#confirmpaypassword').bind('touchend', quickSelectInput);
+		$('#toaddress').bind('touchend', quickSelectInput);
+		$('#desttag').bind('touchend', quickSelectInput);
+		$('#invoiceid').bind('touchend', quickSelectInput);
+		$('#payamount').bind('touchend', quickSelectInput);
+		$('#recoverypassword').bind('touchend', quickSelectInput);
+		$('#corruptionpp').bind('touchend', quickSelectInput);
+		$('#corruptionrp').bind('touchend', quickSelectInput);
+
 		var quickSelectInput = function() {
 			$('#'+this.id).focus();
 		}
-		$('#backuppassword').bind('touchstart', quickSelectInput);
-		$('#restorepassword').bind('touchstart', quickSelectInput);
-		$('#rsecaccpassword').bind('touchstart', quickSelectInput);
-		$('#delaccpassword').bind('touchstart', quickSelectInput);
-		$('#txtsecret').bind('touchstart', quickSelectInput);
-		$('#extaccnick').bind('touchstart', quickSelectInput);
-		$('#extaccpassword').bind('touchstart', quickSelectInput);
-		$('#setpassword1').bind('touchstart', quickSelectInput);
-		$('#setpassword2').bind('touchstart', quickSelectInput);
-		$('#setpassword3').bind('touchstart', quickSelectInput);
-		$('#setpassword4').bind('touchstart', quickSelectInput);
-		$('#setpassword5').bind('touchstart', quickSelectInput);
-		$('#newaccnick').bind('touchstart', quickSelectInput);
-		$('#genaccpassword').bind('touchstart', quickSelectInput);
-		$('#confirmpaypassword').bind('touchstart', quickSelectInput);
-		$('#toaddress').bind('touchstart', quickSelectInput);
-		$('#desttag').bind('touchstart', quickSelectInput);
-		$('#invoiceid').bind('touchstart', quickSelectInput);
-		$('#payamount').bind('touchstart', quickSelectInput);
-		$('#recoverypassword').bind('touchstart', quickSelectInput);
-		$('#corruptionpp').bind('touchstart', quickSelectInput);
-		$('#corruptionrp').bind('touchstart', quickSelectInput);
 
 		var stopClickInput = function(event) {
 			event.stopPropagation();
