@@ -5,6 +5,7 @@ body {
     height: 100vh;
 	color:white;
 	font-size: 1.5em;
+	min-height: 100vh;
 }
 
 #walletbackup {
@@ -338,6 +339,7 @@ label {
 }
 .screentab {
 	display:none;
+	min-height: 100vh;
 }
 
 div.input-group>span.input-group-btn>button {
