@@ -28,7 +28,10 @@
 	var ontestnet = false;
 
 	function refreshWebView() {
-		
+		$('#currenttab').css('border-bottom', '1px solid white');
+		setTimeout(function(){
+			$('#currenttab').css('border-bottom', 'none');
+		}, 10);
 	}
 
 	function renderMoreContentIndicator() {
@@ -304,9 +307,9 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
+	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
-	</center><br>
+	</center>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	<br>
 	<center><div id="accsecretqr"></div></center>
@@ -1409,6 +1412,8 @@ function showTab(tab) {
 		$("#tabaccountsecret label").show();
 		$("#tabaccountsecret button").show();
 		$("#tabaccountsecret input[type='password']").show();
+		$("#btncopysecret").hide();
+		$("#accsecret").hide();
 	} else if (tab == '#tabaccountdetails') {
 		$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); 
 		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
