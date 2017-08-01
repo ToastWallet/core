@@ -329,6 +329,8 @@ label {
     margin-right: 1em;
     padding-top: 0.5em;
     padding-bottom: 4em;
+    touch-action: manipulation;
+    -ms-touch-action: manipulation
 }
 
 div.input-group>span.input-group-btn>button {

@@ -48,7 +48,8 @@
 		}
 
 		if (window.cordova.plugins.Keyboard != undefined) {
-			cordova.plugins.Keyboard.disableScroll(true);	
+			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+			cordova.plugins.Keyboard.disableScroll(false);	
 		}
 
 		$(".screentab").scroll(renderMoreContentIndicator);

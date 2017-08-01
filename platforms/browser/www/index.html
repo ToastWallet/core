@@ -47,6 +47,11 @@
 			Keyboard.disableScrollingInShrinkView(true);
 		}
 
+		if (window.cordova.plugins.Keyboard != undefined) {
+			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+			cordova.plugins.Keyboard.disableScroll(false);	
+		}
+
 		$(".screentab").scroll(renderMoreContentIndicator);
 		$("#morecontentindicator").click(function() {
 			if (currenttab == "") return;
