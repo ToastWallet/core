@@ -27,6 +27,13 @@
 	var debug = true;
 	var ontestnet = false;
 
+	function refreshWebView() {
+		$('#currenttab').css('border-bottom', '1px solid white');
+		setTimeout(function(){
+			$('#currenttab').css('border-bottom', 'none');
+		}, 10);
+	}
+
 	function renderMoreContentIndicator() {
 		if (currenttab == "") return;
 		if ($(currenttab)[0].scrollHeight - $(currenttab).scrollTop() - $(currenttab).outerHeight() < 10) {
@@ -116,9 +123,7 @@
 		new Clipboard('.copybtnaction');
 
 		$('.copybtn').on('touchend', function() {
-                        if (cordova.plugins.Redraw != undefined) {
-				cordova.plugins.Redraw.invalidateWebView();
-                        }
+			refreshWebView();
 		});
 
 		document.addEventListener("pause", function(){
@@ -210,9 +215,7 @@
 				ele.addClass("fa-toggle-off");
 				$(this).data("checked", "false");
 			}
-			if (cordova.plugins.Redraw != undefined) {
-				cordova.plugins.Redraw.invalidateWebView();
-			}
+			refreshWebView();
 		});
 		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
 		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
@@ -304,9 +307,9 @@ Never share your recovery phrase with anyone.</p>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
+	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
-	</center><br>
+	</center>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	<br>
 	<center><div id="accsecretqr"></div></center>
@@ -1330,9 +1333,8 @@ function renderEnteredPin() {
 
 		}
 	}
-	if (cordova.plugins.Redraw != undefined) {
-		cordova.plugins.Redraw.invalidateWebView();
-	}
+
+	refreshWebView();
 
 }
 
@@ -1410,6 +1412,8 @@ function showTab(tab) {
 		$("#tabaccountsecret label").show();
 		$("#tabaccountsecret button").show();
 		$("#tabaccountsecret input[type='password']").show();
+		$("#btncopysecret").hide();
+		$("#accsecret").hide();
 	} else if (tab == '#tabaccountdetails') {
 		$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); 
 		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  

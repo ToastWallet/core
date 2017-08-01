@@ -27,6 +27,10 @@
 	var debug = true;
 	var ontestnet = false;
 
+	function refreshWebView() {
+		
+	}
+
 	function renderMoreContentIndicator() {
 		if (currenttab == "") return;
 		if ($(currenttab)[0].scrollHeight - $(currenttab).scrollTop() - $(currenttab).outerHeight() < 10) {
@@ -116,9 +120,7 @@
 		new Clipboard('.copybtnaction');
 
 		$('.copybtn').on('touchend', function() {
-                        if (cordova.plugins.Redraw != undefined) {
-				cordova.plugins.Redraw.invalidateWebView();
-                        }
+			refreshWebView();
 		});
 
 		document.addEventListener("pause", function(){
@@ -210,9 +212,7 @@
 				ele.addClass("fa-toggle-off");
 				$(this).data("checked", "false");
 			}
-			if (cordova.plugins.Redraw != undefined) {
-				cordova.plugins.Redraw.invalidateWebView();
-			}
+			refreshWebView();
 		});
 		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
 		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
@@ -1330,6 +1330,9 @@ function renderEnteredPin() {
 
 		}
 	}
+
+	refreshWebView();
+
 }
 
 var currenttab = "";

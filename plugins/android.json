@@ -83,9 +83,6 @@
         },
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.toastwallet.core"
-        },
-        "org.apache.cordova.plugin.redraw": {
-            "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
     "dependent_plugins": {

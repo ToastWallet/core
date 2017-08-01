@@ -27,6 +27,10 @@
 	var debug = true;
 	var ontestnet = false;
 
+	function refreshWebView() {
+		
+	}
+
 	function renderMoreContentIndicator() {
 		if (currenttab == "") return;
 		if ($(currenttab)[0].scrollHeight - $(currenttab).scrollTop() - $(currenttab).outerHeight() < 10) {
@@ -114,6 +118,10 @@
 		if (debug) console.log("afterCordovaLoad:2");
 
 		new Clipboard('.copybtnaction');
+
+		$('.copybtn').on('touchend', function() {
+			refreshWebView();
+		});
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
@@ -204,6 +212,7 @@
 				ele.addClass("fa-toggle-off");
 				$(this).data("checked", "false");
 			}
+			refreshWebView();
 		});
 		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
 		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
@@ -1321,6 +1330,9 @@ function renderEnteredPin() {
 
 		}
 	}
+
+	refreshWebView();
+
 }
 
 var currenttab = "";
@@ -1771,7 +1783,7 @@ function importWallet(wallet, successfunc, failurefunc) {
         db.get("pindata").then(function(pindata) {
                 db.get("ppdata").then(function(ppdata) {
                         db.get("rpdata").then(function(rpdata) {
-                                db.get("accounts").then(function(accounts) {
+         /*                       db.get("accounts").then(function(accounts) { */
 
 
 	db.upsert("pindata",
@@ -1821,7 +1833,7 @@ function importWallet(wallet, successfunc, failurefunc) {
 		failurefunc();
 	});
 
-                                });
+/*                                }); */
                         });
                 });
         });

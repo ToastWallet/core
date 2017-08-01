@@ -556,14 +556,6 @@ module.exports = [
             "cordova.plugins.Keyboard"
         ],
         "runs": true
-    },
-    {
-        "id": "org.apache.cordova.plugin.redraw.Redraw",
-        "file": "plugins/org.apache.cordova.plugin.redraw/www/redraw-plugin.js",
-        "pluginId": "org.apache.cordova.plugin.redraw",
-        "clobbers": [
-            "cordova.plugins.Redraw"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -595,8 +587,7 @@ module.exports.metadata =
     "cordova-plugin-screen-orientation": "2.0.1",
     "cordova-plugin-crosswalk-webview": "2.3.0",
     "com.verso.cordova.clipboard": "0.1.0",
-    "ionic-plugin-keyboard": "2.2.1",
-    "org.apache.cordova.plugin.redraw": "1.0.0"
+    "ionic-plugin-keyboard": "2.2.1"
 };
 // BOTTOM OF METADATA
 });

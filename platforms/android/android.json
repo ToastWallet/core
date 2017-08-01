@@ -127,10 +127,6 @@
                         {
                             "xml": "<feature name=\"Keyboard\"><param name=\"android-package\" value=\"io.ionic.keyboard.IonicKeyboard\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Redraw\"><param name=\"android-package\" value=\"org.apache.cordova.plugin.redraw.Redraw\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -314,9 +310,6 @@
             "PACKAGE_NAME": "com.phonegap.helloworld"
         },
         "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.toastwallet.core"
-        },
-        "org.apache.cordova.plugin.redraw": {
             "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
@@ -878,14 +871,6 @@
                 "cordova.plugins.Keyboard"
             ],
             "runs": true
-        },
-        {
-            "id": "org.apache.cordova.plugin.redraw.Redraw",
-            "file": "plugins/org.apache.cordova.plugin.redraw/www/redraw-plugin.js",
-            "pluginId": "org.apache.cordova.plugin.redraw",
-            "clobbers": [
-                "cordova.plugins.Redraw"
-            ]
         }
     ],
     "plugin_metadata": {
@@ -915,7 +900,6 @@
         "cordova-plugin-screen-orientation": "2.0.1",
         "cordova-plugin-crosswalk-webview": "2.3.0",
         "com.verso.cordova.clipboard": "0.1.0",
-        "ionic-plugin-keyboard": "2.2.1",
-        "org.apache.cordova.plugin.redraw": "1.0.0"
+        "ionic-plugin-keyboard": "2.2.1"
     }
 }

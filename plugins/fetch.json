@@ -216,14 +216,5 @@
         },
         "is_top_level": true,
         "variables": {}
-    },
-    "org.apache.cordova.plugin.redraw": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/woodyza/RedrawPlugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
     }
 }
