@@ -230,6 +230,7 @@ body {
     position: fixed;
     left: calc(50% - 0.5em);
     top: calc(50% - 0.5em);
+    z-index: 104;
 }
 .loading:after {
     position: fixed;
@@ -331,6 +332,16 @@ label {
     padding-bottom: 4em;
     touch-action: manipulation;
     -ms-touch-action: manipulation
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+* {
+     touch-action: manipulation;
+         -ms-touch-action: manipulation
+             -webkit-overflow-scrolling: touch;
+                 scroll-behavior: smooth;
+
 }
 
 div.input-group>span.input-group-btn>button {

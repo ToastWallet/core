@@ -25,7 +25,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	var ontestnet = false;
+	var ontestnet = true;
 
 	function renderMoreContentIndicator() {
 		if (currenttab == "") return;
@@ -78,7 +78,6 @@
 					$('.screentab').css('padding-bottom', screentabpaddingbottom + 'em');
 					if (currenttab != "") 
 						$(currenttab).scrollTop(prekeyboardscrollpos);
-					unblockInput();
 				}
 			);
 		}
@@ -151,17 +150,10 @@
 		$('#corruptionpp').bind('touchstart', quickSelectInput);
 		$('#corruptionrp').bind('touchstart', quickSelectInput);
 
-		$('button').bind('touchend', 
-			function() {
-				try {
-					document.activeElement.blur();
-				} catch (e) {}
-			}
-		);
 
 		var quickSelectInput = function() {
 			$('#'+this.id).focus();
-			if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
+			//if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
 		}
 
 
@@ -1316,8 +1308,6 @@ function showTab(tab) {
 		$("input[type='text']").val("");
 	}
 
-	console.log("showTab(" + tab + ");");
-	console.log(previoustabs);
 
 	$("#navheader").show();
 
