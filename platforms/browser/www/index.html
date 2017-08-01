@@ -60,9 +60,17 @@
 						prekeyboardscrollpos=$(currenttab).scrollTop();
 
 						var ele = $(document.activeElement);
-						while (ele != undefined && ele.prev("label").length == 0) ele = ele.parent();
-						if (ele != undefined) ele = ele.prev("label");
-						if (ele == undefined || ele.length == 0) ele = $(document.activeElement);
+						var count = 0;
+						while (ele != undefined && ele.prev("label").length == 0 && count < 10){
+							ele = ele.parent();
+							count++;
+						}
+						if (count < 10) {
+							ele = $(document.activeElement);
+						} else {
+							if (ele != undefined) ele = ele.prev("label");
+							if (ele == undefined || ele.length == 0) ele = $(document.activeElement);
+						}
 
 						var offset = ele.offset().top - $(currenttab).offset().top + $(currenttab).scrollTop()
 
@@ -184,6 +192,7 @@
 		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
 	</div>
 	</center><br>
+	<label>Your backup</label>
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
@@ -197,7 +206,7 @@
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
-
+    <label>Backup</label>
     <textarea id="restorebackup"></textarea>
     <br>
     <div>

@@ -192,6 +192,7 @@
 		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchstart="">Copy</button>
 	</div>
 	</center><br>
+	<label>Your backup</label>
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
@@ -205,7 +206,7 @@
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
-
+    <label>Backup</label>
     <textarea id="restorebackup"></textarea>
     <br>
     <div>
