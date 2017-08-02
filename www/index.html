@@ -262,7 +262,7 @@
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
     <label>Backup</label>
-    <textarea id="restorebackup"></textarea>
+    <textarea id="restorebackup" style="color:black"></textarea>
     <br>
     <div>
 	<label >Passphrase or Recovery Phrase (of current wallet)</label><input  type="password" id="restorepassword" class="form-control" placeholder="">
@@ -302,13 +302,16 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
-	<center><textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea></center>
+	<center>
+		<textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea>
+	</center>
         <br><label>Enter your Passphrase</label>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
-	<center><textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
+	<center>
+		<textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
 	</center>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	<br>
@@ -333,7 +336,9 @@ Never share your recovery phrase with anyone.</p>
 <ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-		<center><textarea oninput="$(this).val($(this).data('content'));" id="accdetailsaddress"></textarea></center>
+		<center>
+			<textarea oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black"></textarea>
+		</center>
 		<button  type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
@@ -1007,7 +1012,6 @@ function doSelectAccount(accselected, nickname) {
 
 
 	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
-	$("#accdetailsaddress").val( accselected );
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
@@ -1017,6 +1021,7 @@ function doSelectAccount(accselected, nickname) {
 
 	
 	showTab("#tabaccountdetails");	
+	$("#accdetailsaddress").val( accselected );
 }
 
 
@@ -1345,7 +1350,7 @@ var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
-function showTab(tab) {
+function showTab(tab, dontClearText) {
 
 	if (tab == currenttab) return;
 
@@ -1374,8 +1379,10 @@ function showTab(tab) {
 	if (tab == -1 && currenttab == "#tabqrscan") {
 		// if the user has gone for a QR scan we dont want to wipe their form.
 	} else {
-		$("input[type='password']").val("");
-		$("input[type='text']").val("");
+		if (dontClearText == undefined) {
+			$("input[type='password']").val("");
+			$("input[type='text']").val("");
+		}
 	}
 
 

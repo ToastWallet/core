@@ -336,7 +336,9 @@ label {
     scroll-behavior: smooth;
 }
 
-
+textarea {
+	transform: translateZ(0);
+}
 
 ::-webkit-scrollbar {
     width: 0px;  /* remove scrollbar space */

@@ -15,19 +15,19 @@ body {
 }
 
 #walletbackup {
-    max-width: 90vw;
-    overflow-wrap: break-word;
     font-size: 0.7em;
-    width: 100%;
     height: calc(100vh - 27em);
+}
+
+textarea {
+    width: 100%;
+    max-width: 90vw;
     overflow-y: scroll;
+    overflow-wrap: break-word;
 }
 
 #restorebackup {
-    width: 100%;
-    min-height: 8em;
     font-size:0.6em;
-    color:black;
 }
 
 #tabbackup2 h3 {
@@ -336,9 +336,6 @@ label {
     scroll-behavior: smooth;
 }
 
-textarea {
-	transform: translateZ(0);
-}
 
 ::-webkit-scrollbar {
     width: 0px;  /* remove scrollbar space */
