@@ -302,15 +302,17 @@ Never share your recovery phrase with anyone.</p>
 </div>
 
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
+        <label>Account Public Address</label>
 	<center>
 		<textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea>
 	</center>
-        <br><label>Enter your Passphrase</label>
+        <br><label id="lblacpassword">Enter your Passphrase</label>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
 	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center>
+		<label id="lblaccsecret">Account Secret</label>
 		<textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
 	</center>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
@@ -1128,9 +1130,10 @@ function doRevealRippleSecret(passphrase, address) {
         validatePassphrase(passphrase, false,
                 function() {
 			getSecretForAccount(passphrase, address, function(secret) {
-				$("#tabaccountsecret label").hide();
-				$("#tabaccountsecret button").hide();
-				$("#tabaccountsecret input[type='password']").hide();
+				$("#lblacpassword").hide();
+				$("#lblaccsecret").show();
+				$("#btnrevealsecret").hide();
+				$("#rsecaccpassword").hide();
         	                $("#accsecret").val(secret);
         	                $("#accsecret").data('content', secret);
 				$("#accsecret").show();
@@ -1372,7 +1375,6 @@ function showTab(tab, dontClearText) {
         $("#accsecret").val('');
         $("#accsecret").data('content', '');
         $("#accsecretqr").empty();
-	$('#btncopysecret').hide();
 	$("#accsecret").hide();
 
 
@@ -1416,9 +1418,10 @@ function showTab(tab, dontClearText) {
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
 		refreshAccounts();	
 	} else if (tab == "#tabaccountsecret") {
-		$("#tabaccountsecret label").show();
-		$("#tabaccountsecret button").show();
-		$("#tabaccountsecret input[type='password']").show();
+		$("#lblacpassword").show();
+		$("#lblaccsecret").hide();
+		$("#btnrevealsecret").show();
+		$("#rsecaccpassword").show();
 		$("#btncopysecret").hide();
 		$("#accsecret").hide();
 	} else if (tab == '#tabaccountdetails') {

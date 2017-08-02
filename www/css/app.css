@@ -15,20 +15,30 @@ body {
 }
 
 #walletbackup {
-    font-size: 0.7em;
     height: calc(100vh - 27em);
 }
 
 textarea {
     width: 100%;
-    max-width: 90vw;
     overflow-y: scroll;
     overflow-wrap: break-word;
+    min-height: 4em;
 }
-
-#restorebackup {
-    font-size:0.6em;
-}
+/*#generatedaddress, #accdetailsaddress, #accdetailssecretaddress, #accsecret {
+    font-size: 1.2em !important;
+    color: black;
+    border: 1px dashed black;
+    box-shadow: none;
+    text-align: center;
+    overflow-wrap: break-word;
+    padding: 0.2em;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    word-wrap: break-word;
+    width: 100%;
+}*/
 
 #tabbackup2 h3 {
     margin-top: 0;
@@ -381,22 +391,6 @@ button, button:focus, button:active, button:hover {
     outline: none !important;
 }
 
-#generatedaddress, #accdetailsaddress, #accdetailssecretaddress, #accsecret {
-    font-size: 1.2em !important;
-    color: black;
-    border: 1px dashed black;
-    resize: none;
-    box-shadow: none;
-    text-align: center;
-    overflow-wrap: break-word;
-    padding: 0.2em;
-    display: inline-block;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: clip;
-    word-wrap: break-word;
-    width: 100%;
-}
 .copybtn {
     max-width: 2.5em;
     max-height: 2.5em;
