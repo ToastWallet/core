@@ -15,19 +15,29 @@ body {
 }
 
 #walletbackup {
-    max-width: 90vw;
-    overflow-wrap: break-word;
-    font-size: 0.7em;
-    width: 100%;
-    height: calc(100vh - 27em);
-    overflow-y: scroll;
+    height: calc(100vh - 17em);
 }
 
-#restorebackup {
+textarea {
     width: 100%;
-    min-height: 8em;
-    font-size:0.6em;
-    color:black;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    min-height: 4em;
+}
+#generatedaddress, #accdetailssecretaddress, #accsecret, #accdetailsaddress {
+    font-size: 1.2em !important;
+    color: black;
+    border: 1px dashed black;
+    box-shadow: none;
+    text-align: center;
+    overflow-wrap: break-word;
+    padding: 0.2em;
+/*    display: inline-block; */
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    word-wrap: break-word;
+    width: 100%;
 }
 
 #tabbackup2 h3 {
@@ -41,10 +51,12 @@ body {
     margin-bottom: 1em;
 }
 .toggleswitch {
-    float: right;
     font-size: 2em;
     vertical-align: middle;
     opacity: 0.5;
+    margin-left: 0.5em;
+    color: black;
+    float: right;
     margin-left: 0.5em;
 }
 
@@ -78,33 +90,28 @@ body {
 
 
 .accountdetailsselector {
-    background: rgb(0, 81, 185);
-    margin-top: -1em;
-    padding: 0;
-    position: fixed;
-    margin-left: -1em;
-    margin-right: -1em;
+    z-index: 89 !important;
+    width: 100%;
     overflow: hidden;
-    border: none;
-    margin-bottom: 0px;
-    z-index:90;
+    text-overflow: clip;
+    padding: 0 !important;
 }
 
-.accountdetailsselector > * {
-    display: inline-block;
-    text-align: center;
-    padding: 0;
-    margin: 0;
-    padding-top: 0.5em;
-    width: 50vw;
-    padding-bottom: 0.5em;
-    z-index:90;
+.accountdetailsselector > *:not(.accdetailsinnertabselected) {
+    background: rgb(0, 81, 185) !important;
+    color: white !important;
 }
 
 .accountdetailsselector > .accdetailsinnertabselected {
-    background-color: white;
-    color: #0051b9;
-    z-index:90;
+    background: white !important;
+    color: rgb(0, 81, 185) !important;
+}
+
+.accountdetailsselector > li {
+    text-align: center;
+    padding: 0.5em 0 0.5em 0;
+    width: calc(50% - 3px);
+    display: inline-block;
 }
 
 .txrow {
@@ -161,13 +168,6 @@ body {
 
 #tabshowrecovery h1 {
     margin-top: 0 !important;
-}
-
-.toggleswitch {
-    float: right;
-    font-size: 2em;
-    vertical-align: middle;
-    opacity: 0.5;
 }
 
 
@@ -334,7 +334,13 @@ label {
     -ms-touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    z-index: 1;
 }
+
+.screentab * {
+	z-index: 2;
+}
+
 
 
 
@@ -382,34 +388,17 @@ button, button:focus, button:active, button:hover {
     outline: none !important;
 }
 
-#generatedaddress, #accdetailsaddress, #accdetailssecretaddress, #accsecret {
-    font-size: 1.2em !important;
-    color: black;
-    border: 1px dashed black;
-    resize: none;
-    box-shadow: none;
-    text-align: center;
-    overflow-wrap: break-word;
-    padding: 0.2em;
-    display: inline-block;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: clip;
-    word-wrap: break-word;
-    width: 100%;
-}
 .copybtn {
     max-width: 2.5em;
-    max-height: 2.5em;
+    max-height: 2.4em;
     min-width: 2.5em !important;
-    min-height: 2.5em;
+    min-height: 2.4em;
     padding: 0;
     margin: 0;
     color: black;
     background: rgba(0,0,0,0.1);
     border: none;
-    position: absolute;
-    right: 1em;
+    float: right;
 }
 
 #navheader > li {

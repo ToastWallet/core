@@ -216,5 +216,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-plugin-queries-schemes": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-queries-schemes"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

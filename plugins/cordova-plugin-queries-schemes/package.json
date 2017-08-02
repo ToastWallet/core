@@ -1,0 +1,38 @@
+{
+  "name": "cordova-plugin-queries-schemes",
+  "version": "0.1.5",
+  "author": "Rob Hilgefort <rjhilgefort@gmail.com> (http://rob.hilgefort.me)",
+  "description": "Cordova / PhoneGap Plugin to work arround Apple's iOS9 requirement that URL Schemes be declared and submitted to Apple (via Info.plist file).",
+  "cordova": {
+    "id": "cordova-plugin-queries-schemes",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjhilgefort/cordova-plugin-queries-schemes.git"
+  },
+  "keywords": [
+    "cordova",
+    "ios",
+    "app",
+    "queries",
+    "url",
+    "schemes",
+    "lsapplicationqueriesschemes",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rjhilgefort/cordova-plugin-queries-schemes/issues"
+  },
+  "homepage": "https://github.com/rjhilgefort/cordova-plugin-queries-schemes#readme"
+}
