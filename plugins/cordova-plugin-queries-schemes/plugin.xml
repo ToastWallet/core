@@ -18,6 +18,12 @@
       <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
           <string>This app can read QR codes from camera or photo library for the purpose of adding a Ripple secret or reading a Ripple public address.</string>
       </config-file>
+      <config-file target="*-Info.plist" parent="CFBundleVersion">
+          <string>2.0</string>
+      </config-file>
+      <config-file target="*-Info.plist" parent="CFBundleShortVersionString">
+          <string>2.0</string>
+      </config-file>
     </platform>
-    </platform>
+
 </plugin>
