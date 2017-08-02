@@ -246,7 +246,7 @@
 	<div>
 		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchend="">Copy</button>
 	</div>
-	</center><br>
+	</center>
 	<label>Your backup</label>
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
@@ -261,15 +261,20 @@
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
-    <label>Backup</label>
-    <textarea id="restorebackup" style="color:black"></textarea>
+    <div>
+    <label>Backup code</label>
+    <input type="text" class="form-control" id="restorebackup" style="color:black">
+    </div>
     <br>
     <div>
 	<label >Passphrase or Recovery Phrase (of current wallet)</label><input  type="password" id="restorepassword" class="form-control" placeholder="">
     </div>
     <br>
-    <p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I understand this will <b style="color:red;">DESTROY</b> my current wallet.</p>
-    
+    <p style="color:black;">
+    	<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+	I understand this will <b style="color:red;">DESTROY</b> my current wallet.
+    </p>
+    <br> 
     <div align="center">
     
     
@@ -288,7 +293,9 @@ Never share your recovery phrase with anyone.</p>
     </u></u>
 <div id="showrecoveryphrase">
 </div><br>
-<p style="color:black;"><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I sincerely promise I've written my recovery phrase down. </p>
+<p style="color:black;">
+<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+I sincerely promise I've written my recovery phrase down.</p>
 <center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
 
@@ -304,7 +311,7 @@ Never share your recovery phrase with anyone.</p>
 <div id="tabaccountsecret" class="screentab" data-title="Secret" data-hasback="true" style="display:none">
         <label>Account Public Address</label>
 	<center>
-		<textarea id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black"></textarea>
+		<input type="text" id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black">
 	</center>
         <br><label id="lblacpassword">Enter your Passphrase</label>
         <div>
@@ -313,16 +320,19 @@ Never share your recovery phrase with anyone.</p>
 	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
 	<center>
 		<label id="lblaccsecret">Account Secret</label>
-		<textarea id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" ></textarea>
+		<input type="text" id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" >
 	</center>
 	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<br>
 	<br>
 	<center><div id="accsecretqr"></div></center>
 </div>
 
 <div id="tabaccountdelete" class="screentab" data-title="Delete Account" data-hasback="true" style="display:none">
 	<center><div id="accdeleteaddress" style="color:black"></div></center><br>
-	<p style="color:red; text-align:justify; "><span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>I really want to delete this account. I understand there's no way to undo this action.</p>
+	<p style="color:red; text-align:justify;">
+	<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+	I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
         <div>
                 <input  type="password" id="delaccpassword" class="form-control" placeholder="">
@@ -335,16 +345,17 @@ Never share your recovery phrase with anyone.</p>
 		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
 		<li id="btnaccdetailsselecttransactions" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});" class="">Transactions</li>
 	</ul>
-<ul class="dummyaccountdetailsselector"><li>&nbsp;</li></ul>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
-		<center>
-			<textarea oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black"></textarea>
-		</center>
-		<button  type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+		<div class="input-group">
+			<input type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
+			<span class="input-group-btn">
+				<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+			</span>
+		</div>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret');">Secret</button>
+			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); ">Secret</button>
 			&nbsp;
 			<button  type="button" class="btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
 		</center>
@@ -755,9 +766,9 @@ function doGenerateBackup() {
 		function(){
 			exportWallet(
 				function(data){
+					showTab('#tabbackup2');
 					$('#walletbackup').val( data ); 
 					$('#walletbackup').data('content', data);
-					showTab('#tabbackup2');
 					unblockInput();
 				}
 			)
@@ -1013,6 +1024,7 @@ function doSelectAccount(accselected, nickname) {
 	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
 
 
+	showTab("#tabaccountdetails");	
 	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
 	$("#accdetailsaddress").data('content', accselected );
 
@@ -1022,7 +1034,6 @@ function doSelectAccount(accselected, nickname) {
 	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "Ripple address" : nickname);
 
 	
-	showTab("#tabaccountdetails");	
 	$("#accdetailsaddress").val( accselected );
 }
 
@@ -1384,6 +1395,7 @@ function showTab(tab, dontClearText) {
 		if (dontClearText == undefined) {
 			$("input[type='password']").val("");
 			$("input[type='text']").val("");
+			$("textarea").val("");
 		}
 	}
 
@@ -1501,6 +1513,16 @@ function showTab(tab, dontClearText) {
 	renderMoreContentIndicator();
 
 	$(currenttab).focus();
+
+	// make sure the values of various input boxes are set correctly before displaying
+	var inputs = $(currenttab + " input");
+	for (var i = 0; i < inputs.length; i++) {
+		var ele = $('#' + inputs[i].id);
+		var content = ele.data('content');
+		if (content != undefined) ele.val(content);
+	}
+	
+	
 
 	setTimeout(unblockInput, 200);
 }
