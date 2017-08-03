@@ -16,6 +16,8 @@
     <preference name="EnableViewportScale" value="true" />
     <preference name="Fullscreen" value="true" />
     <preference name="android-minSdkVersion" value="16" />
+    <preference name="buildArchitecture" value="armv7" />
+    <preference name="xwalkMultipleApk" value="true" />	
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-orientation" source="npm" spec="~1.0.2" />
@@ -71,9 +73,8 @@
         <splash height="960" platform="ios" src="www/res/screen/ios/Default@2x~iphone.png" width="640" />
         <splash height="480" platform="ios" src="www/res/screen/ios/Default~iphone.png" width="320" />
         <splash height="1334" platform="ios" src="www/res/screen/ios/iphone6-port.png" width="750" />
-
-        <splash width="2208" height="1242" platform="ios" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" />
-        <splash width="1242" height="2208" platform="ios" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" />
+        <splash height="1242" platform="ios" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" width="2208" />
+        <splash height="2208" platform="ios" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" width="1242" />
     </platform>
     <platform name="wp8">
         <icon height="99" platform="wp8" src="www/res/icon/wp8/ApplicationIcon.png" width="99" />
@@ -108,12 +109,12 @@
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-		<gap:config-file platform="ios" parent="NSCameraUsageDescription" overwrite="true">
-		   <string>The camera is used to scan QR-codes of Ripple addresses.</string>
-		</gap:config-file>
-		<gap:config-file platform="ios" parent="NSPhotoLibraryUsageDescription" overwrite="true">
-		   <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
-		</gap:config-file>
+        <gap:config-file overwrite="true" parent="NSCameraUsageDescription" platform="ios">
+            <string>The camera is used to scan QR-codes of Ripple addresses.</string>
+        </gap:config-file>
+        <gap:config-file overwrite="true" parent="NSPhotoLibraryUsageDescription" platform="ios">
+            <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
+        </gap:config-file>
     </platform>
     <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6" />
     <engine name="browser" spec="~4.1.0" />
@@ -129,4 +130,5 @@
     </plugin>
     <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
+    <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.1" />
 </widget>

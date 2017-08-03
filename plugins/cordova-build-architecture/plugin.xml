@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-build-architecture"
+        version="1.0.1">
+
+    <name>Build Architecture</name>
+    <description>Experimental plugin to force one single arm or x86 build</description>
+    <license>MIT</license>
+    <repo>https://github.com/MBuchalik/cordova-build-architecture</repo>
+   
+    <engines>
+        <engine name="cordova-android" version=">=4"/>
+        <engine name="cordova-plugman" version=">=4.2.0"/><!-- needed for gradleReference support -->
+    </engines>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+        	<preference name="buildArchitecture" default="arm" />
+        </config-file>
+        
+        <framework src="platforms/android/architecture.gradle" custom="true" type="gradleReference"/>
+    </platform>
+</plugin>

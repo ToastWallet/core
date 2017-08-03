@@ -102,6 +102,9 @@
         },
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-build-architecture": {
+            "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
     "dependent_plugins": {},

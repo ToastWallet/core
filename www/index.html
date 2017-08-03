@@ -98,12 +98,15 @@
 		}
 
 		$(".screentab").scroll(renderMoreContentIndicator);
-		$("#morecontentindicator").on("touchstart", function() {
+
+		var morecontentfunc;
+		$("#morecontentindicator").on("touchstart", morecontentfunc = function() {
 			if (currenttab == "") return;
 			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "fast");
 			renderMoreContentIndicator();
 			return false;
 		});
+
 	
 		
 
@@ -204,7 +207,8 @@
 		$('#corruptionpp').on('click', stopClick);
 		$('#corruptionrp').on('click', stopClick);		
 
-		$(".toggleswitch").on('touchend',function() {
+		var toggleswitchfunc;
+		$(".toggleswitch").on('touchend',toggleswitchfunc = function() {
 			var ele = $($(this).children()[0]);
 			if (ele.hasClass("fa-toggle-off")) {
 				ele.removeClass("fa-toggle-off");
@@ -217,6 +221,11 @@
 			}
 			refreshWebView();
 		});
+
+		if ((device.platform + "").toLowerCase() == 'browser') {
+			$(".toggleswitch").on('click', toggleswitchfunc);
+		}
+
 		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
 		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
 
@@ -295,7 +304,7 @@ Never share your recovery phrase with anyone.</p>
 </div><br>
 <p style="color:black;">
 <span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
-I sincerely promise I've written my recovery phrase down.</p>
+I sincerely promise I've written my recovery phrase down.</p><br>
 <center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
 
@@ -1207,8 +1216,8 @@ function refreshAccounts() {
 	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
-			accountbalances = {};
-			for (var i in acc) {
+		accountbalances = {};
+		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
 
@@ -1216,35 +1225,37 @@ function refreshAccounts() {
 			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
 
 			remote.requestAccountInfo({
-account: i,
-ledger: "validated"
-}, function(err, res) {
-if (err) {
-} else {
-try {
-$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
-} catch(e) {handle_error(e);}
-accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
-}
+				account: i,
+				ledger: "validated"
+			}, 
+			function(err, res) {
+				if (err) {
+				} else {
+					try {
+						$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
+					} catch(e) {handle_error(e);}
+					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+				}
 
-var balcount = Object.keys(accountbalances).length;
-if (balcount > 0 && activeaccount == "") {
-var largest = 0; var largestindex = 0;
-for (var x in accountbalances) {
-if (accountbalances[x] > largest) {
-largest = accountbalances[x];
-largestindx = x;
-}
-}
+				var balcount = Object.keys(accountbalances).length;
+				if (balcount > 0 && activeaccount == "") {
+					var largest = 0; var largestindex = 0;
+					for (var x in accountbalances) {
+						if (accountbalances[x] > largest) {
+							largest = accountbalances[x];
+							largestindx = x;
+						}
+					}
+					activeaccount = x;
 
-activeaccount = x;
+					$("#opt" + x).prop('selected', true);
+					$("#ra" + x).addClass('active');	
+				}
 
-			$("#opt" + x).prop('selected', true);
-			$("#ra" + x).addClass('active');	
-			}
-});
-}
-});
+			});
+		}
+		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
+	});
 
 }
 
@@ -1357,6 +1368,31 @@ function renderEnteredPin() {
 
 }
 
+/* Run this to add a click proxy to all elements so that a browser can use the wallet */
+function clickProxy() {
+	if ((device.platform + "").toLowerCase() == 'browser') {
+		$('*:not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
+		$('*:not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
+			var ts = $(this).attr('ontouchstart');
+			var te = $(this).attr('ontouchend');
+			if (ts != undefined) {
+				ts = '(function(){' + ts + ';})();';
+				eval(ts);
+			}
+			if (te != undefined) {
+				te = '(function(){' + te + ';})();';
+				eval(te);
+			};
+		});
+		$("#morecontentindicator").off(); $("#morecontentindicator").on('click', function() {
+			if (currenttab == "") return;
+			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "fast");
+			renderMoreContentIndicator();
+			return false;
+		});
+	}
+}
+
 var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
@@ -1453,11 +1489,11 @@ function showTab(tab, dontClearText) {
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").off();
 		$(".headerleft").on('touchstart', function() {showTab(-1);});
+		if ((device.platform + "").toLowerCase() == 'browser') $(".headerleft").on('click', function() {showTab(-1);});
 		$(".headerleft").show();
 	} else {
 		$(".headerleft")[0].innerHTML = '';
 		$(".headerleft").off();
-		$(".headerleft").on('touchstart', function() {});
 	}
 
 	if ($(tab).data('title')) {
@@ -1477,6 +1513,7 @@ function showTab(tab, dontClearText) {
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
                 $(".headerright").on('touchend', function(){ showTab("#tabrecovery"); });
+                if ((device.platform + "").toLowerCase() == 'browser') $(".headerright").on('click', function(){ showTab("#tabrecovery"); });
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
@@ -1493,6 +1530,7 @@ function showTab(tab, dontClearText) {
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
                 $(".headerright").on('touchend', function(){ doShowLogin(); });
+                if ((device.platform + "").toLowerCase() == 'browser') $(".headerright").on('click', function(){ doShowLogin(); });
 	        $("#morecontentindicator").addClass("moreindicatorabovenav");
         }	
 
@@ -1523,6 +1561,9 @@ function showTab(tab, dontClearText) {
 	}
 	
 	
+	if ((device.platform + "").toLowerCase() == 'browser') {
+		clickProxy();
+	}
 
 	setTimeout(unblockInput, 200);
 }
@@ -3112,6 +3153,7 @@ function doGetTransactions(address, marker) {
 		} else if (count > 0) {
 			root.append('<button  type="button" class="btn btn-primary" ontouchend="doGetTransactions(\'' + address + '\', \'\')">Back to Start</button>');			
 		}
+		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
 		unblockInput();
 	});
 }
