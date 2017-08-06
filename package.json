@@ -27,10 +27,7 @@
       "icon": "www/res/icon/windows/toasticon_hires.ico"
     },
     "appx": {
-      "backgroundColor": "#1565b1",
-      "publisher": "StarStone Limited",
-      "publisherDisplayName": "StarStone Limited",
-      "languages": ["en-US"]
+      "backgroundColor": "#1565b1"
     }
   },
   "forceCodeSigning": "true",
