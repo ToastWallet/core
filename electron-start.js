@@ -12,6 +12,27 @@ const url = require('url')
 let mainWindow
 
 function createWindow () {
+
+
+  /* the below patch allows electron to load the application without changing the structure away from cordova
+  ** credit: https://github.com/bertyhell : https://github.com/electron/electron/issues/2242
+  */
+  const WEB_FOLDER = 'www';
+  const PROTOCOL = 'file';
+
+  electron.protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
+      /* Strip protocol */
+      let url = request.url.substr(PROTOCOL.length + 1);
+
+      /* Build complete path for node require function */
+      url = path.join(__dirname, WEB_FOLDER, url);
+
+      url = path.normalize(url);
+
+      console.log("electron-load: " + url);
+      callback({path: url});
+  });
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
 	width: 450, 
@@ -22,11 +43,10 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '/www/index.html'),
-    protocol: 'file:',
+    pathname: 'index.html',
+    protocol: PROTOCOL + ':',
     slashes: true
-  }))
-
+  }));
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
