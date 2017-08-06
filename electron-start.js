@@ -58,6 +58,24 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+// if a modal dialog appears it tends to set the title of the window to index.html
+  mainWindow.on("page-title-updated", function(event) {
+	event.preventDefault();
+  }
+}
+
+
+var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
+
+if (shouldQuit) {
+  app.quit();
+  return;
 }
 
 // This method will be called when Electron has finished
