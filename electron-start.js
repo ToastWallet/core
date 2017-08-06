@@ -62,7 +62,7 @@ function createWindow () {
 // if a modal dialog appears it tends to set the title of the window to index.html
   mainWindow.on("page-title-updated", function(event) {
 	event.preventDefault();
-  }
+  });
 }
 
 
