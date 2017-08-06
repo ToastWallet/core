@@ -24,7 +24,7 @@
     "compression": "maximum",
     "win": {
       "target": "appx",
-      "icon": "www/res/icon/windows/toasticon_hires.ico"
+      "icon": "www/res/electron/toastwallet.ico"
     },
     "appx": {
       "backgroundColor": "#1565b1"
