@@ -23,7 +23,8 @@
     "appId": "com.toastwallet.core",
     "compression": "maximum",
     "win": {
-       "target": "appx"
+       "target": "appx",
+       "icon": "www/res/icon/windows/toasticon_hires.ico"
     }
   },
   "forceCodeSigning": "true",

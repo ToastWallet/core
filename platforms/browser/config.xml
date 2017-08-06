@@ -32,4 +32,6 @@
     <preference name="EnableViewportScale" value="true" />
     <preference name="Fullscreen" value="true" />
     <preference name="android-minSdkVersion" value="16" />
+    <preference name="buildArchitecture" value="armv7" />
+    <preference name="xwalkMultipleApk" value="true" />
 </widget>
