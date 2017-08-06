@@ -9,4 +9,13 @@ Warning! Releases will be under release branches. The main branch is the develop
 # Phone builds
 We use Adobe Phonegap's cloud build service. The most recent phone builds can be found here. Warning these may be development builds.
 https://build.phonegap.com/apps/2733163/share
+# Manual compilation for browser build
+Clone the repo.
+Install phonegap https://phonegap.com/
+Run:
+	- phonegap platform add browser
+	- phonegap build browser
 
+# Manual building of electron packages
+- Perform the steps above for the browser version.
+More instructions shortly
