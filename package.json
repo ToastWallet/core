@@ -21,7 +21,7 @@
   },
   "build": {
     "appId": "com.toastwallet.core",
-    "compression": "best"
+    "compression": "maximum"
   },
   "forceCodeSigning": "true",
   "publisherName": "StarStone Limited",
