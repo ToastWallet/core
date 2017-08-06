@@ -1,3 +1,9 @@
+Node version: v6.10.3
+
+Cordova version: 6.5.0
+
+Config.xml file: 
+
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.toastwallet.core" version="2.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
@@ -132,3 +138,11 @@
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.1" />
 </widget>
+
+
+Plugins: 
+
+com.verso.cordova.clipboard,cordova-build-architecture,cordova-plugin-camera,cordova-plugin-compat,cordova-plugin-console,cordova-plugin-contacts,cordova-plugin-crosswalk-webview,cordova-plugin-device,cordova-plugin-device-motion,cordova-plugin-device-orientation,cordova-plugin-dialogs,cordova-plugin-file,cordova-plugin-file-transfer,cordova-plugin-geolocation,cordova-plugin-globalization,cordova-plugin-inappbrowser,cordova-plugin-media,cordova-plugin-media-capture,cordova-plugin-network-information,cordova-plugin-screen-orientation,cordova-plugin-sqlite-2,cordova-plugin-statusbar,cordova-plugin-vibration,cordova-plugin-whitelist,es6-promise-plugin,ionic-plugin-keyboard,phonegap-plugin-barcodescanner
+
+No Platforms Currently Installed
+
