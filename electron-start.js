@@ -23,6 +23,7 @@ function createWindow () {
   electron.protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
       /* Strip protocol */
       let url = request.url.substr(PROTOCOL.length + 1);
+      url = url.replace(/\?.*$/g, "");
 
       /* Build complete path for node require function */
       url = path.join(__dirname, WEB_FOLDER, url);
