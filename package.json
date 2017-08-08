@@ -30,8 +30,10 @@
       "backgroundColor": "#1565b1"
     },
     "linux": {
-      "target": "AppImage",
-      "icon": "www/images/linux_icon.png"
+      "target": "AppImage"
+    },
+    "mac": {
+       "icon":"www/res/icon/icon.icns"
     }
   },
   "forceCodeSigning": "true",
