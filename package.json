@@ -28,6 +28,10 @@
     },
     "appx": {
       "backgroundColor": "#1565b1"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "www/images/linux_logo.png"
     }
   },
   "forceCodeSigning": "true",
