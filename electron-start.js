@@ -64,6 +64,8 @@ function createWindow () {
 	event.preventDefault();
   });
 
+  if (/^darwin/.test(process.platform)) {
+
     var template = [{
         label: "Application",
         submenu: [
@@ -79,7 +81,7 @@ function createWindow () {
     ];
 
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-
+ }
 }
 
 

@@ -33,11 +33,13 @@
       "target": "AppImage"
     },
     "mac": {
-       "icon":"www/res/icon/icon.icns"
+      "icon": "www/res/icon/icon.icns"
     }
   },
   "forceCodeSigning": "true",
   "publisherName": "StarStone Limited",
-  "verifyUpdateCodeSignature": "true"
+  "verifyUpdateCodeSignature": "true",
+  "dependencies": {
+    "menu": "^0.2.5"
+  }
 }
-
