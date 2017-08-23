@@ -261,14 +261,6 @@
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
-<div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
-    <div>
-	<label >Passphrase or Recovery Phrase</label><input  type="password" id="backuppassword" class="form-control" placeholder="">
-    </div>
-    <br>
-    <div align="right"><button  class="btn btn-primary" ontouchend="doGenerateBackup();">Generate Backup</button></div>
-</div>
-
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
     <div>
@@ -622,7 +614,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabrecovery');">Change PIN</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
@@ -771,28 +763,11 @@ function unblockInput() {
 function doGenerateBackup() {
 	if (debug) console.log("doGenerateBackup");
 	blockInput();
-	validatePassphrase(
-		$('#backuppassword').val(), false,
-		function(){
-			exportWallet(
-				function(data){
-					showTab('#tabbackup2');
-					$('#walletbackup').val( data ); 
-					$('#walletbackup').data('content', data);
-					unblockInput();
-				}
-			)
-		}, 
-		function(){
-			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', 
-				function(){
-					unblockInput();
-				}, 
-				'Error', 
-				'OK'
-			);
-		}, 
-		function(){
+	exportWallet(
+		function(data){
+			showTab('#tabbackup2');
+			$('#walletbackup').val( data ); 
+			$('#walletbackup').data('content', data);
 			unblockInput();
 		}
 	);
