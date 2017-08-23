@@ -3063,7 +3063,10 @@ function redefineSigningToAlwaysUseSecret(secret) {
 ** before calling.
 */
 function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
+	
+	if (debug) console.log("sendXRP - " + xrpAmount);
 
+	
 	blockInput();
 	
 	getSecretForAccount(passphrase, fromacc, 
@@ -3082,19 +3085,24 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			transaction.sourceTag(parseInt(sourceTag));
 			transaction.invoiceID(invoiceID);
 
+			if (debug) console.log("sending " + transaction.amount + " drops " + from + " fromacc + " to " + destination + " dstag = " + destTag);
+
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
 					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
+					if (debug) console.log("send failed 1");
 				} else if ( (res != undefined && res.engine_result != undefined && res.engine_result == 'tesSUCCESS') ) {
 					remote.setSecret(null);
 					unblockInput();
 					successfunc();
+					if (debug) console.log("send successful");
 				} else {
 					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
+					if (debug) console.log("send failed 1");
 				}
 			});
 		},
