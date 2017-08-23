@@ -19,7 +19,13 @@
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
 	<script src="js/clipboard.min.js"></script>
-	<script>if (window.module) module = window.module;</script>
+	<script>if (window.module) module = window.module;
+	
+		window.onerror = function(message, url, lineNumber) {  
+			console.log("Error: " + message + ", url: " + url + " line: " + lineNumber);
+			//todo: error prompt the user
+		}
+	</script>
 </head>
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
@@ -1798,6 +1804,10 @@ var walletsalt;
 
 function exportWallet(exportfunc) {
 
+
+	var f = function() {
+		navigator.notification.alert("Cannot backup empty wallet. Please generate your addresses first!", function(){ unblockInput(); showTab("#tabaccounts"); }, "Error", "OK");
+	}
 	db.get("pindata").then(function(pindata) {
 		db.get("ppdata").then(function(ppdata) {
 			db.get("rpdata").then(function(rpdata) {
@@ -3060,7 +3070,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			transaction.sourceTag(parseInt(sourceTag));
 			transaction.invoiceID(invoiceID);
 
-			if (debug) console.log("sending " + transaction.amount + " drops " + from + " fromacc + " to " + destination + " dstag = " + destTag);
+			if (debug) console.log("sending " + transaction.amount + " drops from " +  fromacc + " to " + destination + " dstag = " + destTag);
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
