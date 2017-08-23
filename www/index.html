@@ -3076,7 +3076,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			var transaction = remote.createTransaction("Payment", {
 				account: fromacc,
 				destination: destination,
-				amount: xrpAmount * 1000000
+				amount: Math.floor(xrpAmount * 1000000)
 			});
 			transaction.destinationTag(parseInt(destTag));
 			transaction.sourceTag(parseInt(sourceTag));
