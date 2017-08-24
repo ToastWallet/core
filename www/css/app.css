@@ -44,6 +44,21 @@ textarea {
 
 }
 
+/* pinpad lettering contributed by https://github.com/WietseWind */
+.pinpad button i.char {
+    font-size: .4em;
+    text-transform: uppercase;
+    font-style: normal;
+    display: block;
+    line-height: .4em;
+    position: absolute;
+    width: 100%;
+    margin-top: -20%;
+    letter-spacing: 2px;
+    font-weight: normal;
+    padding-left: 2px;
+}
+
 #generatedaddress:before {
     display: block;
     content: "xxxxxxxxxxxxxxxx";
