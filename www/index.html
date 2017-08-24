@@ -267,6 +267,20 @@
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
+<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore and Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
+    <p style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</p>
+    <div>
+    <label style="color:white;">Backup code</label>
+    <input type="text" class="form-control" id="restorebackup2" style="color:black">
+    </div>
+    
+    <br> 
+    <div align="center">
+    
+    
+    <button class="btn btn-success" ontouchend="doRestoreBackupFreshInstall();">Restore Backup</button></div>
+</div>
+
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
     <div>
@@ -739,9 +753,18 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button  class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
-<br />
-<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
+<center>
+<p style="text-align:center;">If you understand and agree to the above then choose an option below:</p><br/>
+	<div>
+		<button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);" style="min-width: 20em; ">Create a New Wallet</button>
+	</div>
+	<br/>
+	<div>
+		<button class="btn btn-info" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);" style="min-width: 20em;">Restore an Existing Wallet </button>
+	</div>
+	<br>
+	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
+</center>
 </div>
 
 
@@ -1919,6 +1942,33 @@ function importWallet(wallet, successfunc, failurefunc) {
         });
 
 		
+}
+
+function doRestoreBackupFreshInstall() {
+	if (debug) console.log('doRestoreBackupFreshInstall');
+	blockInput();
+	importWallet(
+		$('#restorebackup2').val(),
+		function() {
+			navigator.notification.alert("Backup restored successfully!", 
+				function() {
+					unblockInput();
+					doShowLogin();
+				}, 
+				"Success", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
+				function() {
+					unblockInput();
+				},
+				"Error",
+				"OK"
+			);
+		}
+	);
 }
 
 function doRestoreBackup() {
