@@ -46,7 +46,7 @@ textarea {
 
 /* pinpad lettering contributed by https://github.com/WietseWind */
 .pinpad button i.char {
-    font-size: .4em;
+    font-size: .5em;
     text-transform: uppercase;
     font-style: normal;
     display: block;
