@@ -256,7 +256,7 @@
 <br><center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
-<div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: none;">
+<div id="tabbackup2" class="screentab" data-primarytab="false" hasback="true" data-title="Encrypted Backup" style="display: none;">
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
@@ -533,6 +533,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING THIS ADDRESS HAS NOT YET BEEN ADDED TO YOUR WALLET</div>
 	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
@@ -1804,9 +1805,10 @@ var walletsalt;
 
 function exportWallet(exportfunc) {
 
+	//todo: allow partial backup?
 
 	var f = function() {
-		navigator.notification.alert("Cannot backup empty wallet. Please generate your addresses first!", function(){ unblockInput(); showTab("#tabaccounts"); }, "Error", "OK");
+		navigator.notification.alert("Either your wallet is empty or it has become corrupted. Please generate your addresses first!", function(){ unblockInput(); showTab("#tabaccounts"); }, "Error", "OK");
 	}
 	db.get("pindata").then(function(pindata) {
 		db.get("ppdata").then(function(ppdata) {
@@ -1821,10 +1823,10 @@ function exportWallet(exportfunc) {
 
 					var json =  JSON.stringify(exp);
 					exportfunc(sodium.crypto_generichash(4, json, '', 'hex') + json);
-				});
-			});
-		});
-	});
+				}).catch(f);
+			}).catch(f);
+		}).catch(f);
+	}).catch(f);
 }
 
 function importWallet(wallet, successfunc, failurefunc) {
