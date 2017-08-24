@@ -1946,7 +1946,7 @@ function importWallet(wallet, successfunc, failurefunc) {
 
 function doRestoreBackupFreshInstall() {
 	if (debug) console.log('doRestoreBackupFreshInstall');
-	blockInput();
+	blockInput(true);
 	importWallet(
 		$('#restorebackup2').val(),
 		function() {
