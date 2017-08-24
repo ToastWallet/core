@@ -512,7 +512,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 </div>
 
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
-	<br><label>Current Passphrase</label>
+	<br><label>Current Passphrase or Recovery Phrase</label>
 	<div>
 		<input  type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
@@ -1656,7 +1656,7 @@ function doConfirmPay(passphrase) {
 								}, "Success", "OK"); 
 						}, 
 						function() {
-							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.)", 
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
@@ -1730,6 +1730,20 @@ function doPay(nonce) {
 			"OK"
 		);
 		return;
+	}
+
+	if (/^(?:^(r|n)[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{31,34}$)$/m.test(payto)) {
+		// valid
+	} else {
+		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the Ripple network will charge a fee on failure.", 
+			function(){
+				$("#toaddress").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);
+
 	}
 
 
