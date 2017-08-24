@@ -1679,7 +1679,7 @@ function doConfirmPay(passphrase) {
 								}, "Success", "OK"); 
 						}, 
 						function() {
-							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.)", 
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.) This error can also be caused by an invalid destination address.", 
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
