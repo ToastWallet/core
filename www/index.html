@@ -19,7 +19,13 @@
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
 	<script src="js/clipboard.min.js"></script>
-	<script>if (window.module) module = window.module;</script>
+	<script>if (window.module) module = window.module;
+	
+		window.onerror = function(message, url, lineNumber) {  
+			console.log("Error: " + message + ", url: " + url + " line: " + lineNumber);
+			//todo: error prompt the user
+		}
+	</script>
 </head>
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
@@ -250,7 +256,7 @@
 <br><center><h2>WARNING THIS IS AN ALPHA</h2><p>Do NOT send real XRP. This wallet is connected to the RIPPLE TESTNET.</p></center>
 </div>
 
-<div id="tabbackup2" class="screentab" data-primarytab="true" data-title="Encrypted Backup" style="display: none;">
+<div id="tabbackup2" class="screentab" data-primarytab="false" hasback="true" data-title="Encrypted Backup" style="display: none;">
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
 	<center>
 	<div>
@@ -261,15 +267,21 @@
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
-<div id="tabbackup1" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
+<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore and Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
+    <p style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</p>
     <div>
-	<label >Passphrase or Recovery Phrase</label><input  type="password" id="backuppassword" class="form-control" placeholder="">
+    <label style="color:white;">Backup code</label>
+    <input type="text" class="form-control" id="restorebackup2" style="color:black">
     </div>
-    <br>
-    <div align="right"><button  class="btn btn-primary" ontouchend="doGenerateBackup();">Generate Backup</button></div>
+    
+    <br> 
+    <div align="center">
+    
+    
+    <button class="btn btn-success" ontouchend="doRestoreBackupFreshInstall();">Restore Backup</button></div>
 </div>
 
-<div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Backup Wallet" style="display: none;">  
+<div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
     <div>
     <label>Backup code</label>
@@ -514,7 +526,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 </div>
 
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
-	<br><label>Current Passphrase</label>
+	<br><label>Current Passphrase or Recovery Phrase</label>
 	<div>
 		<input  type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
@@ -535,6 +547,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
+	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING THIS ADDRESS HAS NOT YET BEEN ADDED TO YOUR WALLET</div>
 	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
@@ -622,7 +635,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabrecovery');">Change PIN</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabbackup1');">Backup Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 </div>
 
@@ -740,9 +753,18 @@ NO WARRANTY
 
     END OF TERMS AND CONDITIONS<p></p></blockquote>
 
-<center><button  class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);">I Understand And Agree To The Above</button></center>
-<br />
-<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
+<center>
+<p style="text-align:center;">If you understand and agree to the above then choose an option below:</p><br/>
+	<div>
+		<button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);" style="min-width: 20em; ">Create a New Wallet</button>
+	</div>
+	<br/>
+	<div>
+		<button class="btn btn-info" type="button" id="btnbootstrapsequence" ontouchend="showTab('#tabrestore2');" style="min-width: 20em;">Restore an Existing Wallet </button>
+	</div>
+	<br>
+	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
+</center>
 </div>
 
 
@@ -771,28 +793,11 @@ function unblockInput() {
 function doGenerateBackup() {
 	if (debug) console.log("doGenerateBackup");
 	blockInput();
-	validatePassphrase(
-		$('#backuppassword').val(), false,
-		function(){
-			exportWallet(
-				function(data){
-					showTab('#tabbackup2');
-					$('#walletbackup').val( data ); 
-					$('#walletbackup').data('content', data);
-					unblockInput();
-				}
-			)
-		}, 
-		function(){
-			navigator.notification.alert('Incorrect passphrase. Note you cannot use recovery phrase here.', 
-				function(){
-					unblockInput();
-				}, 
-				'Error', 
-				'OK'
-			);
-		}, 
-		function(){
+	exportWallet(
+		function(data){
+			showTab('#tabbackup2');
+			$('#walletbackup').val( data ); 
+			$('#walletbackup').data('content', data);
 			unblockInput();
 		}
 	);
@@ -1718,7 +1723,7 @@ function doConfirmPay(passphrase) {
 								}, "Success", "OK"); 
 						}, 
 						function() {
-							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. No payment was made.", 
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.)", 
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
@@ -1794,6 +1799,20 @@ function doPay(nonce) {
 		return;
 	}
 
+	if (/^(?:^(r|n)[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{31,34}$)$/m.test(payto)) {
+		// valid
+	} else {
+		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the Ripple network will charge a fee on failure.", 
+			function(){
+				$("#toaddress").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);
+
+	}
+
 
 	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
 		navigator.notification.alert("You must select a valid amount to send", 
@@ -1867,6 +1886,11 @@ var walletsalt;
 
 function exportWallet(exportfunc) {
 
+	//todo: allow partial backup?
+
+	var f = function() {
+		navigator.notification.alert("Either your wallet is empty or it has become corrupted. Please generate your addresses first!", function(){ unblockInput(); showTab("#tabaccounts"); }, "Error", "OK");
+	}
 	db.get("pindata").then(function(pindata) {
 		db.get("ppdata").then(function(ppdata) {
 			db.get("rpdata").then(function(rpdata) {
@@ -1880,10 +1904,10 @@ function exportWallet(exportfunc) {
 
 					var json =  JSON.stringify(exp);
 					exportfunc(sodium.crypto_generichash(4, json, '', 'hex') + json);
-				});
-			});
-		});
-	});
+				}).catch(f);
+			}).catch(f);
+		}).catch(f);
+	}).catch(f);
 }
 
 function importWallet(wallet, successfunc, failurefunc) {
@@ -1962,6 +1986,33 @@ function importWallet(wallet, successfunc, failurefunc) {
         });
 
 		
+}
+
+function doRestoreBackupFreshInstall() {
+	if (debug) console.log('doRestoreBackupFreshInstall');
+	blockInput(true);
+	importWallet(
+		$('#restorebackup2').val(),
+		function() {
+			navigator.notification.alert("Backup restored successfully!", 
+				function() {
+					unblockInput();
+					doShowLogin();
+				}, 
+				"Success", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
+				function() {
+					unblockInput();
+				},
+				"Error",
+				"OK"
+			);
+		}
+	);
 }
 
 function doRestoreBackup() {
@@ -2675,7 +2726,9 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
-		var doupdate = function(data) { try {
+		var doupdate = function(ppdata, rpdata) { try {
+
+			var data = ( storagekey == 'rpdata' ? rpdata : ppdata );
 
 			backupdata = {};
 	                if (data.data == undefined || data.data == "") {
@@ -2686,8 +2739,10 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( data.salt1 == undefined ? "" : fromhex_chksum(data.salt1));
-			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+                        newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+
+			
+			oldsalt1 = ( mode == 0 ? fromhex_chksum(ppdata.salt1) : fromhex_chksum(rpdata.salt1) ) ;
 
 
 			/* updating the key is a two step process:
@@ -2934,8 +2989,11 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                 	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                                         	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
 					
+
 					var secret = sodium.crypto_secretbox_open_easy(oldppciphertext, oldnonce, oldsecret32key);
-				
+
+
+
 					oldsecret32key = "";
 
 					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
@@ -2973,7 +3031,7 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 			
 		} catch(e) { handle_error(e); } }
 
-		db.get(storagekey).then(doupdate).catch(doupdate);
+		getRpPpData(doupdate);
 		
 	}
 
@@ -3107,7 +3165,10 @@ function redefineSigningToAlwaysUseSecret(secret) {
 ** before calling.
 */
 function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
+	
+	if (debug) console.log("sendXRP - " + xrpAmount);
 
+	
 	blockInput();
 	
 	getSecretForAccount(passphrase, fromacc, 
@@ -3120,25 +3181,30 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			var transaction = remote.createTransaction("Payment", {
 				account: fromacc,
 				destination: destination,
-				amount: xrpAmount * 1000000
+				amount: Math.floor(xrpAmount * 1000000)
 			});
 			transaction.destinationTag(parseInt(destTag));
 			transaction.sourceTag(parseInt(sourceTag));
 			transaction.invoiceID(invoiceID);
+
+			if (debug) console.log("sending " + transaction.amount + " drops from " +  fromacc + " to " + destination + " dstag = " + destTag);
 
 			transaction.submit(function(err, res) {
 				if (err != undefined && err != null && err.engine_result == 'tejMaxLedger') {
 					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
+					if (debug) console.log("send failed 1");
 				} else if ( (res != undefined && res.engine_result != undefined && res.engine_result == 'tesSUCCESS') ) {
 					remote.setSecret(null);
 					unblockInput();
 					successfunc();
+					if (debug) console.log("send successful");
 				} else {
 					remote.setSecret(null);
 					unblockInput();
 					failurefunc();
+					if (debug) console.log("send failed 1");
 				}
 			});
 		},

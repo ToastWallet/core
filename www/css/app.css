@@ -39,6 +39,27 @@ textarea {
     word-wrap: break-word;
     width: 100%;
 }
+#generatedaddress {
+	position:relative;
+
+}
+
+#generatedaddress:before {
+    display: block;
+    content: "xxxxxxxxxxxxxxxx";
+    text-align: left;
+    color: black;
+    background-color: white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    /* filter: blur(5px); */
+    font-size: 1.3em !important;
+    line-height: 1.15em;
+    filter: blur(3px);
+}
 
 #tabbackup2 h3 {
     margin-top: 0;
