@@ -2618,7 +2618,9 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 
 		var storagekey = (issettingrecoveryphrase ? "rpdata" : "ppdata");
 
-		var doupdate = function(data) { try {
+		var doupdate = function(ppdata, rpdata) { try {
+
+			var data = ( storagekey == 'rpdata' ? rpdata : ppdata );
 
 			backupdata = {};
 	                if (data.data == undefined || data.data == "") {
@@ -2629,8 +2631,10 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 			}
 
 			newsalt1 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
-                        oldsalt1 = ( data.salt1 == undefined ? "" : fromhex_chksum(data.salt1));
-			newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+                        newsalt2 = sodium.randombytes_buf(sodium.crypto_pwhash_scryptsalsa208sha256_SALTBYTES);
+
+			
+			oldsalt1 = ( mode == 0 ? fromhex_chksum(ppdata.salt1) : fromhex_chksum(rpdata.salt1) ) ;
 
 
 			/* updating the key is a two step process:
@@ -2877,8 +2881,11 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                 	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
                                         	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
 					
+
 					var secret = sodium.crypto_secretbox_open_easy(oldppciphertext, oldnonce, oldsecret32key);
-				
+
+
+
 					oldsecret32key = "";
 
 					var newppciphertext = tohex_chksum(sodium.from_hex(sodium.to_hex(newnonce) + sodium.crypto_secretbox_easy(
@@ -2916,7 +2923,7 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 			
 		} catch(e) { handle_error(e); } }
 
-		db.get(storagekey).then(doupdate).catch(doupdate);
+		getRpPpData(doupdate);
 		
 	}
 
