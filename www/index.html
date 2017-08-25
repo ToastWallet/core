@@ -1227,11 +1227,19 @@ function refreshAccounts() {
 
 	$("#payfromaccount").empty();
 
+	updateExchangeRate();
+
+	// refresh every 5 seconds
+	// I think people keep their wallet open when they're expecing to see a change, 
+	// so either XRP is incoming or exhcnage rate is keep changing, schedule refresh every 5sec while
+	// user stays on one of these two tabs
+	refreshInterval = setInterval(refreshBalances, 5000);
+
 	getAccounts(function(acc) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div><div style="clear-both"/><div class="usdAmount"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
@@ -1243,10 +1251,7 @@ function refreshAccounts() {
 			function(err, res) {
 				if (err) {
 				} else {
-					try {
-						$("#ra" + res.account_data.Account+">.amount")[0].innerText = (parseInt(res.account_data.Balance)/1000000) + " XRP";
-					} catch(e) {handle_error(e);}
-					accountbalances[res.account_data.Account] = (parseInt(res.account_data.Balance)/1000000);
+					renderBalanceAmount(res);
 				}
 
 				var balcount = Object.keys(accountbalances).length;
@@ -1268,7 +1273,43 @@ function refreshAccounts() {
 		}
 		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
 	});
+}
 
+function renderBalanceAmount(res) {
+	var balance = parseInt(res.account_data.Balance)/1000000;
+	try {
+		$("#ra" + res.account_data.Account + ">.amount")[0].innerText = balance + " XRP";
+		$("#ra" + res.account_data.Account + ">.usdAmount")[0].innerText = "(approx. $" + (xrpUsdLastPrice * balance).toFixed(6) + " USD)";
+	} catch(e) {handle_error(e);}
+	accountbalances[res.account_data.Account] = balance;
+}
+
+function refreshBalances() {
+	updateExchangeRate();
+	getAccounts(function(acc) {
+		for (var i in acc) {
+			remote.requestAccountInfo({
+				account: i,
+				ledger: "validated"
+			}, 
+			function(err, res) {
+				if (err) {
+				} else {
+					renderBalanceAmount(res);
+				}
+			});
+		}
+		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
+	});
+}
+
+function updateExchangeRate() {
+	$.getJSON('https://www.bitstamp.net/api/v2/ticker/xrpusd/', function(data) {
+		xrpUsdLastPrice = parseFloat(data.last);
+		for (account in accountbalances) {
+			$("#ra" + account + ">.usdAmount")[0].innerText = "(approx. $" + (xrpUsdLastPrice * accountbalances[account]).toFixed(6) + " USD)";
+		}
+	});
 }
 
 var pinpadvalidate = function(pin) { return false ; }
@@ -1410,6 +1451,8 @@ var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
+var refreshInterval;
+var xrpUsdLastPrice = 0;
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
@@ -1417,6 +1460,7 @@ function showTab(tab, dontClearText) {
 	if (tab == currenttab) return;
 
 	blockInput(true);
+	clearInterval(refreshInterval); // stop refreshing prices if we moved to another tab
 
 	if (debug) console.log("showTab(" + tab + ")");
 
@@ -1476,7 +1520,7 @@ function showTab(tab, dontClearText) {
 	}
 
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
-		refreshAccounts();	
+		refreshAccounts();
 	} else if (tab == "#tabaccountsecret") {
 		$("#lblacpassword").show();
 		$("#lblaccsecret").hide();
