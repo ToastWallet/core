@@ -1,2 +1,4 @@
 platforms
 dist
+plugins
+node_modules
