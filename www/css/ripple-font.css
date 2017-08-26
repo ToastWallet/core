@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'RippleFont';
+    src: url('../fonts/ripple-font.eot');
+    src: url('../fonts/ripple-font.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/ripple-font.woff2') format('woff2'),
+         url('../fonts/ripple-font.woff') format('woff'),
+         url('../fonts/ripple-font.ttf') format('truetype'),
+         url('../fonts/ripple-font.svg#untitled1regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.ripple-symbol {
+    display: inline-block;
+    font: normal normal normal 14px/1 RippleFont;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.ripple-symbol:before {
+    content: "\0052";
+}
