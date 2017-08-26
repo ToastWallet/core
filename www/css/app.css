@@ -339,7 +339,6 @@ img.loader {
 .usdAmount {
     float: right;
 	font-size: 0.8em;
-	color: #aaaaff;	
 }
 #accountslist > li {
     text-overflow: ellipsis;
