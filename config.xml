@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.toastwallet.core" version="2.0.14" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.toastwallet.core" version="2.0.15" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
 	Toast Wallet is a Ripple wallet for Android and iOS.
@@ -46,35 +46,39 @@
         <splash density="port-xxxhdpi" src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
-        <icon height="57" platform="ios" src="www/res/icon/ios/icon.png" width="57" />
-        <icon height="114" platform="ios" src="www/res/icon/ios/icon@2x.png" width="114" />
-        <icon height="40" platform="ios" src="www/res/icon/ios/icon-40.png" width="40" />
-        <icon height="80" platform="ios" src="www/res/icon/ios/icon-40@2x.png" width="80" />
-        <icon height="50" platform="ios" src="www/res/icon/ios/icon-50.png" width="50" />
-        <icon height="100" platform="ios" src="www/res/icon/ios/icon-50@2x.png" width="100" />
-        <icon height="60" platform="ios" src="www/res/icon/ios/icon-60.png" width="60" />
-        <icon height="120" platform="ios" src="www/res/icon/ios/icon-60@2x.png" width="120" />
-        <icon height="180" platform="ios" src="www/res/icon/ios/icon-60@3x.png" width="180" />
-        <icon height="72" platform="ios" src="www/res/icon/ios/icon-72.png" width="72" />
-        <icon height="144" platform="ios" src="www/res/icon/ios/icon-72@2x.png" width="144" />
-        <icon height="76" platform="ios" src="www/res/icon/ios/icon-76.png" width="76" />
-        <icon height="152" platform="ios" src="www/res/icon/ios/icon-76@2x.png" width="152" />
-        <icon height="29" platform="ios" src="www/res/icon/ios/icon-small.png" width="29" />
-        <icon height="58" platform="ios" src="www/res/icon/ios/icon-small@2x.png" width="58" />
-        <icon height="87" platform="ios" src="www/res/icon/ios/icon-small@3x.png" width="87" />
-        <splash height="1136" platform="ios" src="www/res/screen/ios/Default-568h@2x~iphone.png" width="640" />
-        <splash height="1334" platform="ios" src="www/res/screen/ios/Default-667h.png" width="750" />
-        <splash height="2208" platform="ios" src="www/res/screen/ios/Default-736h.png" width="1242" />
-        <splash height="1242" platform="ios" src="www/res/screen/ios/Default-Landscape-736h.png" width="2208" />
-        <splash height="1536" platform="ios" src="www/res/screen/ios/Default-Landscape@2x~ipad.png" width="2048" />
-        <splash height="768" platform="ios" src="www/res/screen/ios/Default-Landscape~ipad.png" width="1024" />
-        <splash height="2048" platform="ios" src="www/res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" />
-        <splash height="1024" platform="ios" src="www/res/screen/ios/Default-Portrait~ipad.png" width="768" />
-        <splash height="960" platform="ios" src="www/res/screen/ios/Default@2x~iphone.png" width="640" />
-        <splash height="480" platform="ios" src="www/res/screen/ios/Default~iphone.png" width="320" />
-        <splash height="1334" platform="ios" src="www/res/screen/ios/iphone6-port.png" width="750" />
-        <splash height="1242" platform="ios" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" width="2208" />
-        <splash height="2208" platform="ios" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" width="1242" />
+	<icon width="76" height="76" src="www/res/icon/ios/AppIcon76x76~ipad.png" />
+	<icon width="167" height="167" src="www/res/icon/ios/AppIcon83.5x83.5@2x~ipad.png" />
+	<icon width="57" height="57" src="www/res/icon/ios/icon.png" />
+	<icon width="114" height="114" src="www/res/icon/ios/icon@2x.png" />
+	<icon width="40" height="40" src="www/res/icon/ios/icon-40.png" />
+	<icon width="80" height="80" src="www/res/icon/ios/icon-40@2x.png" />
+	<icon width="50" height="50" src="www/res/icon/ios/icon-50.png" />
+	<icon width="100" height="100" src="www/res/icon/ios/icon-50@2x.png" />
+	<icon width="60" height="60" src="www/res/icon/ios/icon-60.png" />
+	<icon width="120" height="120" src="www/res/icon/ios/icon-60@2x.png" />
+	<icon width="180" height="180" src="www/res/icon/ios/icon-60@3x.png" />
+	<icon width="72" height="72" src="www/res/icon/ios/icon-72.png" />
+	<icon width="144" height="144" src="www/res/icon/ios/icon-72@2x.png" />
+	<icon width="152" height="152" src="www/res/icon/ios/icon-76@2x.png" />
+	<icon width="29" height="29" src="www/res/icon/ios/icon-small.png" />
+	<icon width="58" height="58" src="www/res/icon/ios/icon-small@2x.png" />
+	<icon width="87" height="87" src="www/res/icon/ios/icon-small@3x.png" />
+	<icon width="512" height="512" src="www/res/icon/ios/iTunesArtwork@1x.png" />
+	<icon width="1024" height="1024" src="www/res/icon/ios/iTunesArtwork@2x.png" />
+	<icon width="1536" height="1536" src="www/res/icon/ios/iTunesArtwork@3x.png" />
+	<splash width="76" height="76" src="www/res/screen/ios/AppIcon76x76~ipad.png" />
+	<splash width="167" height="167" src="www/res/screen/ios/AppIcon83.5x83.5@2x~ipad.png" />
+	<splash width="640" height="960" src="www/res/screen/ios/Default@2x~iphone.png" />
+	<splash width="320" height="480" src="www/res/screen/ios/Default~iphone.png" />
+	<splash width="640" height="1136" src="www/res/screen/ios/Default-568h@2x~iphone.png" />
+	<splash width="2048" height="1536" src="www/res/screen/ios/Default-Landscape@2x~ipad.png" />
+	<splash width="1024" height="768" src="www/res/screen/ios/Default-Landscape~ipad.png" />
+	<splash width="1536" height="2048" src="www/res/screen/ios/Default-Portrait@2x~ipad.png" />
+	<splash width="768" height="1024" src="www/res/screen/ios/Default-Portrait~ipad.png" />
+	<splash width="750" height="1334" src="www/res/screen/ios/iphone6-port.png" />
+	<splash width="750" height="1334" src="www/res/screen/ios/LaunchImage-800-667h@2x.png" />
+	<splash width="2208" height="1242" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" />
+	<splash width="1242" height="2208" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" />    
     </platform>
     <platform name="wp8">
         <icon height="99" platform="wp8" src="www/res/icon/wp8/ApplicationIcon.png" width="99" />
