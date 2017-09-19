@@ -3099,8 +3099,10 @@ function connectToRipple(funcsuccess) {
 	if (debug) console.log("connectToRipple");
 	remote.connect(function(err, res) {
 			if (err) {
+				if (debug) console.log("connect error: " + err);
 				connectToRipple(funcsuccess);
 			} else {
+				if (debug) console.log("connect success");
 				hideSpinner();
 				
 				funcsuccess();
