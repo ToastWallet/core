@@ -41,6 +41,7 @@
 	var ontestnet = false;
 
 	function refreshWebView() {
+		if (debug) console.log("refreshWebView()");
 		$('#currenttab').css('border-bottom', '1px solid white');
 		setTimeout(function(){
 			$('#currenttab').css('border-bottom', 'none');
@@ -48,6 +49,7 @@
 	}
 
 	function renderMoreContentIndicator() {
+		if (debug) console.log("renderMoreContentIndicator()");
 		if (currenttab == "") return;
 		if ($(currenttab)[0].scrollHeight - $(currenttab).scrollTop() - $(currenttab).outerHeight() < 10) {
 			$("#morecontentindicator").hide();
@@ -74,7 +76,8 @@
 
 			window.addEventListener('native.keyboardshow', 
 				function(e) {
-					blockInput(true);
+					if (debug) console.log("nativeKeyboardShow()");
+					//blockInput(true);
 					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em)');
 					if (currenttab != "") {
 						prekeyboardscrollpos=$(currenttab).scrollTop();
@@ -95,14 +98,15 @@
 						var offset = ele.offset().top - $(currenttab).offset().top + $(currenttab).scrollTop()
 
 						$(currenttab).scrollTop(offset);
-						unblockInput();
-					} else unblockInput();
+					//	unblockInput();
+					}// else unblockInput();
 				}
 			);
 
 
 			window.addEventListener('native.keyboardhide', 
 				function(e) {
+					if (debug) console.log("nativeKeyboardHide()");
 					$('.screentab').css('padding-bottom', screentabpaddingbottom + 'em');
 					if (currenttab != "") 
 						$(currenttab).scrollTop(prekeyboardscrollpos);
@@ -114,6 +118,7 @@
 
 		var morecontentfunc;
 		$("#morecontentindicator").on("touchstart", morecontentfunc = function() {
+			if (debug) console.log("onTouchStartMoreContent()");
 			if (currenttab == "") return;
 			$(currenttab).animate({ scrollTop: $(currenttab)[0].scrollHeight }, "fast");
 			renderMoreContentIndicator();
@@ -139,6 +144,7 @@
 		new Clipboard('.copybtnaction');
 
 		$('.copybtn').on('touchend', function() {
+			if (debug) console.log("onTouchEndCopyBtn()");
 			refreshWebView();
 		});
 
@@ -154,6 +160,7 @@
 				currenttab != "#tablicense" &&
 				currenttab != "#tabshowrecovery" &&
 				currenttab != "#tabqrscan" &&
+				currenttab != "#tabrestore2" &&
 				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
 				if (debug) console.log("onPause - show login");
@@ -222,6 +229,7 @@
 
 		var toggleswitchfunc;
 		$(".toggleswitch").on('touchend',toggleswitchfunc = function() {
+			if (debug) console.log("onToggleSwitch()");
 			var ele = $($(this).children()[0]);
 			if (ele.hasClass("fa-toggle-off")) {
 				ele.removeClass("fa-toggle-off");
@@ -239,8 +247,16 @@
 			$(".toggleswitch").on('click', toggleswitchfunc);
 		}
 
-		$('#navheader').on('cut copy paste',function(e){e.preventDefault();});
-		$('#navfooter').on('cut copy paste',function(e){e.preventDefault();});
+		$('#navheader').on('cut copy paste',
+				function(e){
+					if (debug) console.log("onHeaderCopyCutPaste()");
+					e.preventDefault();
+				});
+		$('#navfooter').on('cut copy paste',function(e){
+					if (debug) console.log("onFooterCopyCutPaste()");
+					e.preventDefault();
+				});
+
 
 		if (ontestnet) $('#testnetwarning').show();
 
