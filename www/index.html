@@ -3060,6 +3060,7 @@ function generateAddress(secret) {
 }
 
 function checkConnection(connectedfunc) {
+	if (debug) console.log("checkConnection()");
 	if (navigator.connection.type == 'Connection.NONE') {
 		navigator.notification.alert('Internet Connection Lost.', 
 			function() {
@@ -3072,6 +3073,7 @@ function checkConnection(connectedfunc) {
 			'OK'
 		);
 	} else {
+		if (debug) console.log("checkConnection() -> call connectedfunc()");
 		connectedfunc();
 	}
 }
@@ -3186,7 +3188,7 @@ function validateSecret(x) {
 
 function doGetTransactions(address, marker) {
 	if (debug) console.log("doGetTransactions");
-	blockInput();
+	//blockInput();
 	$.ajax({
 		complete: function() { unblockInput(); },
 		url: 'https://data.ripple.com/v2/accounts/' + 
