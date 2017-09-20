@@ -1,0 +1,4 @@
+#!/bin/bash
+npm run build
+browserify rippleutils.js -o rippleutils-build.js
+cp rippleutils-build.js ../www/js/

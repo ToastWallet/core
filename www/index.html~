@@ -19,7 +19,6 @@
 	<script src="js/sodium.js"></script>
 	<script src="js/clipboard.min.js"></script>
 	<script src="js/instascan.min.js"></script>
-	<script src="js/rippleutils-build.js"></script>
 	<script>if (window.module) module = window.module;
 	
 		window.onerror = function(message, url, lineNumber) {  

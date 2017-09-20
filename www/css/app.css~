@@ -1,0 +1,645 @@
+
+html {
+	height: 100vh;
+	min-height: 100vh;
+	max-height: 100vh;
+	width: 100vw;
+	min-width: 100vw;
+	max-height: 100vw;
+}
+body {
+	font-family: sans-serif;
+    font-family: sans-serif;
+	color:white;
+	font-size: 1.5em;
+}
+
+#walletbackup {
+    height: calc(100vh - 17em);
+}
+
+textarea {
+    width: 100%;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    min-height: 4em;
+}
+#generatedaddress, #accdetailssecretaddress, #accsecret, #accdetailsaddress {
+    font-size: 1.2em !important;
+    color: black;
+    border: 1px dashed black;
+    box-shadow: none;
+    text-align: center;
+    overflow-wrap: break-word;
+    padding: 0.2em;
+/*    display: inline-block; */
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    word-wrap: break-word;
+    width: 100%;
+}
+#generatedaddress {
+	position:relative;
+
+}
+
+/* pinpad lettering contributed by https://github.com/WietseWind */
+.pinpad button i.char {
+    font-size: .4em;
+    text-transform: uppercase;
+    font-style: normal;
+    display: block;
+    line-height: .4em;
+    position: absolute;
+    width: 100%;
+    margin-top: -20%;
+    letter-spacing: 2px;
+    font-weight: normal;
+    padding-left: 2px;
+}
+
+#generatedaddress:before {
+    display: block;
+    content: "xxxxxxxxxxxxxxxx";
+    text-align: left;
+    color: black;
+    background-color: white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    /* filter: blur(5px); */
+    font-size: 1.3em !important;
+    line-height: 1.15em;
+    filter: blur(3px);
+}
+
+#tabbackup2 h3 {
+    margin-top: 0;
+}
+#tabsettings button, #tabaddaccount button, #tabgenaccount button, 
+#tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, 
+#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport, #tabpaymentconfirm button,
+#tabrestore button {
+    min-width: 20em;
+    margin-bottom: 1em;
+}
+.toggleswitch {
+    font-size: 2em;
+    vertical-align: middle;
+    opacity: 0.5;
+    margin-left: 0.5em;
+    color: black;
+    float: right;
+    margin-left: 0.5em;
+}
+
+.paygrouping {
+    margin-bottom: 0.5em;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+.paygrouping > div {
+    text-align: right;
+    margin: 0;
+    padding-left: 1em;
+}
+
+.paygrouping {
+    padding: 0.2em;
+}
+
+.paygrouping > label {
+    float: left;
+    min-width: 50%;
+}
+
+#tabpaymentconfirm div[id^="confirm"] {
+    color: blue;
+    font-size: 1em;
+    overflow-wrap: break-word;
+    display: block;
+    vertical-align: middle;
+}
+
+
+.accountdetailsselector {
+    z-index: 89 !important;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+    padding: 0 !important;
+}
+
+.accountdetailsselector > *:not(.accdetailsinnertabselected) {
+    background: rgb(0, 81, 185) !important;
+    color: white !important;
+}
+
+.accountdetailsselector > .accdetailsinnertabselected {
+    background: white !important;
+    color: rgb(0, 81, 185) !important;
+}
+
+.accountdetailsselector > li {
+    text-align: center;
+    padding: 0.5em 0 0.5em 0;
+    width: calc(50% - 3px);
+    display: inline-block;
+}
+
+.txrow {
+    color: black;
+}
+
+.transactionlist {
+    list-style: none !important;
+}
+
+.txrow>span:first-of-type {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    max-width: 60vw;
+    vertical-align: middle;
+}
+
+.txrow>span:last-of-type {
+    float: right;
+}
+
+.txrow>i {
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+
+.txrow * {
+    display: inline;
+}
+
+.txrow fa {
+}
+
+.txrow i {
+    margin-right: 1em;
+    vertical-align: middle;
+}
+
+.txrow {
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+
+
+#showrecoveryphrase {
+    color: blue;
+    font-size: 2em;
+    text-align: center;
+    font-weight: bold;
+    border: 1px dashed;
+    padding-bottom: 0.5em;
+    padding-top: 0.2em;
+}
+
+#tabshowrecovery h1 {
+    margin-top: 0 !important;
+}
+
+
+.moreindicatorabovenav {
+    bottom: calc(10px + 1.6em) !important;
+}
+
+.moreindicatordark {
+    color: black !important;
+}
+#inputblocker {
+    position: fixed;
+    z-index: 100;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.liteloading:after {
+    display: block;
+    animation: fa-spin 2s infinite linear;
+    z-index: 101;
+    content: "\f021";
+    color: #307ee0;
+    font: normal normal normal 4em/1 FontAwesome;
+    -webkit-animation: fa-spin 2s infinite linear;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    left: calc(50% - 0.5em);
+    top: calc(50% - 0.5em);
+}
+.loading:before {
+    display: block;
+    animation: fa-spin 2s infinite linear;
+    z-index: 102;
+    background: white;
+    content: "\f110";
+    color: #307ee0;
+    font: normal normal normal 4em/1 FontAwesome;
+    -webkit-animation: fa-spin 2s infinite linear;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    left: calc(50% - 0.5em);
+    top: calc(50% - 0.5em);
+    z-index: 104;
+}
+.loading:after {
+    position: fixed;
+    display: block;
+    background: white;
+    content: " ";
+    width: 100vw;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
+    z-index: 103;
+}
+button:not(.varsize) {
+    min-width: 6em;
+}
+a:hover, a:visited, a:active, a:focus {
+    text-decoration: none !important;
+}
+
+.suppressbottommargin, .suppressbottommargin > * {
+	margin-bottom: 0 !important;
+}
+
+.bottom-list-button {
+    text-align: center;
+    vertical-align: middle;
+}
+.list-group-item {
+    width: 100%;
+}
+.active a {
+    color: white !important;
+}
+
+.accountitem {
+    color: hsla(0, 0%, 35%, 1);
+}
+#navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover {
+    color: white !important;
+}
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+ul.verticalform > li {
+    height: 100%;
+}
+
+
+.address {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+video#qrpreview {
+    max-height: 50vh;
+    margin: 0;
+    width: 100%;
+    padding: 0;
+}
+
+img.loader {
+    vertical-align: middle;
+    top: calc(50% - 25px);
+    position: absolute;
+    left: calc(50% - 25px);
+}
+.amount {
+    float: right;
+}
+#accountslist > li {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-height: 4em;
+}
+#btnaddaccount > * {
+    vertical-align: middle;
+}
+i.fa {
+    font-size: 1.3em !important;
+}
+label {
+    color: black;
+}
+#fromaccountslist {
+    margin-bottom: 0 !important;
+}
+
+.screentab {
+    overflow-y: scroll;
+    margin-top: 4.0em;
+    height: calc(100vh - 4em);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100vw - 2em);
+    margin-left: 1em;
+    margin-right: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 4em;
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    z-index: 1;
+}
+
+.screentab * {
+	z-index: 2;
+}
+
+
+
+
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+div.input-group>span.input-group-btn>button {
+    min-width: 5em;
+}
+
+#navfooter {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    left: 0;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    list-style: none;
+    margin: 0;
+    text-align: center;
+    z-index: 90;
+    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
+    height: 3.5em !important;
+}
+
+
+#navheader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    margin: 0;
+    list-style: none;
+    z-index: 90;
+    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
+    height: 4em !important;
+}
+#accdetailsqr {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+button, button:focus, button:active, button:hover {
+    outline: none !important;
+}
+
+.copybtn {
+    max-width: 2.5em;
+    max-height: 2.4em;
+    min-width: 2.5em !important;
+    min-height: 2.4em;
+    padding: 0;
+    margin: 0;
+    color: black;
+    background: rgba(0,0,0,0.1);
+    border: none;
+    float: right;
+}
+
+#navheader > li {
+    vertical-align: middle;
+    margin: 0;
+    display: inline-block;
+}
+#navheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+ul.iosheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1.5em !important;
+    padding-bottom: 0.5em !important;
+}
+.headerleft {
+    width: 25%;
+    text-align: left;
+}
+
+.headerright {
+    width: 25%;
+    text-align: right;
+}
+
+.headermiddle {
+    width: 50%;
+    text-align: center;
+}
+#navfooter > li {
+    text-align: center;
+    vertical-align: top;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    min-width: calc(33% - 1em);
+    padding: 1em 0.5em 1em 0.5em;
+}
+#navfooter div {
+    display: none;
+}
+#navfooter > li > div {
+    font-size: 0.8em;
+}
+
+
+
+.pinpad {
+    text-align: center;
+    margin-top: calc(50vh - 17em);
+}
+
+
+
+.logobackground {
+    background: url('images/toastwallet4finalgrd2new.png') no-repeat;
+    background-size: 100%;
+    height: 100vh;
+}
+
+
+
+.darkbackground {
+    background: linear-gradient(45deg, #1959ab, #317fe2),  #1959ab;
+    background-repeat: no-repeat;
+}
+.darkbackground2 {
+    background: linear-gradient(45deg, #19ab4c, #317fe2), #1959ab;
+    background-repeat: no-repeat;
+}
+
+#tablicense h1 {
+    margin: 0 0 0.3em 0 !important;
+    padding: 0 !important;
+}
+#morecontentindicator {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    opacity: 0.5;
+    z-index: 91;
+    font-size: 2em !important;
+}
+.pinnumber {
+    color: rgba(255,255,255,0.7);
+}
+
+.darkbackground:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url(../images/background.png);
+    opacity: 0.1;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position-y: 50%;
+    z-index: -1;
+}
+.pinpad button {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    padding: 0px;
+    margin: 0.2em 0.4em 0.2em 0.4em;
+    line-height: 3em;
+    font-size: 1.4em;
+    min-width: 3.6em !important;
+    min-height: 3.6em !important;
+    position: relative;
+    text-align: center;
+}
+
+
+.pinpad *:focus {
+    outline: none;
+}
+.pinpad button:active {
+    background-color: rgba(255,0,0,0.6);
+    -moz-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+
+button, label, .screendiv > *, #navheader *, #navfooter * {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+* {
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+* {
+    touch-action: pan-y;
+    -ms-touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+input
+{
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+#tabrecovery div {
+    margin-bottom: 1em;
+}
+
+.shake {
+  animation: shakeanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+.bounce {
+  animation: bounceanimation 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+
+@keyframes shakeanimation {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+@keyframes bounceanimation {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40% {
+    transform: translate3d(0, -30px, 0);
+  }
+  60% {
+    transform: translate3d(0, -15px, 0);
+  }
+}
+
