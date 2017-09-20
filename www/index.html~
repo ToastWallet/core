@@ -19,6 +19,7 @@
 	<script src="js/sodium.js"></script>
 	<script src="js/clipboard.min.js"></script>
 	<script src="js/instascan.min.js"></script>
+	<script src="js/rippleutils-build.js"></script>
 	<script>if (window.module) module = window.module;
 	
 		window.onerror = function(message, url, lineNumber) {  
@@ -1835,14 +1836,8 @@ if (ontestnet) {
 	remote = new ripple.RippleAPI({
 		server: 
 			"wss://s1.ripple.com"
-			/*"wss://s-west.ripple.com:443",
-			"wss://s-east.ripple.com:443"*/
 	});
 }
-
-var VER_REKEYED = 220;
-var VER_ENCRYPTED_ORDINARY = 160;
-var VER_ENCRYPTED_REKEYED = 250;
 
 
 function showSpinner(msg) {
@@ -2482,25 +2477,6 @@ function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
 
 	var address = "";
-	if (secret.charAt(0) === "s" ) {
-		// pass
-	} else if (secret.charAt(0) === "3" ) {
-		// pass 
-		if (secret.length < 2) {
-			return false;
-		}
-		var b = ripple.Base.decode_check(VER_REKEYED, secret);
-		if (isNaN(b)) {
-			return false;
-		}
-		var y = ripple.sjcl.codec.bytes.fromBits(b.toBits());
-		if (y.length !== 32) {
-			return false;
-		}
-		var rks = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(0,16));
-		var ms = ripple.Base.encode_check(ripple.Base.VER_FAMILY_SEED, y.slice(16));
-		address = generateAddress(ms).address;
-	} 
 
 	if (!validateSecret(secret)) {
 		navigator.notification.alert("Invalid Ripple secret.", failurefunc, "Error", "OK");
@@ -3055,21 +3031,23 @@ function removeSecret(address, successfunc, failurefunc) {
 }
 
 
-/* Generates a ripple address keypair, returned as json {secret:.., address:..}
-*  If a secret is provided it will generate the public key for that secret
-*/
 function generateAddress(secret) {
-	if (secret != undefined && secret != "") {
-		secret = ripple.Seed.from_json(secret);
+
+	if (secret == undefined) {
+
+		return remote.generateAddress();
+
 	} else {
-		secret = ripple.Seed.from_bits(ripple.sjcl.random.randomWords(4));
-	}
+
+		if (!validateSecret(secret))
+		 	return;
 
 	
-	return {
-		secret: secret.to_json(),
-		address: secret.get_key().get_address().to_json()
-	};
+		return {
+			secret: secret,
+			address: 	rippleKeypairs.deriveAddress(	rippleKeypairs.deriveKeypair(secret).publicKey )
+		};
+	}
 }
 
 function checkConnection(connectedfunc) {
@@ -3122,23 +3100,23 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			  source: {
 			    address: fromacc,
 			    maxAmount: {
-			      value: xrpAmount,
+			      value: xrpAmount + "",
 			      currency: 'XRP',
-			      tag: ( sourceTag == undefined ? 0 : sourceTag )
-			    }
+			    },
+		      	    tag: parseInt(sourceTag + "")
 			  },
 			  destination: {
 			    address: destination,
 			    amount: {
-			      value: xrpAmount,
+			      value: xrpAmount + "",
 			      currency: 'XRP',
-			      tag: ( destTag == undefined ? 0 : destTag )
-			    }
+			    },
+			    tag: parseInt(destTag + "")
 			  }
 			};
 
-			if (invoiceID !== undefined) {
-				payment.invoiceID = invoiceID;
+			if (invoiceID !== undefined && invoiceID != "") {
+				payment.invoiceID = utils.bytesToHex(invoiceID);
 			}
 
 			  return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
@@ -3169,7 +3147,14 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 
 
 function validateSecret(x) {
-	return !isNaN(ripple.Base.decode_check(ripple.Base.VER_FAMILY_SEED, x));
+
+	try {
+		rippleKeypairs.deriveAddress(
+			rippleKeypairs.deriveKeypair(x).publicKey
+		); 
+	} catch(e) { return false; }
+
+	return true;
 }
 
 
