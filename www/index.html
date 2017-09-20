@@ -39,7 +39,7 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	var ontestnet = true;
+	var ontestnet = false;
 
 	function refreshWebView() {
 	}
@@ -678,7 +678,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.3</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.5</div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -806,7 +806,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-    <p><center style="color:black;" data-version="version">Version: 2.1.3</p>
+    <p><center style="color:black;" data-version="version">Version: 2.1.5</p>
 </div>
 
 
@@ -1857,7 +1857,8 @@ function doPay(nonce) {
 		return;
 	}
 
-	if (/^(?:^(r|n)[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{31,34}$)$/m.test(payto)) {
+//	if (/^(?:^(r|n)[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{31,34}$)$/m.test(payto)) {
+	if (validateAddress(payto)) {
 		// valid
 	} else {
 		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the Ripple network will charge a fee on failure.", 
