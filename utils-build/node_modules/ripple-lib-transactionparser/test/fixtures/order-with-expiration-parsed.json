@@ -1,0 +1,20 @@
+{
+  "rBSZe33F5oxHTbxSF1nZJooVDpcrrqNFp3": [
+    {
+      "direction": "buy",
+      "quantity": {
+        "currency": "CNY",
+        "counterparty": "rnuF96W4SZoCJmbHYBFoJZpR8eCaxNvekK",
+        "value": "3200"
+      },
+      "totalPrice": {
+        "currency": "XRP",
+        "value": "34700.537395"
+      },
+      "sequence": 1122978,
+      "status": "cancelled",
+      "makerExchangeRate": "0.09221759200942773",
+      "expirationTime": "2015-01-14T18:36:52.000Z"
+    }
+  ]
+}
