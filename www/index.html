@@ -380,6 +380,24 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<center><div><button  type="button" class="btn btn-danger" id="btnimport" ontouchend="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
 
+<div id="tabnickchange" class="screentab" data-hasback="true" data-title="Change Nickname" style="display:none">
+	<label >Ripple Address</label>
+		<input  class="form-control" readonly="readonly" type="text" placeholder=""  id="nickchangeaddress">
+	<br>
+        <label >Account Nickname (optional)</label>
+        <div>
+        <input  type="text" id="nickchangenick" class="form-control" placeholder="">
+	</div>
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input  type="password" id="nickchangepassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div>
+			<button  type="button" class="btn btn-primary" id="btnimport" 
+				ontouchend="doChangeNickname($('#nickchangeaddress').val(), $('#nickchangenick').val(), $('#nickchangepassword').val());">Change Nickname</button></div></center>
+</div>
+
+
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
 		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
@@ -395,6 +413,8 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
+			<button id="btnchangenick" type="button" class="btn btn-success" ontouchend="$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); ">Change Nickname</button><br><br>
+
 			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); ">Secret</button>
 			&nbsp;
 			<button  type="button" class="btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
@@ -655,7 +675,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
-	<div><center style="color:black;">Version: ##VERSION##</center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.2</div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -684,7 +704,6 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 
 	<p>This software is licensed under the GPL 2.0 <br><b>without any warranty. Use at own risk.</b></p>
 <p><a href="https://github.com/ToastWallet/core" target="_blank" style="color:lime; ">Tap here to view full source code on GitHub</a></p></center> 
-    
 <blockquote style="font-size:0.8em; text-align:justify;">GNU GENERAL PUBLIC LICENSE
 
 Version 2, June 1991
@@ -784,6 +803,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
+    <p><center style="color:black;" data-version="version">Version: 2.1.2</p>
 </div>
 
 
@@ -1247,11 +1267,12 @@ function refreshAccounts() {
 			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
-			//$("#ra"+i+">.amount")[0].innerText = '0 XRP';
 
 			((account)=>{
+			 if (debug) console.log("requesting account info for: " + account);
 			remote.getAccountInfo(account).then(
 				function(res) {
+			 		if (debug) console.log("received account info for: " + account);
 					try {
 						$("#ra" + account + ">.amount")[0].innerText = res.xrpBalance + " XRP";
 					} catch(e) {handle_error(e);}
@@ -1274,6 +1295,7 @@ function refreshAccounts() {
 
 				}).catch(
 				function(e) {
+					if (debug) console.log("account refresh error: " + e);
 					try {
 						$("#ra" + account + ">.amount")[0].innerText = "(not activated)";
 					} catch(e) {handle_error(e);}					
@@ -1605,6 +1627,49 @@ function doShowAndGenerateAccount() {
 }
 
 
+function doChangeNickname(address, nickname, passphrase) {
+	if (debug) console.log("doChangeNickname " + nickname + " for " + address);
+	blockInput();
+	if (nickname == undefined) nickname = "";
+	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
+	validatePassphrase(passphrase, false, 
+		function() {
+			passphrase = "";
+			changeNickname(address, nickname,  
+				function() {
+					// success
+					showTab('#tabaccounts'); 
+					unblockInput();
+				},
+				function() {
+					// nick change failure will produce its own message 
+					unblockInput();
+				}
+			);
+		},
+		function() {
+			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
+				function(){
+					$("#nickchangepassword").focus();
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);	
+}
+
+
 function doImportExistingAccount(passphrase, nickname, secret) {
 	if (debug) console.log("doImportExistingAccount");
 	generatedAccount.secret = secret;
@@ -1896,66 +1961,69 @@ function importWallet(wallet, successfunc, failurefunc) {
 	if (wallet.pindata == undefined || wallet.ppdata == undefined || wallet.rpdata == undefined || wallet.accounts == undefined) return failurefunc();
 
 
+	var f1;
+	var f2; 
+	var f3;
 
-        db.get("pindata").then(function(pindata) {
-                db.get("ppdata").then(function(ppdata) {
-                        db.get("rpdata").then(function(rpdata) {
-         /*                       db.get("accounts").then(function(accounts) { */
-
-
-	db.upsert("pindata",
-	function(doc) {
-		return { data: JSON.stringify(wallet.pindata)}; 
-	}).then(function(x){
-		db.upsert("ppdata",
-		function(doc) {
-			return { data: JSON.stringify(wallet.ppdata)}; 
-		}).then(function(x){
-			db.upsert("rpdata",
-			function(doc) {
-				return { data: JSON.stringify(wallet.rpdata)}; 
-			}).then(function(x){
-				db.upsert("accounts",
+        db.get("pindata").then(f1 = function(pindata) {
+                db.get("ppdata").then( f2 = function(ppdata) {
+                        db.get("rpdata").then( f3 = function(rpdata) {
+				db.upsert("pindata",
 				function(doc) {
-					return { data: JSON.stringify(wallet.accounts)}; 
+					return { data: JSON.stringify(wallet.pindata)}; 
 				}).then(function(x){
-					successfunc();
-				}).catch(function(x){
-					db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
-						db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
-							db.upsert("rpdata", function(doc) { return { data: rpdata }; }).then(function() {
-								failurefunc();
+					db.upsert("ppdata",
+					function(doc) {
+						return { data: JSON.stringify(wallet.ppdata)}; 
+					}).then(function(x){
+						db.upsert("rpdata",
+						function(doc) {
+							return { data: JSON.stringify(wallet.rpdata)}; 
+						}).then(function(x){
+							db.upsert("accounts",
+							function(doc) {
+								return { data: JSON.stringify(wallet.accounts)}; 
+							}).then(function(x){
+								successfunc();
+							}).catch(function(x){
+								db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+									db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
+										db.upsert("rpdata", function(doc) { return { data: rpdata }; }).then(function() {
+											failurefunc();
+										}).catch(failurefunc);
+									}).catch(failurefunc);
+								}).catch(failurefunc);
+								});
+
+						}).catch(function(x){
+							// wind back pindata and ppdata
+							db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+								db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
+									failurefunc();
+								}).catch(failurefunc);
 							}).catch(failurefunc);
+						});
+
+					}).catch(function(x){
+						// wind back pindata
+						db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
+							failurefunc();
 						}).catch(failurefunc);
-					}).catch(failurefunc);
 					});
 
-			}).catch(function(x){
-				// wind back pindata and ppdata
-				db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
-					db.upsert("ppdata", function(doc) { return { data: ppdata }; }).then(function() {
-						failurefunc();
-					}).catch(failurefunc);
-				}).catch(failurefunc);
+				}).catch(function(x){
+					failurefunc();
+				});
+			}).catch(function(e) {
+				f3("");
 			});
-
-		}).catch(function(x){
-			// wind back pindata
-			db.upsert("pindata", function(doc) { return { data: pindata }; }).then(function() {
-				failurefunc();
-			}).catch(failurefunc);
+                }).catch(function(e) {
+			f2("");
 		});
-
-	}).catch(function(x){
-		failurefunc();
+        }).catch(function(e) {
+		f1("");
 	});
 
-/*                                }); */
-                        });
-                });
-        });
-
-		
 }
 
 function doRestoreBackupFreshInstall() {
@@ -2470,12 +2538,58 @@ function getRpPpData(successfunc) {
 	db.get("ppdata").then(f).catch(f);
 }
 
-/* Assumes passphrase has already been validated!!!!
-*/
+
+
+function changeNickname(address, nickname, successfunc, failurefunc) {
+
+	if (address == undefined || address == "") {
+		navigator.notification.alert("No address was specified when trying to set a new nickname. This could indicate a corrupt wallet. We recommend making a backup from the settings menu.", 
+			failurefunc,
+			"Error", 
+			"OK"
+		);
+		return;
+	}
+
+	// if they specify no nickname then the address will show normally
+	if (nickname == undefined) nickname = "";
+
+	var f = function(accounts) { try {
+		if (accounts.data == undefined || accounts.data == "") {
+			accounts = {};
+		} else {
+			accounts = JSON.parse(accounts.data);
+		}
+
+		if (!(address in accounts)) { 
+			navigator.notification.alert("The specified address was not found in your wallet. This could indicate a corrupt wallet. We recommend making a backup from the settings menu.", 
+				failurefunc,
+				"Error", 
+				"OK"
+			);
+			return;			
+		}
+
+		accounts[address].nickname = nickname;
+
+		db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
+			navigator.notification.alert("Nickname successfully updated.", function(){}, "Success", "OK");
+			successfunc();
+		}).catch(function(x){
+			navigator.notification.alert("Failed to change nickname.", function(){}, "Error", "OK");
+			failurefunc();
+		});
+
+	} catch(e) { handle_error(e); } }
+
+	db.get("accounts").then(f).catch(f);
+
+
+}
+
+/* Assumes passphrase has already been validated!!!!*/
 function importAddress(secret, nickname, passphrase, successfunc, failurefunc) {
 	
-	//if (typeof passphrase == 'string') passphrase = sodium.from_string(passphrase);
-
 	var address = "";
 
 	if (!validateSecret(secret)) {
