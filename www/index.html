@@ -1656,12 +1656,12 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').css('background-color', 'rgba(92, 184, 104, 0.63)');
 			$('#toaddress').css('color', 'white');
 			$('#toaddress').attr('readonly', 'readonly');
-			$('#toaddress').attr('ontouchend', null);
+			$('#btnqrpay').attr('ontouchend', null);
 		} else {
 			$('#toaddress').css('background-color', '');
 			$('#toaddress').css('color', '');
 			$('#toaddress').attr('readonly', null);
-			$('#toaddress').attr('ontouchend', 'scanQR("#toaddress");');
+			$('#btnqrpay').attr('ontouchend', 'scanQR("#toaddress");');
 		}
 	}
 
