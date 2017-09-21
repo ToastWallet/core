@@ -339,7 +339,7 @@ img.loader {
 #accountslist > li {
     text-overflow: ellipsis;
     overflow: hidden;
-    min-height: 4em;
+    min-height: 4.5em;
 }
 #btnaddaccount > * {
     vertical-align: middle;
