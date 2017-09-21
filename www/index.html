@@ -650,7 +650,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<br />
 
 
-	<label >Destination Tag (optional)</label>
+	<label >Destination Tag (optional, but many exchanges require this)</label>
 	<div>
 	<input  type="text" id="desttag" class="form-control" placeholder="">
 	</div>
@@ -678,7 +678,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.5</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.11</div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -806,7 +806,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-    <p><center style="color:black;" data-version="version">Version: 2.1.5</p>
+    <p><center style="color:black;" data-version="version">Version: 2.1.11</p>
 </div>
 
 
@@ -1254,6 +1254,27 @@ function getAccounts(callback) {
 	db.get("accounts").then(f).catch(f);
 }
 
+function getAccountInfo(address, successfunc, failurefunc) {
+
+  if (!validateAddress(address)) return failurefunc();
+  remote.connection._timeout = 500;
+  var request = {
+    command: 'account_info',
+    account: address,
+    ledger_index: 'validated'
+  };
+  return remote.connection.request(request, {timeout: 500}).then( result=> {
+
+	if (result == undefined) return;
+	if ("account_data" in result) {
+		successfunc(result.account_data);
+	} else {
+		failurefunc();
+	}
+		  
+	});
+}
+
 function refreshAccounts() {
 	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
@@ -1267,46 +1288,81 @@ function refreshAccounts() {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"></div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">(loading)</div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
-
-			((account)=>{
-			 if (debug) console.log("requesting account info for: " + account);
-			remote.getAccountInfo(account).then(
-				function(res) {
-			 		if (debug) console.log("received account info for: " + account);
-					try {
-						$("#ra" + account + ">.amount")[0].innerText = res.xrpBalance + " XRP";
-					} catch(e) {handle_error(e);}
-					accountbalances[account] = res.xrpBalance;
-	
-					var balcount = Object.keys(accountbalances).length;
-					if (balcount > 0 && activeaccount == "") {
-						var largest = 0; var largestindex = 0;
-						for (var x in accountbalances) {
-							if (accountbalances[x] > largest) {
-								largest = accountbalances[x];
-								largestindx = x;
-							}
-						}
-						activeaccount = x;
-	
-						$("#opt" + x).prop('selected', true);
-						$("#ra" + x).addClass('active');	
-					}
-
-				}).catch(
-				function(e) {
-					if (debug) console.log("account refresh error: " + e);
-					try {
-						$("#ra" + account + ">.amount")[0].innerText = "(not activated)";
-					} catch(e) {handle_error(e);}					
-				});
-			})(i);
 		}
 		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
 	});
+
+
+
+	var updateaccs = function(exchangerate){
+		getAccounts(function(acc) {
+			accountbalances = {};
+			for (var i in acc) {
+
+				((account) => {
+					var f = 
+					function(res) {
+						var xrpBalance = parseInt(res.Balance) / 1000000.0;
+
+						if (debug) console.log("received account info for: " + account);
+						try {
+							var usdbalance = "";
+							if (exchangerate != -1) {
+								var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
+								usdbalance = '<br><div class="amount"><small style="opacity:0.7;">(' + amount.toFixed(2) + ' USD)</small></div>';
+							}
+							$("#ra" + account + ">.amount")[0].innerHTML = xrpBalance + " XRP" + usdbalance;
+				
+						} catch(e) {handle_error(e);}
+						accountbalances[account] = parseFloat(xrpBalance);
+
+						var balcount = Object.keys(accountbalances).length;
+						if (balcount > 0 && activeaccount == "") {
+							var largest = 0; var largestindex = 0;
+							for (var x in accountbalances) {
+								if (accountbalances[x] > largest) {
+									largest = accountbalances[x];
+									largestindx = x;
+								}
+							}
+							activeaccount = x;
+
+							$("#opt" + x).prop('selected', true);
+							$("#ra" + x).addClass('active');	
+						}
+					};
+
+					var e =
+					function(e) {
+						if (debug) console.log("account refresh error: " + e);
+						try {
+							$("#ra" + account + ">.amount")[0].innerText = "(not activated)";
+						} catch(e) {handle_error(e);}					
+					};
+
+					getAccountInfo(account, f, e).catch(e);
+				})(i);
+			}
+		});
+	};
+
+	remote.getOrderbook(
+		"rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
+		{"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
+		"counter": {"currency":"XRP"}},  { limit: 10 }
+	).then(orders => {
+		var exchangerate = 0;
+		for (var i = 0; i < 10; i++) 
+			exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
+		exchangerate = 10.0/exchangerate;
+		updateaccs(exchangerate);
+	}).catch( function(e) {
+		updateaccs(-1);		
+	});
+
 
 }
 
@@ -1857,7 +1913,6 @@ function doPay(nonce) {
 		return;
 	}
 
-//	if (/^(?:^(r|n)[rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{31,34}$)$/m.test(payto)) {
 	if (validateAddress(payto)) {
 		// valid
 	} else {
@@ -3208,7 +3263,7 @@ function connectToRipple(funcsuccess) {
 			hideSpinner();	
 			funcsuccess();
 		}).catch(function(e) {
-			if (debug) console.log("connect error: " + err);
+			if (debug) console.log("connect error: " + e);
 			connectToRipple(funcsuccess);
 		});
 }
