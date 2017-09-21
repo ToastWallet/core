@@ -678,7 +678,8 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.11</div>
+	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.13</div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -700,6 +701,29 @@ I sincerely promise I've written my recovery phrase down.</p><br>
     </div><br>
     <div><center><button  type="button" class="btn btn-primary" id="btncorruptionprompt" ontouchend="doDataCorruptionRecovery(corruptionstate, $('#corruptionpp').val(), $('#corruptionrp').val());">Attempt Recovery</button></center></div>
 </div>
+
+
+<div id="tabdonate" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
+   <center>
+    <h1>Toast Wallet</h1>
+
+	<center>
+<p style="text-align:center;">We rely on your contributions to keep Toast Wallet free and running smoothly.</p>
+<p style="text-align:center;">Please consider supporting us:</p><br>
+	<div>
+		<button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);" style="min-width: 20em; display: none;">Create a New Wallet</button>
+	</div>
+	<br>
+	<div>
+		<button class="btn btn-success" type="button" id="btndonate20" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate20').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $20</button><br><br>
+<button class="btn btn-info" type="button" id="btndonate10" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate10').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $10</button><br><br>
+<button class="btn btn-warning" type="button" id="btndonate5" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate5').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $5</button><br><br>
+<button class="btn btn-danger" type="button" id="btndonate0" ontouchend="showTab('#tabaccounts');" style="min-width: 20em;">Not at this time</button><br>
+	</div>
+	<br>
+	
+</center>
+    <p></p></center></div>
 
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
    <center>
@@ -806,7 +830,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-    <p><center style="color:black;" data-version="version">Version: 2.1.11</p>
+    <p><center style="color:white;" data-version="version">Version: 2.1.13</p>
 </div>
 
 
@@ -831,6 +855,33 @@ function unblockInput() {
 	$('body').removeClass('liteloading');
 }
 
+function showDonationTab(){
+	showTab('#tabdonate');
+	
+	remote.getOrderbook(
+		"rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
+		{"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
+		"counter": {"currency":"XRP"}},  { limit: 10 }
+	).then(orders => {
+		var exchangerate = 0;
+		for (var i = 0; i < 10; i++) 
+			exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
+		exchangerate = 10.0/exchangerate;
+			
+		$("#btndonate20")[0].innerHTML = "Donate $20 (" + (20.0/exchangerate).toFixed(4) + " XRP)";
+		$("#btndonate10")[0].innerHTML = "Donate $10 (" + (10.0/exchangerate).toFixed(4) + " XRP)";
+		$("#btndonate5")[0].innerHTML = "Donate $5 (" + (5.0/exchangerate).toFixed(4) + " XRP)";
+
+		$("#btndonate20").data('amount', (20.0/exchangerate).toFixed(4));
+		$("#btndonate10").data('amount', (10.0/exchangerate).toFixed(4));
+		$("#btndonate5").data('amount', (5.0/exchangerate).toFixed(4));
+
+		
+
+	}).catch( function(e) {
+			
+	});
+}
 
 function doGenerateBackup() {
 	if (debug) console.log("doGenerateBackup");
@@ -1242,6 +1293,20 @@ function doRevealRippleSecret(passphrase, address) {
 
 }
 
+
+function getLastDonation(callback) {
+	var f	= function(donation) { try {
+		if (donation.data == undefined) {
+			donation = {};
+		} else {
+			donation = JSON.parse(donation.data);
+		}
+		callback(donation);
+	} catch(e) { handle_error(e); } }
+	db.get("lastdonated").then(f).catch(f);
+}
+
+
 function getAccounts(callback) {
 	var f	= function(secrets) { try {
 		if (secrets.data == undefined) {
@@ -1584,6 +1649,41 @@ function showTab(tab, dontClearText) {
 		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
 		$('#accdetailstransactiondetails').hide(); 
 		$('#accdetailsaddressdetails').show();
+	} 
+	if (tab == '#tabpayments') {
+		var to = $('#toaddress').val();
+		if (to == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
+			$('#toaddress').css('background-color', 'rgba(92, 184, 104, 0.63)');
+			$('#toaddress').css('color', 'white');
+			$('#toaddress').attr('readonly', 'readonly');
+		} else {
+			$('#toaddress').css('background-color', '');
+			$('#toaddress').css('color', '');
+			$('#toaddress').attr('readonly', null);
+		}
+	}
+
+	if (tab == '#tabaccounts') {
+		getLastDonation(function(donation) {
+			if ('lastdonation' in donation && Math.floor(new Date().getTime()/1000) - parseInt(donation['lastdonation']) < 15552000 /* 180 days */) {
+				// do nothing
+				return;
+			}
+
+			if (!('lastreminder' in donation) ||  Math.floor(new Date().getTime()/1000) - parseInt(donation['lastreminder']) > 604800 /* 1 week */ ) {
+				// reminder
+				
+				donation['lastreminder'] = "" + Math.floor(new Date().getTime()/1000);
+				db.upsert("lastdonated",
+					function(doc) {
+					return { data: JSON.stringify(donation)	}; 
+				}).then( function() {
+					showDonationTab();
+				})
+
+			}
+		});
+		
 	}
 	var tabs = $(".screentab");
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
@@ -1829,12 +1929,35 @@ function doConfirmPay(passphrase) {
 				function(){
 					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
 						function(){
-							navigator.notification.alert("Your payment was successfully sent.", 
-								function(){
-									clearPaymentScreen();
-									showTab("#tabaccounts");
-									unblockInput();
-								}, "Success", "OK"); 
+
+							if (confirmpay.payto == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
+
+								getLastDonation(function(donation) {
+									donation['lastdonation'] = "" + Math.floor(new Date().getTime()/1000);
+									donation['lastreminder'] = "" + Math.floor(new Date().getTime()/1000);
+									db.upsert("lastdonated",
+										function(doc) {
+										return { data: JSON.stringify(donation)	}; 
+									}).then( function() {
+										navigator.notification.alert("Thank you for your donation! Your contribution helps us keep Toast Wallet running!", 
+											function(){
+												clearPaymentScreen();
+												showTab("#tabaccounts");
+												unblockInput();
+											}, 
+											"Success", 
+											"OK"
+										); 
+									});
+								});
+							} else {
+								navigator.notification.alert("Your payment was successfully sent.", 
+									function(){
+										clearPaymentScreen();
+										showTab("#tabaccounts");
+										unblockInput();
+									}, "Success", "OK"); 
+								}
 						}, 
 						function() {
 							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.) This error can also be caused by an invalid destination address.", 
