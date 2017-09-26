@@ -41,6 +41,8 @@
 	var debug = true;
 	var ontestnet = false;
 
+	var emergencybackup = true;
+
 	function refreshWebView() {
 	}
 
@@ -692,7 +694,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.22</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.23</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -844,7 +846,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.22</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.23</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2499,11 +2501,16 @@ function normalboot () {
 	** of zero length, this will then in turn fire either the login procedure or
 	** license and setup procedure. 
 	*/
-	validatePin("",
-		function() {   connectToRipple( doShowLogin ); },
-		function() {   connectToRipple( doShowLogin ); },
-		function() {   connectToRipple( function() {showTab("#tablicense");}); }
-	);
+
+	if (emergencybackup) {
+		doGenerateBackup();
+	} else {
+		validatePin("",
+			function() {   connectToRipple( doShowLogin ); },
+			function() {   connectToRipple( doShowLogin ); },
+			function() {   connectToRipple( function() {showTab("#tablicense");}); }
+		);
+	}
 }
 
 var corruptionstate;
