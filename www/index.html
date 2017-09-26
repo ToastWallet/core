@@ -694,7 +694,7 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.24</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.25</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -846,7 +846,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.24</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.25</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2722,11 +2722,16 @@ onDeviceReady: function() {
 			** to know this before bootstrapping the app. This function call will tell us
 			** how to proceed and whether we need to run a recovery.
 			*/
-			validateDataStores(
-				normalboot,
-				normalboot,
-				recoveryboot
-			);
+			if (emergencybackup) {
+				hideSpinner();
+				doGenerateBackup();			
+			} else {
+				validateDataStores(
+					normalboot,
+					normalboot,
+					recoveryboot
+				);
+			}
 
 
 	       },
