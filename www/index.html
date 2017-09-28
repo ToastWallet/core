@@ -692,10 +692,18 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabfaq');">FAQ</button></center></div>
 	<div><center style="color:black;" data-version="version">Version: 2.1.22</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
+<div id="tabfaq" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="FAQ" style="padding-bottom: 0em;">
+   <center>
+   
+   <a href="javascript: window.open('https://toastwallet.com/faq', '_system'); return false;">FAQ</a>
+
+</div>							       
+							       
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
 	<label >Passphrase or Recovery Phrase</label><input  type="password" id="recoverypassword" class="form-control" placeholder="">
