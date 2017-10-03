@@ -1585,7 +1585,8 @@ var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
-
+var xrpreserveamount = document.getElementbyId('reserveBaseXRP');
+				       
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
 
@@ -1944,7 +1945,20 @@ function doConfirmPay(passphrase) {
 
 			checkConnection(
 				function(){
-					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
+			
+ 					if (isBelowReserveAmount(confirmpay.payfrom, parseFloat(confirmpay.amount))) {
+ 						navigator.notification.alert("Error! No payment was made because a reserve of " + xrpreserveamount + "xrp must remain in your wallet after your transaction.",
+ 							function() {
+ 								showTab(-1);
+ 								unblockInput();
+ 							}, 
+ 							"Error",
+ 							"OK"
+ 						);
+ 						return;
+ 					}
+ 
+			sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
 						function(){
 
 							if (confirmpay.payto == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
@@ -2011,6 +2025,11 @@ function doConfirmPay(passphrase) {
 	);
 }
 
+function isBelowReserveAmount(accountFrom, amountToSend) {
+ 	var amountAfterTransaction = accountbalances[accountFrom] - parseFloat(amountToSend);
+
+ 	return amountAfterTransaction < xrpreserveamount;
+ }
 
 var confirmpay = {};
 var confirmpayhash = "";
