@@ -1585,7 +1585,9 @@ var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
-var xrpreserveamount = document.getElementbyId('reserveBaseXRP');
+var xrpreserveamount = getServerInfo().then(obj => {
+			obj.validatedLedger.reserveBaseXRP
+})
 				       
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
