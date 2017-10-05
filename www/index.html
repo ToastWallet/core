@@ -1947,7 +1947,7 @@ function doConfirmPay(passphrase) {
 
 			checkConnection(
 				function(){
-			
+					// xrp reserve check contributed by https://github.com/CheungJ and https://github.com/SneakyFish5
  					if (isBelowReserveAmount(confirmpay.payfrom, parseFloat(confirmpay.amount))) {
  						navigator.notification.alert("Error! No payment was made because a reserve of " + xrpreserveamount + "xrp must remain in your wallet after your transaction.",
  							function() {
