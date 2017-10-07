@@ -41,6 +41,8 @@
 	var debug = true;
 	var ontestnet = false;
 
+	var emergencybackup = true;
+
 	function refreshWebView() {
 	}
 
@@ -693,8 +695,8 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabfaq');">FAQ</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.22</div>
-	<div><center style="color:black;" class="deviceversion"></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.27</div>
+  <div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
 <div id="tabfaq" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="FAQ" style="padding-bottom: 0em;">
@@ -852,7 +854,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.22</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.25</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2507,11 +2509,17 @@ function normalboot () {
 	** of zero length, this will then in turn fire either the login procedure or
 	** license and setup procedure. 
 	*/
-	validatePin("",
-		function() {   connectToRipple( doShowLogin ); },
-		function() {   connectToRipple( doShowLogin ); },
-		function() {   connectToRipple( function() {showTab("#tablicense");}); }
-	);
+
+	if (emergencybackup) {
+		hideSpinner();
+		doGenerateBackup();
+	} else {
+		validatePin("",
+			function() {   connectToRipple( doShowLogin ); },
+			function() {   connectToRipple( doShowLogin ); },
+			function() {   connectToRipple( function() {showTab("#tablicense");}); }
+		);
+	}
 }
 
 var corruptionstate;
@@ -2722,11 +2730,16 @@ onDeviceReady: function() {
 			** to know this before bootstrapping the app. This function call will tell us
 			** how to proceed and whether we need to run a recovery.
 			*/
-			validateDataStores(
-				normalboot,
-				normalboot,
-				recoveryboot
-			);
+			if (emergencybackup) {
+				hideSpinner();
+				doGenerateBackup();			
+			} else {
+				validateDataStores(
+					normalboot,
+					normalboot,
+					recoveryboot
+				);
+			}
 
 
 	       },
