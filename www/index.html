@@ -350,10 +350,10 @@
 <div id="showrecoveryphrase">
 </div><br>
 <p style="color:black;">
-<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+<span class="toggleswitch" id="tglsw1"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
 I sincerely promise I've written my recovery phrase down.</p><br>
 <p style="color:black;">
-<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+<span class="toggleswitch" id="tglsw2"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
 I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
@@ -689,7 +689,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	</span>
 	</div>
 	<br/>
-	<div><center style="color:black;">The Ripple network requires 20 XRP minimum balance and charges fees based on congestion even for failed transactions.</center></div>
+	<div><center style="color:black;">The Ripple network requires a minimum <span id="minxrp"></span> XRP balance at all times and charges fees based on congestion even for failed transactions.</center></div>
 
 </div>
 
@@ -701,7 +701,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.29</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.30</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -870,7 +870,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.29</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.30</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -956,7 +956,7 @@ function doGenerateBackup() {
 function doFinishSetup() {
 	if (debug) console.log("doFinishSetup");
 	blockInput();
-	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
+	if ($("#tglsw1").data('checked') != "true" || $("#tglsw2").data('checked') != "true" ) {
 		navigator.notification.alert("You must confirm that you've written your recovery phrase down and that you understand it's not a backup.", 
 			function(){
 				unblockInput();
@@ -2214,7 +2214,8 @@ function doPay(nonce) {
 		if (balance < xrpreserve) {
 			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
 				function(b){
-					if (b == 0) {
+					if (debug) console.log("button selected: " + b);
+					if (b == 1) {
 						nextscreen();
 					} else {
 						$("#payamount").focus();
@@ -2233,7 +2234,7 @@ function doPay(nonce) {
 
 		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account before continuing.",
 			function(b){
-				if (b == 0) {
+				if (b == 1) {
 					nextscreen();
 				} else {
 					$("#payamount").focus();
@@ -3626,6 +3627,7 @@ function connectToRipple(funcsuccess) {
 			remote.getServerInfo().then(info => {
 				if (info != undefined && info['validatedLedger'] != undefined && info['validatedLedger']['reserveBaseXRP'] != undefined) 
 					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
+					$("#minxrp")[0].innerHTML = "" + xrpreserve;
 			}).catch(e => {
 				console.log("xrp reserve request error: " + e);
 			});
