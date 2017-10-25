@@ -39,9 +39,12 @@
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <script>
 	var debug = true;
-	var ontestnet = false;
+	var ontestnet = true;
+	var emergencybackup = false;
 
-	var emergencybackup = true;
+	var xrpreserve = 20; // this will be updated by querying the server when it connects, if there's an error getting this data the default will be used
+
+	var timepaused = 0;
 
 	function refreshWebView() {
 	}
@@ -61,14 +64,6 @@
 		if (debug) console.log("afterCordovaLoad");
 
 		for (var i = 0; i < $('.deviceversion').length; i++) $('.deviceversion')[i].innerHTML = device.model + " - " + device.platform + " - " + device.version;
-
-		if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
-			navigator.notification.alert("Toast Wallet has some compatibility issues with iOS versions below 11.0. You can continue to use it but it may freeze or crash. We strongly recommend updating your phone to at least iOS 11.0", 
-				()=>{},
-				"iOS Update Required", 
-				"OK"
-			)			
-		}
 
 	        window.screen.orientation.lock('portrait');
 
@@ -170,11 +165,19 @@
 				currenttab != "#tabrestore2" &&
 				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
-				if (debug) console.log("onPause - show login");
+				if (debug) console.log("onPause - record time");
+				timepaused = $.now();
+			}
+		}, false);
+
+
+		document.addEventListener("resume", function() {
+			if (debug) console.log("onResume - show login");
+			if ($.now() - timepaused > 30000) {
 				unblockInput();
 				doShowLogin();
 			}
-		}, false);
+		});
 
 		$('#backuppassword').on('touchend', quickSelectInput);
 		$('#restorepassword').on('touchend', quickSelectInput);
@@ -342,13 +345,16 @@
     ">only way for you to regain access to your XRP.</u>&nbsp;
     Never share your recovery phrase with anyone.</p></div>
 
-<div><p style="color:black; text-align:justify; font-weight:bold;">For your safety Toast Wallet does not use deterministic key generation. This recovery phrase is <u style="color:red">useless without a backup</u>. Please make a backup using the settings menu <u style="color:red">after</u> you finish adding or generating <u style="color:red">all</u> of your addresses. Toast Wallet backups are <u style="color:red">data backups</u>, this means you will <u style="color:red">only have access to the addresses you had in your wallet at the time you made the backup!</u></p></div>
+<div><p style="color:black; text-align:justify; font-weight:bold;">This recovery phrase is <u style="color:red">useless without a backup</u>. Please make a backup using the settings menu <u style="color:red">after</u> you finish adding or generating <u style="color:red">all</u> of your addresses. Toast Wallet backups are <u style="color:red">data backups</u>, this means you will <u style="color:red">only have access to the addresses you had in your wallet at the time you made the backup!</u></p></div>
 
 <div id="showrecoveryphrase">
 </div><br>
 <p style="color:black;">
 <span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
 I sincerely promise I've written my recovery phrase down.</p><br>
+<p style="color:black;">
+<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
 
@@ -693,8 +699,9 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showTab('#tabdonate');">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.25</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.27</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -719,6 +726,26 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 </div>
 
 
+<div id="tabbackupreminder" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Backup Reminder" style="padding-bottom: 0em;">
+   <center>
+    <h1>Your recovery phrase is NOT a backup</h1>
+
+	<center>
+<p style="text-align:center;">Your recovery phrase is a second passphrase. It is not a wallet backup.</p><br>
+<p style="text-align:center;">You only need to create a backup when you add a new address to your wallet.</p><br>
+<p style="text-align:center;">Think of your passphrase/recovery phrase as keys which unlock your wallet. The backup is the actual wallet.</p><br>
+<p style="text-align:center;">Keep your backup in a safe place away from your passphrase and recovery phrase. We suggest printing it out.</p><br>
+	<br>
+	<div>
+	<button class="btn btn-danger" type="button" ontouchend="doGenerateBackup();" style="min-width: 20em;">Create a Backup Now</button><br>
+	</div>
+	<br>
+	
+</center>
+    <p></p></center></div>
+
+
+
 <div id="tabdonate" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
    <center>
     <h1>Toast Wallet</h1>
@@ -726,9 +753,6 @@ I sincerely promise I've written my recovery phrase down.</p><br>
 	<center>
 <p style="text-align:center;">We rely on your contributions to keep Toast Wallet free and running smoothly.</p>
 <p style="text-align:center;">Please consider supporting us:</p><br>
-	<div>
-		<button class="btn btn-success" type="button" id="btnbootstrapsequence" ontouchend="doResetPin('', function(){showTab('#tabsetpassphrase');}, function(){}, true);" style="min-width: 20em; display: none;">Create a New Wallet</button>
-	</div>
 	<br>
 	<div>
 		<button class="btn btn-success" type="button" id="btndonate20" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate20').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $20</button><br><br>
@@ -846,7 +870,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.25</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.27</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -900,14 +924,30 @@ function showDonationTab(){
 	});
 }
 
+
+function showBackupReminderTab(){
+	showTab('#tabbackupreminder');
+}
+
 function doGenerateBackup() {
 	if (debug) console.log("doGenerateBackup");
-	blockInput();
+	blockInput();	
 	exportWallet(
 		function(data){
 			showTab('#tabbackup2');
 			$('#walletbackup').val( data ); 
 			$('#walletbackup').data('content', data);
+
+
+			// update backup reminder
+			getLastBackupReminder(function(backupreminder) {
+				backupreminder['lastreminder'] = "" + Math.floor(new Date().getTime()/1000);
+				db.upsert("lastbackupreminder",
+					function(doc) {
+					return { data: JSON.stringify(backupreminder)	}; 
+				});
+			});
+
 			unblockInput();
 		}
 	);
@@ -917,7 +957,7 @@ function doFinishSetup() {
 	if (debug) console.log("doFinishSetup");
 	blockInput();
 	if ($("#tabshowrecovery .toggleswitch").data('checked') != "true") {
-		navigator.notification.alert("You must write your recovery phrase down.", 
+		navigator.notification.alert("You must confirm that you've written your recovery phrase down and that you understand it's not a backup.", 
 			function(){
 				unblockInput();
 			}, 
@@ -1310,6 +1350,19 @@ function doRevealRippleSecret(passphrase, address) {
 
 }
 
+function getLastBackupReminder(callback) {
+	var f	= function(backupreminder) { try {
+		if (backupreminder.data == undefined) {
+			backupreminder = {};
+		} else {
+			backupreminder = JSON.parse(backupreminder.data);
+		}
+		callback(backupreminder);
+	} catch(e) { handle_error(e); } }
+	db.get("lastbackupreminder").then(f).catch(f);
+}
+
+
 
 function getLastDonation(callback) {
 	var f	= function(donation) { try {
@@ -1683,23 +1736,47 @@ function showTab(tab, dontClearText) {
 	}
 
 	if (tab == '#tabaccounts') {
-		getLastDonation(function(donation) {
-			if ('lastdonation' in donation && Math.floor(new Date().getTime()/1000) - parseInt(donation['lastdonation']) < 15552000 /* 180 days */) {
-				// do nothing
-				return;
-			}
 
-			if (!('lastreminder' in donation) ||  Math.floor(new Date().getTime()/1000) - parseInt(donation['lastreminder']) > 604800 /* 1 week */ ) {
-				// reminder
-				
-				donation['lastreminder'] = "" + Math.floor(new Date().getTime()/1000);
-				db.upsert("lastdonated",
-					function(doc) {
-					return { data: JSON.stringify(donation)	}; 
-				}).then( function() {
-					showDonationTab();
-				})
 
+		var donorreminder = function() {
+			getLastDonation(function(donation) {
+				if ('lastdonation' in donation && Math.floor(new Date().getTime()/1000) - parseInt(donation['lastdonation']) < 15552000 /* 180 days */) {
+					// do nothing
+					return;
+				}
+
+				if (!('lastreminder' in donation) ||  Math.floor(new Date().getTime()/1000) - parseInt(donation['lastreminder']) > 604800 /* 1 week */ ) {
+					// reminder
+					
+					donation['lastreminder'] = "" + Math.floor(new Date().getTime()/1000);
+					db.upsert("lastdonated",
+						function(doc) {
+						return { data: JSON.stringify(donation)	}; 
+					}).then( function() {
+						showDonationTab();
+					})
+
+				}
+			});
+		};
+
+		getAccounts(function(acc) {
+			var acccount = 0;
+			for (var i in acc) acccount++;
+
+
+			if (debug) console.log("number of accounts: " + acccount);
+			if (acccount > 0) {
+				getLastBackupReminder(function(backupreminder) {
+					if (!('lastreminder' in backupreminder)) {
+						showBackupReminderTab();
+					} else {
+						donorreminder();
+					}
+
+				});
+			} else {
+				donorreminder();
 			}
 		});
 		
@@ -1979,7 +2056,7 @@ function doConfirmPay(passphrase) {
 								}
 						}, 
 						function() {
-							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.) This error can also be caused by an invalid destination address.", 
+							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.) This error can also be caused by an invalid or not activated destination address or if the Ripple network is overloaded.", 
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
@@ -2022,13 +2099,40 @@ function doPay(nonce) {
 	blockInput();
 
 	var payfrom = $("#payfromaccount").find(":selected").data('account');
-	var payto = $("#toaddress").val();
-	var dest = $("#desttag").val();
-	var invid = $("#invoiceid").val();
-	var amount = $("#payamount").val();
+	var payto = $("#toaddress").val().trim();
+	var dest = $("#desttag").val().trim();
+	var invid = $("#invoiceid").val().trim();
+	var amount = $("#payamount").val().trim();
 
 
 	if (dest == "") dest = 0;
+
+	if (dest + "" != "" + parseInt(dest)) {
+		navigator.notification.alert("Destination tag must be either blank or an integer", 
+			function(){
+				$("#desttag").focus();
+				unblockInput();
+			}, 
+			"Destination tag invalid", 
+			"OK"
+		);
+		return;		
+	}
+
+
+	if (invid != "") {
+		if (/[^a-fA-F0-9]/m.test(invid)) {
+			navigator.notification.alert("Invoice ID must either be blank or be hex-encoded. We recommend not to use an invoice id unless your counter party has instructed you to use one.", 
+				function(){
+					$("#invoiceid").focus();
+					unblockInput();
+				}, 
+				"Invoice ID invalid", 
+				"OK"
+			);
+			return;				
+		}
+	}
 
 	if (payfrom == undefined || payfrom == "") {
 		navigator.notification.alert("You must select an account to pay from", 
@@ -2082,26 +2186,65 @@ function doPay(nonce) {
 		return;
 	}
 
-	confirmpay = { 
-		payfrom: payfrom,
-		payto: payto,
-		dest: dest,
-		invid: invid,
-		amount: amount,
-		nonce: nonce
+	var nextscreen = function() {
+		confirmpay = { 
+			payfrom: payfrom,
+			payto: payto,
+			dest: dest,
+			invid: invid,
+			amount: amount,
+			nonce: nonce
+		};
+
+		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
+
+		$('#confirmpayfromaccount')[0].innerText = payfrom;
+		$('#confirmpaytoaddress')[0].innerText = payto;
+		$('#confirmdesttag')[0].innerText = dest;
+		$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
+		$('#confirmpayamount')[0].innerText = amount + " XRP";
+
+		showTab("#tabpaymentconfirm");
+		
+		unblockInput();
 	};
 
-	confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
+	if (payfrom in accountbalances) {
+		var balance = accountbalances[payfrom] - amount;
+		if (balance < xrpreserve) {
+			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+				function(b){
+					if (b == 0) {
+						nextscreen();
+					} else {
+						$("#payamount").focus();
+						unblockInput();
+					}
+				}, 
+				"XRP Reserve not met", 
+				[ "Try anyway", "Cancel" ]
+			);			
+			return;
+		} else {
+			nextscreen();
+			return;
+		}
+	} else {
 
-	$('#confirmpayfromaccount')[0].innerText = payfrom;
-	$('#confirmpaytoaddress')[0].innerText = payto;
-	$('#confirmdesttag')[0].innerText = dest;
-	$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
-	$('#confirmpayamount')[0].innerText = amount + " XRP";
-
-	showTab("#tabpaymentconfirm");
-	
-	unblockInput();
+		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account before continuing.",
+			function(b){
+				if (b == 0) {
+					nextscreen();
+				} else {
+					$("#payamount").focus();
+					unblockInput();
+				}
+			}, 
+			"XRP balance not confirmed", 
+			[ "Yes continue", "Cancel" ]
+		);			
+		return;
+	}
 }
 
 
@@ -2164,6 +2307,7 @@ function importWallet(wallet, successfunc, failurefunc) {
 	if (debug) console.log("importWallet");
 	if (wallet.length < 8) return failurefunc();
 
+	wallet = ("" + wallet).trim();
 	var hash = wallet.slice(0, 8);
 	wallet = wallet.slice(8);
 
@@ -2247,8 +2391,14 @@ function doRestoreBackupFreshInstall() {
 	importWallet(
 		$('#restorebackup2').val(),
 		function() {
+			db.upsert("lastbackupreminder",
+				function(doc) {
+					return { data: JSON.stringify({"lastreminder": "" + Math.floor(new Date().getTime()/1000) })	}; 
+			});
+		
 			navigator.notification.alert("Backup restored successfully!", 
 				function() {
+
 					unblockInput();
 					doShowLogin();
 				}, 
@@ -2289,6 +2439,12 @@ function doRestoreBackup() {
 			importWallet(
 				$('#restorebackup').val(),
 				function() {
+
+					db.upsert("lastbackupreminder",
+						function(doc) {
+							return { data: JSON.stringify({"lastreminder": "" + Math.floor(new Date().getTime()/1000) })	}; 
+					});
+				
 					navigator.notification.alert("Backup restored successfully!", 
 						function() {
 							unblockInput();
@@ -2718,19 +2874,34 @@ onDeviceReady: function() {
 			setTimeout(afterCordovaLoad, 0);
 			if (debug) console.log("onDeviceReady:3");
 
-			/* There is a possibility the datastores were corrupted somehow, and we need
-			** to know this before bootstrapping the app. This function call will tell us
-			** how to proceed and whether we need to run a recovery.
-			*/
-			if (emergencybackup) {
-				hideSpinner();
-				doGenerateBackup();			
-			} else {
-				validateDataStores(
-					normalboot,
-					normalboot,
-					recoveryboot
+
+
+			if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
+				navigator.notification.alert("Toast Wallet has some compatibility issues with iOS versions below 11.0. Toast Wallet will attempt to generate a backup for you to copy now. If you want to continue using Toast Wallet on this device you need to update it to iOS 11 or newer.", 
+					()=>{
+						hideSpinner();
+						doGenerateBackup();
+					},
+					"iOS Update Required", 
+					"OK"
 				);
+			} else {
+
+
+				/* There is a possibility the datastores were corrupted somehow, and we need
+				** to know this before bootstrapping the app. This function call will tell us
+				** how to proceed and whether we need to run a recovery.
+				*/
+				if (emergencybackup) {
+					hideSpinner();
+					doGenerateBackup();			
+				} else {
+					validateDataStores(
+						normalboot,
+						normalboot,
+						recoveryboot
+					);
+				}
 			}
 
 
@@ -2804,7 +2975,7 @@ function changeNickname(address, nickname, successfunc, failurefunc) {
 		}).catch(function(x){
 			navigator.notification.alert("Failed to change nickname.", function(){}, "Error", "OK");
 			failurefunc();
-		});
+		})
 
 	} catch(e) { handle_error(e); } }
 
@@ -2815,7 +2986,13 @@ function changeNickname(address, nickname, successfunc, failurefunc) {
 
 /* Assumes passphrase has already been validated!!!!*/
 function importAddress(secret, address, nickname, passphrase, successfunc, failurefunc) {
-	
+
+	// set backup reminder to nothing so they get a prompt immediately after importing
+	db.upsert("lastbackupreminder",
+		function(doc) {
+			return { data: JSON.stringify({})	}; 
+	});
+
 	var _import = function(secret, address, nickname, passphrase, successfunc, failurefunc) {
 
 	// to proceed to storage we need to generate salts and secrets
@@ -3444,6 +3621,14 @@ function connectToRipple(funcsuccess) {
 	if (debug) console.log("connectToRipple");
 	remote.connect().then(function() {
 			if (debug) console.log("connect success");
+
+			// 
+			remote.getServerInfo().then(info => {
+				if (info != undefined && info['validatedLedger'] != undefined && info['validatedLedger']['reserveBaseXRP'] != undefined) 
+					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
+			}).catch(e => {
+				console.log("xrp reserve request error: " + e);
+			});
 			hideSpinner();	
 			funcsuccess();
 		}).catch(function(e) {
@@ -3495,10 +3680,17 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
 			    console.log('Payment transaction signed...');
 			    remote.submit(signedTransaction).then(
-				    () => {
-					if (debug) console.log("send successful");
-					unblockInput();
-					successfunc();
+				    data => {
+
+					if (data.resultCode == 'tesSUCCESS') {
+						if (debug) console.log("send successful");
+						unblockInput();
+						successfunc();
+					} else {
+						if (debug) console.log("send failed 2: " + data.resultCode);
+	    					unblockInput();
+						failurefunc();						
+					}
 				    }, (e) => {
 					if (debug) console.log("send failed: " + e);
     					unblockInput();
