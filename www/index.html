@@ -481,7 +481,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" data-dark="true" data-recovery="true" style="display: none;">
     
 	<center>
-	<div class="pinpad" style="">
+	<div class="pinpad">
 	    <div class="pinnumber">
 	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
@@ -511,7 +511,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tabpinset1" class="screentab" data-primarytab="false" data-title="Set New PIN"  data-dark="2" data-noright="true" style="display: none;">
     
 	<center>
-	<div class="pinpad" style="">
+	<div class="pinpad">
 	    <div class="pinnumber">
 	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
@@ -541,7 +541,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-noright="true" data-title="Repeat New PIN" style="display: none;">
     
 	<center>
-	<div class="pinpad" style="">
+	<div class="pinpad">
 	    <div class="pinnumber">
 	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
@@ -1640,6 +1640,7 @@ var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
+var XRP_RESERVE_AMOUNT = 20;
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
@@ -2023,6 +2024,19 @@ function doConfirmPay(passphrase) {
 
 			checkConnection(
 				function(){
+
+					if (isBelowReserveAmount(confirmpay.payfrom, parseFloat(confirmpay.amount))) {
+						navigator.notification.alert("Error! No payment was made because a reserve of " + XRP_RESERVE_AMOUNT + "xrp must remain in your wallet after your transaction.",
+							function() {
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error",
+							"OK"
+						);
+						return;
+					}
+
 					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
 						function(){
 
@@ -2090,6 +2104,11 @@ function doConfirmPay(passphrase) {
 	);
 }
 
+function isBelowReserveAmount(accountFrom, amountToSend) {
+	var amountAfterTransaction = accountbalances[accountFrom] - parseFloat(amountToSend);
+
+	return amountAfterTransaction < XRP_RESERVE_AMOUNT;
+}
 
 var confirmpay = {};
 var confirmpayhash = "";
