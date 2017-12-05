@@ -294,7 +294,7 @@
 
 <div id="tabbackup2" class="screentab" data-primarytab="false" hasback="true" data-title="Encrypted Backup" style="display: none;">
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
-    <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is requird.</p>
+    <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is required.</p>
 	<center>
 
 	<div>
@@ -459,13 +459,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label >Ripple Secret</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret", "#vanityaddr");'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret", "#vanityaddr", existingAddrSecretSwap);'>QR</button></span>
 	</div>
 	<br>
 	<label >Ripple Address (leave blank to generate from secret)</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="vanityaddr">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#vanityaddr");'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret", "#vanityaddr", existingAddrSecretSwap);'>QR</button></span>
 	</div>
 	<br>
         <label >Account Nickname (optional)</label>
@@ -598,6 +598,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div>
 		<input  type="password" id="setpassword3" class="form-control" placeholder="">
 	</div>
+	<div style="text-align:center; color:black;">If you are using your recovery phrase please ensure it is all lower case with a single space between each word and no spaces at either end.</div>
 	<br><label>New Passphrase</label>
 	<div>
 	<input  type="password" id="setpassword4" class="form-control" placeholder="">
@@ -627,6 +628,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div>
                 <input  type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
+	<div style="text-align:center; color:black;">Once imported your address will need to be activated by sending <span id="minxrp2"></span> XRP to it.</div>
+	<br>
 	<center><div><button  type="button" class="btn btn-primary" ontouchend="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
 
@@ -709,7 +712,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.31</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.32</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -878,7 +881,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.31</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.32</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -902,6 +905,10 @@ function blockInput(noloading) {
 function unblockInput() {
 	$("#inputblocker").hide();
 	$('body').removeClass('liteloading');
+}
+
+function existingAddrSecretSwap() {
+	if ($("#txtsecret").val()[0] == 'r' && $("#vanityaddr").val()[0] == 's') { var x = $("#txtsecret").val();  $("#txtsecret").val($("#vanityaddr").val()); $("#vanityaddr").val(x); };
 }
 
 function showDonationTab(){
@@ -1134,7 +1141,7 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 
 var scanner;
 var timeatlastQR = 0;
-function scanQR(intofield, intofield2) {
+function scanQR(intofield, intofield2, after) {
 	if (debug) console.log("scanQR");
 	timeatlastQR = $.now();
 
@@ -1150,7 +1157,10 @@ function scanQR(intofield, intofield2) {
 					part2 = content.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$2");
 				}
 				if (intofield != undefined) $(intofield).val(part1);
-				if (intofield2 != undefined) $(intofield).val(part2);
+				if (intofield2 != undefined) $(intofield2).val(part2);
+				if (after != undefined) {
+					after();
+				}
 				showTab(-1);
 		});
 		Instascan.Camera.getCameras().then(
@@ -1746,7 +1756,7 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').css('background-color', '');
 			$('#toaddress').css('color', '');
 			$('#toaddress').attr('readonly', null);
-			$('#btnqrpay').attr('ontouchend', 'scanQR("#toaddress");');
+			$('#btnqrpay').attr('ontouchend', 'scanQR("#toaddress", "#desttag", existingAddrSecretSwap);');
 		}
 	}
 
@@ -2119,6 +2129,23 @@ function doPay(nonce) {
 	var invid = $("#invoiceid").val().trim();
 	var amount = $("#payamount").val().trim();
 
+	if (/^(.*)[?&][^=]*=(.*)$/m.test(payto)) {
+		var oldpayto = payto;
+		var newdest = oldpayto.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$2");
+		if (dest != "" && dest.trim() != newdest.trim()) {
+			navigator.notification.alert("Destination tag specified twice. You specified a destination tag at the end of your send-to address then again in the destination box. Please remove one.", 
+				function(){
+					$("#desttag").focus();
+					unblockInput();
+				}, 
+				"Destination tag duplicate", 
+				"OK"
+			);
+			return;					
+		}
+		dest = newdest;
+		payto = oldpayto.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$1");
+	}
 
 	if (dest == "") dest = 0;
 
@@ -2177,6 +2204,7 @@ function doPay(nonce) {
 	if (validateAddress(payto)) {
 		// valid
 	} else {
+
 		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the Ripple network will charge a fee on failure.", 
 			function(){
 				$("#toaddress").focus();
@@ -2186,6 +2214,18 @@ function doPay(nonce) {
 			"OK"
 		);
 
+	}
+
+	if (payto == payfrom) {
+		navigator.notification.alert("A Ripple address cannot pay XRP from itself to itself.", 
+			function(){
+				$("#toaddress").focus();
+				unblockInput();
+			}, 
+			"Cannot pay to this address", 
+			"OK"
+		);
+		return;	
 	}
 
 
@@ -3643,6 +3683,7 @@ function connectToRipple(funcsuccess) {
 				if (info != undefined && info['validatedLedger'] != undefined && info['validatedLedger']['reserveBaseXRP'] != undefined) 
 					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
 					$("#minxrp")[0].innerHTML = "" + xrpreserve;
+					$("#minxrp2")[0].innerHTML = "" + xrpreserve;
 			}).catch(e => {
 				console.log("xrp reserve request error: " + e);
 			});
@@ -3692,7 +3733,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 				payment.invoiceID = utils.bytesToHex(invoiceID);
 			}
 
-			  return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
+			return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
 			    console.log('Payment transaction prepared...');
 			    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
 			    console.log('Payment transaction signed...');
@@ -3714,7 +3755,11 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 					failurefunc();
 
 				    });
-			  });
+			}, (fail) => 	 {
+				console.log('Prepare payment failed: ' + fail);
+				unblockInput();
+				failurefunc();
+			});
 
 		
 		},
@@ -3758,7 +3803,7 @@ function doGetTransactions(address, marker) {
 		var count = 0;
 		if (x.payments != undefined) {
 			for (var i in x.payments) {
-				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchend="window.open(\'https://ripple.com/build/ripple-info-tool/#'+x.payments[i].tx_hash+'\', \'_system\');">';
+				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchend="window.open(\'https://ripple.com/build/ripple-info-tool/?'+x.payments[i].tx_hash+'#'+x.payments[i].tx_hash+'\', \'_system\');">';
 				var outgoing = (x.payments[i].source == address);
 
 				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane-o' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
