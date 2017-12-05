@@ -446,7 +446,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
 	<center>
 		<button  type="button" class="btn btn-primary" ontouchend="doShowAndGenerateAccount();">Generate New Address</button><br />
-		<button  type="button" class="btn btn-primary" ontouchend="showTab('#tabaddexistingaccount');">Add Existing Address</button>
+		<button  type="button" class="btn btn-primary" ontouchend="showTab('#tabaddexistingaccount');">Add Existing Address</button><br />
+		<button type="button" class="btn btn-info" ontouchend="window.open('https://xrpvanity.com', '_system');">Get a Vanity Address</button>
 	</center>
 </div>
 
@@ -663,7 +664,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div class="input-group">
 	<input  type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-	<button  class="btn btn-info" ontouchend='scanQR("#toaddress");' id="btnqrpay" type="button">QR</button>
+	<button  class="btn btn-info" ontouchend='scanQR("#toaddress", "#desttag");' id="btnqrpay" type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -1126,7 +1127,7 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 
 var scanner;
 var timeatlastQR = 0;
-function scanQR(intofield) {
+function scanQR(intofield, intofield2) {
 	if (debug) console.log("scanQR");
 	timeatlastQR = $.now();
 
@@ -1135,7 +1136,14 @@ function scanQR(intofield) {
 		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
 		scanner.addListener('scan', 
 			function (content) {
-				$(intofield).val(content);
+				var destaddr = content;
+				var desttag = 0;
+				if (/[?&][dD][tT]=/m.test(content)) {
+					destaddr = content.replace(/^(.*)[?&][dD][tT]=(.*)$/mg, "$1");
+					desttag = content.replace(/^(.*)[?&][dD][tT]=(.*)$/mg, "$2");
+				}
+				if (intofield != undefined) $(intofield).val(destaddr);
+				if (intofield2 != undefined) $(intofield).val(desttag);
 				showTab(-1);
 		});
 		Instascan.Camera.getCameras().then(
@@ -2024,7 +2032,7 @@ function doConfirmPay(passphrase) {
 			checkConnection(
 				function(){
 					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
-						function(){
+						function(wasqueued){
 
 							if (confirmpay.payto == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
 
@@ -2047,7 +2055,7 @@ function doConfirmPay(passphrase) {
 									});
 								});
 							} else {
-								navigator.notification.alert("Your payment was successfully sent.", 
+								navigator.notification.alert("Your payment was successfully " + ( wasqueued ? "queued, and will be sent shortly." : "sent." ), 
 									function(){
 										clearPaymentScreen();
 										showTab("#tabaccounts");
@@ -3684,10 +3692,10 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			    remote.submit(signedTransaction).then(
 				    data => {
 
-					if (data.resultCode == 'tesSUCCESS') {
-						if (debug) console.log("send successful");
+					if (data.resultCode == 'tesSUCCESS' || data.resultCode == 'terQUEUED') {
+						if (debug) console.log("send successful [" + data.resultCode + "]");
 						unblockInput();
-						successfunc();
+						successfunc(data.resultCode == 'terQUEUED');
 					} else {
 						if (debug) console.log("send failed 2: " + data.resultCode);
 	    					unblockInput();
