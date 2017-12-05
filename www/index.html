@@ -712,7 +712,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.32</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.33</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -881,7 +881,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.32</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.33</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1145,22 +1145,26 @@ function scanQR(intofield, intofield2, after) {
 	if (debug) console.log("scanQR");
 	timeatlastQR = $.now();
 
+	var parseContent = function(content) {
+		var part1 = content;
+		var part2 = '';
+		if (intofield2 != undefined && /[?&][^=]*=/m.test(content)) {
+			part1 = content.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$1");
+			part2 = content.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$2");
+		}
+		if (intofield != undefined) $(intofield).val(part1);
+		if (intofield2 != undefined) $(intofield2).val(part2);
+		if (after != undefined) {
+			after();
+		}
+	}
+
 	if (device.platform == 'browser') {
 		showTab("#tabqrscan");
 		scanner = new Instascan.Scanner({ video: document.getElementById('qrpreview') });
 		scanner.addListener('scan', 
 			function (content) {
-				var part1 = content;
-				var part2 = '';
-				if (intofield2 != undefined && /[?&][^=]*=/m.test(content)) {
-					part1 = content.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$1");
-					part2 = content.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$2");
-				}
-				if (intofield != undefined) $(intofield).val(part1);
-				if (intofield2 != undefined) $(intofield2).val(part2);
-				if (after != undefined) {
-					after();
-				}
+				parseContent(content);
 				showTab(-1);
 		});
 		Instascan.Camera.getCameras().then(
@@ -1186,7 +1190,7 @@ function scanQR(intofield, intofield2, after) {
 			function (result) {
 				if(!result.cancelled)
 				{
-					$(intofield).val(result.text);
+					parseContent(result.text);
 				}
 			},
 			function (e) {
