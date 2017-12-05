@@ -44,6 +44,11 @@ textarea {
 
 }
 
+.transactionlist i.fa {
+    display: inline;
+}
+
+
 /* pinpad lettering contributed by https://github.com/WietseWind */
 .pinpad button i.char {
     font-size: .5em;
@@ -152,6 +157,8 @@ textarea {
 
 .txrow {
     color: black;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 .transactionlist {

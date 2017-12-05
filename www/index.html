@@ -294,7 +294,7 @@
 
 <div id="tabbackup2" class="screentab" data-primarytab="false" hasback="true" data-title="Encrypted Backup" style="display: none;">
     <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
-    <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin.</p>
+    <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is requird.</p>
 	<center>
 
 	<div>
@@ -3758,19 +3758,13 @@ function doGetTransactions(address, marker) {
 		var count = 0;
 		if (x.payments != undefined) {
 			for (var i in x.payments) {
-				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'">';
-				if (x.payments[i].source == address) {
-					// outgoing payment
-					tx += '<span><i class="fa fa-paper-plane-o" aria-hidden="true"></i>';
-					tx += x.payments[i].destination + '</span>';
-					tx += '<span>' + x.payments[i].amount + '</span>';
+				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchend="window.open(\'https://ripple.com/build/ripple-info-tool/#'+x.payments[i].tx_hash+'\', \'_system\');">';
+				var outgoing = (x.payments[i].source == address);
 
-				} else {
-					// incoming payment
-					tx += '<span><i class="fa fa-inbox" aria-hidden="true"></i>';
-					tx += x.payments[i].source + '</span>';
-					tx += '<span>' + x.payments[i].amount + '</span>';
-				}
+				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane-o' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
+				tx += ( outgoing ? x.payments[i].destination : x.payments[i].source ) + '</span>';
+				tx += '<span >' + x.payments[i].amount + '</span>';
+
 				tx += '</li>'
 				count++;
 			}
