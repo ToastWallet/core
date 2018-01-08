@@ -37,10 +37,12 @@
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
+<div id="offlinemodewarning" style="position:absolute; top:0; left:0; width:100%; height:15px; background:red; color:white; margin:0px; padding:0px; font-size:11px; text-align:center; z-index:9999999; display:none;">OFFLINE MODE</div>
 <script>
 	var debug = true;
 	var ontestnet = false;
-	var emergencybackup = true;
+	var emergencybackup = false;
+	var offlinemode = false;
 
 	var xrpreserve = 20; // this will be updated by querying the server when it connects, if there's an error getting this data the default will be used
 
@@ -167,6 +169,7 @@
 				currenttab != "#tabpinset2"  && 
 				currenttab != "#tabsetpassphrase" && 
 				currenttab != "#tabrecovery" && 
+				currenttab != "#tabconnectionselect" && 
 				currenttab != "#tabcorruptionprompt" &&
 				currenttab != "#tablicense" &&
 				currenttab != "#tabshowrecovery" &&
@@ -704,6 +707,21 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 </div>
 
+<div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em;">
+    <center>
+        <h1>Connection Issue</h1>
+	<p>Toast Wallet is unable to connect either because your device has no network connectivity, or because the public gateway servers Toast Wallet uses to connect to the Ripple network are down or under heavy load&mdash;this has nothing to do with the Ripple network itself, only the servers that Toast Wallet uses to <i>access</i> the network.</p><br>
+        <div>
+		<div align="left">
+	        	<label style="color:white; text-align:left;">Specify a different gateway server (optional)</label>
+			<input type="text" id="txtnewgateway" class="form-control" placeholder="wss://">
+		</div>
+		<br>
+		<button class="btn btn-success" type="button" id="btnconnect1" ontouchend="doRetryConnection($('#txtnewgateway').val());" style="min-width: 20em;">Retry Connection</button><br><br>
+		<button class="btn btn-info" type="button" id="btnofflinemode" ontouchend="doOfflineMode();" style="min-width: 20em;">Offline Mode</button><br>
+	</div>
+    </center>
+</div>
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabrecovery');">Change PIN</button></center></div>
@@ -712,7 +730,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.35</div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.36</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
 
@@ -778,9 +796,16 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
    <center>
+	<div style="padding: 0.4em;background: rgba(255,0,0,0.7);border-radius: 3px;margin-bottom: 1em;">
+		<p>IMPORTANT NOTICE&mdash;</p>
+		<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the Ripple network. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
+		<p>Toast Wallet keeps your data on your devices. It does not send your data back to our servers&mdash;we cannot help you if you lose your phrases or backup.</p>
+	</div>
     <h1>Toast Wallet</h1>
 
 	<p>This software is licensed under the GPL 2.0 <br><b>without any warranty. Use at own risk.</b></p>
+	<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the Ripple network. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
+	<p>Toast Wallet keeps all data on your devices. It does not send any data back to our servers. If you do not keep your phrases and backup secure you will lose your funds.</p>
 <p><a href="https://github.com/ToastWallet/core" target="_blank" style="color:lime; ">Tap here to view full source code on GitHub</a></p></center> 
 <blockquote style="font-size:0.8em; text-align:justify;">GNU GENERAL PUBLIC LICENSE
 
@@ -881,7 +906,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.35</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.36</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -909,6 +934,7 @@ function unblockInput() {
 
 
 function showDonationTab(){
+	if (offlinemode || emergencybackup) return;
 	showTab('#tabdonate');
 	
 	remote.getOrderbook(
@@ -1268,7 +1294,7 @@ function doSelectAccount(accselected, nickname) {
 
 
 	showTab("#tabaccountdetails");	
-	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? 0 :  accountbalances[accselected] ) + ' XRP';
+	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + ' XRP' );
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
@@ -1501,7 +1527,7 @@ function refreshAccounts() {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">(loading)</div></li>');
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
@@ -2359,6 +2385,9 @@ function doPay(nonce) {
 }
 
 
+var currentServer = 'wss://s1.ripple.com';
+var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
+
 var remote;
 if (ontestnet) {
 	remote = new ripple.RippleAPI({
@@ -2772,6 +2801,13 @@ function normalboot () {
 	if (emergencybackup) {
 		hideSpinner();
 		doGenerateBackup();
+	} else if (offlinemode) {
+		hideSpinner();
+		validatePin("",
+			doShowLogin,
+			doShowLogin,
+			function() {showTab("#tablicense");}
+		);
 	} else {
 		validatePin("",
 			function() {   connectToRipple( doShowLogin ); },
@@ -3728,6 +3764,39 @@ function checkConnection(connectedfunc) {
 	}
 }
 
+
+function doRetryConnection(gateway) {
+	if (gateway == undefined) gateway = "";
+
+	gateway = gateway.trim();
+	if (gateway == "") {
+		// do nothing
+	} else if (gateway.indexOf('wss://') == -1) {
+		gateway = 'wss://' + gateway;
+		serverStack.unshift(gateway);
+	}
+	
+	currentServer = serverStack[0];	
+	remote = new ripple.RippleAPI({
+		server: currentServer
+	});	
+	$('#tabconnectionselect').hide();
+	$('#navheader').hide();
+	$('body').removeClass('darkbackground');
+	currenttab = "";
+	showSpinner();
+	normalboot();	
+}
+
+
+function doOfflineMode() {
+	offlinemode = true;
+	$('#offlinemodewarning').css('top', $('#navheader').height() - 11); 
+	$('#offlinemodewarning').show();
+	normalboot();	
+}
+
+
 function connectToRipple(funcsuccess) {
 	if (debug) console.log("connectToRipple");
 	remote.connect().then(function() {
@@ -3739,6 +3808,7 @@ function connectToRipple(funcsuccess) {
 					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
 					$("#minxrp")[0].innerHTML = "" + xrpreserve;
 					$("#minxrp2")[0].innerHTML = "" + xrpreserve;
+					$("#minxrp3")[0].innerHTML = "" + xrpreserve;
 			}).catch(e => {
 				console.log("xrp reserve request error: " + e);
 			});
@@ -3746,7 +3816,23 @@ function connectToRipple(funcsuccess) {
 			funcsuccess();
 		}).catch(function(e) {
 			if (debug) console.log("connect error: " + e);
-			connectToRipple(funcsuccess);
+
+			for (var i = 0; i < serverStack.length; i++) {
+				if (serverStack[i] == currentServer && i != serverStack.length-1) {
+					// move it along a server
+					currentServer = serverStack[i+1];
+					remote = new ripple.RippleAPI({
+						server: currentServer
+					});
+					connectToRipple(funcsuccess);
+					return;
+				}	
+			}
+			// out of servers, show the error prompt
+			hideSpinner();	
+			showTab('#tabconnectionselect');
+			return;
+
 		});
 }
 
