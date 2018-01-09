@@ -170,6 +170,7 @@
 				currenttab != "#tabsetpassphrase" && 
 				currenttab != "#tabrecovery" && 
 				currenttab != "#tabconnectionselect" && 
+				currenttab != "#tabbackupreminder" && 
 				currenttab != "#tabcorruptionprompt" &&
 				currenttab != "#tablicense" &&
 				currenttab != "#tabshowrecovery" &&
@@ -649,7 +650,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label>Destination Tag</label>
 	<div id="confirmdesttag"></div>
     </div>
-    <div class="paygrouping">
+    <div class="paygrouping" style="display:none">
 	<label>Invoice ID</label>
 	<div id="confirminvoiceid"></div>
     </div>
@@ -689,11 +690,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	</div>
 	<br />
 
-	<label >Invoice ID (optional)</label>
-	<div>
+	<label style="display:none">Invoice ID (optional)</label>
+	<div style="display:none">
 	<input  type="text" id="invoiceid" class="form-control" placeholder="">
+		<br />
 	</div>
-	<br />
+
 
 	<label >Amount</label>
 	<div class="input-group">
@@ -718,7 +720,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		</div>
 		<br>
 		<button class="btn btn-success" type="button" id="btnconnect1" ontouchend="doRetryConnection($('#txtnewgateway').val());" style="min-width: 20em;">Retry Connection</button><br><br>
-		<button class="btn btn-info" type="button" id="btnofflinemode" ontouchend="doOfflineMode();" style="min-width: 20em;">Offline Mode</button><br>
+		<button class="btn btn-info" type="button" id="btnofflinemode" ontouchend="doOfflineMode(true);" style="min-width: 20em;">Offline Mode</button><br>
 	</div>
     </center>
 </div>
@@ -729,7 +731,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
+	<div><center><button  type="button" class="btn btn-success" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
 	<div><center style="color:black;" data-version="version">Version: 2.1.36</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 </div>
@@ -1451,6 +1454,19 @@ function doRevealRippleSecret(passphrase, address) {
 			);
                 }
         );
+
+}
+
+function getSavedGateways(callback) {
+	var f	= function(savedgateways) { try {
+		if (savedgateways.data == undefined) {
+			savedgateways = {};
+		} else {
+			savedgateways = JSON.parse(savedgateways.data);
+		}
+		callback(savedgateways);
+	} catch(e) { handle_error(e); } }
+	db.get("savedgateways").then(f).catch(f);
 
 }
 
@@ -2385,21 +2401,15 @@ function doPay(nonce) {
 }
 
 
-var currentServer = 'wss://s1.ripple.com';
-var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
+var currentServer = '';
+var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', /*'wss://s2.ripple.com'*/ ];
+var defaultServerStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', /*'wss://s2.ripple.com'*/ ];
 
 var remote;
 if (ontestnet) {
-	remote = new ripple.RippleAPI({
-		server: 
-			"wss://s.altnet.rippletest.net:51233"
-		
-	});
+	setRemoteGateway("wss://s.altnet.rippletest.net:51233");
 } else {
-	remote = new ripple.RippleAPI({
-		server: 
-			"wss://s1.ripple.com"
-	});
+	setRemoteGateway(serverStack[0]);
 }
 
 
@@ -2640,6 +2650,7 @@ function dbgdumpdata() {
 	db.get("ppdata").then(function(x){ console.log("ppdata: " + x.data);});
 	db.get("rpdata").then(function(x){ console.log("rpdata: " + x.data);});
 	db.get("accounts").then(function(x){ console.log("accounts: " + x.data);});
+	db.get("savedgateways").then(function(x){ console.log("savedgateways: " + x.data);});
 }
 
 
@@ -3024,10 +3035,10 @@ onDeviceReady: function() {
 
 
 			if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
-				navigator.notification.alert("Toast Wallet has some compatibility issues with iOS versions below 11.0. Toast Wallet will attempt to generate a backup for you to copy now. If you want to continue using Toast Wallet on this device you need to update it to iOS 11 or newer.", 
+				navigator.notification.alert("Toast Wallet does not work with iOS versions below 11.0. Toast Wallet will now start in offline mode.", 
 					()=>{
 						hideSpinner();
-						doGenerateBackup();
+						doOfflineMode(true);
 					},
 					"iOS Update Required", 
 					"OK"
@@ -3035,20 +3046,53 @@ onDeviceReady: function() {
 			} else {
 
 
-				/* There is a possibility the datastores were corrupted somehow, and we need
-				** to know this before bootstrapping the app. This function call will tell us
-				** how to proceed and whether we need to run a recovery.
-				*/
-				if (emergencybackup) {
-					hideSpinner();
-					doGenerateBackup();			
-				} else {
-					validateDataStores(
-						normalboot,
-						normalboot,
-						recoveryboot
-					);
-				}
+				// if we have previously saved new / additional gateways we'll try load them now and add them to the gateway list
+
+				getSavedGateways(function(gateways) {
+
+					if (gateways['gateways'] == undefined) gateways['gateways'] = [];
+
+					console.log("Saved gateways " + gateways['gateways']);
+
+					for (var i = 0; i < gateways['gateways'].length; i++) {
+						// enforce unique
+						var exists = false;
+						for (var n = 0; n < serverStack.length; n++) {
+							if (serverStack[n] == gateways['gateways'][i]) {
+								exists = true;
+								break;
+							}
+						}
+
+						if (!exists) {
+							console.log("Adding " + gateways['gateways'][i] + " to server stack");
+							serverStack.unshift(gateways['gateways'][i]);
+						}
+					}
+
+					setRemoteGateway(serverStack[0]);
+
+					// resume booting
+
+					if (emergencybackup) {
+						hideSpinner();
+						doGenerateBackup();			
+					} else {
+						/* There is a possibility the datastores were corrupted somehow, and we need
+						** to know this before bootstrapping the app. This function call will tell us
+						** how to proceed and whether we need to run a recovery.
+						*/
+
+						validateDataStores(
+							normalboot,
+							normalboot,
+							recoveryboot
+						);
+					}
+
+										
+				});
+
 			}
 
 
@@ -3764,22 +3808,46 @@ function checkConnection(connectedfunc) {
 	}
 }
 
+function doResetGatewayPrompt() {
 
+	getSavedGateways(function(gateways) {
+		if (gateways['gateways'] == undefined || gateways['gateways'].length == 0) {
+			navigator.notification.alert('You have no custom gateways set.', ()=>{}, "No Gateways Set", "OK");
+		} else {
+			navigator.notification.confirm("This will clear the custom gateways that Toast Wallet connects to. The default gateways will be restored next time the app starts. Would you like to clear custom gateways? This will not harm you wallet.",
+			function(b) {
+				if (b == 1) {
+					db.upsert("savedgateways",
+						function(doc) {
+						return { data: JSON.stringify({gateways: []})	}; 
+					});					
+
+					navigator.notification.alert('Custom gateways have been cleared.', ()=>{}, "Success", "OK");
+				}
+			}, "Clear custom gateways?",
+			[ "Yes", "Cancel" ]
+			);
+		}
+	});
+
+	
+}
 function doRetryConnection(gateway) {
 	if (gateway == undefined) gateway = "";
 
 	gateway = gateway.trim();
 	if (gateway == "") {
 		// do nothing
-	} else if (gateway.indexOf('wss://') == -1) {
+	} else if (gateway.indexOf('://') == -1) {
 		gateway = 'wss://' + gateway;
+	}
+
+	if (gateway != "") {
 		serverStack.unshift(gateway);
 	}
 	
-	currentServer = serverStack[0];	
-	remote = new ripple.RippleAPI({
-		server: currentServer
-	});	
+	setRemoteGateway(serverStack[0]);
+
 	$('#tabconnectionselect').hide();
 	$('#navheader').hide();
 	$('body').removeClass('darkbackground');
@@ -3789,20 +3857,64 @@ function doRetryConnection(gateway) {
 }
 
 
-function doOfflineMode() {
+function doOfflineMode(withboot) {
 	offlinemode = true;
 	$('#offlinemodewarning').css('top', $('#navheader').height() - 11); 
 	$('#offlinemodewarning').show();
-	normalboot();	
+	if (withboot) normalboot();	
 }
 
 
+function setRemoteGateway(server) {
+	if (ontestnet) return;
+	currentServer = server;
+	remote = new ripple.RippleAPI({
+		server: server
+	});
+}
+
 function connectToRipple(funcsuccess) {
-	if (debug) console.log("connectToRipple");
+	if (debug) console.log("connectToRipple " + currentServer);
 	remote.connect().then(function() {
 			if (debug) console.log("connect success");
 
-			// 
+			// check if the user has connected via a custom gateway and add it to our gateway list for next time if they have
+			var isDefaultGateway = false;
+			for (var i = 0; i < defaultServerStack.length; i++) {
+				if (defaultServerStack[i] == currentServer) {
+					isDefaultGateway = true;
+					break;
+				}
+			}
+
+			if (!isDefaultGateway) {
+				// we are connected to a non default gateway, store it for next time
+
+				getSavedGateways(function(savedgateways) {
+					// check if its already stored
+					if (savedgateways['gateways'] == undefined) {
+						savedgateways['gateways'] = [];
+					}
+					var exists = false;
+					for (var i = 0; i < savedgateways['gateways'].length; i++) {
+						if (savedgateways['gateways'][i] == currentServer) {
+							exists = true;
+							break;
+						}
+					}
+
+					//  if its not then store it for next time
+					if (!exists) {
+						savedgateways['gateways'].unshift(currentServer);
+						db.upsert("savedgateways",
+							function(doc) {
+							return { data: JSON.stringify(savedgateways)	}; 
+						});					
+					}
+				});
+			}
+
+
 			remote.getServerInfo().then(info => {
 				if (info != undefined && info['validatedLedger'] != undefined && info['validatedLedger']['reserveBaseXRP'] != undefined) 
 					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
@@ -3817,13 +3929,11 @@ function connectToRipple(funcsuccess) {
 		}).catch(function(e) {
 			if (debug) console.log("connect error: " + e);
 
+			
 			for (var i = 0; i < serverStack.length; i++) {
 				if (serverStack[i] == currentServer && i != serverStack.length-1) {
 					// move it along a server
-					currentServer = serverStack[i+1];
-					remote = new ripple.RippleAPI({
-						server: currentServer
-					});
+					setRemoteGateway(serverStack[i+1]);
 					connectToRipple(funcsuccess);
 					return;
 				}	
@@ -3871,7 +3981,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			};
 
 			if (invoiceID !== undefined && invoiceID != "") {
-				payment.invoiceID = utils.bytesToHex(invoiceID);
+				payment.invoiceID = utils.hexToBytes(invoiceID);
 			}
 
 			return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
