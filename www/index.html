@@ -620,7 +620,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
-	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING THIS ADDRESS HAS NOT YET BEEN ADDED TO YOUR WALLET</div>
+	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING&mdash;You must import this address into your wallet before you send anything to it.</div>
 	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
@@ -787,6 +787,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <p style="text-align:center;">Please consider supporting us:</p><br>
 	<br>
 	<div>
+		<button class="btn btn-primary" type="button" id="btndonatecustom" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val(''); showTab('#tabpayments', false); $('#payamount').focus();" style="min-width: 20em;">Donate Custom Amount</button><br><br>
 		<button class="btn btn-success" type="button" id="btndonate20" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate20').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $20</button><br><br>
 <button class="btn btn-info" type="button" id="btndonate10" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate10').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $10</button><br><br>
 <button class="btn btn-warning" type="button" id="btndonate5" ontouchend="$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate5').data('amount')); showTab('#tabpayments', false);" style="min-width: 20em;">Donate $5</button><br><br>
@@ -1049,8 +1050,22 @@ function doResetPin(passphrase, successfunc, failfunc, firstrun) {
 		validatePassphaseOrRecovery(passphrase,
 			s,
 			function() {
-				unblockInput();
-				navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
+
+				// might be recovery phrase, so try format it correctly if it is
+				if (passphrase.indexOf('\t') != -1) passphrase = passphrase.replace(/\t/, ' ');
+				while(passphrase.indexOf('  ') != -1) passphrase = passphrase.replace(/  /, ' ');
+				passphrase = passphrase.trim().toLowerCase();	
+
+				validatePassphaseOrRecovery(passphrase,
+					s,
+					function() {
+						// wasn't recovery code either
+
+						unblockInput();
+						navigator.notification.alert('The passphrase or recovery phrase is incorrect.', function(){}, 'Error', 'OK');
+					},
+					s
+				);
 			},
 			s
 		);
@@ -1143,26 +1158,36 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 		return;
 	}
 	
-
-	setPassphrase(pp1, oldpp, false, 
-		function() {
+	var setsuccess = function() {
 			//success
 			navigator.notification.alert("Your new passphrase has been set", 
 				function(){
 					unblockInput();
 					successfunc();
 				}, "Success", "OK");
-		}, function() {
-			//failure
-			navigator.notification.alert("Old passphrase is incorrect.", 
-				function(){
-					unblockInput();
-				}, 
-				"Failure", 
-				"OK"
-			);
-		}, firstrun
-	);
+		};
+
+	setPassphrase(pp1, oldpp, false, setsuccess, function() {
+			//failure -- this could be a recovery phrase so let's clean it up and format it correctly and try it again
+
+			if (oldpp.indexOf('\t') != -1) oldpp = oldpp.replace(/\t/, ' ');
+			while(oldpp.indexOf('  ') != -1) oldpp = oldpp.replace(/  /, ' ');
+			oldpp = oldpp.trim().toLowerCase();
+
+			setPassphrase(pp1, oldpp, false, setsuccess, function() {
+
+					// failure for the second time
+
+					navigator.notification.alert("Old passphrase is incorrect. If you are trying to use recovery phrase you may need to restore backup to PC version first for some devices.", 
+						function(){
+							unblockInput();
+						},
+						"Failure", 
+						"OK"
+					);
+			}, firstrun);
+	},firstrun);
+			
 }
 
 function decodePaymentURI(uri, addrfield, dtagfield, amountfield, after) {
@@ -1996,7 +2021,8 @@ function doShowAndGenerateAccount() {
 	if (debug) console.log("doShowAndGenerateAccount");
 	blockInput();
 	generatedAccount = generateAddress();
-	$("#generatedaddress")[0].innerHTML = generatedAccount.address;
+
+	$("#generatedaddress")[0].innerHTML = generatedAccount.address.slice(0,20) + "XXXXXXXXXXXX";
 	showTab("#tabgenaccount");	
 	unblockInput();
 }
