@@ -384,7 +384,9 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div>
                 <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
         </div><br>
-	<center><div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div></center>
+	<center>
+		<div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div>
+	</center>
 	<center>
 		<label id="lblaccsecret">Account Secret</label>
 		<input type="text" id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" >
@@ -425,6 +427,23 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
+<div id="tabrekeyaccount" class="screentab" data-hasback="true" data-title="Rekey Account" style="display:none">
+	<p style="color:red; text-align:justify;"><b>WARNING</b>&mdash;This will set a new Ripple secret for the below Ripple address and will make <b>old backups invalid</b>. Only use this if your backup or Ripple secret is compromised!</p>
+	<p style="color:red; text-align:justify;">
+	<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+	I understand there's no way to undo this action and my old backups will be rendered useless.</p>
+	<label >Ripple Address</label>
+		<input  class="form-control" readonly="readonly" type="text" placeholder=""  id="rekeyaddress">
+        <br><label>Enter your Passphrase</label>
+        <div>
+                <input  type="password" id="rekeypassword" class="form-control" placeholder="">
+        </div><br>
+	<center><div>
+			<button  type="button" class="btn btn-danger" id="btndoaccrekey" 
+				ontouchend="">Rekey the Account</button></div></center>
+</div>
+
+
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
 		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();">Address</li>
@@ -440,11 +459,11 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button id="btnchangenick" type="button" class="btn btn-success" ontouchend="$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); ">Change Nickname</button><br><br>
+			<button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchend="$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); ">Change Nickname</button><br>
 
-			<button  id="btnbackupkey" type="button" class="btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); ">Secret</button>
-			&nbsp;
-			<button  type="button" class="btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete</button>
+			<button  id="btnbackupkey" type="button" class="accopt btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); ">Show Secret</button>
+			<!-- button  type="button" id="btnrekeyacc" class="accopt btn btn-warning" ontouchend="$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);">Rekey Address</button--><br>
+			<button  type="button" class="accopt btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete Address</button>
 		</center>
 	</div>
 	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
@@ -726,15 +745,17 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
+	<div><center><button  type="button" class="btn btn-success" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
+	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabrecovery');">Change PIN</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchend="showTab('#tabchangepassphrase');">Change Passphrase</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
-	<div><center><button  type="button" class="btn btn-success" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.36</div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="doAddGatewayPrompt();">Add Gateway</button></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.37</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
+	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -910,7 +931,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.36</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.37</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1350,8 +1371,8 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 				sodium.crypto_pwhash_scryptsalsa208sha256(16,
 					passphrase,
 					fromhex_chksum(ppdata.salt1),
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);			
 
 			passphrase = "";
 
@@ -1360,8 +1381,8 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
 					secretkey,
 					fromhex_chksum(accounts[address].ppsalt),
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 			
 			secretkey = "";
 		
@@ -2201,8 +2222,8 @@ function doConfirmPay(passphrase) {
 									}, "Success", "OK"); 
 								}
 						}, 
-						function() {
-							navigator.notification.alert("An error occured when trying to make your payment. Most likely lack of funds in the account you are sending from. (The network requires a minimum account balance.) This error can also be caused by an invalid or not activated destination address or if the Ripple network is overloaded.", 
+						function(err) {
+							navigator.notification.alert("An error occured when trying to make your payment. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your payment details are incorrect or the receiving address has not been activated. " + err, 
 							function(){
 								lastpaidnonce = "";
 								showTab(-1);
@@ -2427,15 +2448,33 @@ function doPay(nonce) {
 }
 
 
+function randShuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor((sodium.randombytes_buf(1)[0]/256) * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 var currentServer = '';
-var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', /*'wss://s2.ripple.com'*/ ];
-var defaultServerStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', /*'wss://s2.ripple.com'*/ ];
+var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
+var defaultServerStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
+
+function resetServerStack() {
+	serverStack = [];
+	for (var i = 0; i < defaultServerStack.length; i++) {
+		serverStack.unshift(defaultServerStack[i]);
+	}
+	randShuffleArray(serverStack);
+	setRemoteGateway(serverStack[0]);
+}
 
 var remote;
 if (ontestnet) {
 	setRemoteGateway("wss://s.altnet.rippletest.net:51233");
 } else {
-	setRemoteGateway(serverStack[0]);
+	resetServerStack();
 }
 
 
@@ -3224,8 +3263,8 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
 					passphrase,
 					fromhex_chksum(ppdata.salt1),
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
 			// decrypt erk
 			erk = fromhex_chksum(rpdata.erk);
@@ -3238,8 +3277,8 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 				sodium.crypto_pwhash_scryptsalsa208sha256(16,
 					passphrase,
 					fromhex_chksum(ppdata.salt1),
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);			
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);			
 
 			passphrase = "";
 
@@ -3248,8 +3287,8 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
 					secretkey,
 					ppsalt,
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 			
 			secretkey = "";
 
@@ -3257,8 +3296,8 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 				sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
 					recoverykey,
 					rpsalt,
-					sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-					sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+					4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+					33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
 			recoverykey = "";
 
@@ -3400,8 +3439,8 @@ function validatePassphrase(passphrase, isrecoveryphrase, successfunc, failurefu
 			salt2 = fromhex_chksum(ppdata.salt2);
 			var pphash = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 				sodium.crypto_pwhash_scryptsalsa208sha256(16, passphrase, 
-				salt1, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
-			salt2, sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+				salt1, 4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/, 33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
+			salt2, 4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/, 33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
 			passphrase=""; 
 
@@ -3480,11 +3519,11 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 			                                secret = sodium.crypto_pwhash_scryptsalsa208sha256(16, 
 								newphrase, 
 								newsalt1,
-								sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
-								sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+								4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/, 
+								33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
 				                        newsalt2, 
-							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
-							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE));
+							4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/, 
+							33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/));
 	                        
 				var commit = function(data, storagekey, success, failure) {
 					db.upsert(storagekey, function(doc) { return { data: JSON.stringify(data)}; }).then(function(x){
@@ -3529,8 +3568,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 						sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
 							oldphrase,
 							ppsalt1,
-							sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-							sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+							4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+							33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
 						/* end secret key */
 					'hex')));
 
@@ -3558,8 +3597,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 					var recoverykey = sodium.crypto_pwhash_scryptsalsa208sha256(16,
                                                         oldphrase,
                                                         rpsalt1,
-                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                                        33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
 					rpdata.erk = 
 					tohex_chksum(sodium.from_hex(sodium.to_hex(nonce) + sodium.crypto_secretbox_easy(
@@ -3569,8 +3608,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                                 sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
                                                         newphrase,
                                                         newsalt1,
-                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),					
+                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                                        33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),					
 						/* end secret key */
 					'hex')));
 
@@ -3606,8 +3645,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                                 sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
                                                         oldphrase,
                                                         oldsalt1,
-                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                                        33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
                                         // decrypt the old erk
                                         olderk = fromhex_chksum(rpdata.erk);
@@ -3624,8 +3663,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
                                                 sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_secretbox_KEYBYTES,
                                                         newphrase,
                                                         newsalt1,
-                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                                        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                                        33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
                                                 /* end secret key */
 					
 					'hex')));
@@ -3688,22 +3727,22 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
                                                                 	oldphrase,
 	                                                                oldsalt1,
-        	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+        	                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                	                                                33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
                         	                                oldppsalt,
-                                	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+                                	                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                        	                33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 
 
 					var newsecret32key = sodium.crypto_pwhash_scryptsalsa208sha256(sodium.crypto_box_SECRETKEYBYTES,  
 								sodium.crypto_pwhash_scryptsalsa208sha256(16,
                                                                 	newphrase,
 	                                                                newsalt1,
-        	                                                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                	                                                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE),
+        	                                                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                	                                                33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/),
                         	                                newppsalt,
-                                	                        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                                        	                sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE);
+                                	                        4 /*sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE*/,
+                                        	                33554432 /*sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE*/);
 					
 
 					var secret = sodium.crypto_secretbox_open_easy(oldppciphertext, oldnonce, oldsecret32key);
@@ -3834,6 +3873,33 @@ function checkConnection(connectedfunc) {
 	}
 }
 
+
+function doAddGatewayPrompt() {
+	navigator.notification.prompt(
+	    'Enter an additional gateway to connect to: wss://yourgateway',
+	    function(b) {
+	    	if (b.buttonIndex == 1) {
+			var gateway = (b.input1 + "").trim();
+			if (gateway == 'wss://' || gateway.indexOf('wss://') != 0) {
+				return navigator.notification.alert("Invalid gateway", 
+					function() {},
+					"Failure", "OK"
+				);
+			}
+
+			// they have a gateway they want to add, we'll go ahead and test that gateway immediately
+			// if the gateway is connectable then it will be automatically added to their saved gateway list
+
+			doRetryConnection(gateway);
+		}
+	    },
+	    'Add Gateway',   
+	    ['Add','Cancel'],
+	    'wss://' 
+	);
+
+}
+
 function doResetGatewayPrompt() {
 
 	getSavedGateways(function(gateways) {
@@ -3848,7 +3914,10 @@ function doResetGatewayPrompt() {
 						return { data: JSON.stringify({gateways: []})	}; 
 					});					
 
-					navigator.notification.alert('Custom gateways have been cleared.', ()=>{}, "Success", "OK");
+					navigator.notification.alert('Custom gateways have been cleared.', ()=>{
+						resetServerStack();	
+						doRetryConnection(serverStack[0]);
+					}, "Success", "OK");
 				}
 			}, "Clear custom gateways?",
 			[ "Yes", "Cancel" ]
@@ -3868,7 +3937,16 @@ function doRetryConnection(gateway) {
 		gateway = 'wss://' + gateway;
 	}
 
-	if (gateway != "") {
+	// check if already in the stack
+	var exists = false;
+	for (var i = 0; i < serverStack.length; i++) {
+		if (serverStack[i] == gateway) {
+			exists = true;
+			break;
+		}
+	}
+
+	if (gateway != "" && !exists) {
 		serverStack.unshift(gateway);
 	}
 	
@@ -3899,10 +3977,13 @@ function setRemoteGateway(server) {
 	});
 }
 
-function connectToRipple(funcsuccess) {
+function connectToRipple(funcsuccess, suppressbootsequence) {
 	if (debug) console.log("connectToRipple " + currentServer);
+	
 	remote.connect().then(function() {
 			if (debug) console.log("connect success");
+			
+			$('.currentgateway')[0].innerHTML = 'Connected to: ' + currentServer;
 
 			// check if the user has connected via a custom gateway and add it to our gateway list for next time if they have
 			var isDefaultGateway = false;
@@ -3950,7 +4031,7 @@ function connectToRipple(funcsuccess) {
 			}).catch(e => {
 				console.log("xrp reserve request error: " + e);
 			});
-			hideSpinner();	
+			if (suppressbootsequence == undefined || !suppressbootsequence) hideSpinner();	
 			funcsuccess();
 		}).catch(function(e) {
 			if (debug) console.log("connect error: " + e);
@@ -3972,6 +4053,126 @@ function connectToRipple(funcsuccess) {
 		});
 }
 
+
+function doRekeyAccount(passphrase) {
+
+	return; // TODO: finish and test code
+
+	/* To rekey an account we first need to work out which scenario we are in, it can be one of these three:
+	** 1. We currently have the master secret and no regular key has ever been set
+	** 2. We currently have a regular secret and the master key has been disabled.
+	** 3. We currently have a regular secret and the master key has not been disabled.
+	** In scenario 3 we need to verify with them if they want their master key disabled, in scenario 1
+	** we will assume they want it disabled. */
+
+	blockInput();
+
+
+	var suc = function() {
+		navigator.notification.alert("Your account has been rekeyed.", 
+			function() {
+				showBackupReminderTab();
+				unblockInput();
+			},
+			"Success", "OK"
+		);		
+	}
+
+
+	var fail = function(err) {
+		navigator.notification.alert("Rekeying your account failed. " + err, 
+			function() {
+				unblockInput();
+			},
+			"Failure", "OK"
+		);		
+
+	}
+
+
+
+	var scenario = 1;
+
+	validatePassphrase( passphrase, false,
+		function() {
+			remote.getSettings(address).then(
+			settings => {
+				if ('regularKey' in settings && isValidAddress(settings['regularKey'])) {
+					// regular key already set, check if the master key is disabled
+					scenario = ( 'disableMasterKey' in settings && settings['disableMasterKey'] ? 2 : 3 );
+				}
+
+				if (scenario == 3) {
+					// prompt if they want the master key disabled	
+					navigator.notification.confirm("Toast Wallet has detected your master key is still enabled, would you like to disable it after rekeying your account? If you don't know what this is choose Do NOT Disable.",
+						function(b){
+							if (b == 1) {
+								rekeyAccount(passphrase, true, suc, fail);
+							} else {
+								rekeyAccount(passphrase, false, suc, fail);
+							}
+						}, 
+						"XRP balance not confirmed", 
+						[ "Disable Master Key", "Do NOT Disable" ]
+					);					
+				} else {
+					rekeyAccount(passphrase, (scenario == 1), suc, fail);
+				}
+			} ).catch( 
+			e => {
+			navigator.notification.alert("The address you specified has not been activated. Please activate it first before attempting to rekey it.", 
+				()=>{
+					unblockInput();
+				}, "Failure", "OK");
+			});
+		},
+		function() {
+			navigator.notification.alert("Your passphrase is incorrect. Recovery phrase cannot be used here.", 
+				function(){
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		},
+		function() {
+			navigator.notification.alert("Validating your passphrase failed. Your wallet may be corrupted. We recommend making a backup.", 
+				function(){
+					unblockInput();
+				}, 
+				"Failure", 
+				"OK"
+			);
+		}	
+	);
+
+
+}
+
+// assumes already validated passphrase
+function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failurefunc) {
+	
+	return; // TODO finish and test code
+
+	if (debug) console.log("rekeyAccount - " + address);
+
+	getSecretForAccount(passphrase, address, 
+		function(secret) {
+
+			passphrase = "";
+
+			// TODO: finish code 
+		
+		},
+		function() {
+			failurefunc("Could not retrieve secret for this account. Your wallet may be corrupt, please make a backup.");
+		});
+
+}
+
+
+
+
 /* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
 ** before calling.
 */
@@ -3986,7 +4187,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 		function(secret) {
 
 
-			var instructions = {maxLedgerVersionOffset: 5};
+			var instructions = {maxLedgerVersionOffset: 30};
 			var payment = {
 			  source: {
 			    address: fromacc,
@@ -4010,39 +4211,96 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 				payment.invoiceID = utils.hexToBytes(invoiceID);
 			}
 
-			return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
-			    console.log('Payment transaction prepared...');
-			    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
-			    console.log('Payment transaction signed...');
-			    remote.submit(signedTransaction).then(
-				    data => {
 
-					if (data.resultCode == 'tesSUCCESS' || data.resultCode == 'terQUEUED') {
-						if (debug) console.log("send successful [" + data.resultCode + "]");
-						unblockInput();
-						successfunc(data.resultCode == 'terQUEUED');
-					} else {
-						if (debug) console.log("send failed 2: " + data.resultCode);
-	    					unblockInput();
-						failurefunc();						
+			var servercycle = function(doafter, tries) {
+				if (tries >= serverStack.length - 1) {
+					if (debug) console.log("send failed 3: servercycles expired");
+					unblockInput();
+					return failurefunc("[No gateways responded. Is your Internet connected?]");
+				}
+
+				var serverIndex = 0;
+				for (var i = 0; i < serverStack.length; i++) {
+					if (serverStack[i] == currentServer) {
+						serverIndex = i + 1;
+						break;
 					}
-				    }, (e) => {
-					if (debug) console.log("send failed: " + e);
-    					unblockInput();
-					failurefunc();
+				}
 
-				    });
-			}, (fail) => 	 {
-				console.log('Prepare payment failed: ' + fail);
-				unblockInput();
-				failurefunc();
-			});
+				serverIndex %= serverStack.length;
+				setRemoteGateway(serverStack[serverIndex]);
+				connectToRipple(doafter, true); 
+			}
 
+			var preparepayment = function(fromacc, payment, instructions, ptries) {
+				return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
+				    console.log('Payment transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+				    console.log('Payment transaction signed...');
+				    
+
+
+
+				    var submitfunc = function(signedTransaction, successfunc, failurefunc, tries) {
+				    remote.submit(signedTransaction).then(
+					    data => {
+
+						if (data.resultCode == 'tesSUCCESS' || data.resultCode == 'terQUEUED') {
+							if (debug) console.log("send successful [" + data.resultCode + "]");
+							unblockInput();
+							return successfunc(data.resultCode == 'terQUEUED');
+
+						} else if ((data.resultCode + "").toLowerCase().indexOf('max_ledger') != -1) {
+							// failed to be submitted
+							// cycle servers and try again
+							
+							return servercycle(
+								function() {
+									submitfunc(signedTransaction, successfunc, failurefunc, tries + 1);
+								}, tries + 1);
+
+						} else {
+							if (debug) console.log("send failed 2: " + data.resultCode);
+							unblockInput();
+							return failurefunc(data.resultCode + "");						
+						}
+					    }, (e) => {
+						if (debug) console.log("send failed: " + e);
+
+						if ((e + "").toLowerCase().indexOf("notconnected") != -1) {
+							return servercycle(
+								function() {
+									preparepayment(fromacc, payment, instructions, tries + 1);
+								}, ptries + 1);
+						}
+											
+						unblockInput();
+						failurefunc(e + "");
+
+					    });
+				    };
+
+				    submitfunc(signedTransaction, successfunc, failurefunc, ptries);
+				    
+				}, (fail) => 	 {
+					console.log('Prepare payment failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return servercycle(
+							function() {
+								preparepayment(fromacc, payment, instructions, ptries + 1);
+							}, ptries + 1);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+				});
+			}
+
+			return preparepayment(fromacc, payment, instructions, 0);
 		
 		},
 		function() {
 			unblockInput();
-			failurefunc();
+			failurefunc("Could not load secret. Wallet may be corrupted.");
 		});
 
 }

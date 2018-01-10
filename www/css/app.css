@@ -44,6 +44,16 @@ textarea {
 
 }
 
+
+.accopt {
+    width: 10em;
+    display: block;
+}
+
+.accopt + .accopt {
+    margin-left: 1em;
+}
+
 .transactionlist i.fa {
     display: inline;
 }
