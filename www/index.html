@@ -1137,19 +1137,11 @@ function setAndShowNewRecoveryPhrase(passphrase) {
 }
 
 function passphraseComplexityCheck(pp){
-	var minlen = 8; // changed this from 6 
-	var hascapital = /[A-Z]/im.test(pp);
-	var haslowecase = /[a-z]/im.test(pp);
-	var hasnumber = /[0-9]/im.test(pp);
-	var hasspecialchar = /[^a-zA-Z0-9 ]/im.test(pp);
+	var minlen = 10;
 	var islongenough = pp.length >= minlen;
 
 	var msg = "";
-	if (!hascapital) msg += (msg == "" ? "have at least one: " : ", ") + "capital";
-	if (!haslowecase) msg += (msg == "" ? "have at least one: " : ", ") + "lowercase";
-	if (!hasnumber) msg += (msg == "" ? "have at least one: " : ", ") + "number";
-	if (!hasspecialchar) msg += (msg == "" ? "have at least one: " : ", ") + "non-alphanumeric";
-	if (!islongenough) msg += (msg == "" ? "" : ", and ") + "be at least "+minlen+" long";
+	if (!islongenough) msg += (msg == "" ? "" : ", and ") + "be at least "+minlen+" characters long";
 
 	return msg;
 }
