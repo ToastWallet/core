@@ -531,7 +531,7 @@ ul.iosheader > li > * {
     position: relative;
     cursor: pointer;
     display: inline-block;
-    min-width: calc(32vw);
+    min-width: calc(33% - 1em);
     padding: 0; /*1em 0.5em 1em 0.5em;*/
 }
 #navfooter div {
