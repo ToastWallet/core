@@ -245,12 +245,9 @@
 		$('#corruptionpp').on('click', stopClick);
 		$('#corruptionrp').on('click', stopClick);		
 
-		var lasttoggleswitch = 0;
 		var toggleswitchfunc;
 		$(".toggleswitch").on('touchend',toggleswitchfunc = function() {
 			if (debug) console.log("onToggleSwitch()");
-			if ( $.now() - lasttoggleswitch < 50) return; // debounce
-			lasttoggleswitch = $.now();
 			var ele = $($(this).children()[0]);
 			if (ele.hasClass("fa-toggle-off")) {
 				ele.removeClass("fa-toggle-off");
@@ -312,7 +309,7 @@
 	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
 </div>
 
-<div id="tabrestore2" class="screentab darkbackground" data-primarytab="false"  style="display: none;" data-hasback="true" data-title="Restore an Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
+<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore an Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
     <p style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</p>
     <div>
     <label style="color:white;">Backup code</label>
@@ -347,42 +344,34 @@
     
     <button  class="btn btn-danger" ontouchend="doRestoreBackup();">Restore Backup</button></div>
 </div>
-<div id="tabshowrecovery" class="screentab" data-title="Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: none; z-index: 2; padding-bottom: 0em; transition: all 0.15s ease; left: 0px;">
+<div id="tabshowrecovery" class="screentab" data-title="Your Recovery Phrase" data-primarytab="true" data-hasback="false" data-noright="true" style="display: none;">
     <h1 style="color:red; text-align:center;">IMPORTANT!!!</h1>
-<div></div>
+<div><p style="color:black; font-weight:bold; text-align:justify;">Your six(6) word recovery phrase appears below. <u style="color:red;">Write it down on paper</u> and store it in a safe location. If you ever forget your passphrase this code will be the <u style="
 
-<div><div style="color:black; text-align:justify; font-weight:bold; ">
-    <p>This is what you must keep secure:</p>
-    <ol style="">
-        <li>Passphrase &mdash; you just set this</li>
-        <li>Recovery phrase &mdash; appears below</li>
-        <li>Backup code &mdash; you will get this later</li>
-</ol>
-<div style="color:black; text-align:justify; font-weight:bold;">
-<p>Your recovery phrase can ONLY change your passphrase. It is not a backup.</p>
-<p>We cannot help you if you lose both your passphrase and recovery phrase. Nor can we help you if you lose your backup code. No data is sent to our servers. You are responsible for your data.</p>
-</p>
-</div>
-</div>
-</div>
+    color:red;
 
-<div id="showrecoveryphrase"></div>
-<div style="color:black; width:100%; clear:both;">
-<div style="display:inline-block; max-width:calc(100vw - 5em); margin-bottom: 0.2em;">I sincerely promise I've written my recovery phrase down.</div>
-<div class="toggleswitch" id="tglsw1"><i class="fa fa-toggle-off" aria-hidden="true"></i></div>
-</div>
-<div style="color:black; width:100%; clear:both;">
-<div style="display:inline-block; max-width:calc(100vw - 5em); margin-bottom: 0.2em;">I understand that the recovery phrase IS NOT A WALLET BACKUP.</div>
-<div class="toggleswitch" id="tglsw2"><i class="fa fa-toggle-off" aria-hidden="true"></i></div>
+    ">only way for you to regain access to your XRP.</u>&nbsp;
+    Never share your recovery phrase with anyone.</p></div>
+
+<div><p style="color:black; text-align:justify; font-weight:bold;">This recovery phrase is <u style="color:red">useless without a backup</u>. Please make a backup using the settings menu <u style="color:red">after</u> you finish adding or generating <u style="color:red">all</u> of your addresses. Toast Wallet backups are <u style="color:red">data backups</u>, this means you will <u style="color:red">only have access to the addresses you had in your wallet at the time you made the backup!</u></p></div>
+
+<div id="showrecoveryphrase">
 </div><br>
-<center style="clear:both;"><button class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
+<p style="color:black;">
+<span class="toggleswitch" id="tglsw1"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+I sincerely promise I've written my recovery phrase down.</p><br>
+<p style="color:black;">
+<span class="toggleswitch" id="tglsw2"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
+I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
+<center><button  class="btn btn-success" id="btnfinishedsetup" type="button" ontouchend="doFinishSetup();">Finish Setup</button></center>
 
 
 </div>
+
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchend="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i></a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchend="showTab('#tabaddaccount');"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
 	</ul>
 </div>
 
@@ -461,7 +450,7 @@
 		<li id="btnaccdetailsselecttransactions" ontouchend="$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});" class="">Transactions</li>
 	</ul>
 	<div id="accdetailsaddressdetails" class="innertab">
-		<div style="color:black"><div id="accdetailsnickname">Ripple address</div><div id="accdetailsamount" class="amount" style="color:black;"></div></div>
+		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
 		<div class="input-group">
 			<input type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
 			<span class="input-group-btn">
@@ -520,7 +509,7 @@
 </div>
 
 
-<div id="tablogin" class="screentab darkbackground" data-primarytab="true" data-title="Toast Wallet" data-dark="true" data-recovery="true" style="display: none;">
+<div id="tablogin" class="screentab" data-primarytab="true" data-title="Toast Wallet" data-dark="true" data-recovery="true" style="display: none;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -533,24 +522,24 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button class="pinpadbutton" ontouchend="doPinPad('1'); return false;"><div>1</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>	
-	<button class="pinpadbutton" ontouchend="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('0'); return false;"><div>0</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>	
+	<button  ontouchend="doPinPad('Help'); return false;"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
 </div>
 
-<div id="tabpinset1" class="screentab darkbackground2" data-primarytab="false" data-title="Set New PIN"  data-dark="2" data-noright="true" style="display: none;">
+<div id="tabpinset1" class="screentab" data-primarytab="false" data-title="Set New PIN"  data-dark="2" data-noright="true" style="display: none;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -563,24 +552,24 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button class="pinpadbutton" ontouchend="doPinPad('1'); return false;"><div>1</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('0'); return false;"><div>0</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>
+	<button  ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
 </div>
 
-<div id="tabpinset2" class="screentab darkbackground2" data-primarytab="false" data-hasback="true"  data-dark="2" data-noright="true" data-title="Repeat New PIN" style="display: none;">
+<div id="tabpinset2" class="screentab" data-primarytab="false" data-hasback="true"  data-dark="2" data-noright="true" data-title="Repeat New PIN" style="display: none;">
     
 	<center>
 	<div class="pinpad" style="">
@@ -593,18 +582,18 @@
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button class="pinpadbutton" ontouchend="doPinPad('1'); return false;"><div>1</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>
-	<button class="pinpadbutton" ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad('0'); return false;"><div>0</div></button>
-	<button class="pinpadbutton" ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  ontouchend="doPinPad('1'); return false;"><div>1</div></button>
+	<button  ontouchend="doPinPad('2'); return false;"><div>2<i class="char">abc</i></div></button>
+	<button  ontouchend="doPinPad('3'); return false;"><div>3<i class="char">def</i></div></button><br>
+	<button  ontouchend="doPinPad('4'); return false;"><div>4<i class="char">ghi</i></div></button>
+	<button  ontouchend="doPinPad('5'); return false;"><div>5<i class="char">jkl</i></div></button>
+	<button  ontouchend="doPinPad('6'); return false;"><div>6<i class="char">mno</i></div></button><br>
+	<button  ontouchend="doPinPad('7'); return false;"><div>7<i class="char">prqs</i></div></button>
+	<button  ontouchend="doPinPad('8'); return false;"><div>8<i class="char">tuv</i></div></button>
+	<button  ontouchend="doPinPad('9'); return false;"><div>9<i class="char">wxyz</i></div></button><br>
+	<button  ontouchend="showTab(-1); return false;"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  ontouchend="doPinPad('0'); return false;"><div>0</div></button>
+	<button  ontouchend="doPinPad(''); return false;"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -650,7 +639,8 @@
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
-	<label>Preview of account address:</label>
+	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING&mdash;You must import this address into your wallet before you send anything to it.</div>
+	<label>Generated account address:</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
         <label >Account Nickname (optional)</label>
@@ -661,7 +651,7 @@
         <div>
                 <input  type="password" id="genaccpassword" class="form-control" placeholder="">
         </div><br>
-	<div style="text-align:center; color:black;">Once imported your address will need to be activated by sending <span id="minxrp2"></span> XRP to it. You cannot send to it until you have imported it.</div>
+	<div style="text-align:center; color:black;">Once imported your address will need to be activated by sending <span id="minxrp2"></span> XRP to it.</div>
 	<br>
 	<center><div><button  type="button" class="btn btn-primary" ontouchend="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
 </div>
@@ -713,7 +703,7 @@
 	<br />
 
 
-	<label >Destination Tag</label>
+	<label >Destination Tag (optional, but many exchanges require this)</label>
 	<div>
 	<input  type="text" id="desttag" class="form-control" placeholder="">
 	</div>
@@ -738,11 +728,7 @@
 
 </div>
 
-
-
-
-
-<div id="tabconnectionselect" class="screentab darkbackground" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em; display: none;">
+<div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em;">
     <center>
         <h1>Connection Issue</h1>
 	<p>Toast Wallet is unable to connect either because your device has no network connectivity, or because the public gateway servers Toast Wallet uses to connect to the Ripple network are down or under heavy load&mdash;this has nothing to do with the Ripple network itself, only the servers that Toast Wallet uses to <i>access</i> the network.</p><br>
@@ -767,8 +753,8 @@
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="doAddGatewayPrompt();">Add Gateway</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.38</div>
-	<div><center style="color:black; display:none;" class="deviceversion"></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.37</div>
+	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
 
@@ -793,7 +779,7 @@
 </div>
 
 
-<div id="tabbackupreminder" class="screentab darkbackground" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Backup Reminder" style="padding-bottom: 0em; display: none;">
+<div id="tabbackupreminder" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Backup Reminder" style="padding-bottom: 0em;">
    <center>
     <h1>Your recovery phrase is NOT a backup</h1>
 
@@ -813,7 +799,7 @@
 
 
 
-<div id="tabdonate" class="screentab darkbackground" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em; display: none;">
+<div id="tabdonate" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
    <center>
     <h1>Toast Wallet</h1>
 
@@ -833,7 +819,7 @@
 </center>
     <p></p></center></div>
 
-<div id="tablicense" class="screentab darkbackground" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
+<div id="tablicense" class="screentab" data-primarytab="true" data-hasback="false"  data-dark="true" data-noright="true" data-title="License Agreement" style="display: none;">
    <center>
 	<div style="padding: 0.4em;background: rgba(255,0,0,0.7);border-radius: 3px;margin-bottom: 1em;">
 		<p>IMPORTANT NOTICE&mdash;</p>
@@ -943,12 +929,9 @@ NO WARRANTY
 		<button class="btn btn-info" type="button" id="btnbootstrapsequence" ontouchend="showTab('#tabrestore2');" style="min-width: 20em;">Restore an Existing Wallet </button>
 	</div>
 	<br>
-	<div>
-		<button class="btn btn-danger" type="button" id="btnofflinetx" ontouchend="showTab('#tabofflinetx');" style="min-width: 20em;">Send an Offline Transaction</button>
-	</div><br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.38</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.37</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1356,7 +1339,7 @@ function doSelectAccount(accselected, nickname) {
 	$("#ra" + accselected).addClass("active");
 	activeaccount = accselected;
 	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
-	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><div class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
+	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
 
 
 	showTab("#tabaccountdetails");	
@@ -1594,26 +1577,19 @@ function getAccountInfo(address, successfunc, failurefunc) {
 }
 
 function refreshAccounts() {
-	// delete all accounts in the list then readd them from pouchdb	
+	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
-/*	for (var i = 0; i < acc.length; i++) {
+	for (var i = 0; i < acc.length; i++) {
 		acc[i].remove();
 	}
-*/
+
 	$("#payfromaccount").empty();
 
 	getAccounts(function(acc) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-
-			var html = '<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><div class="address">'+(nickname == "" ? i : nickname)+'</div></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></li>';
-
-			if ($('#ra'+i)[0] == undefined) {
-				$("#accountslist").prepend(html);
-			} else {
-				$('#ra'+i)[0].outerHTML = html;
-			}
+			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
@@ -1717,7 +1693,7 @@ function doShowLogin() {
 	runPinPad("#tablogin", function(pin) {
 		validatePin(pin, function() {
 			$("#btnbootstrapsequence").hide();
-			showTab("#tabaccounts", false, true);
+			showTab("#tabaccounts");
 		}, function() {
 			$("#btnbootstrapsequence").hide();
                         setTimeout(function() {
@@ -1832,22 +1808,13 @@ var accountbalances = {};
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
-function showTab(tab, dontClearText, isReverseTransition) {
-
-	var reverseTransition = ( isReverseTransition != undefined && isReverseTransition );
-	var transitioncss = "all .15s ease";
-
-
-	if (debug) console.log("showTab(" + tab + ")");
+function showTab(tab, dontClearText) {
 
 	if (tab == currenttab) return;
 
 	blockInput(true);
-	setTimeout(()=>{
-		unblockInput();
-		renderMoreContentIndicator();
-	}, 350);
 
+	if (debug) console.log("showTab(" + tab + ")");
 
 	document.activeElement.blur();
 
@@ -1876,39 +1843,9 @@ function showTab(tab, dontClearText, isReverseTransition) {
 		}
 	}
 
-	
-
 
 	$("#navheader").show();
 
-
-		
-	// arrange such that the other primary tabs are to the left or right of the current tab depending on their order in the menu
-	// do this before we change tabs of course	
-	var currentprimary = $(currenttab).data('primarytab') ? currenttab : "";
-	if (currentprimary == "") {
-		for (var n = 0; n < previoustabs.length; n++) {
-			if ($(previoustabs[n]).data('primarytab')) {
-				currentprimary = previoustabs[n];
-				break;
-			}
-		}
-	}
-
-	$('#tablogin').css('left', '-100vw');
-
-	if (currentprimary == '#tabaccounts') {
-		$('#tabpayments').css('left', '100vw');
-		$('#tabsettings').css('left', '100vw');
-	} else if (currentprimary == '#tabpayments') {
-		$('#tabaccounts').css('left', '-100vw');
-		$('#tabsettings').css('left', '100vw');
-	} else if (currentprimary == '#tabsettings') {
-		$('#tabpayments').css('left', '-100vw');
-		$('#tabaccounts').css('left', '-100vw');
-	}	
-		
-	
 
 	
 
@@ -1920,9 +1857,7 @@ function showTab(tab, dontClearText, isReverseTransition) {
 			return; // cannot unwind so do nothing
 		}
 
-
 		tab = currenttab = previoustabs.pop();
-		reverseTransition = true;
 
 	} else {
 		//windup mode
@@ -1930,17 +1865,7 @@ function showTab(tab, dontClearText, isReverseTransition) {
 		currenttab = tab;
 	}
 
-	if ($(tab).data('primarytab')) {
-		// check if the tab we're about to show is in the unwind list and if so reverse the slide transition
-		for (var i = 0; i < previoustabs.length; i++) {
-			if (previoustabs[i] == tab) {
-				reverseTransition = true;
-				break;
-			}
-		}	
-		previoustabs = [];
-
-	}
+	if ($(tab).data('primarytab')) previoustabs = [];
 
 	if (tab != "#tabqrscan" && scanner != undefined) {
 		scanner.stop();
@@ -2022,34 +1947,10 @@ function showTab(tab, dontClearText, isReverseTransition) {
 		});
 		
 	}
-
-	if (!reverseTransition) $(tab).css('z-index', '2');
 	var tabs = $(".screentab");
-	for (var i = 0; i < tabs.length; i++) {
-		if ( !reverseTransition && "#" + tabs[i].id != tab ) {
-			$("#" + tabs[i].id).css('z-index', '1');
-		}
-		if ( $("#" + tabs[i].id).css('display') != 'none' || $("#" + tabs[i].id).is(":visible") ) {
-			$("#" + tabs[i].id).css('transition', ( reverseTransition ? transitioncss : 'none'));
-			if (!$("#" + tabs[i].id).data('primarytab')) {
-				$("#" + tabs[i].id).css('left', '-100vw');
-			}
-			(function(i){
-			 	setTimeout(function(){
-					$("#" + tabs[i].id).hide();
-				}, 250);
-			})(i);
-		}
-	}
-
-
+	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
 	$(tab).show();
-	$(tab).css('transition', ( reverseTransition ? 'none' : transitioncss));
-	$(tab).css('left', '0px');
-
-	$(tab)[0].scrollTop = 0;
-	$(tab)[0].scrollLeft = 0;
 
 
 
@@ -2133,9 +2034,8 @@ function showTab(tab, dontClearText, isReverseTransition) {
 		clickProxy();
 	}
 
-	
+	setTimeout(unblockInput, 200);
 }
-
 
 var generatedAccount = {};
 function doShowAndGenerateAccount() {
@@ -2143,7 +2043,7 @@ function doShowAndGenerateAccount() {
 	blockInput();
 	generatedAccount = generateAddress();
 
-	$("#generatedaddress")[0].innerHTML = generatedAccount.address.slice(0,20);
+	$("#generatedaddress")[0].innerHTML = generatedAccount.address.slice(0,20) + "XXXXXXXXXXXX";
 	showTab("#tabgenaccount");	
 	unblockInput();
 }
