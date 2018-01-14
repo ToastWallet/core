@@ -1,4 +1,10 @@
 
+@font-face{
+    font-family: lato;
+    src: url('../fonts/lato.woff2');
+}
+
+
 html {
 	height: 100vh;
 	min-height: 100vh;
@@ -8,10 +14,12 @@ html {
 	max-height: 100vw;
 }
 body {
-	font-family: sans-serif;
-    font-family: sans-serif;
+	font-family: 'lato', sans-serif;
 	color:white;
 	font-size: 1.5em;
+    	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
 }
 
 #walletbackup {
@@ -58,6 +66,9 @@ textarea {
     display: inline;
 }
 
+*:not(.pinpadbutton){
+    border-radius: 2px !important;
+}
 
 /* pinpad lettering contributed by https://github.com/WietseWind */
 .pinpad button i.char {
@@ -334,8 +345,10 @@ ul.verticalform > li {
 
 
 .address {
+    max-width: 50%;
     text-overflow: ellipsis;
     overflow: hidden;
+    display: inline-block;
 }
 video#qrpreview {
     max-height: 50vh;
@@ -351,18 +364,34 @@ img.loader {
     left: calc(50% - 25px);
 }
 .amount {
-    float: right;
+    display: inline-block;
+    float:right;
 }
-#accountslist > li {
+
+.list-group-item.active {
+    background-color: #266dc7;
+}
+#accountslist > li:not(:last-of-type) {
     text-overflow: ellipsis;
     overflow: hidden;
     min-height: 4.5em;
+}
+#accountslist > li:last-of-type {
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+#accountslist {
+	padding-bottom: 0px;
+	margin-bottom: 0px;
 }
 #btnaddaccount > * {
     vertical-align: middle;
 }
 i.fa {
-    font-size: 1.3em !important;
+    font-size: 1.4em !important;
 }
 label {
     color: black;
@@ -371,18 +400,19 @@ label {
     margin-bottom: 0 !important;
 }
 
+
 .screentab {
+    background: white;
     overflow-y: scroll;
     margin-top: 4.0em;
     height: calc(100vh - 4em);
     position: absolute;
     top: 0;
-    left: 0;
-    width: calc(100vw - 2em);
-    margin-left: 1em;
-    margin-right: 1em;
-    padding-top: 0.5em;
-    padding-bottom: 4em;
+    left: -100vw;
+    width: 100vw;
+    padding-top: 0.4em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
     touch-action: pan-y;
     -ms-touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
@@ -416,7 +446,7 @@ div.input-group>span.input-group-btn>button {
     margin: 0;
     text-align: center;
     z-index: 90;
-    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
+/*    border-top: 1px solid hsla(214, 50%, 25%, 0.25); */
     height: 3.5em !important;
 }
 
@@ -433,6 +463,15 @@ div.input-group>span.input-group-btn>button {
     border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
     height: 4em !important;
 }
+#accdetailsamount {
+	float:right;
+	display: inline-block;
+}
+
+#accdetailsnickname {
+	display: inline-block;
+}
+
 #accdetailsqr {
     padding-top: 1em;
     padding-bottom: 1em;
@@ -484,6 +523,7 @@ ul.iosheader > li > * {
 .headermiddle {
     width: 50%;
     text-align: center;
+    font-size: 1.1em;
 }
 #navfooter > li {
     text-align: center;
@@ -492,7 +532,7 @@ ul.iosheader > li > * {
     cursor: pointer;
     display: inline-block;
     min-width: calc(33% - 1em);
-    padding: 1em 0.5em 1em 0.5em;
+    padding: 0; /*1em 0.5em 1em 0.5em;*/
 }
 #navfooter div {
     display: none;
@@ -550,7 +590,7 @@ ul.iosheader > li > * {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 4em);
     background: url(../images/background.png);
     opacity: 0.1;
     background-size: 100%;
@@ -659,4 +699,57 @@ input
     transform: translate3d(0, -15px, 0);
   }
 }
+
+
+
+/* slightly hacky way to add some new icons 
+ * this can be redone a lot better with the new skin */
+#navaccounts > i.fa.fa-home:before {
+    content: "_";
+    color: rgba(0,0,0,0);
+}
+
+
+#navaccounts > i.fa.fa-home {
+    display: block;
+    background: url('../images/home.svg');
+    background-size:  23px 23px;
+    background-repeat: no-repeat;
+    background-position: center center;
+     center;
+    height: 2.5em;
+}
+
+
+#navpayments > i.fa.fa-usd:before {
+    content: "_";
+    color: rgba(0,0,0,0);
+}
+
+#navpayments > i.fa.fa-usd {
+    display: block;
+    background: url('../images/cursor.svg');
+    background-size:  23px 23px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 2.5em;
+}
+
+
+
+#navsettings > i.fa.fa-cog:before {
+    content: "_";	
+    color: rgba(0,0,0,0);
+}
+
+#navsettings > i.fa.fa-cog {
+    display: block;
+    background: url('../images/settings.svg');
+    background-size:  23px 23px;
+    background-repeat: no-repeat;
+    background-position: center center;
+     center;
+    height: 2.5em;
+}
+
 
