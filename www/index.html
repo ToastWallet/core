@@ -23,19 +23,30 @@
 	<script>if (window.module) module = window.module;
 	
 		window.onerror = function(message, url, lineNumber) {  
+            x = "We're sorry: An unexpected error has occured with Toast Wallet. Please report the below to support@toastwallet.com along with what you were trying to do at the time the error occured. If you haven't already it would be prudent to make a backup of your wallet. You may need to restart Toast Wallet by closing it manually. " + message + " " + url + " " + lineNumber;
 			console.log("Error: " + message + ", url: " + url + " line: " + lineNumber);
-			navigator.notification.alert("We're sorry: An unexpected error has occured with Toast Wallet. Please report the below to support@toastwallet.com along with what you were trying to do at the time the error occured. If you haven't already it would be prudent to make a backup of your wallet. " + error + " " + url + " " + lineNumber, 
+            try {
+			navigator.notification.alert(x, 
 				function(){
 					unblockInput();
 				}, 
 				"Unexpected Error", 
 				"OK"
 			);
+
+            } catch (E) {
+                try {
+                    $('#gracefulerror')[0].innerHTML = '<center><h1>Unexpected Error</h1></center><br><div>' + x + '</div><br><center><div><button class="btn btn-primary" onclick="$(\'#gracefulerror\').css(\'display\', \'none\');">Close Error</button>';
+                    $('#gracefulerror').css('display', 'block');
+                    unblockInput();
+                } catch (EE){}
+            }
 		}
 	</script>
 </head>
 <body class="loading">
 <div id="inputblocker" style="display:none">&nbsp;</div>
+<div id="gracefulerror" style="display:none; z-index:99999999; padding: 2em; background-color:arbg(255,255,255,0.75); color: black; position:absolute; left: 0; top: 0; width: 100vw; height: 100vh;"></div>
 <i id="morecontentindicator" class="fa fa-chevron-circle-down bounce" aria-hidden="true"></i>
 <div id="offlinemodewarning" style="position:absolute; top:0; left:0; width:100%; height:15px; background:red; color:white; margin:0px; padding:0px; font-size:11px; text-align:center; z-index:9999999; display:none;">OFFLINE MODE</div>
 <script>
@@ -669,7 +680,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label>Destination Tag</label>
 	<div id="confirmdesttag"></div>
     </div>
-    <div class="paygrouping" style="display:none">
+    <div class="paygrouping">
 	<label>Invoice ID</label>
 	<div id="confirminvoiceid"></div>
     </div>
@@ -685,13 +696,29 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
 
+<div id="tabgreenqr" class="screentab" data-primarytab="true" data-title="Offline Transaction" style="display:none">
+    <p style="color:black">Scan this green QR code in your online Toast Wallet to send the payment.</p>
+    <div id="paytabgreenqr">
+    </div>    
+</div>
+
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
 	<label >From Account</label>
 	<div>
-	<select id="payfromaccount" class="form-control">
+	<select id="payfromaccount" class="form-control" onchange="onPaymentSelectFromAccount();">
 	</select>
 	</div>
-	<br />
+
+    <div id="payofflinecodediv" style="display:none;">
+        <center>
+            <div id="paytabredqr">
+            </div>
+        </center>
+      	<br />    
+        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <input  type="text" id="payofflinecode" class="form-control" placeholder="">
+    </div>
+    <br>
 
 	<label >To Address</label>
 	<div class="input-group">
@@ -704,16 +731,22 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 	<label >Destination Tag (optional, but many exchanges require this)</label>
-	<div>
+	<div class="input-group">
 	<input  type="text" id="desttag" class="form-control" placeholder="">
+	<span class="input-group-btn">
+		<button  class="btn btn-default" ontouchend='doToggleInvoiceId();' id="btnpayshowmore" type="button">More</button>
+	</span>
 	</div>
-	<br />
 
-	<label style="display:none">Invoice ID (optional)</label>
-	<div style="display:none">
+    <br />
+
+    <div id="invoiceiddiv" style="display:none">
+	<label>Invoice ID (optional)</label>
+	<div>
 	<input  type="text" id="invoiceid" class="form-control" placeholder="">
 		<br />
 	</div>
+    </div>
 
 
 	<label >Amount</label>
@@ -726,6 +759,36 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<br/>
 	<div><center style="color:black;">The Ripple network requires a minimum <span id="minxrp"></span> XRP balance at all times and charges fees based on congestion even for failed transactions.</center></div>
 
+</div>
+
+
+
+<div id="tabsubmitofflinetx" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Offline Transaction" style="padding-bottom: 0em;">
+	<center>
+		<p>Open Toast Wallet on your offline device and use the send tab to create a payment then follow the steps below to submit the payment.</p><br>
+	</center>
+    <div id="submitofflinetxstep1">
+	<label style="color:white;">Scan red QR code</label><div class="input-group">
+	<input type="text" id="txtredqr" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button class="btn btn-danger" ontouchend="scanQR('#txtredqrcode', undefined, undefined, (content, intofield1, intofield2, intofield3, after)=>{$('#txtredqr').val(content); doSubmitOfflineTransaction(1, content);}, ()=>{});" type="button" style="
+">QR</button>
+	</span>
+	</div>
+    </div>
+    <br>
+    <div id="submitofflinetxstep2">
+    <label style="color:white;">Enter this Confirmation Code</label><div id="lblofflinetxconfirm" style="border: 1px dashed white; padding: 0.2em; font-size:1.3em; font-weight:bold; text-align:center;"></div>
+    </div>
+	<br>
+	<div id="submitofflinetxstep3">
+	<label style="color:white;">Press Pay in Offline Wallet then Scan green QR code</label><div class="input-group">
+	<input type="text" id="txtgreenqr" class="form-control" placeholder="">
+	<span class="input-group-btn">
+		<button class="btn btn-success" ontouchend="scanQR('#txtgreenqr', undefined, undefined, (content, intofield1, intofield2, intofield3, after)=>{$('#txtgreenqr').val(content);}, ()=>{});" type="button" style="">QR</button>
+	</span>
+	</div>
+</div>
 </div>
 
 <div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em;">
@@ -744,6 +807,20 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 </div>
 
+
+<div id="tabaddgateway" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="false" data-title="Add Gateway" style="padding-bottom: 0em;">
+    <center>
+ 	<p style="color:black;">Add a custom gateway you would like Toast Wallet to connect to. A connection will be attempted and if it is successful the gateway will be stored and remembered as your preferred gateway.</p>
+	        	<label style="color:white; text-align:left;">Specify additional gateway server</label>
+			<input type="text" id="txtnewgateway2" class="form-control" placeholder="wss://">
+    <br />
+
+		<button class="btn btn-primary" type="button" id="btnconnect2" ontouchend="doAddGateway($('#txtnewgateway2').val());" style="min-width: 10em;">Add Gateway</button><br><br>
+    </center>
+
+</div>
+
+
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
 	<div><center><button  type="button" class="btn btn-success" ontouchend="showDonationTab();">Support Toast Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchend="window.open('https://toastwallet.com/faq', '_system');">FAQ / Help</button></center></div>
@@ -752,8 +829,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" ontouchend="doGenerateBackup();">Backup Wallet</button></center></div>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="doAddGatewayPrompt();">Add Gateway</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.38</div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.1.39</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -929,9 +1006,13 @@ NO WARRANTY
 		<button class="btn btn-info" type="button" id="btnbootstrapsequence" ontouchend="showTab('#tabrestore2');" style="min-width: 20em;">Restore an Existing Wallet </button>
 	</div>
 	<br>
+	<div>
+		<button class="btn btn-danger" type="button" id="btnsendofflinetx" ontouchend="doSubmitOfflineTransaction();" style="min-width: 20em;">Submit Offline Transaction</button>
+	</div>
+	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.38</p>
+<p><center style="color:white;" data-version="version">Version: 2.1.39</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -955,6 +1036,115 @@ function blockInput(noloading) {
 function unblockInput() {
 	$("#inputblocker").hide();
 	$('body').removeClass('liteloading');
+}
+
+
+
+// this function fires when an account is selected on the payments tab
+// but is only used to supply red qr code in the event the user is in offline mode
+function onPaymentSelectFromAccount() {
+    if (!offlinemode) return;
+    $('#payofflinecodediv').css('display', 'block');
+    var account = $("#payfromaccount").find(":selected").data('account');
+    $("#paytabredqr").empty();
+    $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
+    $('#payofflinecodediv').css('display', 'block');
+}
+
+function doSubmitOfflineTransaction(stage, account) {
+    if (stage == undefined) stage = 0;
+
+
+    if (stage == 0) {
+        
+        $('#submitofflinetxstep1').css('display', 'block');
+        $('#submitofflinetxstep2').css('display', 'none' );
+        $('#submitofflinetxstep3').css('display', 'none' );
+        showTab('#tabsubmitofflinetx');
+
+    } else if (stage == 1) {
+
+        blockInput();
+
+        // query the ledger sequence ID and account sequence ID
+        if (account == undefined) account = $('#txtredqr').val();
+        console.log("RED QR: " + account);
+        if (account == "" || !validateAddress(account)) {
+
+			return navigator.notification.alert("The QR code you scanned was not a valid Ripple Account", 
+				function() {
+                    doSubmitOfflineTransaction(0);
+                    unblockInput();
+                },
+				"Failure", "OK"
+			);
+        }
+        checkConnection(() => {
+                remote.getAccountInfo(account).then(info => {
+                    var accseqid = info.sequence;
+
+                    remote.getLedger({}).then(info2 => {
+                        var ledseqid = info2.ledgerVersion;
+
+                        // encode these into a portable format
+
+                        var bytes = [];
+
+                        // 3 byte int for the accseqid
+                        bytes[0] = (accseqid & 0xff0000) >> 16;
+                        bytes[1] = (accseqid & 0xff00) >> 8;
+                        bytes[2] = (accseqid & 0xff) >> 0;                        
+
+                        // 4 byte int for the ledseqid
+                        bytes[3] = (ledseqid & 0xff000000) >> 24;
+                        bytes[4] = (ledseqid & 0xff0000) >> 16;
+                        bytes[5] = (ledseqid & 0xff00) >> 8;
+                        bytes[6] = (ledseqid & 0xff) >> 0;                        
+
+                        // 1 byte checksum
+                        var hex = utils.bytesToHex(bytes);
+                        hex += sodium.crypto_generichash(1, hex, 'offlinecode', 'hex');
+
+                        // remove leading 0's
+                        while(hex.charAt(0) == '0') hex = hex.slice(1);
+                        
+                        hex = hex.toUpperCase();
+
+                        // add spaces for ease of copying
+                        var displayhex = "";
+                        for (var i = 0; i < hex.length; i+= 4) 
+                            displayhex += hex.slice(i, i + 4) + " ";
+
+                        displayhex = displayhex.trim();
+
+
+                        $('#lblofflinetxconfirm')[0].innerHTML = displayhex;
+                        unblockInput();
+
+                        $('#submitofflinetxstep1').css('display', 'block');
+                        $('#submitofflinetxstep2').css('display', 'block' );
+                        $('#submitofflinetxstep3').css('display', 'block' );
+                        showTab('#tabsubmitofflinetx');
+                        
+                    });
+
+                });
+        });
+    }
+}
+
+function doAddGateway(gateway) {
+			if (gateway == 'wss://' || gateway.indexOf('wss://') != 0) {
+				return navigator.notification.alert("Invalid gateway", 
+					function() {},
+					"Failure", "OK"
+				);
+			}
+
+			// they have a gateway they want to add, we'll go ahead and test that gateway immediately
+			// if the gateway is connectable then it will be automatically added to their saved gateway list
+
+			doRetryConnection(gateway);
 }
 
 
@@ -985,6 +1175,11 @@ function showDonationTab(){
 	}).catch( function(e) {
 			
 	});
+}
+
+function doToggleInvoiceId() {
+    $('#invoiceiddiv').css( 'display', ( $('#invoiceiddiv').css('display') == 'none' ? 'block' : 'none' ) );
+    $('#btnpayshowmore')[0].innerHTML = ( $('#invoiceiddiv').css('display') == 'none' ? 'More' : 'Less' );
 }
 
 
@@ -1576,7 +1771,7 @@ function getAccountInfo(address, successfunc, failurefunc) {
 	});
 }
 
-function refreshAccounts() {
+function refreshAccounts(after) {
 	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {
@@ -1584,6 +1779,77 @@ function refreshAccounts() {
 	}
 
 	$("#payfromaccount").empty();
+
+
+    var fetchRateAndUpdateBalance = function(after) {
+        var updateaccs = function(exchangerate, after){
+            getAccounts(function(acc) {
+                accountbalances = {};
+                for (var i in acc) {
+
+                    ((account) => {
+                        var f = 
+                        function(res) {
+                            var xrpBalance = parseInt(res.Balance) / 1000000.0;
+
+                            if (debug) console.log("received account info for: " + account);
+                            try {
+                                var usdbalance = "";
+                                if (exchangerate != -1) {
+                                    var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
+                                    usdbalance = '<br><div class="amount"><small style="opacity:0.7;">(' + amount.toFixed(2) + ' USD)</small></div>';
+                                }
+                                $("#ra" + account + ">.amount")[0].innerHTML = xrpBalance + " XRP" + usdbalance;
+                    
+                            } catch(e) {handle_error(e);}
+                            accountbalances[account] = parseFloat(xrpBalance);
+
+                            var balcount = Object.keys(accountbalances).length;
+                            if (balcount > 0 && activeaccount == "") {
+                                var largest = 0; var largestindex = 0;
+                                for (var x in accountbalances) {
+                                    if (accountbalances[x] > largest) {
+                                        largest = accountbalances[x];
+                                        largestindx = x;
+                                    }
+                                }
+                                activeaccount = x;
+
+                                $("#opt" + x).prop('selected', true);
+                                $("#ra" + x).addClass('active');	
+                            }
+                        };
+
+                        var e =
+                        function(e) {
+                            if (debug) console.log("account refresh error: " + e);
+                            try {
+                                $("#ra" + account + ">.amount")[0].innerText = "(not activated)";
+                            } catch(e) {handle_error(e);}					
+                        };
+
+                        getAccountInfo(account, f, e).catch(e);
+                    })(i);
+                }
+
+                after();
+            });
+        };
+
+        remote.getOrderbook(
+            "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
+            {"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
+            "counter": {"currency":"XRP"}},  { limit: 10 }
+        ).then(orders => {
+            var exchangerate = 0;
+            for (var i = 0; i < 10; i++) 
+                exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
+            exchangerate = 10.0/exchangerate;
+            updateaccs(exchangerate, after);
+        }).catch( function(e) {
+            updateaccs(-1);		
+        });
+    };
 
 	getAccounts(function(acc) {
 		accountbalances = {};
@@ -1594,75 +1860,12 @@ function refreshAccounts() {
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
 		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
+
+        fetchRateAndUpdateBalance(after);
 	});
 
 
 
-	var updateaccs = function(exchangerate){
-		getAccounts(function(acc) {
-			accountbalances = {};
-			for (var i in acc) {
-
-				((account) => {
-					var f = 
-					function(res) {
-						var xrpBalance = parseInt(res.Balance) / 1000000.0;
-
-						if (debug) console.log("received account info for: " + account);
-						try {
-							var usdbalance = "";
-							if (exchangerate != -1) {
-								var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
-								usdbalance = '<br><div class="amount"><small style="opacity:0.7;">(' + amount.toFixed(2) + ' USD)</small></div>';
-							}
-							$("#ra" + account + ">.amount")[0].innerHTML = xrpBalance + " XRP" + usdbalance;
-				
-						} catch(e) {handle_error(e);}
-						accountbalances[account] = parseFloat(xrpBalance);
-
-						var balcount = Object.keys(accountbalances).length;
-						if (balcount > 0 && activeaccount == "") {
-							var largest = 0; var largestindex = 0;
-							for (var x in accountbalances) {
-								if (accountbalances[x] > largest) {
-									largest = accountbalances[x];
-									largestindx = x;
-								}
-							}
-							activeaccount = x;
-
-							$("#opt" + x).prop('selected', true);
-							$("#ra" + x).addClass('active');	
-						}
-					};
-
-					var e =
-					function(e) {
-						if (debug) console.log("account refresh error: " + e);
-						try {
-							$("#ra" + account + ">.amount")[0].innerText = "(not activated)";
-						} catch(e) {handle_error(e);}					
-					};
-
-					getAccountInfo(account, f, e).catch(e);
-				})(i);
-			}
-		});
-	};
-
-	remote.getOrderbook(
-		"rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
-		{"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
-		"counter": {"currency":"XRP"}},  { limit: 10 }
-	).then(orders => {
-		var exchangerate = 0;
-		for (var i = 0; i < 10; i++) 
-			exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
-		exchangerate = 10.0/exchangerate;
-		updateaccs(exchangerate);
-	}).catch( function(e) {
-		updateaccs(-1);		
-	});
 
 
 }
@@ -1840,6 +2043,8 @@ function showTab(tab, dontClearText) {
 			$("input[type='password']").val("");
 			$("input[type='text']").val("");
 			$("textarea").val("");
+            $('#paytabredqr').empty();
+            $('#paytabgreenqr').empty();
 		}
 	}
 
@@ -1872,7 +2077,7 @@ function showTab(tab, dontClearText) {
 	}
 
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
-		refreshAccounts();	
+        refreshAccounts( (tab == '#tabpayments' && offlinemode ? onPaymentSelectFromAccount : ()=>{}) );	
 	} else if (tab == "#tabaccountsecret") {
 		$("#lblacpassword").show();
 		$("#lblaccsecret").hide();
@@ -2187,6 +2392,11 @@ function doConfirmPay(passphrase) {
 			}
 
 
+            if (offlinemode) {
+                // we're just going to create the payment as a QR code and display it
+                sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid);
+                return;
+            }
 
 			checkConnection(
 				function(){
@@ -2268,8 +2478,12 @@ function doPay(nonce) {
 	var payfrom = $("#payfromaccount").find(":selected").data('account');
 	var payto = $("#toaddress").val().trim();
 	var dest = $("#desttag").val().trim();
-	var invid = $("#invoiceid").val().trim();
+	var invid = ($("#invoiceid").val().trim() + "").toUpperCase();
 	var amount = $("#payamount").val().trim();
+
+    var offlinecode = $('#payofflinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accseqid = -1;
+    var ledseqid = -1;
 
 	if (amount != undefined && (amount+"").charAt(0) == '.') amount = "0" + amount;
 
@@ -2306,9 +2520,47 @@ function doPay(nonce) {
 	}
 
 
+
+    if (offlinemode) {
+
+        var codevalid = /^[A-F0-9]{11,16}$/m.test(offlinecode);        
+
+        if (codevalid) {
+            // pad out the 0's on the front
+            while (offlinecode.length < 16) offlinecode = '0' + offlinecode;
+            console.log("offline code: " + offlinecode);
+            // further validate offline code by checking checksum
+            codevalid = (offlinecode.slice(offlinecode.length - 2, offlinecode.length) == sodium.crypto_generichash(1, offlinecode.slice(0,14), 'offlinecode', 'hex').toUpperCase());
+        }
+
+        if (!codevalid) {
+            navigator.notification.alert("Your offline code appears to be incorrect. Check you scanned the red QR code on the online version of Toast Wallet first.", 
+                function(){
+                    $("#payofflinecode").focus();
+                    unblockInput();
+                }, 
+                "Offline code invalid", 
+                "OK"
+            );
+            return;
+        } else {
+            var bytes = utils.hexToBytes(offlinecode);
+            accseqid = 
+                bytes[0] * 0xff00 +
+                bytes[1] * 0xff +
+                bytes[2];
+
+            ledseqid =
+                bytes[3] * 0xff0000 +
+                bytes[4] * 0xff00 +
+                bytes[5] * 0xff +
+                bytes[6];
+        }
+    }
+
 	if (invid != "") {
-		if (/[^a-fA-F0-9]/m.test(invid)) {
-			navigator.notification.alert("Invoice ID must either be blank or be hex-encoded. We recommend not to use an invoice id unless your counter party has instructed you to use one.", 
+        if (!/^[A-F0-9]{64}$/m.test(invid)) {
+			navigator.notification.alert("Invoice ID must either be blank or be hex-encoded 256bit value. We recommend not to use an invoice id unless your counter party has instructed you to use one.", 
 				function(){
 					$("#invoiceid").focus();
 					unblockInput();
@@ -2392,7 +2644,9 @@ function doPay(nonce) {
 			dest: dest,
 			invid: invid,
 			amount: amount,
-			nonce: nonce
+			nonce: nonce,
+            accseqid: accseqid, // used for offline tx
+            ledseqid: ledseqid
 		};
 
 		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
@@ -3874,32 +4128,6 @@ function checkConnection(connectedfunc) {
 }
 
 
-function doAddGatewayPrompt() {
-	navigator.notification.prompt(
-	    'Enter an additional gateway to connect to: wss://yourgateway',
-	    function(b) {
-	    	if (b.buttonIndex == 1) {
-			var gateway = (b.input1 + "").trim();
-			if (gateway == 'wss://' || gateway.indexOf('wss://') != 0) {
-				return navigator.notification.alert("Invalid gateway", 
-					function() {},
-					"Failure", "OK"
-				);
-			}
-
-			// they have a gateway they want to add, we'll go ahead and test that gateway immediately
-			// if the gateway is connectable then it will be automatically added to their saved gateway list
-
-			doRetryConnection(gateway);
-		}
-	    },
-	    'Add Gateway',   
-	    ['Add','Cancel'],
-	    'wss://' 
-	);
-
-}
-
 function doResetGatewayPrompt() {
 
 	getSavedGateways(function(gateways) {
@@ -4172,6 +4400,9 @@ function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failur
 
 
 
+function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, accSeqID, ledSeqID) {
+// TODO: Finish code
+}
 
 /* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
 ** before calling.
@@ -4208,7 +4439,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			};
 
 			if (invoiceID !== undefined && invoiceID != "") {
-				payment.invoiceID = utils.hexToBytes(invoiceID);
+				payment.invoiceID = invoiceID;
 			}
 
 
