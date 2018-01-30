@@ -836,7 +836,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.1</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.2</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1018,7 +1018,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.1</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.2</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1144,6 +1144,7 @@ function doSubmitOfflineTransaction(stage, content) {
     } else if (stage == 2) {
         // ready to submit the transaction!
 
+        blockInput();
         var signedTx = content;
         if (signedTx == undefined) signedTx =$('#txtgreenqr').val();
 
