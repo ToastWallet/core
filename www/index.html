@@ -836,7 +836,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.5</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.6</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1018,7 +1018,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.5</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.6</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1158,6 +1158,18 @@ function doSubmitOfflineTransaction(stage, content) {
         var signedTx = content;
         if (signedTx == undefined) signedTx =$('#txtgreenqr').val();
 
+        if (signedTx.slice(0, 'ripple:signed-transaction:'.length) != 'ripple:signed-transaction:') {
+            return  navigator.notification.alert("The QR code you scanned is not a valid transaction QR. Ensure you are scanning the GREEN QR code you received after finalizing your transaction on the offline device.", 
+                        function(){
+                            unblockInput();
+                        }, "Invalid QR Code", "OK"
+            ); 
+        }
+        
+
+        // remove prefix from the tx
+        signedTx =  signedTx.slice('ripple:signed-transaction:'.length);
+
 
         checkConnection(function(){
         submitSignedTransaction(
@@ -1165,7 +1177,6 @@ function doSubmitOfflineTransaction(stage, content) {
             function(wasqueued){
                     navigator.notification.alert("Your payment was successfully " + ( wasqueued ? "queued, and will be sent shortly." : "sent." ), 
                         function(){
-                            clearPaymentScreen();
                             showTab(-1);
                             unblockInput();
                         }, "Success", "OK"); 
@@ -1174,7 +1185,6 @@ function doSubmitOfflineTransaction(stage, content) {
             function(err) {
                 navigator.notification.alert("An error occured when trying to make your payment. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your payment details are incorrect or the receiving address has not been activated. " + err, 
                 function(){
-                    lastpaidnonce = "";
                     showTab(-1);
                     unblockInput();
                 }, 
@@ -2744,6 +2754,8 @@ function doPay(nonce) {
 		}
 	} else {
 
+        if (offlinemode) return nextscreen(); // skip this warning if we already know we can't check the balance
+        
 		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account before continuing.",
 			function(b){
 				if (b == 1) {
@@ -3676,33 +3688,62 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 		return;
 	}
 
+    var normalImport = function(secret, address, nickname, passphrase, successfunc, failurefunc) {
+        // this is an ordinary account
+        if (offlinemode) return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+
+        // if we are connected then run a check to see if the master key is disabled
+        return remote.getSettings(address).then(
+        settings => {
+            console.log("normalImport loaded the following settings for the account");
+            console.log(settings);
+            if ('disableMasterKey' in settings && settings['disableMasterKey']) {
+                // they are trying to add an account using a secret that has been disabled
+                navigator.notification.alert("The secret you are attempting to add has been disabled on the corresponding Ripple account, and therefore cannot be used. If this is an account you own then you need to add it using the current regular key.", failurefunc, "Failure", "OK");
+            } else {
+                // this is fine, the account already exists but the master key is still valid
+                return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+            }
+        }).catch( 
+        e => {
+            // if we can't get this data it's probably because the account doesn't exist or we aren't connected / can't get a req out
+            // either way just add the account
+            return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+        });
+
+    }
+
 	if (address == "") {
 		address = generateAddress(secret).address;
-		return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+        return normalImport(secret, address, nickname, passphrase, successfunc, failurefunc);
 	} else {
 		// make sure the address is valid, either corresponding to the secret or corresponding to setregular key
 
 		var pubaddress = rippleKeypairs.deriveAddress(rippleKeypairs.deriveKeypair(secret).publicKey);
 
 		if (pubaddress == address) {
-			// this is an ordinary account, continue
-			return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+            return normalImport(secret, address, nickname, passphrase, successfunc, failurefunc);
 		} else {
-			// this could be a set regular key account, check the regular key
-			remote.getSettings(address).then(
-			settings => {
-				if ('regularKey' in settings && settings['regularKey'] == pubaddress) {
-					// this is fine, continue
-					return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
-				}
-				navigator.notification.alert("The address you specified has a regular key set, however that regular key does not correspond to the secret you have provided.", failurefunc, "Failure", "OK");
+            
+            if (offlinemode) {
+                return navigator.notification.alert("You are adding an account with a regular key in offline mode. Toast Wallet has no way to ensure this regular key corresponds to your Ripple account. The account will be added however transactions may fail if the regular key is incorrect.", ()=>{return _import(secret, address, nickname, passphrase, successfunc, failurefunc);}, "Warning", "OK");
+            }
 
+			// this could be a set regular key account, check the regular key
+			return remote.getSettings(address).then(
+			settings => {
+				if ('regularKey' in settings) {
+                    if (settings['regularKey'] == pubaddress) {
+    					// this is fine, continue
+	    				return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
+                    } else {    
+                        return navigator.notification.alert("The address you specified has a regular key set, however that regular key does not correspond to the secret you have provided.", failurefunc, "Failure", "OK");
+                    }
+                }
 			} ).catch( 
 			e => {
 				navigator.notification.alert("The address you specified has not been activated. Please activate it first before attempting to add it.", failurefunc, "Failure", "OK");
 			});
-
-			return;
 		}
 	}
 }
@@ -4505,7 +4546,7 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 				    secret = "";
 
                     $('#divgreenqrdisplay').empty();
-                    $('#divgreenqrdisplay').append(kjua({text: signedTransaction, fill: "#00FF00", ecLevel: 'L', size: 340}));
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#00FF00", ecLevel: 'L', size: 340}));
                     showTab('#tabgreenqr');
                     unblockInput();
             },
