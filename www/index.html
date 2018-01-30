@@ -186,7 +186,9 @@
 				currenttab != "#tablicense" &&
 				currenttab != "#tabshowrecovery" &&
 				currenttab != "#tabqrscan" &&
-				currenttab != "#tabrestore2" &&
+                currenttab != "#tabsubmitofflinetx" &&
+                currenttab != "#tabrestore2" &&
+                currenttab != "#tabgreenqr" &&
 				$.now() - timeatlastQR > 30 /* this fixes a bug with android */
 			) {
 
@@ -199,6 +201,7 @@
 		});
 
 		$('#backuppassword').on('touchend', quickSelectInput);
+		$('#payofflinecode').on('touchend', quickSelectInput);
 		$('#restorepassword').on('touchend', quickSelectInput);
 		$('#rsecaccpassword').on('touchend', quickSelectInput);
 		$('#delaccpassword').on('touchend', quickSelectInput);
@@ -697,9 +700,11 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabgreenqr" class="screentab" data-primarytab="true" data-title="Offline Transaction" style="display:none">
-    <p style="color:black">Scan this green QR code in your online Toast Wallet to send the payment.</p>
-    <div id="paytabgreenqr">
-    </div>    
+    <center>
+    <p style="color:black; font-weight: bold;">Scan this green QR code in your online Toast Wallet to send the payment.</p>
+    <div id="divgreenqrdisplay">
+    </div>  
+    </center>  
 </div>
 
 <div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
@@ -763,12 +768,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 
-<div id="tabsubmitofflinetx" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Offline Transaction" style="padding-bottom: 0em;">
+<div id="tabsubmitofflinetx" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="true" data-title="Offline Transaction" style="padding-bottom: 0em;">
 	<center>
-		<p>Open Toast Wallet on your offline device and use the send tab to create a payment then follow the steps below to submit the payment.</p><br>
+		<p style="color: black;">Open Toast Wallet 2.2.0 or newer on your offline device and use the send tab to create a payment then follow the steps below to submit the payment.</p><br>
 	</center>
     <div id="submitofflinetxstep1">
-	<label style="color:white;">Scan red QR code</label><div class="input-group">
+	<label>Scan red QR code</label><div class="input-group">
 	<input type="text" id="txtredqr" class="form-control" placeholder="">
 	<span class="input-group-btn">
         <button class="btn btn-danger" ontouchend="scanQR('#txtredqrcode', undefined, undefined, (content, intofield1, intofield2, intofield3, after)=>{$('#txtredqr').val(content); doSubmitOfflineTransaction(1, content);}, ()=>{});" type="button" style="
@@ -778,14 +783,14 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </div>
     <br>
     <div id="submitofflinetxstep2">
-    <label style="color:white;">Enter this Confirmation Code</label><div id="lblofflinetxconfirm" style="border: 1px dashed white; padding: 0.2em; font-size:1.3em; font-weight:bold; text-align:center;"></div>
+    <label>Enter this Confirmation Code</label><div id="lblofflinetxconfirm" style="color: blue; border: 1px dashed black; padding: 0.2em; font-size:1.3em; font-weight:bold; text-align:center;"></div>
     </div>
 	<br>
 	<div id="submitofflinetxstep3">
-	<label style="color:white;">Press Pay in Offline Wallet then Scan green QR code</label><div class="input-group">
+	<label>Press Pay in Offline Wallet then Scan green QR code</label><div class="input-group">
 	<input type="text" id="txtgreenqr" class="form-control" placeholder="">
 	<span class="input-group-btn">
-		<button class="btn btn-success" ontouchend="scanQR('#txtgreenqr', undefined, undefined, (content, intofield1, intofield2, intofield3, after)=>{$('#txtgreenqr').val(content);}, ()=>{});" type="button" style="">QR</button>
+		<button class="btn btn-success" ontouchend="scanQR('#txtgreenqr', undefined, undefined, (content, intofield1, intofield2, intofield3, after)=>{$('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content);}, ()=>{});" type="button" style="">QR</button>
 	</span>
 	</div>
 </div>
@@ -830,7 +835,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchend="showTab('#tabrestore');">Restore Wallet</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.1.39</div>
+	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.1</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1012,7 +1018,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.1.39</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.1</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1051,7 +1057,7 @@ function onPaymentSelectFromAccount() {
     $('#payofflinecodediv').css('display', 'block');
 }
 
-function doSubmitOfflineTransaction(stage, account) {
+function doSubmitOfflineTransaction(stage, content) {
     if (stage == undefined) stage = 0;
 
 
@@ -1065,6 +1071,8 @@ function doSubmitOfflineTransaction(stage, account) {
     } else if (stage == 1) {
 
         blockInput();
+
+        var account = content;
 
         // query the ledger sequence ID and account sequence ID
         if (account == undefined) account = $('#txtredqr').val();
@@ -1087,6 +1095,9 @@ function doSubmitOfflineTransaction(stage, account) {
                         var ledseqid = info2.ledgerVersion;
 
                         // encode these into a portable format
+
+                        console.log("Ledger Seq ID: " + ledseqid);
+                        console.log("Account Seq ID: " + accseqid);                        
 
                         var bytes = [];
 
@@ -1130,6 +1141,37 @@ function doSubmitOfflineTransaction(stage, account) {
 
                 });
         });
+    } else if (stage == 2) {
+        // ready to submit the transaction!
+
+        var signedTx = content;
+        if (signedTx == undefined) signedTx =$('#txtgreenqr').val();
+
+
+        checkConnection(function(){
+        submitSignedTransaction(
+            signedTx,       
+            function(wasqueued){
+                    navigator.notification.alert("Your payment was successfully " + ( wasqueued ? "queued, and will be sent shortly." : "sent." ), 
+                        function(){
+                            clearPaymentScreen();
+                            showTab(-1);
+                            unblockInput();
+                        }, "Success", "OK"); 
+                    }
+            , 
+            function(err) {
+                navigator.notification.alert("An error occured when trying to make your payment. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your payment details are incorrect or the receiving address has not been activated. " + err, 
+                function(){
+                    lastpaidnonce = "";
+                    showTab(-1);
+                    unblockInput();
+                }, 
+                "Error", "OK");
+            },
+            0
+        );
+        });        
     }
 }
 
@@ -2546,15 +2588,20 @@ function doPay(nonce) {
         } else {
             var bytes = utils.hexToBytes(offlinecode);
             accseqid = 
-                bytes[0] * 0xff00 +
-                bytes[1] * 0xff +
+                bytes[0] * 0x10000 +
+                bytes[1] * 0x100 +
                 bytes[2];
 
             ledseqid =
-                bytes[3] * 0xff0000 +
-                bytes[4] * 0xff00 +
-                bytes[5] * 0xff +
+                bytes[3] * 0x1000000 +
+                bytes[4] * 0x10000 +
+                bytes[5] * 0x100 +
                 bytes[6];
+
+            console.log("Reconstructed Ledger Seq ID: " + ledseqid);
+            console.log("Reconstructed Account Seq ID: " + accseqid);                        
+
+  
         }
     }
 
@@ -4401,8 +4448,132 @@ function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failur
 
 
 function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, accSeqID, ledSeqID) {
-// TODO: Finish code
+
+	
+	if (debug) console.log("sendXRPOffline - " + xrpAmount);
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+			var instructions = {
+                maxLedgerVersion: (ledSeqID + 100), // valid for a while
+                sequence: (accSeqID),
+                maxFee: 1000000 + ""
+            };
+			var payment = {
+			  source: {
+			    address: fromacc,
+			    maxAmount: {
+			      value: xrpAmount + "",
+			      currency: 'XRP',
+			    },
+		      	    tag: parseInt(sourceTag + "")
+			  },
+			  destination: {
+			    address: destination,
+			    amount: {
+			      value: xrpAmount + "",
+			      currency: 'XRP',
+			    },
+			    tag: parseInt(destTag + "")
+			  }
+			};
+
+			if (invoiceID !== undefined && invoiceID != "") {
+				payment.invoiceID = invoiceID;
+			}
+
+            remote.preparePayment(fromacc, payment, instructions).then(prepared => {
+ 				    console.log('Payment transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+				    console.log('Payment transaction signed...');
+				    secret = "";
+
+                    $('#divgreenqrdisplay').empty();
+                    $('#divgreenqrdisplay').append(kjua({text: signedTransaction, fill: "#00FF00", ecLevel: 'L', size: 340}));
+                    showTab('#tabgreenqr');
+                    unblockInput();
+            });
+        },
+		function() {
+            navigator.notification.alert("Could not load secret. Wallet may be corrupted.", 
+                function(){
+                    unblockInput();
+                }, 
+                "Failure", 
+                "OK"
+            );
+		}
+    );
 }
+
+
+function serverCycle(doafter, tries, failurefunc) {
+    if (tries >= serverStack.length - 1) {
+        if (debug) console.log("send failed 3: servercycles expired");
+        unblockInput();
+        return failurefunc("[No gateways responded. Is your Internet connected?]");
+    }
+
+    var serverIndex = 0;
+    for (var i = 0; i < serverStack.length; i++) {
+        if (serverStack[i] == currentServer) {
+            serverIndex = i + 1;
+            break;
+        }
+    }
+
+    serverIndex %= serverStack.length;
+    setRemoteGateway(serverStack[serverIndex]);
+    connectToRipple(doafter, true); 
+}
+
+function submitSignedTransaction(signedTransaction, successfunc, failurefunc, tries) {
+    remote.submit(signedTransaction).then(
+        data => {
+
+            if (debug) console.log("Submission result: " + data.resultCode );
+            if (data.resultCode == 'tesSUCCESS' || data.resultCode == 'terQUEUED') {
+                if (debug) console.log("send successful [" + data.resultCode + "]");
+                unblockInput();
+                return successfunc(data.resultCode == 'terQUEUED');
+
+            } else if ((data.resultCode + "").toLowerCase().indexOf('max_ledger') != -1) {
+                // failed to be submitted
+                // cycle servers and try again
+                
+                return serverCycle(
+                    function() {
+                        submitSignedTransaction(signedTransaction, successfunc, failurefunc, tries + 1);
+                    }, tries + 1, failurefunc);
+
+            } else {
+                if (debug) console.log("send failed 2: " + data.resultCode);
+                unblockInput();
+                return failurefunc(data.resultCode + "");						
+            }
+        }, 
+        (e) => {
+            if (debug) console.log("send failed: " + e);
+
+            if ((e + "").toLowerCase().indexOf("notconnected") != -1) {
+                return serverCycle(
+                    function() {
+                        submitSignedTransaction(signedTransaction, successfunc, failurefunc, tries + 1);
+                    }, 
+                    tries + 1, failurefunc
+                );
+            }
+                            
+            unblockInput();
+            failurefunc(e + "");
+
+        }
+    );
+}
+
 
 /* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
 ** before calling.
@@ -4443,25 +4614,6 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			}
 
 
-			var servercycle = function(doafter, tries) {
-				if (tries >= serverStack.length - 1) {
-					if (debug) console.log("send failed 3: servercycles expired");
-					unblockInput();
-					return failurefunc("[No gateways responded. Is your Internet connected?]");
-				}
-
-				var serverIndex = 0;
-				for (var i = 0; i < serverStack.length; i++) {
-					if (serverStack[i] == currentServer) {
-						serverIndex = i + 1;
-						break;
-					}
-				}
-
-				serverIndex %= serverStack.length;
-				setRemoteGateway(serverStack[serverIndex]);
-				connectToRipple(doafter, true); 
-			}
 
 			var preparepayment = function(fromacc, payment, instructions, ptries) {
 				return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
@@ -4469,57 +4621,15 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
 				    console.log('Payment transaction signed...');
 				    
-
-
-
-				    var submitfunc = function(signedTransaction, successfunc, failurefunc, tries) {
-				    remote.submit(signedTransaction).then(
-					    data => {
-
-						if (data.resultCode == 'tesSUCCESS' || data.resultCode == 'terQUEUED') {
-							if (debug) console.log("send successful [" + data.resultCode + "]");
-							unblockInput();
-							return successfunc(data.resultCode == 'terQUEUED');
-
-						} else if ((data.resultCode + "").toLowerCase().indexOf('max_ledger') != -1) {
-							// failed to be submitted
-							// cycle servers and try again
-							
-							return servercycle(
-								function() {
-									submitfunc(signedTransaction, successfunc, failurefunc, tries + 1);
-								}, tries + 1);
-
-						} else {
-							if (debug) console.log("send failed 2: " + data.resultCode);
-							unblockInput();
-							return failurefunc(data.resultCode + "");						
-						}
-					    }, (e) => {
-						if (debug) console.log("send failed: " + e);
-
-						if ((e + "").toLowerCase().indexOf("notconnected") != -1) {
-							return servercycle(
-								function() {
-									preparepayment(fromacc, payment, instructions, tries + 1);
-								}, ptries + 1);
-						}
-											
-						unblockInput();
-						failurefunc(e + "");
-
-					    });
-				    };
-
-				    submitfunc(signedTransaction, successfunc, failurefunc, ptries);
+				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
 				    
 				}, (fail) => 	 {
 					console.log('Prepare payment failed: ' + fail);
 					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
-						return servercycle(
+						return serverCycle(
 							function() {
 								preparepayment(fromacc, payment, instructions, ptries + 1);
-							}, ptries + 1);
+							}, ptries + 1, failurefunc);
 					}
 					unblockInput();
 					failurefunc("" + fail);
