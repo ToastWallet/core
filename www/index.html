@@ -55,6 +55,7 @@
 	var emergencybackup = false;
 	var offlinemode = false;
 
+    const toastepoc = 36225052; // this is the ledger seq number from which toast wallet bases its offline tx qr codes
 	var xrpreserve = 20; // this will be updated by querying the server when it connects, if there's an error getting this data the default will be used
 
 	var timepaused = 0;
@@ -692,10 +693,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	
     <div id="confirmpayamount"></div></div>
     <br>
-        <label>Enter your Passphrase</label>
-        <div>
-                <input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
-        </div><br>
+    <label>Enter your Passphrase</label>    
+    <div class="input-group">
+	<input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doConfirmPay(content);  }  );' id="btnqrpassconfirmpay" type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
 </div>
 
@@ -836,7 +840,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.7</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.8</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1018,7 +1022,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.7</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.8</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1097,39 +1101,123 @@ function doSubmitOfflineTransaction(stage, content) {
 				"Failure", "OK"
 			);
         }
+
+        var failurefunc = function(fail) {
+
+	        return navigator.notification.alert("An error occured when trying to query the Ripple network. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your device has no connectivity. " + fail,
+				function() {
+                    doSubmitOfflineTransaction(0);
+                    unblockInput();
+                },
+				"Failure", "OK"
+			);
+        }
+
+        var failurefuncAccNotFound = function(fail) {
+
+	        return navigator.notification.alert("The account you are trying to submit a transaction on behalf of does not exist (has not been activated) on the network. " + fail,
+				function() {
+                    doSubmitOfflineTransaction(0);
+                    unblockInput();
+                },
+				"Failure", "OK"
+			);
+        }
+
+        var onApiFailure = function(fail, failurefunc) {
+					console.log('API query failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return serverCycle(
+							function() {
+								preparepayment(fromacc, payment, instructions, ptries + 1);
+							}, ptries + 1, failurefunc);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+		};
+
         checkConnection(() => {
+            remote.getFee().then(fee => {
+                if (fee == undefined) {
+                    fee = 10;
+                } else {
+                    fee *= 1000000;
+                }
                 remote.getAccountInfo(account).then(info => {
-                    var accseqid = info.sequence;
+
+                   var accseqid = info.sequence;
 
                     remote.getLedger({}).then(info2 => {
-                        var ledseqid = info2.ledgerVersion;
+
+                        var ledseqid = info2.ledgerVersion - toastepoc; // toast wallet epoc
 
                         // encode these into a portable format
 
                         console.log("Ledger Seq ID: " + ledseqid);
                         console.log("Account Seq ID: " + accseqid);                        
+                        console.log("Fee: " + fee);                        
 
                         var bytes = [];
 
-                        // 3 byte int for the accseqid
-                        bytes[0] = (accseqid & 0xff0000) >> 16;
-                        bytes[1] = (accseqid & 0xff00) >> 8;
-                        bytes[2] = (accseqid & 0xff) >> 0;                        
+                        // 4 byte int for the accseqid
+                        bytes[0] = (accseqid & 0xff000000) >> 24;
+                        bytes[1] = (accseqid & 0xff0000) >> 16;
+                        bytes[2] = (accseqid & 0xff00) >> 8;
+                        bytes[3] = (accseqid & 0xff) >> 0;                        
 
                         // 4 byte int for the ledseqid
-                        bytes[3] = (ledseqid & 0xff000000) >> 24;
-                        bytes[4] = (ledseqid & 0xff0000) >> 16;
-                        bytes[5] = (ledseqid & 0xff00) >> 8;
-                        bytes[6] = (ledseqid & 0xff) >> 0;                        
+                        bytes[4] = (ledseqid & 0xff000000) >> 24;
+                        bytes[5] = (ledseqid & 0xff0000) >> 16;
+                        bytes[6] = (ledseqid & 0xff00) >> 8;
+                        bytes[7] = (ledseqid & 0xff) >> 0;                        
+               
+                        // 4 byte int for the fee
+                        bytes[8]  = (fee & 0xff000000) >> 24;
+                        bytes[9]  = (fee & 0xff0000) >> 16;
+                        bytes[10] = (fee & 0xff00) >> 8;
+                        bytes[11] = (fee & 0xff) >> 0;                        
 
                         // 1 byte checksum
                         var hex = utils.bytesToHex(bytes);
-                        hex += sodium.crypto_generichash(1, hex, 'offlinecode', 'hex');
+                        var checksum = sodium.crypto_generichash(1, hex, 'offlinecode', 'hex');
+                       
+                        var fullhex = hex;
 
-                        // remove leading 0's
-                        while(hex.charAt(0) == '0') hex = hex.slice(1);
-                        
+                        var removedZerosLedId = 0;
+                        var removedZerosAccId = 0;
+                        var removedZerosFee = 0;
+
+                        // remove leading 0's from the ledgerid
+                        while(hex.charAt(8) == '0') {
+                            hex = hex.slice(0,8) + hex.slice(9);
+                            removedZerosLedId++;
+                        }
+
+                        // remove leading 0's from the fee
+                        while(hex.charAt(hex.length - 8 + removedZerosFee) == '0') {
+                            hex =  hex.slice(0, hex.length - 8 + removedZerosFee) + hex.slice( hex.length - 7 + removedZerosFee);
+                            removedZerosFee++;
+                        }
+                    
+                        // remove leading 0's from acc seq id
+                        while(hex.charAt(0) == '0') {
+                            hex = hex.slice(1);
+                            removedZerosAccId++;
+                        }
+
+                        // encode the zero removal
+                        var compressionByte = 0;
+
+                        compressionByte += removedZerosLedId; 
+                        compressionByte += removedZerosAccId * 8;
+                
+                        // add checksum to the beginning
+                        hex = checksum + utils.bytesToHex([compressionByte]) +hex;
+
+                        // due to the checksum we should be able to reconstruct this
                         hex = hex.toUpperCase();
+
+                        console.log("Full offline code: " + checksum + utils.bytesToHex([compressionByte]) + fullhex);
 
                         // add spaces for ease of copying
                         var displayhex = "";
@@ -1147,9 +1235,15 @@ function doSubmitOfflineTransaction(stage, content) {
                         $('#submitofflinetxstep3').css('display', 'block' );
                         showTab('#tabsubmitofflinetx');
                         
+                    }).catch(e => {
+                        return onApiFailure(e, failurefunc); 
                     });
-
+                }).catch(e => {
+                    return onApiFailure(e, failurefuncAccNotFound); 
                 });
+            }).catch(e => {
+                return onApiFailure(e, failurefunc); 
+            });
         });
     } else if (stage == 2) {
         // ready to submit the transaction!
@@ -2461,7 +2555,7 @@ function doConfirmPay(passphrase) {
 
 				navigator.notification.alert("A QR code of this signed transaction has been generated. Scan it using your online device to complete the transaction.", 
 					function(){
-                        return sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid);					
+                        return sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid, confirmpay.fee);					
                     }, 
 					"Offline Transaction", 
 					"OK"
@@ -2554,8 +2648,9 @@ function doPay(nonce) {
 	var amount = $("#payamount").val().trim();
 
     var offlinecode = $('#payofflinecode').val().trim().replace(/ /g, "").toUpperCase();
-    var accseqid = -1;
-    var ledseqid = -1;
+    var accID = '';
+    var ledID = '';
+    var fee = '';
 
 	if (amount != undefined && (amount+"").charAt(0) == '.') amount = "0" + amount;
 
@@ -2595,14 +2690,51 @@ function doPay(nonce) {
 
     if (offlinemode) {
 
-        var codevalid = /^[A-F0-9]{11,16}$/m.test(offlinecode);        
+        var codevalid = /^[A-F0-9]+$/m.test(offlinecode);        
 
         if (codevalid) {
-            // pad out the 0's on the front
-            while (offlinecode.length < 16) offlinecode = '0' + offlinecode;
+
+            // grab the checksum from the front
+
+            var checksum = offlinecode.slice(0,2);
+            var compression = utils.hexToBytes(offlinecode.slice(2,4));
+
+            offlinecode = offlinecode.slice(4);
+
+            var removedZerosLedId = compression & 7;
+            var removedZerosAccId = compression >> 3;
+            var removedZerosFee = 24 - (offlinecode.length + removedZerosLedId + removedZerosAccId);
+
+            console.log("removedZerosLedId: " + removedZerosLedId);
+            console.log("removedZerosAccId: " + removedZerosAccId);
+            console.log("removedZerosFee: " + removedZerosFee);            
+
+
+
+            // from the checksum we need to figure out where to readd our zeros
+            // we know there are 24 digits to make up and we know the checksum
+
+            // there will be up to six 0's added in three places
+            var isValid = function(offlinecode, checksum) {
+                return checksum.toUpperCase() == sodium.crypto_generichash(1, offlinecode, 'offlinecode', 'hex').toUpperCase();
+            }
+
+
+            accID = '0'.repeat(removedZerosAccId) + offlinecode.slice(0, 8 - removedZerosAccId);
+            offlinecode = offlinecode.slice(8 - removedZerosAccId);
+
+            ledID = '0'.repeat(removedZerosLedId) + offlinecode.slice(0, 8 - removedZerosLedId);
+            offlinecode = offlinecode.slice(8 - removedZerosLedId);
+
+            while(offlinecode.length < 8) offlinecode = '0' + offlinecode;
+            fee = offlinecode;
+
+            offlinecode = accID + ledID + fee;
+
+            codevalid = isValid(offlinecode, checksum);
+
             console.log("offline code: " + offlinecode);
             // further validate offline code by checking checksum
-            codevalid = (offlinecode.slice(offlinecode.length - 2, offlinecode.length) == sodium.crypto_generichash(1, offlinecode.slice(0,14), 'offlinecode', 'hex').toUpperCase());
         }
 
         if (!codevalid) {
@@ -2616,22 +2748,13 @@ function doPay(nonce) {
             );
             return;
         } else {
-            var bytes = utils.hexToBytes(offlinecode);
-            accseqid = 
-                bytes[0] * 0x10000 +
-                bytes[1] * 0x100 +
-                bytes[2];
+            accID = parseInt('0x' + accID);
+            ledID = parseInt('0x' + ledID);
+            fee = parseInt('0x' + fee);
 
-            ledseqid =
-                bytes[3] * 0x1000000 +
-                bytes[4] * 0x10000 +
-                bytes[5] * 0x100 +
-                bytes[6];
-
-            console.log("Reconstructed Ledger Seq ID: " + ledseqid);
-            console.log("Reconstructed Account Seq ID: " + accseqid);                        
-
-  
+            console.log("Reconstructed LedID: " + accID);
+            console.log("Reconstructed AccID: " + ledID);                        
+            console.log("Reconstructed Fee: " + fee);   
         }
     }
 
@@ -2722,8 +2845,9 @@ function doPay(nonce) {
 			invid: invid,
 			amount: amount,
 			nonce: nonce,
-            accseqid: accseqid, // used for offline tx
-            ledseqid: ledseqid
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
 		};
 
 		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
@@ -4510,7 +4634,7 @@ function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failur
 
 
 
-function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, accSeqID, ledSeqID) {
+function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, accSeqID, ledSeqID, fee) {
 
 	
 	if (debug) console.log("sendXRPOffline - " + xrpAmount);
@@ -4522,9 +4646,9 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 
             try {
 			var instructions = {
-                maxLedgerVersion: (ledSeqID + 100), // valid for a while
+                maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
                 sequence: (accSeqID),
-                maxFee: 1000000 + ""
+                fee: fee + ""
             };
 			var payment = {
 			  source: {
@@ -4556,7 +4680,7 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 				    secret = "";
 
                     $('#divgreenqrdisplay').empty();
-                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#00FF00", ecLevel: 'L', size: 340}));
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
                     showTab('#tabgreenqr');
                     unblockInput();
             },
