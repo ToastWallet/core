@@ -834,7 +834,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.12</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.14</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1023,7 +1023,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.12</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.14</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1139,9 +1139,11 @@ function doSubmitOfflineTransaction(stage, content) {
 
         checkConnection(() => {
             remote.getFee().then(fee => {
-                if (fee == undefined || fee < 12) {
+                if (fee == undefined) {
                     fee = 12;
-                } 
+                } else {
+                    fee *= 1000000;
+                }
                 if (fee > 1000000) fee = 1000000; // we'd rather the tx fail than go through for more than 1 xrp
                 remote.getAccountInfo(account).then(info => {
 
@@ -2751,7 +2753,7 @@ function doPay(nonce) {
         } else {
             accID = parseInt('0x' + accID);
             ledID = parseInt('0x' + ledID);
-            fee = parseInt('0x' + fee);
+            fee = (parseInt('0x' + fee)/1000000.0) + "";
 
             console.log("Reconstructed LedID: " + accID);
             console.log("Reconstructed AccID: " + ledID);                        
