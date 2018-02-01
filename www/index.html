@@ -201,29 +201,9 @@
 
 		});
 
-		$('#backuppassword').on('touchend', quickSelectInput);
-		$('#payofflinecode').on('touchend', quickSelectInput);
-		$('#restorepassword').on('touchend', quickSelectInput);
-		$('#rsecaccpassword').on('touchend', quickSelectInput);
-		$('#delaccpassword').on('touchend', quickSelectInput);
-		$('#txtsecret').on('touchend', quickSelectInput);
-		$('#extaccnick').on('touchend', quickSelectInput);
-		$('#extaccpassword').on('touchend', quickSelectInput);
-		$('#setpassword1').on('touchend', quickSelectInput);
-		$('#setpassword2').on('touchend', quickSelectInput);
-		$('#setpassword3').on('touchend', quickSelectInput);
-		$('#setpassword4').on('touchend', quickSelectInput);
-		$('#setpassword5').on('touchend', quickSelectInput);
-		$('#newaccnick').on('touchend', quickSelectInput);
-		$('#genaccpassword').on('touchend', quickSelectInput);
-		$('#confirmpaypassword').on('touchend', quickSelectInput);
-		$('#toaddress').on('touchend', quickSelectInput);
-		$('#desttag').on('touchend', quickSelectInput);
-		$('#invoiceid').on('touchend', quickSelectInput);
-		$('#payamount').on('touchend', quickSelectInput);
-		$('#recoverypassword').on('touchend', quickSelectInput);
-		$('#corruptionpp').on('touchend', quickSelectInput);
-		$('#corruptionrp').on('touchend', quickSelectInput);
+        //REM: Add  new fields to this list to ensure they are quickselected on tap
+        var txtFields = ['#restorebackup2', '#restorebackup', '#restorepassword', '#accdetailssecretaddress', '#rsecaccpassword', '#accsecret', '#delaccpassword', '#nickchangeaddress', '#nickchangenick', '#nickchangepassword', '#rekeyaddress', '#rekeypassword', '#accdetailsaddress', '#txtsecret', '#vanityaddr', '#extaccnick', '#extaccpassword', '#setpassword1', '#setpassword2', '#setpassword3', '#setpassword4', '#setpassword5', '#newaccnick', '#genaccpassword', '#confirmpaypassword', '#payofflinecode', '#toaddress', '#desttag', '#invoiceid', '#payamount', '#txtredqr', '#txtgreenqr', '#txtnewgateway', '#txtnewgateway2', '#recoverypassword', '#corruptionpp', '#corruptionrp'];
+
 
 
 		var quickSelectInput = function() {
@@ -237,28 +217,11 @@
 			return false;
 		}
 
-		$('#backuppassword').on('click', stopClick);
-		$('#restorepassword').on('click', stopClick);
-		$('#rsecaccpassword').on('click', stopClick);
-		$('#delaccpassword').on('click', stopClick);
-		$('#txtsecret').on('click', stopClick);
-		$('#extaccnick').on('click', stopClick);
-		$('#extaccpassword').on('click', stopClick);
-		$('#setpassword1').on('click', stopClick);
-		$('#setpassword2').on('click', stopClick);
-		$('#setpassword3').on('click', stopClick);
-		$('#setpassword4').on('click', stopClick);
-		$('#setpassword5').on('click', stopClick);
-		$('#newaccnick').on('click', stopClick);
-		$('#genaccpassword').on('click', stopClick);
-		$('#confirmpaypassword').on('click', stopClick);
-		$('#toaddress').on('click', stopClick);
-		$('#desttag').on('click', stopClick);
-		$('#invoiceid').on('click', stopClick);
-		$('#payamount').on('click', stopClick);
-		$('#recoverypassword').on('click', stopClick);
-		$('#corruptionpp').on('click', stopClick);
-		$('#corruptionrp').on('click', stopClick);		
+        // enforce quick selection on txt fields
+        for (var i = 0; i < txtFields.length; i++) {
+        	$(txtFields[i]).on('touchend', quickSelectInput);
+	    	$(txtFields[i]).on('click', stopClick);
+        }
 
 		var toggleswitchfunc;
 		$(".toggleswitch").on('touchend',toggleswitchfunc = function() {
@@ -346,7 +309,13 @@
     </div>
     <br>
     <div>
-	<label >Passphrase or Recovery Phrase (of current wallet)</label><input  type="password" id="restorepassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase (of current wallet)</label>
+    <div class="input-group">
+	<input  id="restorepassword" type="password" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#restorepassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div>
     </div>
     <br>
     <p style="color:black;">
@@ -395,10 +364,16 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 		<input type="text" id="accdetailssecretaddress" oninput="$(this).val($(this).data('content'));" style="color:black">
 	</center>
-        <br><label id="lblacpassword">Enter your Passphrase</label>
-        <div>
-                <input  type="password" id="rsecaccpassword" class="form-control" placeholder="">
-        </div><br>
+    <br>
+    <label id="lblacpassword">Enter your Passphrase</label>
+    <div>
+        <div class="input-group" id="divrsecaccpassword">
+        <input  id="rsecaccpassword" type="password" class="form-control" placeholder="">
+        <span class="input-group-btn">
+            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doRevealRippleSecret(content, $("#accdetailssecretaddress").val()) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        </span>
+        </div>
+    </div><br>
 	<center>
 		<div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchend="doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());">Reveal Ripple Secret</button></div>
 	</center>
@@ -418,9 +393,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
 	I really want to delete this account. I understand there's no way to undo this action.</p>
         <br><label>Enter your Passphrase to DELETE</label>
-        <div>
-                <input  type="password" id="delaccpassword" class="form-control" placeholder="">
-        </div><br>
+        <div class="input-group">
+        <input  id="delaccpassword" type="password" class="form-control" placeholder="">
+        <span class="input-group-btn">
+            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#delaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        </span>
+        </div>
+        <br>
 	<center><div><button  type="button" class="btn btn-danger" id="btnimport" ontouchend="doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); ">DELETE ACCOUNT</button></div></center>
 </div>
 
@@ -433,9 +412,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <input  type="text" id="nickchangenick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
-        <div>
-                <input  type="password" id="nickchangepassword" class="form-control" placeholder="">
-        </div><br>
+        <div class="input-group">
+        <input  id="nickchangepassword" type="password" class="form-control" placeholder="">
+        <span class="input-group-btn">
+            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#nickchangepassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        </span>
+        </div>
+        <br>
 	<center><div>
 			<button  type="button" class="btn btn-primary" id="btnimport" 
 				ontouchend="doChangeNickname($('#nickchangeaddress').val(), $('#nickchangenick').val(), $('#nickchangepassword').val());">Change Nickname</button></div></center>
@@ -451,7 +434,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<input  class="form-control" readonly="readonly" type="text" placeholder=""  id="rekeyaddress">
         <br><label>Enter your Passphrase</label>
         <div>
-                <input  type="password" id="rekeypassword" class="form-control" placeholder="">
+            <input  type="password" id="rekeypassword" class="form-control" placeholder=""><!--todo: add QR here-->
         </div><br>
 	<center><div>
 			<button  type="button" class="btn btn-danger" id="btndoaccrekey" 
@@ -510,10 +493,14 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div>
         <input  type="text" id="extaccnick" class="form-control" placeholder="">
 	</div>
-        <br><label>Enter your Passphrase</label>
-        <div>
-                <input  type="password" id="extaccpassword" class="form-control" placeholder="">
-        </div><br>
+    <br><label>Enter your Passphrase</label>
+        <div class="input-group">
+        <input  id="extaccpassword" type="password" class="form-control" placeholder="">
+        <span class="input-group-btn">
+            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#extaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        </span>
+        </div>
+    <br>
 	<center><div><button  type="button" class="btn btn-primary" id="btnimport" ontouchend="doImportExistingAccount($('#extaccpassword').val(), $('#extaccnick').val(), $('#txtsecret').val(), $('#vanityaddr').val());">Import Account</button></div></center>
 </div>
 
@@ -633,9 +620,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
 	<br><label>Current Passphrase or Recovery Phrase</label>
-	<div>
-		<input  type="password" id="setpassword3" class="form-control" placeholder="">
-	</div>
+    <div class="input-group">
+	<input  id="setpassword3" type="password" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#setpassword3").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div>
 	<div style="text-align:center; color:black;">If you are using your recovery phrase please ensure it is all lower case with a single space between each word and no spaces at either end.</div>
 	<br><label>New Passphrase</label>
 	<div>
@@ -663,9 +653,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <input  type="text" id="newaccnick" class="form-control" placeholder="">
 	</div>
         <br><label>Enter your Passphrase</label>
-        <div>
-                <input  type="password" id="genaccpassword" class="form-control" placeholder="">
-        </div><br>
+        <div class="input-group">
+        <input  id="genaccpassword" type="password" class="form-control" placeholder="">
+        <span class="input-group-btn">
+            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#genaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        </span>
+        </div>        
+        <br>
 	<div style="text-align:center; color:black;">Once imported your address will need to be activated by sending <span id="minxrp2"></span> XRP to it.</div>
 	<br>
 	<center><div><button  type="button" class="btn btn-primary" ontouchend="doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());">Import this Address</button></div></center>
@@ -840,17 +834,24 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.9</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.10</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
-	<label >Passphrase or Recovery Phrase</label><input  type="password" id="recoverypassword" class="form-control" placeholder="">
+	<label >Passphrase or Recovery Phrase</label>
+    <div class="input-group">
+	<input  id="recoverypassword" type="password" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doResetPin(content, function(){showTab("#tabaccounts");}, function(){}); } )'  type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div>
     </div>
 
-    <div align="right"><button  class="btn btn-primary" ontouchend="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></div>
+    <center>
+        <button  class="btn btn-primary" style="min-width: 20em !important;" ontouchend="doResetPin($('#recoverypassword').val(), function(){showTab('#tabaccounts');}, function(){});">Reset PIN</button></center>
 </div>
 
 <div id="tabcorruptionprompt" class="screentab" data-primarytab="true" data-hasback="false"  data-noright="true" data-title="Recover Corrupt Data" style="display: none;">
@@ -1022,7 +1023,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.9</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.10</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1814,7 +1815,7 @@ function doRevealRippleSecret(passphrase, address) {
 				$("#lblacpassword").hide();
 				$("#lblaccsecret").show();
 				$("#btnrevealsecret").hide();
-				$("#rsecaccpassword").hide();
+				$("#divrsecaccpassword").hide();
         	                $("#accsecret").val(secret);
         	                $("#accsecret").data('content', secret);
 				$("#accsecret").show();
@@ -2237,6 +2238,7 @@ function showTab(tab, dontClearText) {
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
         refreshAccounts( (tab == '#tabpayments' && offlinemode ? onPaymentSelectFromAccount : ()=>{}) );	
 	} else if (tab == "#tabaccountsecret") {
+        $("#divrsecaccpassword").show();
 		$("#lblacpassword").show();
 		$("#lblaccsecret").hide();
 		$("#btnrevealsecret").show();
