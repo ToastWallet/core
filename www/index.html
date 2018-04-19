@@ -51,7 +51,7 @@
 <div id="offlinemodewarning" style="position:absolute; top:0; left:0; width:100%; height:15px; background:#00abff; color:white; margin:0px; padding:0px; font-size:11px; text-align:center; z-index:9999999; display:none;">OFFLINE MODE</div>
 <script>
 	var debug = true;
-	var ontestnet = false;
+	var ontestnet = true;
 	var emergencybackup = false;
 	var offlinemode = false;
 
@@ -426,7 +426,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabaddtrustline" class="screentab" data-hasback="true" data-title="Add Trustline" style="display:none">
-	<label >Ripple Address</label>
+    <center style="color:black;">Trustlines are an <b>advanced</b> Ripple network feature that allow you to accept non-XRP tokens. Please research this feature before you use it.</center><br/>
+    <label >Ripple Address</label>
 		<input  class="form-control" readonly="readonly" type="text" placeholder=""  id="atladdress">
 	<br>
 
@@ -442,7 +443,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </div>
 
     
-	<label >Counterparty (Issuer Address)</label>
+	<label >Issuer Address</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder=""  id="atlissueraddr">
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#atlissueraddr").val(content) } )'>QR</button></span>
@@ -477,22 +478,22 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabtrustlineconfirm" class="screentab" data-primarytab="false" data-title="Confirm Trustline" style="display: none;">
 	<div class="paygrouping">
-    <label>Your Account</label>
+    <label>Address</label>
 	<div id="ctladdress"></div>
     </div>
 
 	<div class="paygrouping">
-    <label>Counterparty (Issuer) Address</label>
+    <label>Issuer</label>
 	<div id="ctlissueraddr"></div>
     </div>
 
 	<div class="paygrouping">
-    <label>Currency Code</label>
+    <label>Currency</label>
 	<div id="ctlcurrency"></div>
     </div>
 
 	<div class="paygrouping">
-    <label>Trustline Limit</label>
+    <label>Limit</label>
 	<div id="ctllimit"></div>
     </div>
 
@@ -512,7 +513,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doConfirmTrustline(content);  }  );' id="btnqrpassconfirmatl" type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div><br>
-	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmTrustline($('#confirmatlpassword').val());">Confirm Trustline</button></div></center>
+	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmTrustline($('#confirmatlpassword').val());">Submit Trustline</button></div></center>
 </div>
 
 
@@ -550,10 +551,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
 		<center>
-			<button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchend="$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); ">Change Nickname</button><br>
 
 			<button  id="btnbackupkey" type="button" class="accopt btn btn-info" ontouchend="$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); ">Show Secret</button>
 			<!-- button  type="button" id="btnrekeyacc" class="accopt btn btn-warning" ontouchend="$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);">Rekey Address</button--><br>
+		<button  id="btnaddtrustline" type="button" class="accopt btn btn-warning" ontouchend="$('#atladdress').data('content', $('#accdetailsaddress').data('content') ); $('#atladdress').val( $('#accdetailsaddress').val() ); showTab('#tabaddtrustline', true); ">Add Trustline</button>
+        <br>
+            <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchend="$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); ">Change Nickname</button><br>
 			<button  type="button" class="accopt btn btn-danger" ontouchend="$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');">Delete Address</button>
 		</center>
 	</div>
@@ -2734,6 +2737,92 @@ function doConfirmPay(passphrase) {
 }
 
 
+function doConfirmTrustline(passphrase) {
+	if (debug) console.log("doConfirmTrustline");
+	if (confirmtl.nonce == lasttrustlinenonce) {
+		// this is an accidental double tap
+		return;
+	} 
+	blockInput();
+
+	lasttrustlinenonce = confirmtl.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmtl == undefined || confirmtl.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmtl), ''+confirmtl.nonce, 'hex') != confirmtlhash ) {
+				navigator.notification.alert("An error occured when trying to make your trustline. No trustline was created.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
+				return;
+			}
+
+
+            if (offlinemode) {
+                // we're just going to create the payment as a QR code and display it
+
+				navigator.notification.alert("A QR code of this signed trustline creation transaction has been generated. Scan it using your online device to complete the transaction.", 
+					function(){
+                    //TODO: Replace this
+                       // return sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid, confirmpay.fee);					
+                    }, 
+					"Offline Transaction", 
+					"OK"
+				);            
+
+                return;
+            }
+
+			checkConnection(
+				function(){
+					sendTrustLineTx(passphrase, confirmtl.atladdress, confirmtl.atlissueraddr, confirmtl.atlcurrency, confirmtl.atllimit, confirmtl.atlrippling, 
+						function(wasqueued){
+								navigator.notification.alert("Your trustline creation was successfully " + ( wasqueued ? "queued, and should be executed shortly." : "executed." ), 
+									function(){
+										clearPaymentScreen();
+										showTab("#tabaccounts");
+										unblockInput();
+									}, "Success", "OK"); 
+						}, 
+						function(err) {
+							navigator.notification.alert("An error occured when trying to set the trustline. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your trustline details are incorrect or the receiving address has not been activated. " + err, 
+							function(){
+								lasttrustlinenonce = "";
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error", "OK");
+						}
+					);
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lasttrustlinenonce = "";
+					unblockInput();
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not create trustline due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lasttrustlinenonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
+
 function validateCurrency(cur) {
     return /^[A-Z0-9?!@#$%^&*<>(){}[\]|]{3}$/.test(""+cur);
 }
@@ -2749,7 +2838,7 @@ function doAddTrustline(nonce) {
 
 	var atladdress = $("#atladdress").val().trim();
 	var atlissueraddr = $("#atlissueraddr").val().trim();
-	var atlcurrency = (""+$("#atlissueraddr").val()).trim().toUpperCase();
+	var atlcurrency = (""+$("#atlcurrency").val()).trim().toUpperCase();
 	var atllimit = $("#atllimit").val().trim();
 	var atlrippling = $("#atlrippling").val().trim().toUpperCase() == "ENABLED";
 
@@ -2811,7 +2900,7 @@ function doAddTrustline(nonce) {
 
     try {
         var x = new BN(atllimit);
-        if (x.isNeg() || x.isZero) return invalidLimit();
+        if (x.isNeg() || x.isZero()) return invalidLimit();
     } catch (E) {
         return invalidLimit();
     }
@@ -2831,35 +2920,53 @@ function doAddTrustline(nonce) {
 
     // if execution reaches this point the validation has completed successfully
 
-	var nextscreen = function() {
 
 
-		confirmtl = { 
-			atladdress: atladdress,
-			atlissueraddr: atlissueraddr,
-			atlcurrency: atlcurrency,
-			atllimit: atllimit,
-			atlrippling: atlrippling,
-			nonce: nonce,
+    var nextscreen = function() {
+        confirmtl = { 
+            atladdress: atladdress,
+            atlissueraddr: atlissueraddr,
+            atlcurrency: atlcurrency,
+            atllimit: atllimit,
+            atlrippling: atlrippling,
+            nonce: nonce,
             accseqid: accID, // used for offline tx
             ledseqid: ledID,
             fee: fee
-		};
+        };
 
-		confirmtlhash = sodium.crypto_generichash(16, JSON.stringify(confirmtl), ''+nonce, 'hex');
+        confirmtlhash = sodium.crypto_generichash(16, JSON.stringify(confirmtl), ''+nonce, 'hex');
 
-		$('#ctladdress')[0].innerText = atladdress;
-		$('#ctlissueraddr')[0].innerText = atlissueraddr;
-		$('#ctlcurrency')[0].innerText = atlcurrency;
-		$('#ctllimit')[0].innerText = atllimit;
-		$('#ctlrippling')[0].innerText = ( atlrippling ? 'ENABLED' : 'DISABLED' );
+        $('#ctladdress')[0].innerText = atladdress;
+        $('#ctlissueraddr')[0].innerText = atlissueraddr;
+        $('#ctlcurrency')[0].innerText = atlcurrency;
+        $('#ctllimit')[0].innerText = atllimit;
+        $('#ctlrippling')[0].innerText = ( atlrippling ? 'ENABLED' : 'DISABLED' );
 
-		showTab("#tabtrustlineconfirm");
-		
-		unblockInput();
-	};
+        showTab("#tabtrustlineconfirm");
+        
+        unblockInput();
+    };
 
 
+    checkAccountIsFunded(atladdress, 5, function(){
+			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+				function(b){
+					if (debug) console.log("button selected: " + b);
+					if (b == 1) {
+						nextscreen();
+					} else {
+						$('#atladdress').focus();
+						unblockInput();
+					}
+				}, 
+				"XRP Reserve not met", 
+				[ "Try anyway", "Cancel" ]
+                );},
+                function() {
+					$('#atladdress').focus();
+					unblockInput();                    
+                }, nextscreen);
 
 
 }
@@ -3110,38 +3217,45 @@ function doPay(nonce) {
 		unblockInput();
 	};
 
-	if (payfrom in accountbalances) {
-		var balance = accountbalances[payfrom] - amount;
-		if (balance < xrpreserve) {
+    checkAccountIsFunded(payfrom, amount, function(){
 			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
 					if (b == 1) {
 						nextscreen();
 					} else {
-						$("#payamount").focus();
+						$('#payamount').focus();
 						unblockInput();
 					}
 				}, 
 				"XRP Reserve not met", 
 				[ "Try anyway", "Cancel" ]
-			);			
-			return;
+                );}, 
+                function() { 
+                    $('#payamount').focus();
+                    unblockInput();
+                }, nextscreen);
+}
+
+
+function checkAccountIsFunded(payfrom, amount, failurefunc, silentfailurefunc, successfunc) {
+	if (payfrom in accountbalances) {
+		var balance = accountbalances[payfrom] - amount;
+		if (balance < xrpreserve) {
+			return failurefunc();
 		} else {
-			nextscreen();
-			return;
+			return successfunc();
 		}
 	} else {
 
         if (offlinemode) return nextscreen(); // skip this warning if we already know we can't check the balance
         
-		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account before continuing.",
+		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account after the " + amount + " XRP transaction before continuing.",
 			function(b){
 				if (b == 1) {
-					nextscreen();
+					return successfunc();
 				} else {
-					$("#payamount").focus();
-					unblockInput();
+				    return silentfailurefunc();
 				}
 			}, 
 			"XRP balance not confirmed", 
@@ -3164,9 +3278,15 @@ function randShuffleArray(array) {
 var currentServer = '';
 var serverStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
 var defaultServerStack = [ 'wss://s1.ripple.com', 'wss://s3.ripple.com', 'wss://s-west.ripple.com', 'wss://s-east.ripple.com', 'wss://s2.ripple.com' ];
+var testnetServer = 'wss://s.altnet.rippletest.net:51233';
 
 function resetServerStack() {
 	serverStack = [];
+    if (ontestnet) {
+        serverStack.unshift(testnetServer);
+	    setRemoteGateway(serverStack[0]);
+        return;
+    }
 	for (var i = 0; i < defaultServerStack.length; i++) {
 		serverStack.unshift(defaultServerStack[i]);
 	}
@@ -3175,11 +3295,7 @@ function resetServerStack() {
 }
 
 var remote;
-if (ontestnet) {
-	setRemoteGateway("wss://s.altnet.rippletest.net:51233");
-} else {
-	resetServerStack();
-}
+resetServerStack();
 
 
 function showSpinner(msg) {
@@ -3819,7 +3935,7 @@ onDeviceReady: function() {
 
 				getSavedGateways(function(gateways) {
 
-					if (gateways['gateways'] == undefined) gateways['gateways'] = [];
+					if (gateways['gateways'] == undefined || ontestnet) gateways['gateways'] = [];
 
 					console.log("Saved gateways " + gateways['gateways']);
 
@@ -4679,7 +4795,6 @@ function doOfflineMode(withboot) {
 
 
 function setRemoteGateway(server) {
-	if (ontestnet) return;
 	currentServer = server;
 	remote = new ripple.RippleAPI({
 		server: server
@@ -5028,6 +5143,56 @@ function submitSignedTransaction(signedTransaction, successfunc, failurefunc, tr
 
         }
     );
+}
+
+
+function sendTrustLineTx(passphrase, fromacc, issuer, currency, limit, rippling, successfunc, failurefunc) {
+	
+	if (debug) console.log("sendTrustLineTx - " + issuer + " currency " + currency + " limit " + limit + " rippling " + rippling + " foraddr " + fromacc);
+	
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+			var instructions = {maxLedgerVersionOffset: 30};
+			var trustline = {
+                "currency" : currency,
+                "counterparty" : issuer,
+                "limit" : limit,
+                "ripplingDisabled" : !rippling
+			};
+
+			var preparetrustline = function(fromacc, trustline, instructions, ptries) {
+				return remote.prepareTrustline(fromacc, trustline, instructions).then(prepared => {
+				    console.log('Trustline transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+				    console.log('Trustline transaction signed...');
+				    
+				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
+				    
+				}, (fail) => 	 {
+					console.log('Prepare trustline failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return serverCycle(
+							function() {
+								preparepayment(fromacc, trustline, instructions, ptries + 1);
+							}, ptries + 1, failurefunc);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+				});
+			}
+
+			return preparetrustline(fromacc, trustline, instructions, 0);
+		
+		},
+		function() {
+			unblockInput();
+			failurefunc("Could not load secret. Wallet may be corrupted.");
+		});    
+
 }
 
 
