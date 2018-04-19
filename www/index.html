@@ -425,6 +425,99 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
+<div id="tabaddtrustline" class="screentab" data-hasback="true" data-title="Add Trustline" style="display:none">
+	<label >Ripple Address</label>
+		<input  class="form-control" readonly="readonly" type="text" placeholder=""  id="atladdress">
+	<br>
+
+    <div id="atlofflinecodediv" style="display:none;">
+        <center>
+            <div id="atltabredqr">
+            </div>
+        </center>
+      	<br />    
+        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <input  type="text" id="atlofflinecode" class="form-control" placeholder="">
+        <br>
+    </div>
+
+    
+	<label >Counterparty (Issuer Address)</label>
+	<div class="input-group">
+		<input  class="form-control" type="text" placeholder=""  id="atlissueraddr">
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#atlissueraddr").val(content) } )'>QR</button></span>
+	</div>
+	<br>
+    <label >Currency Code</label>
+    <div>
+    <input  class="form-control" type="text" placeholder="USD"  id="atlcurrency" maxlength="3" >
+    </div>
+    <br>
+    <label >Trustline Limit</label>
+    <div>
+    <input  class="form-control" type="text" placeholder="10000"  id="atllimit" >
+    </div>
+    <br>
+
+    <label >Rippling (disabled is strongly recommended)</label>
+    <div>
+	<select id="atlrippling" class="form-control" onchange="">
+        <option selected="selected">disabled</option>
+        <option>enabled</option>
+	</select>
+    </div>
+    <br>
+
+    <center><div>
+			<button  type="button" class="btn btn-primary" id="btnaddtrustline" 
+		ontouchend="doAddTrustline(sodium.randombytes_random());">Add Trustline</button></div></center>
+</div>
+
+
+
+<div id="tabtrustlineconfirm" class="screentab" data-primarytab="false" data-title="Confirm Trustline" style="display: none;">
+	<div class="paygrouping">
+    <label>Your Account</label>
+	<div id="ctladdress"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Counterparty (Issuer) Address</label>
+	<div id="ctlissueraddr"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Currency Code</label>
+	<div id="ctlcurrency"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Trustline Limit</label>
+	<div id="ctllimit"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Rippling</label>
+	<div id="ctlrippling"></div>
+    </div>
+
+
+
+
+    <br>
+    <label>Enter your Passphrase</label>    
+    <div class="input-group">
+	<input  type="password" id="confirmatlpassword" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doConfirmTrustline(content);  }  );' id="btnqrpassconfirmatl" type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div><br>
+	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmTrustline($('#confirmatlpassword').val());">Confirm Trustline</button></div></center>
+</div>
+
+
+
+
 <div id="tabrekeyaccount" class="screentab" data-hasback="true" data-title="Rekey Account" style="display:none">
 	<p style="color:red; text-align:justify;"><b>WARNING</b>&mdash;This will set a new Ripple secret for the below Ripple address and will make <b>old backups invalid</b>. Only use this if your backup or Ripple secret is compromised!</p>
 	<p style="color:red; text-align:justify;">
@@ -765,6 +858,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center style="color:black;">The Ripple network requires a minimum <span id="minxrp"></span> XRP balance at all times and charges fees based on congestion even for failed transactions.</center></div>
 
 </div>
+
+
 
 
 
@@ -2639,6 +2734,213 @@ function doConfirmPay(passphrase) {
 }
 
 
+function validateCurrency(cur) {
+    return /^[A-Z0-9?!@#$%^&*<>(){}[\]|]{3}$/.test(""+cur);
+}
+
+var lasttrustlinenonce;
+var confirmtl = {};
+var confirmtlhash = "";
+
+function doAddTrustline(nonce) {
+    
+	if (debug) console.log("doAddTrustline");
+	blockInput();
+
+	var atladdress = $("#atladdress").val().trim();
+	var atlissueraddr = $("#atlissueraddr").val().trim();
+	var atlcurrency = (""+$("#atlissueraddr").val()).trim().toUpperCase();
+	var atllimit = $("#atllimit").val().trim();
+	var atlrippling = $("#atlrippling").val().trim().toUpperCase() == "ENABLED";
+
+    var offlinecode = $('#atlofflinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accID = '';
+    var ledID = '';
+    var fee = '';
+
+
+	if (atllimit != undefined && (atllimit+"").charAt(0) == '.') atllimit = "0" + atllimit;
+
+    if (atllimit == undefined) atllimit = "0";
+
+    if (!validateAddress(atladdress)) {
+		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid Ripple address.", 
+			function(){
+				$("#atladdress").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);    
+    }
+
+
+    if (!validateAddress(atlissueraddr)) {
+		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid Ripple address.", 
+			function(){
+				$("#atlissueraddr").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);    
+    }
+
+    if (!validateCurrency(atlcurrency)) {
+		return navigator.notification.alert("Invalid currency code. Must be 3 characters A-Z, 0-9 or any of the following ? ! @ # $ % ^ & * < > ( ) { } [ ] |", 
+			function(){
+				$("#atlcurrency").focus();
+				unblockInput();
+			}, 
+			"Invalid currency code", 
+			"OK"
+		);    
+    }
+
+
+    var invalidLimit = ()=>{
+		return navigator.notification.alert("Invalid limit. Must be a number greater than 0.", 
+			function(){
+				$("#atllimit").focus();
+				unblockInput();
+			}, 
+			"Invalid limit", 
+			"OK"
+		);
+    };
+
+    try {
+        var x = new BN(atllimit);
+        if (x.isNeg() || x.isZero) return invalidLimit();
+    } catch (E) {
+        return invalidLimit();
+    }
+
+
+    if (offlinemode) {
+
+        ofl = validateOfflineCode(offlinecode, '#atlofflinecode');
+        if (ofl === false) return;
+
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
+    }
+
+
+
+    // if execution reaches this point the validation has completed successfully
+
+	var nextscreen = function() {
+
+
+		confirmtl = { 
+			atladdress: atladdress,
+			atlissueraddr: atlissueraddr,
+			atlcurrency: atlcurrency,
+			atllimit: atllimit,
+			atlrippling: atlrippling,
+			nonce: nonce,
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
+		};
+
+		confirmtlhash = sodium.crypto_generichash(16, JSON.stringify(confirmtl), ''+nonce, 'hex');
+
+		$('#ctladdress')[0].innerText = atladdress;
+		$('#ctlissueraddr')[0].innerText = atlissueraddr;
+		$('#ctlcurrency')[0].innerText = atlcurrency;
+		$('#ctllimit')[0].innerText = atllimit;
+		$('#ctlrippling')[0].innerText = ( atlrippling ? 'ENABLED' : 'DISABLED' );
+
+		showTab("#tabtrustlineconfirm");
+		
+		unblockInput();
+	};
+
+
+
+
+}
+
+
+function validateOfflineCode(offlinecode, offlinecodefield) {
+
+        var codevalid = /^[A-F0-9]+$/m.test(offlinecode);        
+
+        if (codevalid) {
+
+            // grab the checksum from the front
+
+            var checksum = offlinecode.slice(0,2);
+            var compression = utils.hexToBytes(offlinecode.slice(2,4));
+
+            offlinecode = offlinecode.slice(4);
+
+            var removedZerosLedId = compression & 7;
+            var removedZerosAccId = compression >> 3;
+            var removedZerosFee = 24 - (offlinecode.length + removedZerosLedId + removedZerosAccId);
+
+            console.log("removedZerosLedId: " + removedZerosLedId);
+            console.log("removedZerosAccId: " + removedZerosAccId);
+            console.log("removedZerosFee: " + removedZerosFee);            
+
+
+
+            // from the checksum we need to figure out where to re-add our zeros
+            // we know there are 24 digits to make up and we know the checksum
+
+            // there will be up to six 0's added in three places
+            var isValid = function(offlinecode, checksum) {
+                return checksum.toUpperCase() == sodium.crypto_generichash(1, offlinecode, 'offlinecode', 'hex').toUpperCase();
+            }
+
+
+            accID = '0'.repeat(removedZerosAccId) + offlinecode.slice(0, 8 - removedZerosAccId);
+            offlinecode = offlinecode.slice(8 - removedZerosAccId);
+
+            ledID = '0'.repeat(removedZerosLedId) + offlinecode.slice(0, 8 - removedZerosLedId);
+            offlinecode = offlinecode.slice(8 - removedZerosLedId);
+
+            while(offlinecode.length < 8) offlinecode = '0' + offlinecode;
+            fee = offlinecode;
+
+            offlinecode = accID + ledID + fee;
+
+            codevalid = isValid(offlinecode, checksum);
+
+            console.log("offline code: " + offlinecode);
+
+        }
+
+        if (!codevalid) {
+            navigator.notification.alert("Your offline code appears to be incorrect. Check you scanned the red QR code on the online version of Toast Wallet first.", 
+                function(){
+                    $(offlinecodefield).focus();
+                    unblockInput();
+                }, 
+                "Offline code invalid", 
+                "OK"
+            );
+            return false;
+        } 
+
+
+        accID = parseInt('0x' + accID);
+        ledID = parseInt('0x' + ledID);
+        fee = (parseInt('0x' + fee)/1000000.0) + "";
+
+        console.log("Reconstructed LedID: " + accID);
+        console.log("Reconstructed AccID: " + ledID);                        
+        console.log("Reconstructed Fee: " + fee);   
+
+        return { accID: accID, ledID: ledID, fee: fee };
+       
+
+}
+
+
 var confirmpay = {};
 var confirmpayhash = "";
 var lastpaidnonce;
@@ -2695,72 +2997,12 @@ function doPay(nonce) {
 
     if (offlinemode) {
 
-        var codevalid = /^[A-F0-9]+$/m.test(offlinecode);        
+        ofl = validateOfflineCode(offlinecode, '#payofflinecode');
+        if (ofl === false) return;
 
-        if (codevalid) {
-
-            // grab the checksum from the front
-
-            var checksum = offlinecode.slice(0,2);
-            var compression = utils.hexToBytes(offlinecode.slice(2,4));
-
-            offlinecode = offlinecode.slice(4);
-
-            var removedZerosLedId = compression & 7;
-            var removedZerosAccId = compression >> 3;
-            var removedZerosFee = 24 - (offlinecode.length + removedZerosLedId + removedZerosAccId);
-
-            console.log("removedZerosLedId: " + removedZerosLedId);
-            console.log("removedZerosAccId: " + removedZerosAccId);
-            console.log("removedZerosFee: " + removedZerosFee);            
-
-
-
-            // from the checksum we need to figure out where to readd our zeros
-            // we know there are 24 digits to make up and we know the checksum
-
-            // there will be up to six 0's added in three places
-            var isValid = function(offlinecode, checksum) {
-                return checksum.toUpperCase() == sodium.crypto_generichash(1, offlinecode, 'offlinecode', 'hex').toUpperCase();
-            }
-
-
-            accID = '0'.repeat(removedZerosAccId) + offlinecode.slice(0, 8 - removedZerosAccId);
-            offlinecode = offlinecode.slice(8 - removedZerosAccId);
-
-            ledID = '0'.repeat(removedZerosLedId) + offlinecode.slice(0, 8 - removedZerosLedId);
-            offlinecode = offlinecode.slice(8 - removedZerosLedId);
-
-            while(offlinecode.length < 8) offlinecode = '0' + offlinecode;
-            fee = offlinecode;
-
-            offlinecode = accID + ledID + fee;
-
-            codevalid = isValid(offlinecode, checksum);
-
-            console.log("offline code: " + offlinecode);
-            // further validate offline code by checking checksum
-        }
-
-        if (!codevalid) {
-            navigator.notification.alert("Your offline code appears to be incorrect. Check you scanned the red QR code on the online version of Toast Wallet first.", 
-                function(){
-                    $("#payofflinecode").focus();
-                    unblockInput();
-                }, 
-                "Offline code invalid", 
-                "OK"
-            );
-            return;
-        } else {
-            accID = parseInt('0x' + accID);
-            ledID = parseInt('0x' + ledID);
-            fee = (parseInt('0x' + fee)/1000000.0) + "";
-
-            console.log("Reconstructed LedID: " + accID);
-            console.log("Reconstructed AccID: " + ledID);                        
-            console.log("Reconstructed Fee: " + fee);   
-        }
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
     }
 
 	if (invid != "") {
