@@ -51,11 +51,13 @@
 <div id="offlinemodewarning" style="position:absolute; top:0; left:0; width:100%; height:15px; background:#00abff; color:white; margin:0px; padding:0px; font-size:11px; text-align:center; z-index:9999999; display:none;">OFFLINE MODE</div>
 <script>
 	var debug = true;
-	var ontestnet = true;
+	var ontestnet = false;
 	var emergencybackup = false;
 	var offlinemode = false;
 
-    const toastepoc = 36225052; // this is the ledger seq number from which toast wallet bases its offline tx qr codes
+    var toastepoc = 36225052; // this is the ledger seq number from which toast wallet bases its offline tx qr codes
+    if (ontestnet) toastepoc = 0;
+
 	var xrpreserve = 20; // this will be updated by querying the server when it connects, if there's an error getting this data the default will be used
 
 	var timepaused = 0;
@@ -797,7 +799,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabgreenqr" class="screentab" data-primarytab="true" data-title="Offline Transaction" style="display:none">
     <center>
-    <p style="color:black; font-weight: bold;">Scan this green QR code in your online Toast Wallet to send the payment.</p>
+    <p style="color:black; font-weight: bold;">Scan this green QR code in your online Toast Wallet to submit the transaction.</p>
     <div id="divgreenqrdisplay">
     </div>  
     </center>  
@@ -934,7 +936,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchend="doResetGatewayPrompt();">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchend="showTab('#tabaddgateway');">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchend="doSubmitOfflineTransaction(0);">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.17</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.18</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1123,7 +1125,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.17</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.18</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1371,7 +1373,7 @@ function doSubmitOfflineTransaction(stage, content) {
         submitSignedTransaction(
             signedTx,       
             function(wasqueued){
-                    navigator.notification.alert("Your payment was successfully " + ( wasqueued ? "queued, and will be sent shortly." : "sent." ), 
+                    navigator.notification.alert("Your transaction was successfully " + ( wasqueued ? "queued." : "submitted." ), 
                         function(){
                             showTab(-1);
                             unblockInput();
@@ -1793,7 +1795,7 @@ function doSelectAccount(accselected, nickname) {
 	$("#ra" + accselected).addClass("active");
 	activeaccount = accselected;
 	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
-	$("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><a href="#"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></li>');
+    $("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><div class="accountline"><a href="#" class="address"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></div><div class="trustlines"></div></li>');
 
 
 	showTab("#tabaccountdetails");	
@@ -2022,7 +2024,20 @@ function getAccountInfo(address, successfunc, failurefunc) {
 
 	if (result == undefined) return;
 	if ("account_data" in result) {
-		successfunc(result.account_data);
+
+        // check for trustlines and add as 'trustlines' key if found
+
+
+        remote.getTrustlines(address).then( 
+            (trustlines) => {
+                result.account_data['trustlines'] = trustlines;
+                return successfunc(result.account_data);
+            }
+        ).catch((E)=>{
+                return successfunc(result.account_data);
+        });
+
+
 	} else {
 		failurefunc();
 	}
@@ -2058,8 +2073,29 @@ function refreshAccounts(after) {
                                     var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
                                     usdbalance = '<br><div class="amount"><small style="opacity:0.7;">(' + amount.toFixed(2) + ' USD)</small></div>';
                                 }
-                                $("#ra" + account + ">.amount")[0].innerHTML = xrpBalance + " XRP" + usdbalance;
-                    
+
+                                var trustlines = "";
+                                if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
+                                    res['trustlines'].length != undefined && res['trustlines'].length > 0) {
+                                    
+                                    for (t in res['trustlines']) {
+                                        var tl = res['trustlines'][t];
+                                        var issuer, currency, balance;
+                                        if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
+                                            (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined) continue;
+
+                                        // in the specification there is an optional 40 character setting for currency, we can't display that here and displaying a turncated 
+                                        // version may lead to people being manipulated into thinking they have another currency. 
+                                        if (currency.length > 3) currency = 'UNKNOWN'; 
+                                        trustlines += '<div class="trustline"><span class="trustline_issuer"><small><i>' + issuer + '</i></small></span> <div class="amount"><span class="mono">' + balance + ' ' + currency + '</span></div></div>';
+
+                                    }
+                                }
+
+                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + xrpBalance + " XRP" + usdbalance + '</span>';
+                                if (trustlines != "") 
+                                    $("#ra" + account + ">.trustlines")[0].innerHTML = trustlines;
+
                             } catch(e) {handle_error(e);}
                             accountbalances[account] = parseFloat(xrpBalance);
 
@@ -2083,7 +2119,7 @@ function refreshAccounts(after) {
                         function(e) {
                             if (debug) console.log("account refresh error: " + e);
                             try {
-                                $("#ra" + account + ">.amount")[0].innerText = "(not activated)";
+                                $("#ra" + account + ">.accountline>.amount")[0].innerText = "(not activated)";
                             } catch(e) {handle_error(e);}					
                         };
 
@@ -2114,7 +2150,7 @@ function refreshAccounts(after) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-			$("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><a href="#" ontouchend="doSelectAccount(\''+i+'\');"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></li>');
+            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchend="doSelectAccount(\''+i+'\', \''+nickname+'\');"><div class="accountline"><a href="#" ontouchend="doSelectAccount(\''+i+'\');" class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></div><div class="trustlines"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
@@ -2304,9 +2340,12 @@ function showTab(tab, dontClearText) {
 			$("input[type='text']").val("");
 			$("textarea").val("");
             $('#paytabredqr').empty();
+            $('#atltabredqr').empty();
             $('#paytabgreenqr').empty();
 		}
 	}
+
+
 
 
 	$("#navheader").show();
@@ -2351,7 +2390,14 @@ function showTab(tab, dontClearText) {
 		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
 		$('#accdetailstransactiondetails').hide(); 
 		$('#accdetailsaddressdetails').show();
-	} 
+    } else if (tab == '#tabaddtrustline' && offlinemode) {
+
+        var account = $("#atladdress").data('content');
+        $("#atltabredqr").empty();
+        $("#atltabredqr").append(kjua({text: account, fill:"#ff0000"}));    
+        $('#atlofflinecodediv').css('display', 'block')
+
+    }
 	if (tab == '#tabpayments') {
 		var to = $('#toaddress').val();
 		if (to == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
@@ -2766,8 +2812,7 @@ function doConfirmTrustline(passphrase) {
 
 				navigator.notification.alert("A QR code of this signed trustline creation transaction has been generated. Scan it using your online device to complete the transaction.", 
 					function(){
-                    //TODO: Replace this
-                       // return sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid, confirmpay.fee);					
+                        return sendTrustLineTxOffline(passphrase, confirmtl.atladdress, confirmtl.atlissueraddr, confirmtl.atlcurrency, confirmtl.atllimit, confirmtl.atlrippling, confirmtl.accseqid, confirmtl.ledseqid, confirmtl.fee);
                     }, 
 					"Offline Transaction", 
 					"OK"
@@ -3248,7 +3293,7 @@ function checkAccountIsFunded(payfrom, amount, failurefunc, silentfailurefunc, s
 		}
 	} else {
 
-        if (offlinemode) return nextscreen(); // skip this warning if we already know we can't check the balance
+        if (offlinemode) return successfunc(); // skip this warning if we already know we can't check the balance
         
 		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account after the " + amount + " XRP transaction before continuing.",
 			function(b){
@@ -3668,7 +3713,6 @@ function setPin(pin, successfunc, failfunc) {
 	
 
 }
-
 
 function validatePin(pin, successfunc, failfunc, nopinsetfunc) {
 	var f = function(pindata) { try {
@@ -5005,7 +5049,6 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 	getSecretForAccount(passphrase, fromacc, 
 		function(secret) {
 
-
             try {
 			var instructions = {
                 maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
@@ -5038,8 +5081,10 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
             remote.preparePayment(fromacc, payment, instructions).then(prepared => {
  				    console.log('Payment transaction prepared...');
 				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
-				    console.log('Payment transaction signed...');
-				    secret = "";
+				    
+                    secret = "";
+				    
+                    console.log('Payment transaction signed...');
 
                     $('#divgreenqrdisplay').empty();
                     $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
@@ -5168,7 +5213,10 @@ function sendTrustLineTx(passphrase, fromacc, issuer, currency, limit, rippling,
 				return remote.prepareTrustline(fromacc, trustline, instructions).then(prepared => {
 				    console.log('Trustline transaction prepared...');
 				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
-				    console.log('Trustline transaction signed...');
+                    
+                    secret = "";
+				    
+                    console.log('Trustline transaction signed...');
 				    
 				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
 				    
@@ -5193,6 +5241,79 @@ function sendTrustLineTx(passphrase, fromacc, issuer, currency, limit, rippling,
 			failurefunc("Could not load secret. Wallet may be corrupted.");
 		});    
 
+}
+
+
+function sendTrustLineTxOffline(passphrase, fromacc, issuer, currency, limit, rippling, accSeqID, ledSeqID, fee) {
+
+
+	if (debug) console.log("sendTrustLineTx - " + issuer + " currency " + currency + " limit " + limit + " rippling " + rippling + " foraddr " + fromacc + " accSeqID " +  accSeqID + " ledSeqID " + ledSeqID + " fee " + fee);
+
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+            try {
+			var instructions = {
+                maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
+                sequence: (accSeqID),
+                fee: fee + ""
+            };
+			var trustline = {
+                "currency" : currency,
+                "counterparty" : issuer,
+                "limit" : limit,
+                "ripplingDisabled" : !rippling
+			};
+
+
+            remote.prepareTrustline(fromacc, trustline, instructions).then(prepared => {
+                console.log('Trustline transaction prepared...');
+                const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+                console.log('Trustline transaction signed...');
+
+                secret = "";
+
+                    $('#divgreenqrdisplay').empty();
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
+                    showTab('#tabgreenqr');
+                    unblockInput();
+            },
+            E => {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );            
+            });
+         
+
+            } catch (E) {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );
+            }
+        },
+		function() {
+            navigator.notification.alert("Could not load secret. Wallet may be corrupted.", 
+                function(){
+                    unblockInput();
+                }, 
+                "Failure", 
+                "OK"
+            );
+		}
+    );
 }
 
 
@@ -5240,6 +5361,9 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 				return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
 				    console.log('Payment transaction prepared...');
 				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+
+                    secret = "";
+
 				    console.log('Payment transaction signed...');
 				    
 				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);

@@ -131,6 +131,14 @@ textarea {
     min-width: 50%;
 }
 
+.paygrouping {
+    color: blue;
+    font-size: 1em;
+    overflow-wrap: break-word;
+    display: block;
+    vertical-align: middle;
+}
+
 #tabpaymentconfirm div[id^="confirm"] {
     color: blue;
     font-size: 1em;
@@ -351,7 +359,8 @@ img.loader {
     left: calc(50% - 25px);
 }
 .amount {
-    float: right;
+    text-align: right;
+    flex: 1;
 }
 #accountslist > li {
     text-overflow: ellipsis;
@@ -439,6 +448,39 @@ div.input-group>span.input-group-btn>button {
 }
 button, button:focus, button:active, button:hover {
     outline: none !important;
+}
+
+.trustline {
+    display:flex;
+}
+
+
+.accountline {
+    white-space: nowrap;
+    display: flex;
+}
+
+.trustlines {
+    display: block;
+}
+
+
+
+span.trustline_issuer {
+    overflow: hidden;
+    text-overflow:  ellipsis;
+}
+.mono {
+}
+.trustline>.amount {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.amount:before {
+    display: inline-block;
+    content: " ";
+    width: 2em;
 }
 
 .copybtn {
