@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.toastwallet.core" version="2.2.21" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.toastwallet.core" version="2.2.22" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
 	Toast Wallet is a Ripple wallet for Android and iOS.
@@ -18,7 +18,7 @@
     <preference name="android-minSdkVersion" value="16" />
     <preference name="buildArchitecture" value="armv7" />
     <preference name="xwalkMultipleApk" value="true" />
-    <preference name='phonegap-version' value='cli-8.0.0' />
+    <preference name='phonegap-version' value='cli-6.4.0' />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-orientation" source="npm" spec="~1.0.2" />
