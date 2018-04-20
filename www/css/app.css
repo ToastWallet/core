@@ -454,7 +454,9 @@ button, button:focus, button:active, button:hover {
     display:flex;
 }
 
-
+span#accdetailsamount {
+    float: right;
+}
 .accountline {
     white-space: nowrap;
     display: flex;
