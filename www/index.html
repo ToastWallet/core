@@ -948,7 +948,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.32</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.33</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1137,7 +1137,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.32</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.33</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2313,7 +2313,18 @@ function te(e, x) {
     if (/*dx*dx + dy*dy < touchTolerance && */
             /* then second check if its actually the same element */
         e.srcElement == document.elementFromPoint(e.changedTouches[0].pageX, e.changedTouches[0].pageY)) {
-        return x();
+
+        // stop the event from firing further
+        try {
+            e.stopPropagation();
+        } catch (E) {}
+
+        if (typeof x === "function")  {
+            x();
+        } else {
+            console.log("warning touchend can't execute func x = " + x);
+        }
+
     }
 }
 
