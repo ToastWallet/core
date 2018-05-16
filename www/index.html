@@ -203,9 +203,6 @@
 
 		});
 
-        //REM: Add  new fields to this list to ensure they are quickselected on tap
-        var quickSelectFields = ['#restorebackup2', '#restorebackup', '#restorepassword', '#rsecaccpassword', '#accsecret', '#delaccpassword',  '#nickchangenick', '#nickchangepassword', '#rekeyaddress', '#rekeypassword', '#txtsecret', '#vanityaddr', '#extaccnick', '#extaccpassword', '#setpassword1', '#setpassword2', '#setpassword3', '#setpassword4', '#setpassword5', '#newaccnick', '#genaccpassword', '#confirmpaypassword', '#payofflinecode', '#toaddress', '#desttag', '#invoiceid', '#payamount', '#txtredqr', '#txtgreenqr', '#txtnewgateway', '#txtnewgateway2', '#recoverypassword', '#corruptionpp', '#corruptionrp', '#tabaddtrustline', '#atlofflinecodediv', '#atltabredqr', '#atlofflinecode', '#atlissueraddr', '#atlcurrency', '#atllimit', '#btnaddtrustline'];
-
 
         var noSelectFields = [
                 '#accdetailssecretaddress', '#accdetailsaddress',  '#atladdress', '#nickchangeaddress'
@@ -214,7 +211,6 @@
 
 		var quickSelectInput = function() {
 			$(this).focus();
-			//if (cordova.plugins.Keyboard != undefined) cordova.plugins.Keyboard.show();
 		}
 
 		var stopClick = function(e) {
@@ -223,16 +219,23 @@
 			return false;
 		}
 
-        // enforce quick selection on txt fields
-        for (var i = 0; i < quickSelectFields.length; i++) {
-            $(quickSelectFields[i]).on('touchend', (event)=>{ te(event, quickSelectFields); });
-	    	$(quickSelectFields[i]).on('click', stopClick);
-        }
 
-        // enforce noselect on certain fields
-        for (var i = 0; i < noSelectFields.length; i++) {
-        	$(noSelectFields[i]).on('touchend', stopClick);
-	    	$(noSelectFields[i]).on('click', stopClick);
+
+
+		if ((device.platform + "").toLowerCase() != 'browser') {
+
+            // prevent 'clicks' being registered on any field or button, we only deal in ontouchend
+            $('*').on('click', stopClick);
+
+            // create quick selection on touch for these fields
+            $('input').on('touchend', (event)=>{ te(event, quickSelectFields); });
+
+            // enforce noselect on certain fields
+            for (var i = 0; i < noSelectFields.length; i++) {
+           	    $(noSelectFields[i]).unbind('touchend');
+        	    $(noSelectFields[i]).on('touchend', stopClick);
+            }
+
         }
 
 
@@ -948,7 +951,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.33</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.34</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1137,7 +1140,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.33</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.34</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2331,19 +2334,56 @@ function te(e, x) {
 /* Run this to add a click proxy to all elements so that a browser can use the wallet */
 function clickProxy() {
 	if ((device.platform + "").toLowerCase() == 'browser') {
-		$('*:not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
-		$('*:not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
+		$('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
+		$('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
             inClickProxy = true;
-			var _ts = $(this).attr('ontouchstart');
-			var _te = $(this).attr('ontouchend');
+
+            var ele = this;
+
+            var _ts;
+            var _te;
+
+            var maxUp = 5;
+
+            do {
+
+                if (ele == undefined || $(ele) == undefined || $(ele)[0] == undefined) break;
+
+                var events = $._data($(ele)[0], 'events');
+
+                for (var x in events) {
+                    if (x == 'touchstart') _ts = events['touchstart'];
+                    if (x == 'touchend') _te = events['touchend'];
+                }
+
+
+                if (_ts == undefined && _te == undefined) {
+                    _ts = $(ele).attr('ontouchstart');
+                    _te = $(ele).attr('ontouchend');
+                }
+
+            } while (_ts == undefined && _te == undefined && (typeof($(ele).parent) === 'function') && (ele = $(ele).parent()) != undefined  && maxUp-- > 0 );
+
+
+            var executeHandler = (handler)=>{
+                if (typeof(handler) == 'string') {
+    				handler = '(function(){' + handler + ';})();';
+	    			eval(handler);
+                } else if (typeof(handler) == 'object') {
+                    if (handler[0] != undefined && handler[0].handler != undefined && typeof(handler[0].handler) == 'function') {
+                        (handler[0].handler)();
+                    }
+                }
+            }
+
 			if (_ts != undefined) {
-				_ts = '(function(){' + _ts + ';})();';
-				eval(_ts);
+                executeHandler(_ts);
 			}
 			if (_te != undefined) {
-				_te = '(function(){' + _te + ';})();';
-				eval(_te);
+                executeHandler(_te);
 			};
+			e.stopPropagation();
+			e.preventDefault();
             inClickProxy = false;
 		});
 		$("#morecontentindicator").off(); $("#morecontentindicator").on('click', function() {
@@ -2586,7 +2626,7 @@ function showTab(tab, dontClearText) {
 
 	renderMoreContentIndicator();
 
-	$(currenttab).focus();
+//	$(currenttab).focus();
 
 	// make sure the values of various input boxes are set correctly before displaying
 	var inputs = $(currenttab + " input");
@@ -2600,6 +2640,7 @@ function showTab(tab, dontClearText) {
 	if ((device.platform + "").toLowerCase() == 'browser') {
 		clickProxy();
 	}
+
 
 	setTimeout(unblockInput, 200);
 }
