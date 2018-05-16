@@ -282,7 +282,7 @@
 	<center>
 
 	<div>
-		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction" ontouchend="">Copy</button>
+		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction">Copy</button>
 	</div>
 	</center>
 	<label>Your backup</label>
@@ -315,7 +315,7 @@
     <div class="input-group">
 	<input  id="restorepassword" type="password" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#restorepassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#restorepassword').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div>
     </div>
@@ -372,7 +372,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="input-group" id="divrsecaccpassword">
         <input  id="rsecaccpassword" type="password" class="form-control" placeholder="">
         <span class="input-group-btn">
-            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doRevealRippleSecret(content, $("#accdetailssecretaddress").val()) } )'  type="button" style="min-width: 5em !important;">QR</button>
+            <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doRevealRippleSecret(content, $('#accdetailssecretaddress').val()) } )"  type="button" style="min-width: 5em !important;">QR</button>
         </span>
         </div>
     </div><br>
@@ -398,7 +398,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="input-group">
         <input  id="delaccpassword" type="password" class="form-control" placeholder="">
         <span class="input-group-btn">
-            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#delaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+            <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#delaccpassword').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
         </span>
         </div>
         <br>
@@ -417,7 +417,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="input-group">
         <input  id="nickchangepassword" type="password" class="form-control" placeholder="">
         <span class="input-group-btn">
-            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#nickchangepassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+            <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#nickchangepassword').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
         </span>
         </div>
         <br>
@@ -448,7 +448,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label >Issuer Address</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder=""  id="atlissueraddr">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#atlissueraddr").val(content) } )'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#atlissueraddr').val(content) } )">QR</button></span>
 	</div>
 	<br>
     <label >Currency Code</label>
@@ -512,7 +512,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div class="input-group">
 	<input  type="password" id="confirmatlpassword" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doConfirmTrustline(content);  }  );' id="btnqrpassconfirmatl" type="button" style="min-width: 5em !important;">QR</button>
+        <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmTrustline(content);  }  );" id="btnqrpassconfirmatl" type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmTrustline($('#confirmatlpassword').val());">Submit Trustline</button></div></center>
@@ -578,13 +578,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label >Ripple Secret</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret", "#vanityaddr", "#txtsecret", decodeSecretAddressURI, existingAddrSecretSwap);'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend="scanQR('#txtsecret', '#vanityaddr', '#txtsecret', decodeSecretAddressURI, existingAddrSecretSwap);">QR</button></span>
 	</div>
 	<br>
 	<label >Ripple Address (leave blank to generate from secret)</label>
 	<div class="input-group">
 		<input  class="form-control" type="text" placeholder="Enter your secret key here"  id="vanityaddr">
-		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend='scanQR("#txtsecret", "#vanityaddr", "#vanityaddr", decodeSecretAddressURI, existingAddrSecretSwap);'>QR</button></span>
+		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchend="scanQR('#txtsecret', '#vanityaddr', '#vanityaddr', decodeSecretAddressURI, existingAddrSecretSwap);">QR</button></span>
 	</div>
 	<br>
         <label >Account Nickname (optional)</label>
@@ -595,7 +595,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="input-group">
         <input  id="extaccpassword" type="password" class="form-control" placeholder="">
         <span class="input-group-btn">
-            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#extaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+            <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#extaccpassword').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
         </span>
         </div>
     <br>
@@ -723,7 +723,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div class="input-group">
 	<input  id="setpassword3" type="password" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#setpassword3").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+        <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#setpassword3').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div>
 	<div style="text-align:center; color:black;">If you are using your recovery phrase please ensure it is all lower case with a single space between each word and no spaces at either end.</div>
@@ -756,7 +756,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="input-group">
         <input  id="genaccpassword" type="password" class="form-control" placeholder="">
         <span class="input-group-btn">
-            <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { $("#genaccpassword").val(content) } )'  type="button" style="min-width: 5em !important;">QR</button>
+            <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#genaccpassword').val(content) } )"  type="button" style="min-width: 5em !important;">QR</button>
         </span>
         </div>        
         <br>
@@ -791,7 +791,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div class="input-group">
 	<input  type="password" id="confirmpaypassword" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doConfirmPay(content);  }  );' id="btnqrpassconfirmpay" type="button" style="min-width: 5em !important;">QR</button>
+        <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmPay(content);  }  );" id="btnqrpassconfirmpay" type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchend="doConfirmPay($('#confirmpaypassword').val());">Confirm Payment</button></div></center>
@@ -827,7 +827,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div class="input-group">
 	<input  type="text" id="toaddress" class="form-control" placeholder="">
 	<span class="input-group-btn">
-		<button  class="btn btn-info" ontouchend='scanQR("#toaddress", "#desttag", "#payamount",  decodePaymentURI );' id="btnqrpay" type="button">QR</button>
+		<button  class="btn btn-info" ontouchend="scanQR('#toaddress', '#desttag', '#payamount',  decodePaymentURI );" id="btnqrpay" type="button">QR</button>
 	</span>
 	</div>
 	<br />
@@ -837,7 +837,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div class="input-group">
 	<input  type="text" id="desttag" class="form-control" placeholder="">
 	<span class="input-group-btn">
-		<button  class="btn btn-default" ontouchend='doToggleInvoiceId();' id="btnpayshowmore" type="button">More</button>
+		<button  class="btn btn-default" ontouchend="doToggleInvoiceId();" id="btnpayshowmore" type="button">More</button>
 	</span>
 	</div>
 
@@ -947,7 +947,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div class="input-group">
 	<input  id="recoverypassword" type="password" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button  class="btn btn-info" ontouchend='scanQR("", "", "", (content, intofield1, intofield2, intofield3, after) => { doResetPin(content, function(){showTab("#tabaccounts");}, function(){}); } )'  type="button" style="min-width: 5em !important;">QR</button>
+        <button  class="btn btn-info" ontouchend="scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); } )"  type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div>
     </div>
@@ -2273,6 +2273,28 @@ function renderEnteredPin() {
 
 	refreshWebView();
 
+}
+
+/* Touching the screen on a phone or tablet produces two touch events of interest:
+   onTouchStart and onTouchEnd. Previously we had only looked for touchend events
+   however this causes an issue wherein drag-to-scroll action was being misinterpreted
+   as a touch action. To mitigate this we record the page location of the start of 
+   each touch action then compare it to the end location of the touch action. If
+   the locations do not match then the user has been performing a gesture that's not
+   a touch tap action. */
+var lastTouchX = 0;
+var lastTouchY = 0;
+const touchTolerance = 100; // square of the maximum pixel distance to register as a touch
+function ts(e) {
+    lastTouchX = e.changedTouches[0].pageX;
+    lastTouchY = e.changedTouches[0].pageY;
+}
+
+// executes the function x if the user's finger hasn't moved outside the tolerance range
+function te(e, x) {
+    var dx = lastTouchX - e.changedTouches[0].pageX;
+    var dy = lastTouchY - e.changedTouches[0].pageY;
+    if (dx*dx + dy*dy < touchTolerance) x();
 }
 
 /* Run this to add a click proxy to all elements so that a browser can use the wallet */
