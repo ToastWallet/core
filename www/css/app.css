@@ -629,7 +629,7 @@ ul.iosheader > li > * {
 }
 
 
-button, label, .screendiv > *, #navheader *, #navfooter * {
+*:not(input) {
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
