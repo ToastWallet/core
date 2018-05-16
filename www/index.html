@@ -75,6 +75,17 @@
 		}
 	}
 
+	function quickSelectInput() {
+    	$(this).focus();
+	}
+
+	function stopClick(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}
+
+
 	var prekeyboardscrollpos = 0;
 	function afterCordovaLoad()  {
 		if (debug) console.log("afterCordovaLoad");
@@ -207,17 +218,6 @@
         var noSelectFields = [
                 '#accdetailssecretaddress', '#accdetailsaddress',  '#atladdress', '#nickchangeaddress'
             ];
-
-
-		var quickSelectInput = function() {
-			$(this).focus();
-		}
-
-		var stopClick = function(e) {
-			e.stopPropagation();
-			e.preventDefault();
-			return false;
-		}
 
 
 
@@ -951,7 +951,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.37</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.38</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1140,7 +1140,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.37</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.38</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
