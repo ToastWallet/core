@@ -951,7 +951,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.35</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.36</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1140,7 +1140,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.35</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.36</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2290,43 +2290,39 @@ function renderEnteredPin() {
 
 }
 
-/* Touching the screen on a phone or tablet produces two touch events of interest:
-   onTouchStart and onTouchEnd. Previously we had only looked for touchend events
-   however this causes an issue wherein drag-to-scroll action was being misinterpreted
-   as a touch action. To mitigate this we record the page location of the start of 
-   each touch action then compare it to the end location of the touch action. If
-   the locations do not match then the user has been performing a gesture that's not
-   a touch tap action. */
-var lastTouchX = 0;
-var lastTouchY = 0;
-const touchTolerance = 5000; // square of the maximum pixel distance to register as a touch
+
+/* ts and te are functions to handle touchstart and touchend events on active elements
+   te in particular ensures that drag-to-scroll gesture does not cause accidental taps */
+
 var inClickProxy = false;
+
 function ts(e) {
     if (inClickProxy) return;
-    lastTouchX = e.changedTouches[0].pageX;
-    lastTouchY = e.changedTouches[0].pageY;
 }
 
 // executes the function x if the user's finger hasn't moved outside the tolerance range
 function te(e, x) {
+
+    // stop the event from firing further
+    try {
+        e.stopPropagation();
+        e.preventDefault();
+    } catch (E) {
+
     if (inClickProxy) {
         x();
         return false;
     }
-    var dx = lastTouchX - e.changedTouches[0].pageX;
-    var dy = lastTouchY - e.changedTouches[0].pageY;
-    // first check the element is in the same position as the touch event started
-    if (/*dx*dx + dy*dy < touchTolerance && */
-            /* then second check if its actually the same element */
-        e.srcElement == document.elementFromPoint(e.changedTouches[0].pageX, e.changedTouches[0].pageY)) {
 
-        // stop the event from firing further
-        try {
-            e.stopPropagation();
-            e.preventDefault();
-        } catch (E) {}
+    if (e.srcElement == document.elementFromPoint(e.changedTouches[0].pageX, e.changedTouches[0].pageY)) {
 
         if (typeof x === "function")  {
+            // stop the event from firing further
+            try {
+                e.stopPropagation();
+                e.preventDefault();
+            } catch (E) {}
+   
             x();
         } else {
             console.log("warning touchend can't execute func x = " + x);
