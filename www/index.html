@@ -75,9 +75,9 @@
 		}
 	}
 
-	function quickSelectInput() {
-        console.log("quickselect input on " + $(this)[0].id);
-    	$(this).focus();
+	function quickSelectInput(e) {
+        if (e == undefined) return;
+    	$(e).focus();
 	}
 
 	function stopClick(e) {
@@ -85,6 +85,7 @@
 		e.preventDefault();
 		return false;
 	}
+
 
 
 	var prekeyboardscrollpos = 0;
@@ -2301,7 +2302,7 @@ function te(e, x) {
                 e.preventDefault();
             } catch (E) {}
    
-            x();
+            x(e.srcElement);
         } else {
             console.log("warning touchend can't execute func x = " + x);
         }
