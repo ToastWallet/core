@@ -351,7 +351,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddaccount');})"><a href="#"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddaccount');})"><a href="#"><i class="fa fa-plus-circle" style="font-size: 2.7em" aria-hidden="true"></i></a></li>
 	</ul>
 </div>
 
@@ -538,7 +538,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<li id="btnaccdetailsselecttransactions" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});})" class="">Transactions</li>
 	</ul>
 	<div id="accdetailsaddressdetails" class="innertab">
-		<div style="color:black"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div><br>
+		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
 			<span class="input-group-btn">
@@ -930,7 +930,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.40</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.41</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1119,7 +1119,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.40</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.41</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1793,7 +1793,7 @@ function doSelectAccount(accselected, nickname) {
 
 
 	showTab("#tabaccountdetails");	
-	$("#accdetailsamount")[0].innerText = ( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + ' XRP' );
+    $("#accdetailsamount")[0].innerHTML = ( accountbalances[accselected] == undefined ? '' :  '<b>XRP ' + accountbalances[accselected] + '</b>' );
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
@@ -2039,6 +2039,21 @@ function getAccountInfo(address, successfunc, failurefunc) {
 	});
 }
 
+
+function display_currency_amount(x) {
+    if (typeof(x) != "number") {
+        console.log("format_currency called on not a number " + x);
+        return "(error)";
+    }
+
+    if (x > 1) {
+        return x.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    } else {
+        return x.toLocaleString(undefined, {minimumSignificantDigits:4, maximumSignificantDigits:4});
+    }
+
+}
+
 function refreshAccounts(after) {
 	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
@@ -2065,13 +2080,18 @@ function refreshAccounts(after) {
                                 var usdbalance = "";
                                 if (exchangerate != -1) {
                                     var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
-                                    usdbalance = '<br><div class="amount"><small style="opacity:0.7;">(' + amount.toFixed(2) + ' USD)</small></div>';
+                                    var stramount =  display_currency_amount(amount);
+
+                                    usdbalance = '<span class="mono" style="opacity:0.7"><small>USD ' + stramount + '</small></span>';
                                 }
 
                                 var trustlines = "";
                                 if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
                                     res['trustlines'].length != undefined && res['trustlines'].length > 0) {
                                     
+
+                                    tlbalances = {};
+
                                     for (t in res['trustlines']) {
                                         var tl = res['trustlines'][t];
                                         var issuer, currency, balance;
@@ -2081,12 +2101,25 @@ function refreshAccounts(after) {
                                         // in the specification there is an optional 40 character setting for currency, we can't display that here and displaying a turncated 
                                         // version may lead to people being manipulated into thinking they have another currency. 
                                         if (currency.length > 3) currency = 'UNKNOWN'; 
-                                        trustlines += '<div class="trustline"><span class="trustline_issuer"><small><i>' + issuer + '</i></small></span> <div class="amount"><span class="mono">' + balance + ' ' + currency + '</span></div></div>';
+                                
+                                        if (currency == 'USD') currency = '*USD';
 
+                                        if (currency in tlbalances) {
+                                            tlbalances[currency] += parseFloat("" + balance);
+                                        } else {
+                                            tlbalances[currency] = parseFloat("" + balance);
+                                        }
                                     }
+
+                                    for (var currency in tlbalances) {
+                                        trustlines += '<div class="trustline"><div class="amount"><span class="mono">' + currency + ' ' + display_currency_amount(tlbalances[currency]) + '</span></div></div>';
+                                    }
+
                                 }
 
-                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + xrpBalance + " XRP" + usdbalance + '</span>';
+                                trustlines = '<div class="trustline"><div class="amount"><span class="mono" style="font-weight:500">XRP ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
+
+                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
                                 if (trustlines != "") 
                                     $("#ra" + account + ">.trustlines")[0].innerHTML = trustlines;
 

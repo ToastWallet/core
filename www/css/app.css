@@ -359,19 +359,22 @@ img.loader {
     left: calc(50% - 25px);
 }
 .amount {
-    text-align: right;
+    //text-align: right;
     flex: 1;
 }
 #accountslist > li {
     text-overflow: ellipsis;
     overflow: hidden;
-    min-height: 4.5em;
+//    min-height: 4.5em;
+    border: 0;
+    margin: 0;
+    border-radius: 3px;
 }
 #btnaddaccount > * {
     vertical-align: middle;
 }
 i.fa {
-    font-size: 1.3em !important;
+    font-size: 1.5em;
 }
 label {
     color: black;
@@ -450,8 +453,18 @@ button, button:focus, button:active, button:hover {
     outline: none !important;
 }
 
+.accountline .address {
+    max-width: 50%;
+}
+
 .trustline {
-    display:flex;
+    border-radius: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: left;
+    display: inline-flex;
+    margin-top: 0.3em;
+    white-space: nowrap;
 }
 
 span#accdetailsamount {
@@ -460,10 +473,17 @@ span#accdetailsamount {
 .accountline {
     white-space: nowrap;
     display: flex;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 
 .trustlines {
-    display: block;
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    margin-right:0;
+    margin-left:0;
+    justify-content:space-between;   
+
 }
 
 
@@ -476,13 +496,11 @@ span.trustline_issuer {
 }
 .trustline>.amount {
     white-space: nowrap;
-    text-align: right;
 }
 
-.amount:before {
-    display: inline-block;
-    content: " ";
-    width: 2em;
+
+.accountline .amount {
+    text-align: right;
 }
 
 .copybtn {
