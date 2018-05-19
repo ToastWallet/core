@@ -422,7 +422,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabaddtrustline" class="screentab" data-hasback="true" data-title="Add Trustline" style="display:none">
-    <center style="color:black;">Trustlines are an <b>advanced</b> Ripple network feature that allow you to accept non-XRP tokens. Please research this feature before you use it.</center><br/>
     <label >Ripple Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="atladdress">
 	<br>
@@ -930,7 +929,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.41</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.42</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1119,7 +1118,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.41</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.42</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2117,7 +2116,7 @@ function refreshAccounts(after) {
 
                                 }
 
-                                trustlines = '<div class="trustline"><div class="amount"><span class="mono" style="font-weight:500">XRP ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
+                                trustlines = '<div class="trustline"><div class="amount"><span class="mono" style="">XRP ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
 
                                 $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
                                 if (trustlines != "") 
@@ -2146,7 +2145,7 @@ function refreshAccounts(after) {
                         function(e) {
                             if (debug) console.log("account refresh error: " + e);
                             try {
-                                $("#ra" + account + ">.accountline>.amount")[0].innerText = "(not activated)";
+                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<small style="opacity:0.7">not activated</small>';
                             } catch(e) {handle_error(e);}					
                         };
 
@@ -2177,7 +2176,7 @@ function refreshAccounts(after) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\');})"><div class="accountline"><a href="#" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\');})" class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount">' + (offlinemode ? '(offline)' : '(loading)') + '</div></div><div class="trustlines"></div></li>');
+            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\');})"><div class="accountline"><a href="#" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\');})" class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : 'loading') + '</small></div></div><div class="trustlines"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
