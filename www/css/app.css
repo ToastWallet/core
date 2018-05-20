@@ -155,12 +155,14 @@ textarea {
 }
 
 
+
 .accountdetailsselector {
     z-index: 89 !important;
     width: 100%;
-    overflow: hidden;
-    text-overflow: clip;
-    padding: 0 !important;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    background: #286abc;
 }
 
 .accountdetailsselector > *:not(.accdetailsinnertabselected) {
@@ -168,16 +170,38 @@ textarea {
     color: white !important;
 }
 
-.accountdetailsselector > .accdetailsinnertabselected {
-    background: white !important;
-    color: rgb(0, 81, 185) !important;
-}
+.accountdetailsselector > .accdetailsinnertabselected {background: white;color: black;}
 
 .accountdetailsselector > li {
+    flex: 2;
     text-align: center;
-    padding: 0.5em 0 0.5em 0;
-    width: calc(50% - 3px);
-    display: inline-block;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    border-radius: 2px 2px 0px 0px;
+}
+
+div#tabaccountdetails {
+    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+}
+
+div#accdetailstransactiondetails {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.accountdetailsselector > li:not(:first-of-type) {
+    border-left: 1px solid #286abc;
+}
+
+.accountdetailsselector > li:last-of-type {
+}
+
+div#accdetailsaddressdetails {
+    margin-left: 1em;
+    margin-right: 1em;
 }
 
 .txrow {
@@ -474,7 +498,6 @@ button, button:focus, button:active, button:hover {
     text-align: left;
     display: inline-flex;
     white-space: nowrap;
-    font-weight: 450;
 }
 
 span#accdetailsamount {
@@ -485,7 +508,34 @@ span#accdetailsamount {
     display: flex;
     padding-right: 0.2em;
     padding-left: 0.2em;
-    border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+.accountline .currency {
+    background: rgba(3, 151, 0, 0.8);
+}
+
+.currency {
+    font-size: 0.7em;
+    border-radius: 3px;
+    background-color: hsla(119, 0%, 61%, 1);
+    padding-right: 3px;
+    color: white;
+    padding-top: 2px;
+    padding-left: 3px;
+    padding-bottom: 1px;
+    display: inline-block;
+}
+
+.accountitem.active .currency {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding-top: 1px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+#accountslist > li:not(:first-of-type) {
+    border-top: 1px solid rgba(0,0,0,0.07);
 }
 
 .accountitem.active .trustlines {
@@ -498,7 +548,7 @@ span#accdetailsamount {
 
 .trustlines {
     display: flex;
-    flex-direction: row-reverse;
+//    flex-direction: row-reverse;
     flex-wrap: wrap;
     margin-right:0;
     margin-left:0;

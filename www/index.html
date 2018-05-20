@@ -533,8 +533,9 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabaccountdetails" class="screentab" data-title="Account Details" data-hasback="true" style="display:none">
 	<ul class="accountdetailsselector">
-		<li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  $('#accdetailstransactiondetails').hide(); $('#accdetailsaddressdetails').show();})">Address</li>
-		<li id="btnaccdetailsselecttransactions" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); $('#btnaccdetailsselecttransactions').addClass('accdetailsinnertabselected'); $('#accdetailsaddressdetails').hide(); $('#accdetailstransactiondetails').show(); checkConnection(function(){doGetTransactions($('#accdetailsaddress').data('content'), '');});})" class="">Transactions</li>
+        <li id="btnaccdetailsselectaddress" class="accdetailsinnertabselected" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{selectAccountDetailsSubTab(x, 'address')})">Address</li>
+        <li id="btnaccdetailsselecttrustlines" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{selectAccountDetailsSubTab(x, 'trustlines')})">Trustlines</li>
+        <li id="btnaccdetailsselecttransactions" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{selectAccountDetailsSubTab(x, 'transactions')})">Transactions</li>
 	</ul>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
@@ -929,7 +930,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.42</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.43</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1118,7 +1119,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.42</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.43</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1401,6 +1402,28 @@ function doAddGateway(gateway) {
 			doRetryConnection(gateway);
 }
 
+
+function selectAccountDetailsSubTab(tabele, subtabname) {
+    $('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected');
+    $(tabele).addClass('accdetailsinnertabselected');
+
+    if (subtabname == 'address') {
+        $('#accdetailstransactiondetails').hide(); 
+        $('#accdetailstrustlinedetails').hide(); 
+        $('#accdetailsaddressdetails').show();
+    } else if (subtabname == 'trustlines') {
+        $('#accdetailstransactiondetails').hide(); 
+        $('#accdetailstrustlinedetails').show(); 
+        $('#accdetailsaddressdetails').hide();
+    } else if (subtabname == 'transactions') {
+        $('#accdetailstransactiondetails').show(); 
+        $('#accdetailstrustlinedetails').hide(); 
+        $('#accdetailsaddressdetails').hide();
+        checkConnection(()=>{doGetTransactions($('#accdetailsaddress').data('content'), '');});
+    }
+
+
+}
 
 function showDonationTab(){
 	if (offlinemode || emergencybackup) return;
@@ -1792,7 +1815,7 @@ function doSelectAccount(accselected, nickname) {
 
 
 	showTab("#tabaccountdetails");	
-    $("#accdetailsamount")[0].innerHTML = ( accountbalances[accselected] == undefined ? '' :  '<b>XRP ' + accountbalances[accselected] + '</b>' );
+    $("#accdetailsamount")[0].innerHTML = ( accountbalances[accselected] == undefined ? '' :  '<b><div class="currency">XRP</div> ' + accountbalances[accselected] + '</b>' );
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
@@ -2081,7 +2104,7 @@ function refreshAccounts(after) {
                                     var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
                                     var stramount =  display_currency_amount(amount);
 
-                                    usdbalance = '<span class="mono" style="opacity:0.7"><small>USD ' + stramount + '</small></span>';
+                                    usdbalance = '<span class="mono" style="opacity:0.7"><div class="currency"><span>USD ' + stramount + '</span></div></span>';
                                 }
 
                                 var trustlines = "";
@@ -2111,12 +2134,12 @@ function refreshAccounts(after) {
                                     }
 
                                     for (var currency in tlbalances) {
-                                        trustlines += '<div class="trustline"><div class="amount"><span class="mono">' + currency + ' ' + display_currency_amount(tlbalances[currency]) + '</span></div></div>';
+                                        trustlines += '<div class="trustline"><div class="amount"><span class="mono"><div class="currency">' + currency + '</div> ' + display_currency_amount(tlbalances[currency]) + '</span></div></div>';
                                     }
 
                                 }
 
-                                trustlines = '<div class="trustline"><div class="amount"><span class="mono" style="">XRP ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
+                                trustlines = '<div class="trustline"><div class="amount"><span class="mono" style=""><div class="currency">XRP</div> ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
 
                                 $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
                                 if (trustlines != "") 
@@ -2494,10 +2517,7 @@ function showTab(tab, dontClearText) {
 		$("#btncopysecret").hide();
 		$("#accsecret").hide();
 	} else if (tab == '#tabaccountdetails') {
-		$('.accdetailsinnertabselected').removeClass('accdetailsinnertabselected'); 
-		$('#btnaccdetailsselectaddress').addClass('accdetailsinnertabselected');  
-		$('#accdetailstransactiondetails').hide(); 
-		$('#accdetailsaddressdetails').show();
+        selectAccountDetailsSubTab($('#btnaccdetailsselectaddress'), 'address');
     } else if (tab == '#tabaddtrustline' && offlinemode) {
 
         var account = $("#atladdress").data('content');
@@ -2523,6 +2543,7 @@ function showTab(tab, dontClearText) {
 
 	if (tab == '#tabaccounts') {
 
+ 
 
 		var donorreminder = function() {
 			getLastDonation(function(donation) {
@@ -2570,7 +2591,9 @@ function showTab(tab, dontClearText) {
 	var tabs = $(".screentab");
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
+
 	$(tab).show();
+    $(tab).scrollTop(0);
 
 
 
@@ -2639,7 +2662,6 @@ function showTab(tab, dontClearText) {
 
 	renderMoreContentIndicator();
 
-//	$(currenttab).focus();
 
 	// make sure the values of various input boxes are set correctly before displaying
 	var inputs = $(currenttab + " input");
