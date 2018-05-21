@@ -556,8 +556,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');})">Delete Address</button>
 		</center>
 	</div>
-	<div id="accdetailstransactiondetails" class="innertab" style="display:none">
-	</div>
+    <div id="accdetailstransactiondetails" class="innertab" style="display:none"></div>
+    <div id="accdetailstrustlinedetails" class="innertab" style="display:none"><ul id="adtrustlines"></ul></div>
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
@@ -575,15 +575,15 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('#txtsecret', '#vanityaddr', '#txtsecret', decodeSecretAddressURI, existingAddrSecretSwap);})">QR</button></span>
 	</div>
 	<br>
-	<label >Ripple Address (leave blank to generate from secret)</label>
+	<label >Ripple Address</label>
 	<div class="input-group">
-		<input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Enter your secret key here"  id="vanityaddr">
+		<input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Only if rekeyed"  id="vanityaddr">
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('#txtsecret', '#vanityaddr', '#vanityaddr', decodeSecretAddressURI, existingAddrSecretSwap);})">QR</button></span>
 	</div>
 	<br>
-        <label >Account Nickname (optional)</label>
+        <label >Account Nickname</label>
         <div>
-        <input ontouchend="te(event, quickSelectInput)"  type="text" id="extaccnick" class="form-control" placeholder="">
+        <input ontouchend="te(event, quickSelectInput)"  type="text" id="extaccnick" class="form-control" placeholder="Optional">
 	</div>
     <br><label>Enter your Passphrase</label>
         <div class="input-group">
@@ -738,13 +738,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabgenaccount" class="screentab" data-hasback="true" data-title="New Account" style="display:none">
-	<div style="color:red; text-align:center; font-weight:bold; margin-bottom:0.5em;">WARNING&mdash;You must import this address into your wallet before you send anything to it.</div>
-	<label>Generated account address:</label>
+	<label>Account Address</label>
 	<center><div id="generatedaddress"></div></center>
 	<br />
-        <label >Account Nickname (optional)</label>
+        <label >Account Nickname</label>
         <div>
-        <input ontouchend="te(event, quickSelectInput)"  type="text" id="newaccnick" class="form-control" placeholder="">
+        <input ontouchend="te(event, quickSelectInput)"  type="text" id="newaccnick" class="form-control" placeholder="Optional">
 	</div>
         <br><label>Enter your Passphrase</label>
         <div class="input-group">
@@ -812,8 +811,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             </div>
         </center>
       	<br />    
-        <label>Confirmation Code (from Online Toast Wallet)</label>
-        <input ontouchend="te(event, quickSelectInput)"  type="text" id="payofflinecode" class="form-control" placeholder="">
+        <label>Confirmation Code</label>
+        <input ontouchend="te(event, quickSelectInput)"  type="text" id="payofflinecode" class="form-control" placeholder="(from Online Toast Wallet)">
     </div>
     <br>
 
@@ -827,9 +826,9 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<br />
 
 
-	<label >Destination Tag (optional, but many exchanges require this)</label>
+	<label >Destination Tag</label>
 	<div class="input-group">
-	<input ontouchend="te(event, quickSelectInput)"  type="text" id="desttag" class="form-control" placeholder="">
+	<input ontouchend="te(event, quickSelectInput)"  type="text" id="desttag" class="form-control" placeholder="Only if receiver provides">
 	<span class="input-group-btn">
 		<button  class="btn btn-default" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doToggleInvoiceId();})" id="btnpayshowmore" type="button">More</button>
 	</span>
@@ -838,13 +837,20 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <br />
 
     <div id="invoiceiddiv" style="display:none">
-	<label>Invoice ID (optional)</label>
+	<label>Invoice ID</label>
 	<div>
-	<input ontouchend="te(event, quickSelectInput)"  type="text" id="invoiceid" class="form-control" placeholder="">
+	<input ontouchend="te(event, quickSelectInput)"  type="text" id="invoiceid" class="form-control" placeholder="Only if receiver provides">
 		<br />
 	</div>
     </div>
 
+
+	<label>Currency</label>
+	<div>
+	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option data-issuer="Ripple" id="optpa-xrp">XRP</option>
+    </select>
+    </div>
+    <br/>
 
 	<label >Amount</label>
 	<div class="input-group">
@@ -853,8 +859,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<button  class="btn btn-success" id="btnpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPay(sodium.randombytes_random());})" type="button">Pay</button>
 	</span>
 	</div>
-	<br/>
-	<div><center style="color:black;">The Ripple network requires a minimum <span id="minxrp"></span> XRP balance at all times and charges fees based on congestion even for failed transactions.</center></div>
 
 </div>
 
@@ -930,7 +934,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.43</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.44</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1119,7 +1123,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.43</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.44</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1415,14 +1419,15 @@ function selectAccountDetailsSubTab(tabele, subtabname) {
         $('#accdetailstransactiondetails').hide(); 
         $('#accdetailstrustlinedetails').show(); 
         $('#accdetailsaddressdetails').hide();
+        refreshTrustlines(activeaccount);
     } else if (subtabname == 'transactions') {
         $('#accdetailstransactiondetails').show(); 
         $('#accdetailstrustlinedetails').hide(); 
         $('#accdetailsaddressdetails').hide();
-        checkConnection(()=>{doGetTransactions($('#accdetailsaddress').data('content'), '');});
+        checkConnection(()=>{doGetTransactions($('#accdetailsaddress').data('content'), '');  renderMoreContentIndicator(); });
     }
 
-
+    renderMoreContentIndicator();
 }
 
 function showDonationTab(){
@@ -1802,7 +1807,7 @@ function scanQR(intofield1, intofield2, intofield3, parseContentFunc, after) {
 	}
 }
 
-function doSelectAccount(accselected, nickname) {
+function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	if (debug) console.log("doSelectAccount");
 	var acc = $(".accountitem");
 	for (var i = 0; i < acc.length; i++) {	
@@ -1815,6 +1820,13 @@ function doSelectAccount(accselected, nickname) {
 
 
 	showTab("#tabaccountdetails");	
+
+    if (trustlinesSubTab == undefined || !trustlinesSubTab) {
+        selectAccountDetailsSubTab($('#btnaccdetailsselectaddress'), 'address');
+    } else {
+        selectAccountDetailsSubTab($('#btnaccdetailsselecttrustlines'), 'trustlines');
+    }
+
     $("#accdetailsamount")[0].innerHTML = ( accountbalances[accselected] == undefined ? '' :  '<b><div class="currency">XRP</div> ' + accountbalances[accselected] + '</b>' );
 	$("#accdetailsaddress").data('content', accselected );
 
@@ -2064,7 +2076,7 @@ function getAccountInfo(address, successfunc, failurefunc) {
 
 function display_currency_amount(x) {
     if (typeof(x) != "number") {
-        console.log("format_currency called on not a number " + x);
+        console.log("display_currency_amount called on not a number " + x);
         return "(error)";
     }
 
@@ -2073,6 +2085,49 @@ function display_currency_amount(x) {
     } else {
         return x.toLocaleString(undefined, {minimumSignificantDigits:4, maximumSignificantDigits:4});
     }
+
+}
+
+/** 
+  refreshes the trustlines subtab or account details
+  */
+function refreshTrustlines(account, after) {
+
+    $('#adtrustlines').empty();
+
+    if (offlinemode) {
+        $('#adtrustlines')[0].innerHTML = '<li>Cannot display trustlines in offline mode</li>';
+        return;
+    }
+
+    var f = (res)=>{
+        var trustlines = "";
+        var tlcount = 0;
+        if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
+            res['trustlines'].length != undefined && res['trustlines'].length > 0) {
+            for (t in res['trustlines']) {
+                var tl = res['trustlines'][t];
+                var issuer, currency, balance;
+                if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
+                (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
+
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlsubheader"><button class="btn btn-warning adtlbutton adtllimitbutton"><span class="scap">Lim</span>&nbsp;10000.00</button><button class="btn btn-success adtlbutton"><span>Trade</span>&nbsp;<i class="fa fa-exchange"></i></button><button class="btn btn-primary adtlbutton"><span>Send </span>&nbsp;<i class="fa fa-paper-plane"></i></button></div></li>';
+            }
+
+        } else {
+            trustlines = '<li>No trustlines on this account yet.</li>';
+        }
+
+        $('#adtrustlines')[0].innerHTML = trustlines;
+                                    
+    };
+
+    var e = ()=>{
+        $('#adtrustlines')[0].innerHTML = '<li>There was an error loading the account. Check your connection or restart Toast Wallet.</li>';
+        return;
+    }
+
+    getAccountInfo(account, f, e);
 
 }
 
@@ -2108,6 +2163,7 @@ function refreshAccounts(after) {
                                 }
 
                                 var trustlines = "";
+                                var tlcount = 0;
                                 if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
                                     res['trustlines'].length != undefined && res['trustlines'].length > 0) {
                                     
@@ -2135,6 +2191,7 @@ function refreshAccounts(after) {
 
                                     for (var currency in tlbalances) {
                                         trustlines += '<div class="trustline"><div class="amount"><span class="mono"><div class="currency">' + currency + '</div> ' + display_currency_amount(tlbalances[currency]) + '</span></div></div>';
+                                        tlcount++;
                                     }
 
                                 }
@@ -2142,8 +2199,11 @@ function refreshAccounts(after) {
                                 trustlines = '<div class="trustline"><div class="amount"><span class="mono" style=""><div class="currency">XRP</div> ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
 
                                 $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
-                                if (trustlines != "") 
+                                if (trustlines != "")  {
                                     $("#ra" + account + ">.trustlines")[0].innerHTML = trustlines;
+                                     $("#ra" + account + ">.trustlines").data('tlcount', tlcount);
+                                }
+
 
                             } catch(e) {handle_error(e);}
                             accountbalances[account] = parseFloat(xrpBalance);
@@ -2199,7 +2259,7 @@ function refreshAccounts(after) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\');})"><div class="accountline"><a href="#" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\');})" class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : 'loading') + '</small></div></div><div class="trustlines"></div></li>');
+            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\', false);})"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : 'loading') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})"></div></li>');
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
@@ -2344,7 +2404,7 @@ function te(e, x) {
     } catch (E) {}
 
     if (inClickProxy) {
-        x();
+        x(e.srcElement);
         return false;
     }
 
@@ -2381,6 +2441,8 @@ function clickProxy() {
 
             var maxUp = 5;
 
+            var srcEle;
+
             do {
 
                 if (ele == undefined || $(ele) == undefined || $(ele)[0] == undefined) break;
@@ -2398,16 +2460,20 @@ function clickProxy() {
                     _te = $(ele).attr('ontouchend');
                 }
 
+                if (_ts != undefined || _te != undefined) srcEle = ele;
+
             } while (_ts == undefined && _te == undefined && (typeof($(ele).parent) === 'function') && (ele = $(ele).parent()) != undefined  && maxUp-- > 0 );
 
 
             var executeHandler = (handler)=>{
                 if (typeof(handler) == 'string') {
+                    event = {srcElement: srcEle};
     				handler = '(function(){' + handler + ';})();';
 	    			eval(handler);
                 } else if (typeof(handler) == 'object') {
                     if (handler[0] != undefined && handler[0].handler != undefined && typeof(handler[0].handler) == 'function') {
-                        (handler[0].handler)();
+                        event = {srcElement: srcEle};
+                        (handler[0].handler)(event);
                     }
                 }
             }
@@ -2516,8 +2582,7 @@ function showTab(tab, dontClearText) {
 		$("#rsecaccpassword").show();
 		$("#btncopysecret").hide();
 		$("#accsecret").hide();
-	} else if (tab == '#tabaccountdetails') {
-        selectAccountDetailsSubTab($('#btnaccdetailsselectaddress'), 'address');
+
     } else if (tab == '#tabaddtrustline' && offlinemode) {
 
         var account = $("#atladdress").data('content');
@@ -5024,7 +5089,7 @@ function connectToRipple(funcsuccess, suppressbootsequence) {
 			remote.getServerInfo().then(info => {
 				if (info != undefined && info['validatedLedger'] != undefined && info['validatedLedger']['reserveBaseXRP'] != undefined) 
 					xrpreserve = parseInt('' +   info['validatedLedger']['reserveBaseXRP']);
-					$("#minxrp")[0].innerHTML = "" + xrpreserve;
+//					$("#minxrp")[0].innerHTML = "" + xrpreserve;
 					$("#minxrp2")[0].innerHTML = "" + xrpreserve;
 					$("#minxrp3")[0].innerHTML = "" + xrpreserve;
 			}).catch(e => {

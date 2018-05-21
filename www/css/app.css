@@ -154,7 +154,71 @@ textarea {
     vertical-align: middle;
 }
 
+div#generatedaddress {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+}
 
+ul#adtrustlines {
+    color: black;
+    margin-left: 0.5em;
+    margin-right: 0.5em;    
+}
+
+.adtlheader {
+    justify-content: space-between;
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    margin-top: 0.4em;
+    margin-bottom: 0.8em;    
+}
+
+
+.adtlrow {
+    width: 100%;
+    margin-top: 0.5em;
+    text-align: left;
+    margin-bottom: 0.5em;
+    border-radius: 2px;
+}
+
+span.adtlorder {
+    padding-left: 2em;padding-right: 2em;font-size: 0.7em;line-height: 2.5em;font-weight: 500;color: #01d301;
+}
+
+
+.tlissuer {
+    font-size: 0.8em;
+    line-height: 1.8em;
+    overflow-wrap: none;
+    white-space: nowrap;
+    flex: 1;
+}
+
+
+.adtlrow.adtlbuyrow {
+    background: rgba(0,255,0,0.2); 
+}
+
+li.adtrustline:not(:first-of-type) {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+}
+
+.tlissuer {
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tlvaluation {}
+
+.tlvaluation .currency {
+    background: rgba(3, 151, 0, 0.8);
+}
 
 .accountdetailsselector {
     z-index: 89 !important;
@@ -513,6 +577,60 @@ span#accdetailsamount {
     background: rgba(3, 151, 0, 0.8);
 }
 
+
+.adtlinfo {
+    font-size: 0.8em;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 2px;
+}
+
+.adtlsubheader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+span.scap {
+    font-variant-caps:  all-small-caps;
+    line-height: 1.25em;
+}
+
+.adtlbutton {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    padding-left: 0.1em;
+    padding-right: 0.1em;
+    max-width: 15em;
+}
+
+.adtlbutton:not(:first-of-type) {
+    margin-left: 1em;
+}
+
+
+i.fa.fa-exchange {
+    transform: rotate(135deg);
+    font-size: 1.4em;
+}
+
+
+.adtllimitbutton {
+    flex: 2;
+    max-width: 15em;
+    overflow: hidden;
+}
+
+.adtrustline {
+    padding-bottom: 0.6em;
+}
+
 .currency {
     font-size: 0.7em;
     border-radius: 3px;
@@ -523,6 +641,8 @@ span#accdetailsamount {
     padding-left: 3px;
     padding-bottom: 1px;
     display: inline-block;
+    min-width: 2.5em;
+    text-align: center;
 }
 
 .accountitem.active .currency {
