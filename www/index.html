@@ -17,7 +17,7 @@
 	<script src="cordova.js"></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
-	<script src="js/clipboard.min.js"></script>
+	<script src="js/clipboard.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/rippleutils-build.js"></script>
 	<script>if (window.module) module = window.module;
@@ -172,12 +172,7 @@
 
 		if (debug) console.log("afterCordovaLoad:2");
 
-		new Clipboard('.copybtnaction');
-
-		$('.copybtn').on('touchend', function() {
-			if (debug) console.log("onTouchEndCopyBtn()");
-			refreshWebView();
-		});
+		new ClipboardJS('.copybtnaction');
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
@@ -220,19 +215,33 @@
 
 
 		var toggleswitchfunc;
-		$(".toggleswitch").on('touchend',toggleswitchfunc = function() {
+		$(".toggleswitch").on('touchend',toggleswitchfunc = function(e) {
 			if (debug) console.log("onToggleSwitch()");
-			var ele = $($(this).children()[0]);
-			if (ele.hasClass("fa-toggle-off")) {
+			var ele; 
+            var _this;
+
+            if (inClickProxy && e.srcElement != undefined) {
+                ele = $($(e.srcElement).children()[0]);
+                _this = $(e.srcElement);
+            } else {
+                ele = $($(this).children()[0]);
+                _this = $(this);
+            }
+
+            if (ele.hasClass("fa-toggle-off")) {
 				ele.removeClass("fa-toggle-off");
 				ele.addClass("fa-toggle-on");
-				$(this).data("checked", "true");
+				_this.data("checked", "true");
 			} else {
 				ele.removeClass("fa-toggle-on");
 				ele.addClass("fa-toggle-off");
-				$(this).data("checked", "false");
+				_this.data("checked", "false");
 			}
-			refreshWebView();
+
+            if (_this.data('after') != undefined) {
+                eval(_this.data('after'));
+            }
+
 		});
 
 		if ((device.platform + "").toLowerCase() == 'browser') {
@@ -775,7 +784,17 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label>Invoice ID</label>
 	<div id="confirminvoiceid"></div>
     </div>
-	<div class="paygrouping">
+    <div class="paygrouping">
+    <label>Currency</label>
+    <div id="confirmasset"></div>
+    </div>
+
+    <div class="paygrouping" id="confirmissuerpaygroup">
+    <label>Issuer</label>
+    <div id="confirmissuer"></div>
+    </div>
+
+    <div class="paygrouping">
 	<label>Amount</label>
 	
     <div id="confirmpayamount"></div></div>
@@ -828,7 +847,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 	<label >Destination Tag</label>
 	<div class="input-group">
-	<input ontouchend="te(event, quickSelectInput)"  type="text" id="desttag" class="form-control" placeholder="Only if receiver provides">
+	<input ontouchend="te(event, quickSelectInput)"  type="text" id="desttag" class="form-control" placeholder="Only if provided by receiver">
 	<span class="input-group-btn">
 		<button  class="btn btn-default" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doToggleInvoiceId();})" id="btnpayshowmore" type="button">More</button>
 	</span>
@@ -839,17 +858,25 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div id="invoiceiddiv" style="display:none">
 	<label>Invoice ID</label>
 	<div>
-	<input ontouchend="te(event, quickSelectInput)"  type="text" id="invoiceid" class="form-control" placeholder="Only if receiver provides">
-		<br />
+	<input ontouchend="te(event, quickSelectInput)"  type="text" id="invoiceid" class="form-control" placeholder="Only if provided by receiver">
 	</div>
+	<br />
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="onToggleIssueOwnCurrency();" id="tglIssueOwnCurrency"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Issue Own Currency</div>
+    </div>    
+	<br />    
     </div>
 
 
 	<label>Currency</label>
-	<div>
-	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option data-issuer="Ripple" id="optpa-xrp">XRP</option>
-    </select>
-    </div>
+    <div id="oflcurrencydiv" style="display:none">
+	    <input ontouchend="te(event, quickSelectInput)" type="text" id="payassetofl" class="form-control" placeholder="Leave blank for XRP">
+        <br />
+        <label>Issuer Addresss</label>
+        <input ontouchend="te(event, quickSelectInput)" type="text" id="payissuerofl" class="form-control" placeholder="Leave blank for XRP">
+	</div>
+
+	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option id="optpa-xrp" data-asset="XRP" data-issuer="Ripple">XRP</option></select>
     <br/>
 
 	<label >Amount</label>
@@ -859,6 +886,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<button  class="btn btn-success" id="btnpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPay(sodium.randombytes_random());})" type="button">Pay</button>
 	</span>
 	</div>
+    <br>
 
 </div>
 
@@ -934,7 +962,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.44</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.45</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1123,7 +1151,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.44</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.45</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1154,12 +1182,33 @@ function unblockInput() {
 // this function fires when an account is selected on the payments tab
 // but is only used to supply red qr code in the event the user is in offline mode
 function onPaymentSelectFromAccount() {
-    if (!offlinemode) return;
-    $('#payofflinecodediv').css('display', 'block');
+
+    if ($("#payfromaccount").find(":selected") == undefined) return;
+
     var account = $("#payfromaccount").find(":selected").data('account');
-    $("#paytabredqr").empty();
-    $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
-    $('#payofflinecodediv').css('display', 'block');
+    if (account == undefined) return;
+    
+    if (offlinemode) {
+        $('#payofflinecodediv').css('display', 'block');
+        $("#paytabredqr").empty();
+        $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
+        $('#payofflinecodediv').css('display', 'block');
+        $("#payasset").hide();
+        $('#oflcurrencydiv').show();
+        
+    } else {
+        $('#payasset').show();
+        var xrpoption = '<option data-issuer="Ripple" data-currency="XRP" id="optpa-xrp">XRP</option>';
+
+        if (trustlinesdropdown[account] != undefined) {
+            var tloptions = "";
+            for (var x in trustlinesdropdown[account]) 
+                tloptions += trustlinesdropdown[account][x];
+            $('#payasset')[0].innerHTML = xrpoption + tloptions;
+        } else {
+            $('#payasset')[0].innerHTML = xrpoption;
+        }
+    }
 }
 
 function doSubmitOfflineTransaction(stage, content) {
@@ -2115,7 +2164,7 @@ function refreshTrustlines(account, after) {
             }
 
         } else {
-            trustlines = '<li>No trustlines on this account yet.</li>';
+            trustlines = '<li><center><i>No trustlines on this account yet.</i></center></li>';
         }
 
         $('#adtrustlines')[0].innerHTML = trustlines;
@@ -2131,6 +2180,26 @@ function refreshTrustlines(account, after) {
 
 }
 
+function onToggleIssueOwnCurrency() {
+    if (debug) console.log("onToggleIssueOwnCurrency()");
+    
+    if ($('#tglIssueOwnCurrency').data('checked') == "true") {
+        $('#payasset').hide();
+        $('#oflcurrencydiv').show();
+        $('#payissuerofl').val('This account');
+        $('#payissuerofl').attr('readonly', 'readonly');
+        $('#payassetofl').removeAttr('placeholder');
+    } else {
+        $('#payissuerofl').val('');
+        $('#payissuerofl').removeAttr('readonly');
+        $('#payassetofl').attr('placeholder', 'Leave blank for XRP');
+        $('#oflcurrencydiv').hide();
+        $('#payasset').show();
+    }
+}
+
+var trustlinesdropdown = {};
+
 function refreshAccounts(after) {
 	// delete all accounts in the list then readd them from puchdb	
 	var acc = $(".accountitem");
@@ -2145,6 +2214,10 @@ function refreshAccounts(after) {
         var updateaccs = function(exchangerate, after){
             getAccounts(function(acc) {
                 accountbalances = {};
+
+                var lastacc;
+                for (var i in acc) lastacc = i;
+
                 for (var i in acc) {
 
                     ((account) => {
@@ -2164,8 +2237,13 @@ function refreshAccounts(after) {
 
                                 var trustlines = "";
                                 var tlcount = 0;
+
+
+                                trustlinesdropdown[account] = {};
+
                                 if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
                                     res['trustlines'].length != undefined && res['trustlines'].length > 0) {
+                                   
                                     
 
                                     tlbalances = {};
@@ -2187,6 +2265,12 @@ function refreshAccounts(after) {
                                         } else {
                                             tlbalances[currency] = parseFloat("" + balance);
                                         }
+
+                                        // populate the dropdown for this account
+
+                                        if (trustlinesdropdown[account] == undefined) trustlinesdropdown[account] = {};
+
+                                        trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + (""+currency).replace(/[^A-Za-z0-9]/mg, "") + ' - ' + (""+issuer).replace(/[^A-Za-z0-9]/mg, "") + '</option>';
                                     }
 
                                     for (var currency in tlbalances) {
@@ -2222,6 +2306,9 @@ function refreshAccounts(after) {
                                 $("#opt" + x).prop('selected', true);
                                 $("#ra" + x).addClass('active');	
                             }
+
+
+                            if (after != undefined && typeof(after) == 'function' && lastacc == account) after();
                         };
 
                         var e =
@@ -2236,7 +2323,7 @@ function refreshAccounts(after) {
                     })(i);
                 }
 
-                if (after != undefined && typeof(after) == 'function') after();
+             
             });
         };
 
@@ -2251,7 +2338,7 @@ function refreshAccounts(after) {
             exchangerate = 10.0/exchangerate;
             updateaccs(exchangerate, after);
         }).catch( function(e) {
-            updateaccs(-1);		
+            updateaccs(-1, after);		
         });
     };
 
@@ -2397,6 +2484,12 @@ function ts(e) {
 // executes the function x if the user's finger hasn't moved outside the tolerance range
 function te(e, x) {
 
+    if (e != undefined && e.srcElement != undefined && e.srcElement.tagName == "SELECT") {
+        // we will let the click propagate through for a select dropdown
+        // due to poor support for programmatic select box activation
+        return true;
+    } 
+    
     // stop the event from firing further
     try {
         e.stopPropagation();
@@ -2411,12 +2504,7 @@ function te(e, x) {
     if (e.srcElement == document.elementFromPoint(e.changedTouches[0].pageX, e.changedTouches[0].pageY)) {
 
         if (typeof x === "function")  {
-            // stop the event from firing further
-            try {
-                e.stopPropagation();
-                e.preventDefault();
-            } catch (E) {}
-   
+            
             x(e.srcElement);
         } else {
             console.log("warning touchend can't execute func x = " + x);
@@ -2424,13 +2512,15 @@ function te(e, x) {
 
     }
 
+    
+
     return false;
 }
 
 /* Run this to add a click proxy to all elements so that a browser can use the wallet */
 function clickProxy() {
 	if ((device.platform + "").toLowerCase() == 'browser') {
-		$('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
+        $('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
 		$('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
             inClickProxy = true;
 
@@ -2460,7 +2550,7 @@ function clickProxy() {
                     _te = $(ele).attr('ontouchend');
                 }
 
-                if (_ts != undefined || _te != undefined) srcEle = ele;
+                if (_ts != undefined || _te != undefined) srcEle = (ele[0] == undefined ? ele : ele[0]);
 
             } while (_ts == undefined && _te == undefined && (typeof($(ele).parent) === 'function') && (ele = $(ele).parent()) != undefined  && maxUp-- > 0 );
 
@@ -2573,7 +2663,9 @@ function showTab(tab, dontClearText) {
 	}
 
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
-        refreshAccounts( (tab == '#tabpayments' && offlinemode ? onPaymentSelectFromAccount : ()=>{}) );	
+        // force refresh this box to default XRP entry because the load time might be long depending on the connection
+        $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="Ripple">Loading...</option>';
+        refreshAccounts( onPaymentSelectFromAccount );	
 	} else if (tab == "#tabaccountsecret") {
         $("#divrsecaccpassword").show();
 		$("#lblacpassword").show();
@@ -3302,6 +3394,21 @@ function doPay(nonce) {
 	var invid = ($("#invoiceid").val().trim() + "").toUpperCase();
 	var amount = $("#payamount").val().trim();
 
+
+    var asset;
+    var issuer;
+
+    if (!offlinemode) {
+        asset = $('#payasset').find(':selected').data('asset');
+        issuer = $('#payasset').find(':selected').data('issuer');
+    } else {
+        asset = $('#payassetofl').val().trim();
+        issuer = $('#payissuerofl').val().trim();
+    }
+
+    if (asset == '') asset = 'XRP';
+    if (asset == 'XRP') issuer = '';
+
     var offlinecode = $('#payofflinecode').val().trim().replace(/ /g, "").toUpperCase();
     var accID = '';
     var ledID = '';
@@ -3442,7 +3549,9 @@ function doPay(nonce) {
 			nonce: nonce,
             accseqid: accID, // used for offline tx
             ledseqid: ledID,
-            fee: fee
+            fee: fee,
+            asset: asset,
+            issuer: issuer
 		};
 
 		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
@@ -3451,7 +3560,17 @@ function doPay(nonce) {
 		$('#confirmpaytoaddress')[0].innerText = payto;
 		$('#confirmdesttag')[0].innerText = dest;
 		$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
-		$('#confirmpayamount')[0].innerText = amount + " XRP";
+		$('#confirmpayamount')[0].innerText = amount;
+
+        $('#confirmasset')[0].innerText = asset;
+        $('#confirmissuer')[0].innerText = issuer;
+
+        if (asset == 'XRP') {
+            $('#confirmissuerpaygroup').hide();
+        } else {
+            $('#confirmissuerpaygroup').show();
+            $('#confirmissuer')[0].innerText = issuer;
+        }
 
 		showTab("#tabpaymentconfirm");
 		
@@ -5047,7 +5166,7 @@ function connectToRipple(funcsuccess, suppressbootsequence) {
 	remote.connect().then(function() {
 			if (debug) console.log("connect success");
 			
-			$('.currentgateway')[0].innerHTML = 'Connected to: ' + currentServer;
+			$('.currentgateway')[0].innerHTML = currentServer;
 
 			// check if the user has connected via a custom gateway and add it to our gateway list for next time if they have
 			var isDefaultGateway = false;
