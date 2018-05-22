@@ -430,6 +430,133 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
+<div id="tabaccountflags" class="screentab" data-hasback="true" data-title="Set Account Flags" style="display:none">
+
+    <label >Ripple Address</label>   
+		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="afaddress">
+    	<br>
+
+
+    <div id="afofflinecodediv" style="display:none;">
+        <center>
+            <div id="aftabredqr">
+            </div>
+        </center>
+      	<br />    
+        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <input ontouchend="te(event, quickSelectInput)"  type="text" id="afofflinecode" class="form-control" placeholder="">
+        <br>
+    </div>
+
+   
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglDefaultRipple"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Default Ripple</div>
+    </div>    
+	<br />       
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglDepositAuth"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Deposit Auth</div>
+    </div>    
+	<br />       
+    
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglDisableMasterKey"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Disable Master Key</div>
+    </div>    
+	<br />       
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglDisallowIncomingXRP"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Disallow Incoming XRP</div>
+    </div>    
+	<br />      
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglGlobalFreeze"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Global Freeze</div>
+    </div>    
+	<br />      
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglNoFreeze"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">No Freeze</div>
+    </div>    
+	<br />      
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglRequireAuthorization"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Require Authorization</div>
+    </div>    
+	<br />      
+
+    <div style="color:black;">
+    	<span class="toggleswitch"  data-after="" id="tglRequireDestinationTag"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Require Destination Tag</div>
+    </div>    
+	<br />      
+
+    <center><div>
+			<button  type="button" class="btn btn-primary" id="btnsetaccountflags" 
+    ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSetAccountFlags(sodium.randombytes_random());})">Set Account Flags</button></div></center>
+
+</div>
+
+
+<div id="tabaccountflagsconfirm" class="screentab" data-primarytab="false" data-title="Confirm Account Flags" style="display: none;">
+	<div class="paygrouping">
+    <label>Account</label>
+	<div id="cafaddress"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Default Ripple</label>
+	<div id="cafdefaultripple"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Deposit Auth</label>
+	<div id="cafdepositauth"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Disable Master Key</label>
+	<div id="cafdisablemasterkey"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Disallow Incoming XRP</label>
+	<div id="cafdisallowincomingxrp"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Global Freeze</label>
+	<div id="cafglobalfreeze"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>No Freeze</label>
+	<div id="cafnofreeze"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Require Authorization</label>
+	<div id="cafrequireauthorization"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Require Destination Tag</label>
+	<div id="cafrequiredestinationtag"></div>
+    </div>
+
+
+
+
+    <br>
+    <label>Enter your Passphrase</label>    
+    <div class="input-group">
+	<input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmafpassword" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmAccountFlags(content);  }  );})" id="btnqrpassconfirmaf" type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div><br>
+	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmAccountFlags($('#confirmafpassword').val());})">Submit Settings</button></div></center>
+</div>
+
 <div id="tabaddtrustline" class="screentab" data-hasback="true" data-title="Add Trustline" style="display:none">
     <label >Ripple Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="atladdress">
@@ -560,6 +687,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 			<button  id="btnbackupkey" type="button" class="accopt btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); })">Show Secret</button>
 			<!-- button  type="button" id="btnrekeyacc" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button--><br>
 		<button  id="btnaddtrustline" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#atladdress').data('content', $('#accdetailsaddress').data('content') ); $('#atladdress').val( $('#accdetailsaddress').val() ); showTab('#tabaddtrustline', true); })">Add Trustline</button>
+        <br>
+        <button id="btnsetflags" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ showAccountFlags($('#accdetailsaddress').data('content')); })">Modify Flags</button>
         <br>
             <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Change Nickname</button><br>
 			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');})">Delete Address</button>
@@ -863,6 +992,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<br />
     <div style="color:black;">
     	<span class="toggleswitch"  data-after="onToggleIssueOwnCurrency();" id="tglIssueOwnCurrency"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Issue Own Currency</div>
+        <p>DefaultRipple must be enabled to allow peer to peer transfer of your currency.</p>
     </div>    
 	<br />    
     </div>
@@ -876,7 +1006,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <input ontouchend="te(event, quickSelectInput)" type="text" id="payissuerofl" class="form-control" placeholder="Leave blank for XRP">
 	</div>
 
-	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option id="optpa-xrp" data-asset="XRP" data-issuer="Ripple">XRP</option></select>
+	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option id="optpa-xrp" data-asset="XRP" data-issuer="">XRP</option></select>
     <br/>
 
 	<label >Amount</label>
@@ -962,7 +1092,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.45</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.46</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1151,7 +1281,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.45</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.46</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1198,7 +1328,7 @@ function onPaymentSelectFromAccount() {
         
     } else {
         $('#payasset').show();
-        var xrpoption = '<option data-issuer="Ripple" data-currency="XRP" id="optpa-xrp">XRP</option>';
+        var xrpoption = '<option data-issuer="" data-asset="XRP" id="optpa-xrp">XRP</option>';
 
         if (trustlinesdropdown[account] != undefined) {
             var tloptions = "";
@@ -1511,6 +1641,57 @@ function showDonationTab(){
 function doToggleInvoiceId() {
     $('#invoiceiddiv').css( 'display', ( $('#invoiceiddiv').css('display') == 'none' ? 'block' : 'none' ) );
     $('#btnpayshowmore')[0].innerHTML = ( $('#invoiceiddiv').css('display') == 'none' ? 'More' : 'Less' );
+}
+
+
+function setToggleSwitch(tgl, checked) {
+    var ctgl = $($(tgl).children()[0]);
+    ctgl.removeClass('fa-toggle-on');
+    ctgl.removeClass('fa-toggle-off');
+    ctgl.addClass('fa-toggle-' + (checked? 'on' : 'off'));
+    $(tgl).data('checked', '' + checked);
+}
+
+
+
+function showAccountFlags(account, warningdisplayed) {
+    blockInput();
+    if ( (!(account in accountflags)  || offlinemode) && warningdisplayed == undefined ) {
+		navigator.notification.alert("Toast Wallet is unable to load your existing account flags. Submitting below will potentially override the current values of these flags which are not displayed here.", 
+			function(){
+                showAccountFlags(account, true);
+			}, 
+			"WARNING", 
+			"OK"
+		);
+		return;
+	}
+
+    $('#afaddress').val(account);
+    $('#afaddress').data('content', account);
+
+
+    var toggles = [ "#tglDefaultRipple", "#tglDepositAuth", "#tglDisableMasterKey", "#tglDisallowIncomingXRP", "#tglGlobalFreeze", "#tglNoFreeze", "#tglRequireAuthorization", "#tglRequireDestinationTag"];
+
+    // first set all switches to off
+    for (var i in toggles) setToggleSwitch(toggles[i], false);
+
+    // then check any entries we have values for
+    if (accountflags[account] != undefined) {
+        var flags = accountflags[account];
+        if (flags['defaultRipple']) setToggleSwitch("#tglDefaultRipple", true);
+        if (flags['depositAuth']) setToggleSwitch("#tglDepositAuth", true);
+        if (flags['disableMasterKey'] ) setToggleSwitch("#tglDisableMasterKey", true);
+        if (flags['disallowIncomingXRP'] ) setToggleSwitch("#tglDisallowIncomingXRP", true);
+        if (flags['globalFreeze']) setToggleSwitch("#tglGlobalFreeze", true);
+        if (flags['noFreeze']) setToggleSwitch("#tglNoFreeze", true);
+        if (flags['requireAuthorization']) setToggleSwitch("#tglRequireAuthorization", true);
+        if (flags['requireDestinationTag']) setToggleSwitch("#tglRequireDestinationTag", true);
+    }
+
+    showTab('#tabaccountflags', true);
+    unblockInput();
+
 }
 
 
@@ -2105,14 +2286,25 @@ function getAccountInfo(address, successfunc, failurefunc) {
         // check for trustlines and add as 'trustlines' key if found
 
 
-        remote.getTrustlines(address).then( 
+        var t = (address, result)=>{remote.getTrustlines(address).then( 
             (trustlines) => {
                 result.account_data['trustlines'] = trustlines;
                 return successfunc(result.account_data);
             }
         ).catch((E)=>{
                 return successfunc(result.account_data);
+        });}
+
+
+        remote.getSettings(address).then(
+            (settings)=>{
+                result.account_data['flags'] = settings;
+                t(address, result);
+            }
+        ).catch((E)=>{
+            return t(address, result);
         });
+        
 
 
 	} else {
@@ -2160,7 +2352,7 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlsubheader"><button class="btn btn-warning adtlbutton adtllimitbutton"><span class="scap">Lim</span>&nbsp;10000.00</button><button class="btn btn-success adtlbutton"><span>Trade</span>&nbsp;<i class="fa fa-exchange"></i></button><button class="btn btn-primary adtlbutton"><span>Send </span>&nbsp;<i class="fa fa-paper-plane"></i></button></div></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlsubheader"><button class="btn btn-warning adtlbutton adtllimitbutton"><span class="scap">Lim</span>&nbsp;' + display_currency_amount(parseFloat("" + tl['specification']['limit']))  + '</button><button class="btn btn-success adtlbutton"><span>Trade</span>&nbsp;<i class="fa fa-exchange"></i></button><button class="btn btn-primary adtlbutton"><span>Send </span>&nbsp;<i class="fa fa-paper-plane"></i></button></div></li>';
             }
 
         } else {
@@ -2189,6 +2381,7 @@ function onToggleIssueOwnCurrency() {
         $('#payissuerofl').val('This account');
         $('#payissuerofl').attr('readonly', 'readonly');
         $('#payassetofl').removeAttr('placeholder');
+        $('#payassetofl').focus();
     } else {
         $('#payissuerofl').val('');
         $('#payissuerofl').removeAttr('readonly');
@@ -2214,6 +2407,8 @@ function refreshAccounts(after) {
         var updateaccs = function(exchangerate, after){
             getAccounts(function(acc) {
                 accountbalances = {};
+                accountbalancestl = {};
+                accountflags = {};
 
                 var lastacc;
                 for (var i in acc) lastacc = i;
@@ -2241,12 +2436,20 @@ function refreshAccounts(after) {
 
                                 trustlinesdropdown[account] = {};
 
+                                accountbalancestl[account] = {};
+
+                                // store the account's set flags for use later
+                                if (res['flags'] != undefined) {
+                                    accountflags[account] = res['flags'];
+                                }
+
                                 if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
                                     res['trustlines'].length != undefined && res['trustlines'].length > 0) {
                                    
                                     
-
+                                    // these are cumulative balances for display purposes that discard issuer; true balances are kept in accountbalancestl
                                     tlbalances = {};
+
 
                                     for (t in res['trustlines']) {
                                         var tl = res['trustlines'][t];
@@ -2257,17 +2460,19 @@ function refreshAccounts(after) {
                                         // in the specification there is an optional 40 character setting for currency, we can't display that here and displaying a turncated 
                                         // version may lead to people being manipulated into thinking they have another currency. 
                                         if (currency.length > 3) currency = 'UNKNOWN'; 
-                                
-                                        if (currency == 'USD') currency = '*USD';
-
+                               
+                                        // update display balance record 
                                         if (currency in tlbalances) {
                                             tlbalances[currency] += parseFloat("" + balance);
                                         } else {
                                             tlbalances[currency] = parseFloat("" + balance);
                                         }
 
-                                        // populate the dropdown for this account
+                                        // update the official balance record
+                                        if (!(currency in accountbalancestl[account])) accountbalancestl[account][currency] = {};
+                                        accountbalancestl[account][currency][issuer] = parseFloat("" + balance);
 
+                                        // populate the dropdown for this account
                                         if (trustlinesdropdown[account] == undefined) trustlinesdropdown[account] = {};
 
                                         trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + (""+currency).replace(/[^A-Za-z0-9]/mg, "") + ' - ' + (""+issuer).replace(/[^A-Za-z0-9]/mg, "") + '</option>';
@@ -2591,6 +2796,9 @@ var currenttab = "";
 var previoustabs = [];
 var activeaccount = "";
 var accountbalances = {};
+var accountbalancestl = {};
+var accountflags = {};
+
 var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
@@ -2663,9 +2871,11 @@ function showTab(tab, dontClearText) {
 	}
 
 	if (tab == "#tabaccounts" || tab == "#tabpayments") {
-        // force refresh this box to default XRP entry because the load time might be long depending on the connection
-        $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="Ripple">Loading...</option>';
-        refreshAccounts( onPaymentSelectFromAccount );	
+        if ( dontClearText == undefined || dontClearText == false ) {
+            $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="">Loading...</option>';
+            if (tab == "#tabpayments") clearPaymentScreen();
+            refreshAccounts( onPaymentSelectFromAccount );	
+        }
 	} else if (tab == "#tabaccountsecret") {
         $("#divrsecaccpassword").show();
 		$("#lblacpassword").show();
@@ -2682,7 +2892,15 @@ function showTab(tab, dontClearText) {
         $("#atltabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $('#atlofflinecodediv').css('display', 'block')
 
+    } else if (tab == '#tabaccountflags' && offlinemode) {
+
+        var account = $("#afaddress").data('content');
+        $("#aftabredqr").empty();
+        $("#aftabredqr").append(kjua({text: account, fill:"#ff0000"}));    
+        $('#afofflinecodediv').css('display', 'block')
+
     }
+
 	if (tab == '#tabpayments') {
 		var to = $('#toaddress').val();
 		if (to == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
@@ -2960,6 +3178,17 @@ function clearPaymentScreen() {
 		$("#desttag").val("");
 		$("#invoiceid").val("");
 		$("#payamount").val("");
+        var tgl = $($('#tglIssueOwnCurrency').children()[0]);
+        tgl.removeClass('fa-toggle-on');
+        tgl.removeClass('fa-toggle-off');
+        tgl.addClass('fa-toggle-off');
+        $('#tglIssueOwnCurrency').data('checked', 'false');
+        $('#payassetofl').val('');
+        $('#payissuerofl').val('');
+        $('#invoiceiddiv').css( 'display', 'none' );
+        $('#btnpayshowmore')[0].innerHTML = 'More';
+        $('#oflcurrencydiv').hide();
+        $('#payasset').show();
 	} catch(e) {handle_error(e);}
 }
 
@@ -2992,7 +3221,7 @@ function doConfirmPay(passphrase) {
 
 				navigator.notification.alert("A QR code of this signed transaction has been generated. Scan it using your online device to complete the transaction.", 
 					function(){
-                        return sendXRPOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.accseqid, confirmpay.ledseqid, confirmpay.fee);					
+                        return sendPaymentOffline(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.asset, confirmpay.issuer, confirmpay.accseqid, confirmpay.ledseqid, confirmpay.fee);					
                     }, 
 					"Offline Transaction", 
 					"OK"
@@ -3003,7 +3232,7 @@ function doConfirmPay(passphrase) {
 
 			checkConnection(
 				function(){
-					sendXRP(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, 
+					sendPayment(passphrase, confirmpay.payfrom, parseFloat(confirmpay.amount), confirmpay.payto, 0, confirmpay.dest, confirmpay.invid, confirmpay.asset, confirmpay.issuer, 
 						function(wasqueued){
 
 							if (confirmpay.payto == 'rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y') {
@@ -3061,6 +3290,91 @@ function doConfirmPay(passphrase) {
 			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
 				function(){
 					lastpaidnonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
+
+function doConfirmAccountFlags(passphrase) {
+	if (debug) console.log("doConfirmAccountFlags");
+	if (confirmfl.nonce == lastsetflagsnonce) {
+		// this is an accidental double tap
+		return;
+	} 
+	blockInput();
+
+	lastsetflagsnonce = confirmfl.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmfl == undefined || confirmfl.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmfl), ''+confirmfl.nonce, 'hex') != confirmflhash ) {
+				navigator.notification.alert("An error occured when trying to submit your settings change request. No settings change occured.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
+				return;
+			}
+
+
+            if (offlinemode) {
+                // we're just going to create the tx as a QR code and display it
+
+				navigator.notification.alert("A QR code of this signed account-flags transaction has been generated. Scan it using your online device to complete the transaction.", 
+					function(){
+                        return sendAccountFlagsTxOffline(passphrase, confirmfl.afaddress, confirmfl.defaultRipple, confirmfl.depositAuth, confirmfl.disableMasterKey, confirmfl.disallowIncomingXRP, confirmfl.globalFreeze, confirmfl.noFreeze, confirmfl.requireAuthorization, confirmfl.requireDestinationTag, confirmfl.accseqid, confirmfl.ledseqid, confirmfl.fee);
+                    }, 
+					"Offline Transaction", 
+					"OK"
+				);            
+
+                return;
+            }
+
+			checkConnection(
+				function(){
+					sendAccountFlagsTx(passphrase, confirmfl.afaddress, confirmfl.defaultRipple, confirmfl.depositAuth, confirmfl.disableMasterKey, confirmfl.disallowIncomingXRP, confirmfl.globalFreeze, confirmfl.noFreeze, confirmfl.requireAuthorization, confirmfl.requireDestinationTag, 
+						function(wasqueued){
+								navigator.notification.alert("Your account flags transaction was " + ( wasqueued ? "queued, and should be executed shortly." : "executed." ), 
+									function(){
+										clearPaymentScreen();
+										showTab("#tabaccounts");
+										unblockInput();
+									}, "Success", "OK"); 
+						}, 
+						function(err) {
+							navigator.notification.alert("An error occured when trying to set your account flags. " + err, 
+							function(){
+								lasttrustlinenonce = "";
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error", "OK");
+						}
+					);
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lasttrustlinenonce = "";
+					unblockInput();
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not set account flags due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lasttrustlinenonce = "";
 					unblockInput();
 				}, 
 				"Error", 
@@ -3282,7 +3596,7 @@ function doAddTrustline(nonce) {
     };
 
 
-    checkAccountIsFunded(atladdress, 5, function(){
+    checkAccountIsFunded(atladdress, 5, 'XRP', '', function(){
 			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
@@ -3303,6 +3617,104 @@ function doAddTrustline(nonce) {
 
 
 }
+
+
+
+
+var lastsetflagsnonce;
+var confirmfl = {};
+var confirmflhash = "";
+
+function doSetAccountFlags(nonce) {
+    
+	if (debug) console.log("doSetAccountFlags");
+	blockInput();
+
+	var afaddress = $("#afaddress").val().trim();
+
+    var defaultRipple = $('#tglDefaultRipple').data('checked');
+    var depositAuth = $('#tglDepositAuth').data('checked');
+    var disableMasterKey = $('#tglDisableMasterKey').data('checked');
+    var disallowIncomingXRP = $('#tglDisallowIncomingXRP').data('checked');
+    var globalFreeze = $('#tglGlobalFreeze').data('checked');
+    var noFreeze = $('#tglNoFreeze').data('checked');
+    var requireAuthorization = $('#tglRequireAuthorization').data('checked');
+    var requireDestinationTag = $('#tglRequireDestinationTag').data('checked');
+
+
+    var offlinecode = $('#afofflinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accID = '';
+    var ledID = '';
+    var fee = '';
+
+
+    if (offlinemode) {
+        ofl = validateOfflineCode(offlinecode, '#atlofflinecode');
+        if (ofl === false) return;
+
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
+    }
+
+
+    var nextscreen = function() {
+        confirmfl = {
+            afaddress: afaddress,
+            defaultRipple: defaultRipple,
+            depositAuth: depositAuth,
+            disableMasterKey: disableMasterKey,
+            disallowIncomingXRP: disallowIncomingXRP,
+            globalFreeze: globalFreeze,
+            noFreeze: noFreeze,
+            requireAuthorization: requireAuthorization,
+            requireDestinationTag: requireDestinationTag,
+            nonce: nonce,
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
+        };
+
+        confirmflhash = sodium.crypto_generichash(16, JSON.stringify(confirmfl), ''+nonce, 'hex');
+
+        $('#cafaddress')[0].innerText = afaddress;
+        $('#cafdefaultripple')[0].innerText = '' + defaultRipple;
+        $('#cafdepositauth')[0].innerText = '' + depositAuth;
+        $('#cafdisablemasterkey')[0].innerText = '' + disableMasterKey;
+        $('#cafdisallowincomingxrp')[0].innerText = '' + disallowIncomingXRP;
+        $('#cafglobalfreeze')[0].innerText = '' + globalFreeze;        
+        $('#cafnofreeze')[0].innerText = '' + noFreeze;
+        $('#cafrequireauthorization')[0].innerText = '' + requireAuthorization;        
+        $('#cafrequiredestinationtag')[0].innerText = '' + requireDestinationTag;       
+
+        showTab("#tabaccountflagsconfirm");
+        
+        unblockInput();
+    };
+
+
+    checkAccountIsFunded(afaddress, 0.1, 'XRP', '', function(){
+			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+				function(b){
+					if (debug) console.log("button selected: " + b);
+					if (b == 1) {
+						nextscreen();
+					} else {
+						$('#atladdress').focus();
+						unblockInput();
+					}
+				}, 
+				"XRP Reserve not met", 
+				[ "Try anyway", "Cancel" ]
+                );},
+                function() {
+					$('#atladdress').focus();
+					unblockInput();                    
+                }, nextscreen);
+
+
+}
+
 
 
 function validateOfflineCode(offlinecode, offlinecodefield) {
@@ -3394,20 +3806,16 @@ function doPay(nonce) {
 	var invid = ($("#invoiceid").val().trim() + "").toUpperCase();
 	var amount = $("#payamount").val().trim();
 
+    var owncurrencytgl = $('#tglIssueOwnCurrency').data('checked') == 'true';
 
-    var asset;
-    var issuer;
+    var asset = ( $('#payasset').is(':visible') ? ("" + $('#payasset').find(':selected').data('asset')).trim().toUpperCase() :  $('#payassetofl').val().trim().toUpperCase() );
+    var issuer = ( $('#payasset').is(':visible') ? $('#payasset').find(':selected').data('issuer') : $('#payissuerofl').val().trim() );
 
-    if (!offlinemode) {
-        asset = $('#payasset').find(':selected').data('asset');
-        issuer = $('#payasset').find(':selected').data('issuer');
-    } else {
-        asset = $('#payassetofl').val().trim();
-        issuer = $('#payissuerofl').val().trim();
+    if (owncurrencytgl) {
+        issuer = payfrom;
     }
 
     if (asset == '') asset = 'XRP';
-    if (asset == 'XRP') issuer = '';
 
     var offlinecode = $('#payofflinecode').val().trim().replace(/ /g, "").toUpperCase();
     var accID = '';
@@ -3527,6 +3935,25 @@ function doPay(nonce) {
 	}
 
 
+    if (asset == 'XRP' && ( issuer != '' || owncurrencytgl)) {
+		navigator.notification.alert("You cannot specify an issuer for XRP.", 
+			function(){
+                if ($('#oflcurrencydiv').is(':visible')) {
+                    $("#payassetofl").focus();
+                } else {
+    				$("#payasset").focus();
+                }
+
+				unblockInput();
+			}, 
+			"Select a payment amount", 
+			"OK"
+		);
+		return;
+    }
+
+    if ( asset == 'XRP' ) issuer = '';
+
 	if (amount == "" || parseFloat(amount)+ "" != (""+amount).trim()) {
 		navigator.notification.alert("You must select a valid amount to send", 
 			function(){
@@ -3569,7 +3996,12 @@ function doPay(nonce) {
             $('#confirmissuerpaygroup').hide();
         } else {
             $('#confirmissuerpaygroup').show();
-            $('#confirmissuer')[0].innerText = issuer;
+
+            if (owncurrencytgl) {
+                $('#confirmissuer')[0].innerText = 'This Account';
+            } else {
+                $('#confirmissuer')[0].innerText = issuer;
+            }
         }
 
 		showTab("#tabpaymentconfirm");
@@ -3577,7 +4009,7 @@ function doPay(nonce) {
 		unblockInput();
 	};
 
-    checkAccountIsFunded(payfrom, amount, function(){
+    checkAccountIsFunded(payfrom, amount, asset, issuer, function(){
 			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
@@ -3598,19 +4030,33 @@ function doPay(nonce) {
 }
 
 
-function checkAccountIsFunded(payfrom, amount, failurefunc, silentfailurefunc, successfunc) {
-	if (payfrom in accountbalances) {
+function checkAccountIsFunded(payfrom, amount, asset, issuer, failurefunc, silentfailurefunc, successfunc) {
+
+    if (offlinemode) return successfunc(); // skip this warning if we already know we can't check the balance
+
+    if ( payfrom == issuer ) return successfunc();
+    //todo: check if receiver has trustline setup to receive your currency
+    
+    if (asset == 'XRP' && payfrom in accountbalances) {
 		var balance = accountbalances[payfrom] - amount;
 		if (balance < xrpreserve) {
 			return failurefunc();
 		} else {
 			return successfunc();
 		}
-	} else {
+    }
 
-        if (offlinemode) return successfunc(); // skip this warning if we already know we can't check the balance
-        
-		navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account after the " + amount + " XRP transaction before continuing.",
+
+    if ( asset != 'XRP' &&  accountbalancestl[payfrom] != undefined && accountbalancestl[payfrom][asset] != undefined && accountbalancestl[payfrom][asset][issuer] != undefined ) {
+        var balance = accountbalancestl[payfrom][asset][issuer] - amount;
+        if (balance >= 0) {
+            return successfunc();
+        } else {
+            return failurefunc();
+        }
+    }
+
+    return navigator.notification.confirm("Toast Wallet was unable to check your account balance at this time. Please confirm that you have left " + xrpreserve + " XRP reserve in your account after the " + amount + " XRP transaction before continuing.",
 			function(b){
 				if (b == 1) {
 					return successfunc();
@@ -3620,9 +4066,8 @@ function checkAccountIsFunded(payfrom, amount, failurefunc, silentfailurefunc, s
 			}, 
 			"XRP balance not confirmed", 
 			[ "Yes continue", "Cancel" ]
-		);			
-		return;
-	}
+	);			
+
 }
 
 
@@ -5355,10 +5800,10 @@ function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failur
 
 
 
-function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, accSeqID, ledSeqID, fee) {
+function sendPaymentOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, asset, issuer, accSeqID, ledSeqID, fee) {
 
 	
-	if (debug) console.log("sendXRPOffline - " + xrpAmount);
+	if (debug) console.log("sendPaymentOffline - " + xrpAmount);
 	blockInput();
 	
 	getSecretForAccount(passphrase, fromacc, 
@@ -5375,7 +5820,7 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 			    address: fromacc,
 			    maxAmount: {
 			      value: xrpAmount + "",
-			      currency: 'XRP',
+			      currency: asset,
 			    },
 		      	    tag: parseInt(sourceTag + "")
 			  },
@@ -5383,11 +5828,17 @@ function sendXRPOffline(passphrase, fromacc, xrpAmount, destination, sourceTag, 
 			    address: destination,
 			    amount: {
 			      value: xrpAmount + "",
-			      currency: 'XRP',
+			      currency: asset,
 			    },
 			    tag: parseInt(destTag + "")
 			  }
 			};
+
+            if (asset != 'XRP' && issuer != '' && issuer != undefined) {
+                payment.source.maxAmount['counterparty'] = issuer;
+                payment.destination.amount['counterparty'] = issuer;
+                payment['allowPartialPayment'] = true;
+            }
 
 			if (invoiceID !== undefined && invoiceID != "") {
 				payment.invoiceID = invoiceID;
@@ -5502,6 +5953,140 @@ function submitSignedTransaction(signedTransaction, successfunc, failurefunc, tr
             failurefunc(e + "");
 
         }
+    );
+}
+
+
+function sendAccountFlagsTx(passphrase, fromacc, defaultRipple, depositAuth, disableMasterKey, disallowIncomingXRP, globalFreeze, noFreeze, requireAuthorization, requireDestinationTag, successfunc, failurefunc) {
+	
+	if (debug) console.log('sendAccountFlagsTx - ' + 'defaultRipple: ' + defaultRipple + ', ' + 'depositAuth: ' + depositAuth + ', ' + 'disableMasterKey: ' + disableMasterKey + ', ' + 'disallowIncomingXRP: ' + disallowIncomingXRP + ', ' + 'globalFreeze: ' + globalFreeze + ', ' + 'noFreeze: ' + noFreeze + ', ' + 'requireAuthorization: ' + requireAuthorization + ', ' + requireDestinationTag);
+	
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+			var instructions = {maxLedgerVersionOffset: 30};
+			var settings = {
+                "defaultRipple": defaultRipple == "true",
+                "depositAuth": depositAuth == "true",
+                "disableMasterKey": disableMasterKey == "true",
+                "disallowIncomingXRP": disallowIncomingXRP == "true",
+                "globalFreeze": globalFreeze == "true",
+                "noFreeze": noFreeze == "true",
+                "requireAuthorization": requireAuthorization == "true",
+                "requireDestinationTag": requireDestinationTag == "true"
+			};
+
+			var preparesettings = function(fromacc, settings, instructions, ptries) {
+				return remote.prepareSettings(fromacc, settings, instructions).then(prepared => {
+				    console.log('Trustline transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+                    
+                    secret = "";
+				    
+                    console.log('Settings transaction signed...');
+				    
+				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
+				    
+				}, (fail) => 	 {
+					console.log('Prepare settings failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return serverCycle(
+							function() {
+								preparepayment(fromacc, settings, instructions, ptries + 1);
+							}, ptries + 1, failurefunc);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+				});
+			}
+
+			return preparesettings(fromacc, settings, instructions, 0);
+		
+		},
+		function() {
+			unblockInput();
+			failurefunc("Could not load secret. Wallet may be corrupted.");
+		});    
+
+}
+
+
+function  sendAccountFlagsTxOffline(passphrase, fromacc, defaultRipple, depositAuth, disableMasterKey, disallowIncomingXRP, globalFreeze, noFreeze, requireAuthorization, requireDestinationTag, accSeqID, ledSeqID, fee) {
+
+
+	if (debug) console.log('sendAccountFlagsTx - ' + 'defaultRipple: ' + defaultRipple + ', ' + 'depositAuth: ' + depositAuth + ', ' + 'disableMasterKey: ' + disableMasterKey + ', ' + 'disallowIncomingXRP: ' + disallowIncomingXRP + ', ' + 'globalFreeze: ' + globalFreeze + ', ' + 'noFreeze: ' + noFreeze + ', ' + 'requireAuthorization: ' + requireAuthorization + ', ' + requireDestinationTag + " accSeqID " +  accSeqID + " ledSeqID " + ledSeqID + " fee " + fee);
+
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+            try {
+			var instructions = {
+                maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
+                sequence: (accSeqID),
+                fee: fee + ""
+            };
+			var settings = {
+                "defaultRipple": defaultRipple == "true",
+                "depositAuth": depositAuth == "true",
+                "disableMasterKey": disableMasterKey == "true",
+                "disallowIncomingXRP": disallowIncomingXRP == "true",
+                "globalFreeze": globalFreeze == "true",
+                "noFreeze": noFreeze == "true",
+                "requireAuthorization": requireAuthorization == "true",
+                "requireDestinationTag": requireDestinationTag == "true"
+			};
+
+
+            remote.prepareSettings(fromacc, settings, instructions).then(prepared => {
+                console.log('Settings transaction prepared...');
+                const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+                console.log('Settings transaction signed...');
+
+                secret = "";
+
+                    $('#divgreenqrdisplay').empty();
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
+                    showTab('#tabgreenqr');
+                    unblockInput();
+            },
+            E => {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );            
+            });
+         
+
+            } catch (E) {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );
+            }
+        },
+		function() {
+            navigator.notification.alert("Could not load secret. Wallet may be corrupted.", 
+                function(){
+                    unblockInput();
+                }, 
+                "Failure", 
+                "OK"
+            );
+		}
     );
 }
 
@@ -5635,9 +6220,9 @@ function sendTrustLineTxOffline(passphrase, fromacc, issuer, currency, limit, ri
 /* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
 ** before calling.
 */
-function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, successfunc, failurefunc) {
+function sendPayment(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, asset, issuer, successfunc, failurefunc) {
 	
-	if (debug) console.log("sendXRP - " + xrpAmount);
+	if (debug) console.log("sendPayment - " + xrpAmount);
 
 	
 	blockInput();
@@ -5652,7 +6237,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			    address: fromacc,
 			    maxAmount: {
 			      value: xrpAmount + "",
-			      currency: 'XRP',
+			      currency: asset,
 			    },
 		      	    tag: parseInt(sourceTag + "")
 			  },
@@ -5660,7 +6245,7 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 			    address: destination,
 			    amount: {
 			      value: xrpAmount + "",
-			      currency: 'XRP',
+			      currency: asset,
 			    },
 			    tag: parseInt(destTag + "")
 			  }
@@ -5670,7 +6255,13 @@ function sendXRP(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag
 				payment.invoiceID = invoiceID;
 			}
 
+            if (asset != 'XRP' && issuer != '' && issuer != undefined) {
+                payment.source.maxAmount['counterparty'] = issuer;
+                payment.destination.amount['counterparty'] = issuer;
+            }
 
+
+            console.log(payment);
 
 			var preparepayment = function(fromacc, payment, instructions, ptries) {
 				return remote.preparePayment(fromacc, payment, instructions).then(prepared => {
