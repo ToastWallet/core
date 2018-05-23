@@ -1134,7 +1134,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.47</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.48</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1323,7 +1323,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.47</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.48</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1344,7 +1344,10 @@ NO WARRANTY
 // but is only used to supply red qr code in the event the user is in offline mode
 function onPaymentSelectFromAccount() {
 
-    if ($("#payfromaccount").find(":selected") == undefined) return;
+    if ($("#payfromaccount").find(":selected") == undefined) {
+        if (activeaccount == undefined) return;
+        $('#opt' + activeaccount).attr('selected', 'selected');
+    } 
 
     var account = $("#payfromaccount").find(":selected").data('account');
     if (account == undefined) return;
@@ -1353,7 +1356,6 @@ function onPaymentSelectFromAccount() {
         $('#payofflinecodediv').css('display', 'block');
         $("#paytabredqr").empty();
         $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
-        $('#payofflinecodediv').css('display', 'block');
         $("#payasset").hide();
         $('#oflcurrencydiv').show();
         
@@ -3263,8 +3265,8 @@ function clearPaymentScreen() {
         if ($('#payfromaccount').find(':selected').data('account') != activeaccount) {
             $('#payfromaccount').find(':selected').removeAttr('selected');
             $('#opt' + activeaccount).attr('selected', 'selected');
-            onPaymentSelectFromAccount();
         }
+        onPaymentSelectFromAccount();
 
 		$("#toaddress").val("");
 		$("#desttag").val("");
@@ -3279,8 +3281,14 @@ function clearPaymentScreen() {
         $('#payissuerofl').val('');
         $('#invoiceiddiv').css( 'display', 'none' );
         $('#btnpayshowmore')[0].innerHTML = 'More';
-        $('#oflcurrencydiv').hide();
-        $('#payasset').show();
+
+        if (offlinemode) {
+            $('#oflcurrencydiv').show();
+            $('#payasset').hide();
+        } else {
+            $('#oflcurrencydiv').hide();
+            $('#payasset').show();
+        }
 	} catch(e) {handle_error(e);}
 }
 
@@ -3758,7 +3766,7 @@ function doSetAccountFlags(nonce) {
     var old_flags = {};
 
     if (accountflags[afaddress] != undefined) old_flags_orig = accountflags[afaddress];
-    for (var i in flag_keys)  old_flags[flag_keys[i]] = ( flag_keys[i] in old_flags_orig && old_flags_orig[flag_keys[i]] );
+    for (var i in flag_keys)  old_flags[flag_keys[i]] = ( offlinemode ? 'unknown' :  ( flag_keys[i] in old_flags_orig && old_flags_orig[flag_keys[i]] ) );
 
 
 
