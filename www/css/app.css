@@ -166,6 +166,20 @@ ul#adtrustlines {
     margin-right: 1em;    
 }
 
+.unknowntoggle:before {
+    content: "\f205";
+    color:red;
+    
+}
+
+.unknowntoggle:after {
+    position: absolute;
+    transform: translateX(-100%) rotate(180deg);
+    content: "\f205";
+    color:red;
+}
+
+
 .adtlheader {
     justify-content: space-between;
     width: 100%;

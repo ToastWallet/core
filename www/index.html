@@ -21,6 +21,18 @@
 	<script src="js/instascan.min.js"></script>
 	<script src="js/rippleutils-build.js"></script>
 	<script>if (window.module) module = window.module;
+
+        function blockInput(noloading) {
+            $("#inputblocker").show();
+            if (noloading == undefined || (noloading != undefined && !noloading)) $('body').addClass('liteloading');
+        }
+
+        function unblockInput() {
+            $("#inputblocker").hide();
+            $('body').removeClass('liteloading');
+        }
+
+
 	
 		window.onerror = function(message, url, lineNumber) {  
             x = "We're sorry: An unexpected error has occured with Toast Wallet. Please report the below to support@toastwallet.com along with what you were trying to do at the time the error occured. If you haven't already it would be prudent to make a backup of your wallet. You may need to restart Toast Wallet by closing it manually. " + message + " " + url + " " + lineNumber;
@@ -228,18 +240,38 @@
                 _this = $(this);
             }
 
-            if (ele.hasClass("fa-toggle-off")) {
-				ele.removeClass("fa-toggle-off");
-				ele.addClass("fa-toggle-on");
-				_this.data("checked", "true");
-			} else {
-				ele.removeClass("fa-toggle-on");
-				ele.addClass("fa-toggle-off");
-				_this.data("checked", "false");
-			}
+            var allowunknown = _this.data('allowunknown');
+            
+
+            if (ele.hasClass("unknowntoggle")) {
+                ele.removeClass("unknowntoggle");
+                ele.addClass("fa-toggle-off");
+                _this.data("checked", "false");
+            } else if (ele.hasClass("fa-toggle-off")) {
+                ele.removeClass("fa-toggle-off");
+                ele.addClass("fa-toggle-on");
+                _this.data("checked", "true");
+            } else {
+                if (allowunknown == undefined || allowunknown == false) {
+                    ele.removeClass("fa-toggle-on");
+                    ele.addClass("fa-toggle-off");
+                    _this.data("checked", "false");
+                } else {
+                    ele.removeClass("fa-toggle-on");
+                    ele.addClass("unknowntoggle");
+                    _this.data("checked", "unknown");
+                }
+
+            }
+
 
             if (_this.data('after') != undefined) {
-                eval(_this.data('after'));
+                var f = _this.data('after');
+                if (typeof(f) == "string") {
+                    eval(f);
+                } else if (typeof(f) == "function") {
+                    f(_this);
+                }
             }
 
 		});
@@ -435,15 +467,20 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label >Ripple Address</label>   
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="afaddress">
     	<br>
+        <div style="color:black; text-align:justify;">These are your Ripple Account's global flags. You are strongly advised to research each setting before enabling it. To submit your changes scroll to the bottom.</div>
+        <br>
 
+        <div id="afoflwarningdiv" style="display:none; color:red; text-align:justify;">Warning: You are in offline mode and your account flags cannot be read from the XRP Ledger. Please ensure you are aware of the current flags before changing them.<br></div>
 
     <div id="afofflinecodediv" style="display:none;">
+        <br>
+        <label>Scan Red QR into Online Toast</label>
         <center>
             <div id="aftabredqr">
             </div>
         </center>
       	<br />    
-        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <label>Confirmation Code</label>
         <input ontouchend="te(event, quickSelectInput)"  type="text" id="afofflinecode" class="form-control" placeholder="">
         <br>
     </div>
@@ -543,6 +580,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div id="cafrequiredestinationtag"></div>
     </div>
 
+	<div class="paygrouping">
+    <label>These changes require</label>
+	<div id="cafnotransactions"></div>
+    </div>
 
 
 
@@ -580,22 +621,23 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { $('#atlissueraddr').val(content) } )})">QR</button></span>
 	</div>
 	<br>
-    <label >Currency Code</label>
+    <label >Currency</label>
     <div>
-    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="USD"  id="atlcurrency" maxlength="3" >
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="atlcurrency" maxlength="3" >
     </div>
     <br>
     <label >Trustline Limit</label>
     <div>
-    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="10000"  id="atllimit" >
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="atllimit" >
     </div>
     <br>
 
-    <label >Rippling (disabled is strongly recommended)</label>
+    <label >Rippling</label>
+    <p style="color:black;">Leave disabled unless you understand how Rippling in trustlines works.</p>
     <div>
 	<select ontouchend="te(event, quickSelectInput)" id="atlrippling" class="form-control" onchange="">
         <option selected="selected">disabled</option>
-        <option>enabled</option>
+        <option>enabled</option>        
 	</select>
     </div>
     <br>
@@ -1092,7 +1134,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.46</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.47</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1281,7 +1323,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.46</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.47</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1296,17 +1338,6 @@ NO WARRANTY
 
 
 <script>
-
-function blockInput(noloading) {
-	$("#inputblocker").show();
-	if (noloading == undefined || (noloading != undefined && !noloading)) $('body').addClass('liteloading');
-}
-
-function unblockInput() {
-	$("#inputblocker").hide();
-	$('body').removeClass('liteloading');
-}
-
 
 
 // this function fires when an account is selected on the payments tab
@@ -1644,28 +1675,30 @@ function doToggleInvoiceId() {
 }
 
 
-function setToggleSwitch(tgl, checked) {
+function setToggleSwitch(tgl, checked, aftertglfunc, allowunknown) {
     var ctgl = $($(tgl).children()[0]);
     ctgl.removeClass('fa-toggle-on');
     ctgl.removeClass('fa-toggle-off');
-    ctgl.addClass('fa-toggle-' + (checked? 'on' : 'off'));
-    $(tgl).data('checked', '' + checked);
+    ctgl.removeClass('unknowntoggle');
+
+    if (allowunknown != undefined)  $(tgl).data('allowunknown', allowunknown);
+
+
+
+    ctgl.addClass((checked == 'unknown' || checked == undefined ? 'unknowntoggle' : ( checked? 'fa-toggle-on' : 'fa-toggle-off')));
+    $(tgl).data('checked', '' + ( checked == 'unknown' || checked == undefined ? 'unknown' : ( checked ? 'true' : 'false' ) ));
+
+    if (aftertglfunc != undefined) {
+            $(tgl).data('after', aftertglfunc);
+    }
 }
 
 
 
-function showAccountFlags(account, warningdisplayed) {
+
+
+function showAccountFlags(account) {
     blockInput();
-    if ( (!(account in accountflags)  || offlinemode) && warningdisplayed == undefined ) {
-		navigator.notification.alert("Toast Wallet is unable to load your existing account flags. Submitting below will potentially override the current values of these flags which are not displayed here.", 
-			function(){
-                showAccountFlags(account, true);
-			}, 
-			"WARNING", 
-			"OK"
-		);
-		return;
-	}
 
     $('#afaddress').val(account);
     $('#afaddress').data('content', account);
@@ -1673,23 +1706,74 @@ function showAccountFlags(account, warningdisplayed) {
 
     var toggles = [ "#tglDefaultRipple", "#tglDepositAuth", "#tglDisableMasterKey", "#tglDisallowIncomingXRP", "#tglGlobalFreeze", "#tglNoFreeze", "#tglRequireAuthorization", "#tglRequireDestinationTag"];
 
-    // first set all switches to off
-    for (var i in toggles) setToggleSwitch(toggles[i], false);
+    // special instructions for disable master key
+    setToggleSwitch('#tglDisableMasterKey', (offlinemode ? 'unknown' : false), (tgl)=>{
 
-    // then check any entries we have values for
-    if (accountflags[account] != undefined) {
-        var flags = accountflags[account];
-        if (flags['defaultRipple']) setToggleSwitch("#tglDefaultRipple", true);
-        if (flags['depositAuth']) setToggleSwitch("#tglDepositAuth", true);
-        if (flags['disableMasterKey'] ) setToggleSwitch("#tglDisableMasterKey", true);
-        if (flags['disallowIncomingXRP'] ) setToggleSwitch("#tglDisallowIncomingXRP", true);
-        if (flags['globalFreeze']) setToggleSwitch("#tglGlobalFreeze", true);
-        if (flags['noFreeze']) setToggleSwitch("#tglNoFreeze", true);
-        if (flags['requireAuthorization']) setToggleSwitch("#tglRequireAuthorization", true);
-        if (flags['requireDestinationTag']) setToggleSwitch("#tglRequireDestinationTag", true);
+        blockInput();
+        var checked = ( offlinemode ? 'unknown' : tgl.data('checked') != 'true');
+
+        // flip the switch back -- they can't change this setting on this screen
+        setToggleSwitch('#tglDisableMasterKey',  checked);
+
+        return 	navigator.notification.alert("Master key cannot be enabled or disabled here, it is shown for information only. Please use Rekey in the Account Details screen instead.", 
+            function(){
+                unblockInput();
+            }, 
+            "WARNING", 
+            "OK"
+        );                
+
+    });
+   
+
+    if (offlinemode) {
+
+        // in offline set the toggles to an unknown state
+        for (var i in toggles) if (toggles[i] != '#tglDisableMasterKey') setToggleSwitch(toggles[i], 'unknown', 
+                (tgl)=>{
+                    blockInput();
+                    // on toggle action count toggles currently set then prevent them setting a new one because offline mode limits to one toggle setting
+                    var c = 0;
+                    for (var n in toggles) {
+                        if ($(toggles[n]).data('checked') != 'unknown') c++;
+                        if (c > 1) {
+                            setToggleSwitch(tgl, 'unknown');
+                            return 	navigator.notification.alert("Unfortunately in offline mode it is only possible to set one account flag at a time.", 
+                			function(){
+                                unblockInput();
+                            }, 
+                			"WARNING", 
+                			"OK"
+                    		);
+                        }
+                    }
+                    unblockInput();
+                }, true);
+
+            showTab('#tabaccountflags', true);
+    } else {
+
+
+        var flags = {};
+        // then check any entries we have values for
+        if (accountflags[account] != undefined) flags = accountflags[account];
+
+        showTab('#tabaccountflags', true);
+
+        setToggleSwitch("#tglDefaultRipple", flags['defaultRipple'] === true);
+        setToggleSwitch("#tglDepositAuth", flags['depositAuth'] === true);
+        setToggleSwitch("#tglDisableMasterKey", flags['disableMasterKey'] === true);
+        setToggleSwitch("#tglDisallowIncomingXRP", flags['disallowIncomingXRP'] === true);
+        setToggleSwitch("#tglGlobalFreeze", flags['globalFreeze'] === true);
+        setToggleSwitch("#tglNoFreeze", flags['noFreeze'] === true);
+        setToggleSwitch("#tglRequireAuthorization", flags['requireAuthorization'] === true);
+        setToggleSwitch("#tglRequireDestinationTag", flags['requireDestinationTag'] === true);
+        
+
     }
 
-    showTab('#tabaccountflags', true);
+ 
+
     unblockInput();
 
 }
@@ -2475,7 +2559,7 @@ function refreshAccounts(after) {
                                         // populate the dropdown for this account
                                         if (trustlinesdropdown[account] == undefined) trustlinesdropdown[account] = {};
 
-                                        trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + (""+currency).replace(/[^A-Za-z0-9]/mg, "") + ' - ' + (""+issuer).replace(/[^A-Za-z0-9]/mg, "") + '</option>';
+                                        trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + currency.replace(/[^A-Za-z0-9?!@#$%\^&*<>(){}[\]|]/mg, "") + ' - ' + (""+issuer).replace(/[^A-Za-z0-9]/mg, "") + '</option>';
                                     }
 
                                     for (var currency in tlbalances) {
@@ -2870,10 +2954,11 @@ function showTab(tab, dontClearText) {
 		scanner.stop();
 	}
 
-	if (tab == "#tabaccounts" || tab == "#tabpayments") {
+    if (tab == "#tabpayments") {
+            clearPaymentScreen();
+    } else if (tab == "#tabaccounts") {
         if ( dontClearText == undefined || dontClearText == false ) {
-            $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="">Loading...</option>';
-            if (tab == "#tabpayments") clearPaymentScreen();
+           // $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="">XRP</option>';
             refreshAccounts( onPaymentSelectFromAccount );	
         }
 	} else if (tab == "#tabaccountsecret") {
@@ -2897,8 +2982,8 @@ function showTab(tab, dontClearText) {
         var account = $("#afaddress").data('content');
         $("#aftabredqr").empty();
         $("#aftabredqr").append(kjua({text: account, fill:"#ff0000"}));    
-        $('#afofflinecodediv').css('display', 'block')
-
+        $('#afofflinecodediv').css('display', 'block');
+        $('#afoflwarningdiv').css('display', 'block');
     }
 
 	if (tab == '#tabpayments') {
@@ -3174,6 +3259,13 @@ function doImportGeneratedAccount(passphrase, nickname) {
 
 function clearPaymentScreen() {
 	try {
+
+        if ($('#payfromaccount').find(':selected').data('account') != activeaccount) {
+            $('#payfromaccount').find(':selected').removeAttr('selected');
+            $('#opt' + activeaccount).attr('selected', 'selected');
+            onPaymentSelectFromAccount();
+        }
+
 		$("#toaddress").val("");
 		$("#desttag").val("");
 		$("#invoiceid").val("");
@@ -3342,7 +3434,7 @@ function doConfirmAccountFlags(passphrase) {
 				function(){
 					sendAccountFlagsTx(passphrase, confirmfl.afaddress, confirmfl.defaultRipple, confirmfl.depositAuth, confirmfl.disableMasterKey, confirmfl.disallowIncomingXRP, confirmfl.globalFreeze, confirmfl.noFreeze, confirmfl.requireAuthorization, confirmfl.requireDestinationTag, 
 						function(wasqueued){
-								navigator.notification.alert("Your account flags transaction was " + ( wasqueued ? "queued, and should be executed shortly." : "executed." ), 
+								navigator.notification.alert("Your account flags transaction(s) were submitted successfully.", 
 									function(){
 										clearPaymentScreen();
 										showTab("#tabaccounts");
@@ -3350,7 +3442,7 @@ function doConfirmAccountFlags(passphrase) {
 									}, "Success", "OK"); 
 						}, 
 						function(err) {
-							navigator.notification.alert("An error occured when trying to set your account flags. " + err, 
+							navigator.notification.alert("An error occured when trying to set your account flags. If you were attempting to set multiple flags some of them may have been set." + err, 
 							function(){
 								lasttrustlinenonce = "";
 								showTab(-1);
@@ -3630,6 +3722,7 @@ function doSetAccountFlags(nonce) {
 	if (debug) console.log("doSetAccountFlags");
 	blockInput();
 
+
 	var afaddress = $("#afaddress").val().trim();
 
     var defaultRipple = $('#tglDefaultRipple').data('checked');
@@ -3657,35 +3750,61 @@ function doSetAccountFlags(nonce) {
         fee = ofl.fee;
     }
 
+    var flag_keys = ['defaultRipple', 'depositAuth', 'disableMasterKey', 'disallowIncomingXRP', 'globalFreeze', 'noFreeze', 'requireAuthorization', 'requireDestinationTag'];  
 
-    var nextscreen = function() {
+
+    // check which flags have changed
+    var old_flags_orig = {};
+    var old_flags = {};
+
+    if (accountflags[afaddress] != undefined) old_flags_orig = accountflags[afaddress];
+    for (var i in flag_keys)  old_flags[flag_keys[i]] = ( flag_keys[i] in old_flags_orig && old_flags_orig[flag_keys[i]] );
+
+
+
+
+    var nextscreen = function(){ 
+
+        var changedflagcount = 0;
+
         confirmfl = {
             afaddress: afaddress,
-            defaultRipple: defaultRipple,
-            depositAuth: depositAuth,
-            disableMasterKey: disableMasterKey,
-            disallowIncomingXRP: disallowIncomingXRP,
-            globalFreeze: globalFreeze,
-            noFreeze: noFreeze,
-            requireAuthorization: requireAuthorization,
-            requireDestinationTag: requireDestinationTag,
+            defaultRipple: ( defaultRipple == '' + old_flags['defaultRipple'] ? 'unchanged' : defaultRipple ),
+            depositAuth: ( depositAuth == '' + old_flags['depositAuth'] ? 'unchanged' : depositAuth ),
+            disableMasterKey: ( disableMasterKey == '' + old_flags['disableMasterKey'] ? 'unchanged' : disableMasterKey ),
+            disallowIncomingXRP: ( disallowIncomingXRP == '' + old_flags['disallowIncomingXRP'] ? 'unchanged' : disallowIncomingXRP ),
+            globalFreeze: ( globalFreeze == '' + old_flags['globalFreeze'] ? 'unchanged' : globalFreeze ),
+            noFreeze: ( noFreeze == '' + old_flags['noFreeze'] ? 'unchanged' : noFreeze ),
+            requireAuthorization: ( requireAuthorization == '' + old_flags['requireAuthorization'] ? 'unchanged' : requireAuthorization ),
+            requireDestinationTag: ( requireDestinationTag == '' + old_flags['requireDestinationTag'] ? 'unchanged' : requireDestinationTag ),
             nonce: nonce,
             accseqid: accID, // used for offline tx
             ledseqid: ledID,
             fee: fee
         };
 
+        var changedflagcount = ( confirmfl.defaultRipple != 'unchanged' ? 1 : 0) +( confirmfl.depositAuth != 'unchanged' ? 1 : 0) +( confirmfl.disableMasterKey != 'unchanged' ? 1 : 0) +( confirmfl.disallowIncomingXRP != 'unchanged' ? 1 : 0) +( confirmfl.globalFreeze != 'unchanged' ? 1 : 0) +( confirmfl.noFreeze != 'unchanged' ? 1 : 0) +( confirmfl.requireAuthorization != 'unchanged' ? 1 : 0) +( confirmfl.requireDestinationTag != 'unchanged' ? 1 : 0);
+
+        if (changedflagcount == 0) return navigator.notification.alert("You have not made any changes to submit.", ()=>{unblockInput();}, "ERROR", "OK");
+            
+
+
+
+        confirmfl['changedflagcount'] = changedflagcount;
+
         confirmflhash = sodium.crypto_generichash(16, JSON.stringify(confirmfl), ''+nonce, 'hex');
 
         $('#cafaddress')[0].innerText = afaddress;
-        $('#cafdefaultripple')[0].innerText = '' + defaultRipple;
-        $('#cafdepositauth')[0].innerText = '' + depositAuth;
-        $('#cafdisablemasterkey')[0].innerText = '' + disableMasterKey;
-        $('#cafdisallowincomingxrp')[0].innerText = '' + disallowIncomingXRP;
-        $('#cafglobalfreeze')[0].innerText = '' + globalFreeze;        
-        $('#cafnofreeze')[0].innerText = '' + noFreeze;
-        $('#cafrequireauthorization')[0].innerText = '' + requireAuthorization;        
-        $('#cafrequiredestinationtag')[0].innerText = '' + requireDestinationTag;       
+        $('#cafdefaultripple')[0].innerText = '' + confirmfl.defaultRipple;
+        $('#cafdepositauth')[0].innerText = '' + confirmfl.depositAuth;
+        $('#cafdisablemasterkey')[0].innerText = '' + confirmfl.disableMasterKey;
+        $('#cafdisallowincomingxrp')[0].innerText = '' + confirmfl.disallowIncomingXRP;
+        $('#cafglobalfreeze')[0].innerText = '' + confirmfl.globalFreeze;        
+        $('#cafnofreeze')[0].innerText = '' + confirmfl.noFreeze;
+        $('#cafrequireauthorization')[0].innerText = '' + confirmfl.requireAuthorization;        
+        $('#cafrequiredestinationtag')[0].innerText = '' + confirmfl.requireDestinationTag;       
+        
+        $('#cafnotransactions')[0].innerText = changedflagcount + ' transactions';
 
         showTab("#tabaccountflagsconfirm");
         
@@ -5966,44 +6085,64 @@ function sendAccountFlagsTx(passphrase, fromacc, defaultRipple, depositAuth, dis
 	getSecretForAccount(passphrase, fromacc, 
 		function(secret) {
 
+            var flags = {
+                "defaultRipple": defaultRipple, "depositAuth": depositAuth, "disableMasterKey": disableMasterKey, "disallowIncomingXRP": disallowIncomingXRP, "globalFreeze": globalFreeze, "noFreeze": noFreeze, "requireAuthorization": requireAuthorization, "requireDestinationTag": requireDestinationTag
+            }
 
-			var instructions = {maxLedgerVersionOffset: 30};
-			var settings = {
-                "defaultRipple": defaultRipple == "true",
-                "depositAuth": depositAuth == "true",
-                "disableMasterKey": disableMasterKey == "true",
-                "disallowIncomingXRP": disallowIncomingXRP == "true",
-                "globalFreeze": globalFreeze == "true",
-                "noFreeze": noFreeze == "true",
-                "requireAuthorization": requireAuthorization == "true",
-                "requireDestinationTag": requireDestinationTag == "true"
-			};
+            var submit_flag_change = (flags, secret) => {
 
-			var preparesettings = function(fromacc, settings, instructions, ptries) {
-				return remote.prepareSettings(fromacc, settings, instructions).then(prepared => {
-				    console.log('Trustline transaction prepared...');
-				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+                for (var f in flags) {
+                    // drop any flags we're not changing
+                    if (flags[f] == 'unchanged') {
+                        delete(flags[f]);
+                        continue;
+                    }
+
+                    // grab the first flag off the top and submit it
+
+
+                    var instructions = {maxLedgerVersionOffset: 30};
+                    var settings = {};
                     
-                    secret = "";
-				    
-                    console.log('Settings transaction signed...');
-				    
-				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
-				    
-				}, (fail) => 	 {
-					console.log('Prepare settings failed: ' + fail);
-					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
-						return serverCycle(
-							function() {
-								preparepayment(fromacc, settings, instructions, ptries + 1);
-							}, ptries + 1, failurefunc);
-					}
-					unblockInput();
-					failurefunc("" + fail);
-				});
-			}
+                    settings[f] = ( flags[f] == "true" );
+                    
 
-			return preparesettings(fromacc, settings, instructions, 0);
+                    delete(flags[f]);
+
+                    var preparesettings = function(fromacc, settings, instructions, ptries) {
+                        return remote.prepareSettings(fromacc, settings, instructions).then(prepared => {
+                            console.log('Trustline transaction prepared...');
+                            const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+                            
+                           
+                            
+                            console.log('Settings transaction signed...');
+                            
+                            submitSignedTransaction(signedTransaction, ()=>{ submit_flag_change(flags, secret); }, failurefunc, ptries);
+                            
+                        }, (fail) => 	 {
+                            console.log('Prepare settings failed: ' + fail);
+                            if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+                                return serverCycle(
+                                    function() {
+                                        preparepayment(fromacc, settings, instructions, ptries + 1);
+                                    }, ptries + 1, failurefunc);
+                            }
+                            unblockInput();
+                            failurefunc("" + fail);
+                        });
+                    }
+
+                    return preparesettings(fromacc, settings, instructions, 0);
+
+                }
+
+                // if code execution reaches here then all submissions were successful!
+                successfunc();
+            };
+            
+            submit_flag_change(flags, secret);
+            secret = "";
 		
 		},
 		function() {
@@ -6031,16 +6170,17 @@ function  sendAccountFlagsTxOffline(passphrase, fromacc, defaultRipple, depositA
                 sequence: (accSeqID),
                 fee: fee + ""
             };
-			var settings = {
-                "defaultRipple": defaultRipple == "true",
-                "depositAuth": depositAuth == "true",
-                "disableMasterKey": disableMasterKey == "true",
-                "disallowIncomingXRP": disallowIncomingXRP == "true",
-                "globalFreeze": globalFreeze == "true",
-                "noFreeze": noFreeze == "true",
-                "requireAuthorization": requireAuthorization == "true",
-                "requireDestinationTag": requireDestinationTag == "true"
-			};
+            var settings = {};
+
+            // only allow one flag to be set, whichever comes first
+            if (defaultRipple != 'unchanged') settings['defaultRipple'] = ( defaultRipple == 'true' );
+            else if (depositAuth != 'unchanged') settings['depositAuth'] = ( depositAuth == 'true' );
+            else if (disableMasterKey != 'unchanged') settings['disableMasterKey'] = ( disableMasterKey == 'true' );
+            else if (disallowIncomingXRP != 'unchanged') settings['disallowIncomingXRP'] = ( disallowIncomingXRP == 'true' );
+            else if (globalFreeze != 'unchanged') settings['globalFreeze'] = ( globalFreeze == 'true' );
+            else if (noFreeze != 'unchanged') settings['noFreeze'] = ( noFreeze == 'true' );
+            else if (requireAuthorization != 'unchanged') settings['requireAuthorization'] = ( requireAuthorization == 'true' );
+            else if (requireDestinationTag != 'unchanged') settings['requireDestinationTag'] = ( requireDestinationTag == 'true' );
 
 
             remote.prepareSettings(fromacc, settings, instructions).then(prepared => {
