@@ -643,8 +643,55 @@ i.fa.fa-exchange {
 
 .adtrustline {
     padding-bottom: 0.6em;
+    text-align: center;
 }
 
+.chartele {
+    display: inline-block;
+    border: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+
+.chartelered {
+    display: inline-block;
+    border: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    background: #d47400;
+}
+
+.chartelegreen {
+    display: inline-block;
+    border: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    background: #00BCD4;
+}
+
+.charteleblank {
+    display: inline-block;
+    border: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.bidask { 
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 0.5em;
+}
+
+.ask{
+    color:blue;
+    margin-left:0.5em;
+}
+
+.bid{
+    color:red;
+}
 .currency {
     font-size: 0.7em;
     border-radius: 3px;

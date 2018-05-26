@@ -20,6 +20,7 @@
 	<script src="js/clipboard.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/rippleutils-build.js"></script>
+    
 	<script>if (window.module) module = window.module;
 
         function blockInput(noloading) {
@@ -938,6 +939,71 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center><div><button  type="button" class="btn btn-primary" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doImportGeneratedAccount($('#genaccpassword').val(), $('#newaccnick').val());})">Import this Address</button></div></center>
 </div>
 
+
+<div id="tabneworder" class="screentab" data-hasback="true" data-title="New Order" style="padding-bottom: 4em;">
+    <label>Ripple Address</label>
+		<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="atladdress">
+	<br>
+
+    <div id="atlofflinecodediv" style="display:none;">
+        <center>
+            <div id="atltabredqr"></div>
+        </center>
+      	<br>    
+        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <input ontouchend="te(event, quickSelectInput)" type="text" id="atlofflinecode" class="form-control" placeholder="">
+        <br>
+    </div>
+
+    <label>Buy Currency</label>
+        <div id="oflcurrencyselldiv" style="display:none">
+	    <input ontouchend="te(event, quickSelectInput)" type="text" id="sellassetofl" class="form-control" placeholder="Leave blank for XRP">
+        <br>
+        <label>Issuer Addresss</label>
+        <input ontouchend="te(event, quickSelectInput)" type="text" id="sellissuerofl" class="form-control" placeholder="Leave blank for XRP">
+	</div>
+
+	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option data-issuer="" data-asset="XRP" id="optpa-xrp">XRP</option><option id="optpa-ALV-raEQc5krJ2rUXyi6fgmUAf63oAXmF7p6jp" data-asset="ALV" data-issuer="raEQc5krJ2rUXyi6fgmUAf63oAXmF7p6jp">ALV - raEQc5krJ2rUXyi6fgmUAf63oAXmF7p6jp</option></select>
+    <br>
+	<label>Buy Amount</label>
+	
+<div class="input-group">
+	<input ontouchend="te(event, quickSelectInput)" type="text" id="payamount" class="form-control" placeholder="Leave blank for spot">
+	<span class="input-group-btn">
+	<button class="btn btn-default" id="btnpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPay(sodium.randombytes_random());})" type="button">Rate</button>
+	</span>
+	</div>
+    
+
+    <br>
+    <label>Sell Currency</label>
+        <div id="oflcurrencyselldiv" style="display:none">
+	    <input ontouchend="te(event, quickSelectInput)" type="text" id="posellassetofl" class="form-control" placeholder="Leave blank for XRP">
+        <br>
+        <label>Issuer Addresss</label>
+        <input ontouchend="te(event, quickSelectInput)" type="text" id="posellissuerofl" class="form-control" placeholder="Leave blank for XRP">
+	</div>
+
+    <select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option data-issuer="" data-asset="XRP" id="optpa-xrp">XRP</option><option>New ...</option></select>
+    <br>
+	<label>Sell Amount</label>
+	<div class="input-group">
+	<input ontouchend="te(event, quickSelectInput)" type="text" id="posellamount" class="form-control" placeholder="Maximum amount to sell">
+	<span class="input-group-btn">
+	<button class="btn btn-default" id="btnpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPay(sodium.randombytes_random());})" type="button">More</button>
+	</span>
+	</div>
+    
+
+    <br>
+<label>Expiry</label>
+<br><select ontouchend="te(event, quickSelectInput)" id="poexpiry" class="form-control" onchange=""><option id="">24 hours</option></select><br>
+    
+
+    <center><div>
+			<button type="button" class="btn btn-primary" id="btnplaceorder" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPlaceOrder(sodium.randombytes_random());})">Place Order</button></div></center>
+</div>
+
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
 	<div class="paygrouping">
     <label>From Account</label>
@@ -1134,7 +1200,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.48</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.49</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1323,7 +1389,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.48</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.49</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2415,6 +2481,112 @@ function display_currency_amount(x) {
 
 }
 
+
+function renderOrderbookChart(orders, eleid) {
+
+
+    var o = orders;
+
+    var bids = o.bids;
+    var asks = o.asks;
+
+    var smallestx = Number.MAX_SAFE_INTEGER;
+    var largestx = 0;
+
+    var smallesty = Number.MAX_SAFE_INTEGER;
+    var largesty = 0;
+
+    var data = [];
+
+    var buyaccumulator = 0;
+    for (var x = bids.length - 1; x >= 0; x--) {
+        var val = 1.0/parseFloat(""+o.bids[x].properties.makerExchangeRate);
+        if ( x != bids.length - 1 && val > largestx) largestx = val;
+        if ( x != bids.length - 1 && val < smallestx) smallestx = val;
+        var y = parseFloat(""+o.bids[x].specification.totalPrice.value);
+        data.push([val, y]);
+        if (y < smallesty) smallesty = y;     
+        buyaccumulator += y;   
+    }
+
+    var halfway = data.length;
+
+    var sellaccumulator = 0;
+    for (x in asks) {
+        var val = parseFloat(""+o.asks[x].properties.makerExchangeRate);
+        if (val > largestx) largestx = val;
+        if (val < smallestx) smallestx = val;
+        var y = parseFloat(""+o.asks[x].specification.totalPrice.value);
+        data.push([val, y]);
+
+        if (y < smallesty) smallesty = y;
+        sellaccumulator += y;
+    }
+
+    if (sellaccumulator > largesty) largesty = sellaccumulator;
+    if (buyaccumulator > largesty) largesty = buyaccumulator;
+
+    var range = largestx - smallestx;
+
+    var vertrange = largesty - smallesty;
+
+
+    var chart = $(eleid);
+    chart.empty();
+
+    for (var x = 1; x < halfway; x++) {
+        var price = data[x][0];
+        var amount = data[x][1];
+
+        var lastprice = data[x-1][0];
+
+        buyaccumulator -= amount;
+
+        var width = (((price - lastprice) / range) * 100);
+        var height = (((buyaccumulator - smallesty) / vertrange)*5);
+  
+
+
+        chart[0].innerHTML += '<span class="chartelered" style="width: '+width+'%; height: '+height+'em;"></span>';
+
+    }
+
+    // half way gap
+
+    var hwidth = ((data[halfway][0] - data[halfway-1][0])/range)*100;
+    chart[0].innerHTML += '<span class="charteleblank" style="width: '+width+'%; background: rgba(0,0,0,0); height: 0px"></span>';
+
+
+
+    sellaccumulator = 0;
+    for (var x = halfway; x < data.length-1; x++) {
+        var price = data[x][0];
+        var amount = data[x][1];
+
+        var nextprice = data[x+1][0];
+
+        sellaccumulator += amount;
+        var width = (((nextprice - price) / range) * 100);
+        var height = (((sellaccumulator - smallesty) / vertrange)*5);
+   
+
+        console.log("amount: " + amount + ", smallesty: " + smallesty +", vertrange: " + vertrange); 
+        console.log("width: " + width + ", height: " + height);
+
+        chart[0].innerHTML += '<span class="chartelegreen" style="width: '+width+'%; height: '+height+'em;"></span>';
+
+    }
+
+    var currency = bids[0]['specification']['totalPrice']['currency'];
+    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(data[halfway-1][0]);
+    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(data[halfway][0]);
+
+
+
+}
+
+
+
 /** 
   refreshes the trustlines subtab or account details
   */
@@ -2427,7 +2599,11 @@ function refreshTrustlines(account, after) {
         return;
     }
 
+
+
     var f = (res)=>{
+
+
         var trustlines = "";
         var tlcount = 0;
         if (res['trustlines'] != undefined && typeof(res['trustlines']) == 'object' && 
@@ -2438,15 +2614,35 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlsubheader"><button class="btn btn-warning adtlbutton adtllimitbutton"><span class="scap">Lim</span>&nbsp;' + display_currency_amount(parseFloat("" + tl['specification']['limit']))  + '</button><button class="btn btn-success adtlbutton"><span>Trade</span>&nbsp;<i class="fa fa-exchange"></i></button><button class="btn btn-primary adtlbutton"><span>Send </span>&nbsp;<i class="fa fa-paper-plane"></i></button></div></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><div class="adtlsubheader"><button class="btn btn-warning adtlbutton adtllimitbutton"><span class="scap">Lim</span>&nbsp;' + display_currency_amount(parseFloat("" + tl['specification']['limit']))  + '</button><button class="btn btn-success adtlbutton"><span>Trade</span>&nbsp;<i class="fa fa-exchange"></i></button><button class="btn btn-primary adtlbutton"><span>Send </span>&nbsp;<i class="fa fa-paper-plane"></i></button></div></li>';
             }
 
         } else {
             trustlines = '<li><center><i>No trustlines on this account yet.</i></center></li>';
+            return;
         }
 
         $('#adtrustlines')[0].innerHTML = trustlines;
-                                    
+                          
+       // render graphs 
+        for (t in res['trustlines']) {
+           var tl = res['trustlines'][t];
+           var issuer, currency, balance;
+           if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
+           (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
+           ((currency, issuer) => {
+            remote.getOrderbook(
+                "raEQc5krJ2rUXyi6fgmUAf63oAXmF7p6jp", 
+                {"base": {"currency": currency, "counterparty": issuer}, 
+                "counter": {"currency":"XRP"}},  { limit: 15 }
+            ).then(orders => {
+               renderOrderbookChart(orders, '#grp-'+currency+'-'+issuer);
+            });           
+           })(currency, issuer);
+        }
+
+        
+
     };
 
     var e = ()=>{
@@ -2476,6 +2672,9 @@ function onToggleIssueOwnCurrency() {
         $('#payasset').show();
     }
 }
+
+
+
 
 var trustlinesdropdown = {};
 
