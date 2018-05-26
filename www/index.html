@@ -1200,7 +1200,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.50</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.51</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1389,7 +1389,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.50</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.51</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2547,7 +2547,7 @@ function renderOrderbookChart(orders, eleid) {
   
 
 
-        chart[0].innerHTML += '<span class="chartelered" style="width: '+width+'%; height: '+height+'em;"></span>';
+        chart[0].innerHTML += '<span class="chartelegreen" style="width: '+width+'%; height: '+height+'em;"></span>';
 
     }
 
@@ -2573,7 +2573,7 @@ function renderOrderbookChart(orders, eleid) {
         console.log("amount: " + amount + ", smallesty: " + smallesty +", vertrange: " + vertrange); 
         console.log("width: " + width + ", height: " + height);
 
-        chart[0].innerHTML += '<span class="chartelegreen" style="width: '+width+'%; height: '+height+'em;"></span>';
+        chart[0].innerHTML += '<span class="chartelered" style="width: '+width+'%; height: '+height+'em;"></span>';
 
     }
 
