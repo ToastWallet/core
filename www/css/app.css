@@ -606,6 +606,8 @@ span#accdetailsamount {
     width: 100%;
     justify-content: space-between;
     flex-wrap: nowrap;
+    opacity: 0.7;
+    max-width: 50em;
 }
 
 span.scap {
@@ -617,15 +619,14 @@ span.scap {
     display: flex;
     justify-content: center;
     flex: 1;
-    padding-top: 0.3em;
-    padding-bottom: 0.3em;
-    padding-left: 0.1em;
-    padding-right: 0.1em;
-    max-width: 15em;
+    min-width: 1.5em !important;
+    max-width: 10em;
+    font-size: 1em;
+    padding: 0.2em;
 }
 
 .adtlbutton:not(:first-of-type) {
-    margin-left: 1em;
+    margin-left: 0.5em;
 }
 
 
@@ -677,20 +678,37 @@ i.fa.fa-exchange {
     padding: 0 0 0 0;
 }
 
+.adtlgraph > * {
+    vertical-align: bottom;
+}
+
+.adtlgraph {
+    max-width: 100%;
+    height: 4em;
+    white-space: nowrap;
+    border-bottom: 1px solid #80808047;
+    margin: 0;
+    padding: 0;
+    display: block;
+    vertical-align: bottom;
+    overflow: hidden;
+}
+
 .bidask { 
     font-size: 0.9em;
     display: flex;
     justify-content: space-around;
     margin-bottom: 0.5em;
+    margin-top: 0.3em;
 }
 
 .ask{
-    color:blue;
+    color:red;
     margin-left:0.5em;
 }
 
 .bid{
-    color:red;
+    color:blue;
 }
 .currency {
     font-size: 0.7em;
