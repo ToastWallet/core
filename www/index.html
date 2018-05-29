@@ -313,16 +313,15 @@
 </div>
 
 <div id="tabbackup2" class="screentab" data-primarytab="false" hasback="true" data-title="Encrypted Backup" style="display: none;">
-    <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
-    <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is required.</p>
-	<center>
-
-	<div>
-		<button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction">Copy</button>
-	</div>
-	</center>
-	<label>Your backup</label>
-	<textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
+    <div class="divbackuprompt">
+        <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
+        <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is required.</p>
+    	<center>
+		    <button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-info copybtnaction">Copy</button>
+	    </center>
+    	<label>Your backup</label>
+	    <textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
+    </div>
 </div>
 
 <div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore an Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
@@ -337,6 +336,7 @@
     
     
     <button class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doRestoreBackupFreshInstall();})">Restore Backup</button></div>
+    </div>
 </div>
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Wallet" style="display: none;">  
@@ -775,8 +775,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <br>            
             <button id="btnsetflags" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ showAccountFlags($('#accdetailsaddress').data('content')); })">Modify Flags</button>
             <br>
-            <button  type="button" id="btnrekeyacc" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button>
-            <br>
+            <!--button  type="button" id="btnrekeyacc" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button-->
  			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');})">Delete Address</button>
 		</div>
         </center>
@@ -1011,7 +1010,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloissuerofl" class="form-control" placeholder="Leave blank for XRP">
 	</div>
 
-    <input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="atladdress">
+    <input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="ntloissuer">
     <br>
     
     <label>Amount</label><div class="input-group">
@@ -1271,7 +1270,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.2.54</center>
+        <center style="color:black;" data-version="version">Version: 2.2.55</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1461,7 +1460,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.54</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.55</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2777,6 +2776,16 @@ function onToggleIssueOwnCurrency() {
 
 function showPaymentTab(account, currency, issuer, balance) {
     if (debug) console.log("showPaymentTab - account: " + account + ", currency: " + currency + ", issuer: " + issuer + ", balance: " + balance); 
+    clearPaymentScreen();
+
+    $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
+    onPaymentSelectFromAccount();
+    $('#optpa-'+currency+'-'+issuer).attr('selected', 'selected');
+   
+//    $('#payamount').attr('placeholder', ''+balance);
+    $('#payamount').val(balance);
+    showTab('#tabpayments', true);
+    $('#toaddress').focus();
 
 }
 
@@ -3217,6 +3226,8 @@ function showTab(tab, dontClearText) {
 
 	if (tab == currenttab) return;
 
+    if (dontClearText == undefined) dontClearText = false;
+
 	blockInput(true);
 
 	if (debug) console.log("showTab(" + tab + ")");
@@ -3241,7 +3252,7 @@ function showTab(tab, dontClearText) {
 	if (tab == -1 && currenttab == "#tabqrscan") {
 		// if the user has gone for a QR scan we dont want to wipe their form.
 	} else {
-		if (dontClearText == undefined) {
+		if (!dontClearText) {
 			$("input[type='password']").val("");
 			$("input[type='text']").val("");
 			$("textarea").val("");
@@ -3282,10 +3293,10 @@ function showTab(tab, dontClearText) {
 		scanner.stop();
 	}
 
-    if (tab == "#tabpayments") {
+    if (tab == "#tabpayments" && !dontClearText) {
             clearPaymentScreen();
     } else if (tab == "#tabaccounts") {
-        if ( dontClearText == undefined || dontClearText == false ) {
+        if ( !dontClearText ) {
            // $('#payasset')[0].innerHTML = '<option id="optpa-xrp" data-asset="XRP" data-issuer="">XRP</option>';
             refreshAccounts( onPaymentSelectFromAccount );	
         }
@@ -3605,6 +3616,7 @@ function clearPaymentScreen() {
 		$("#desttag").val("");
 		$("#invoiceid").val("");
 		$("#payamount").val("");
+        $("#payamount").removeAttr('placeholder');
         var tgl = $($('#tglIssueOwnCurrency').children()[0]);
         tgl.removeClass('fa-toggle-on');
         tgl.removeClass('fa-toggle-off');

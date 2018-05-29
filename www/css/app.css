@@ -22,7 +22,7 @@ body {
 }
 
 #walletbackup {
-    height: calc(100vh - 17em);
+    flex: 2;
 }
 
 textarea {
@@ -704,6 +704,17 @@ i.fa.fa-exchange {
     margin: 0.5em;
     margin-bottom: 0.5em !important;
 }
+
+.divbackuprompt {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: calc(100vh - 8.5em);
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
 
 .adtlgraph > * {
     vertical-align: bottom;
