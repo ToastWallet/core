@@ -678,6 +678,33 @@ i.fa.fa-exchange {
     padding: 0 0 0 0;
 }
 
+.accdetailbuttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 20em;
+}
+
+
+.accdetailbuttons > button {
+    flex: 1;
+    margin: 0.5em;
+    min-width: 8em;
+    max-width: 10em;
+}
+
+.settingsbuttons {
+    max-width: 40em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.settingsbuttons > button {
+    margin: 0.5em;
+    margin-bottom: 0.5em !important;
+}
+
 .adtlgraph > * {
     vertical-align: bottom;
 }

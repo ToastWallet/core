@@ -649,6 +649,45 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
+<div id="tabmodifytrustline" class="screentab" data-hasback="true" data-title="Modify Trustline" style="display:none">
+    <label >Ripple Address</label>
+		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="mtladdress">
+	<br>
+
+    <div id="mtlofflinecodediv" style="display:none;">
+        <center>
+            <div id="mtltabredqr">
+            </div>
+        </center>
+      	<br />    
+        <label>Confirmation Code (from Online Toast Wallet)</label>
+        <input ontouchend="te(event, quickSelectInput)"  type="text" id="mtlofflinecode" class="form-control" placeholder="">
+        <br>
+    </div>
+
+    
+	<label >Issuer Address</label>
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="mtlissueraddr"  readonly="readonly">
+    <br>
+    <label >Currency</label>
+    <div>
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="mtlcurrency" maxlength="3"  readonly="readonly">
+    </div>
+    <br>
+
+    <p style="color:black; text-align: justify">To delete this trustline ensure balance is 0 then set trustline limit to 0.</p>
+    <label >Trustline Limit</label>
+    <div>
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="mtllimit" >
+    </div>
+    <br>
+
+    <center><div>
+			<button  type="button" class="btn btn-primary" id="btnmodifytrustline" 
+		ontouchstart="ts(event)" ontouchend="te(event, ()=>{doModifyTrustline(sodium.randombytes_random());})">Modify Trustline</button></div></center>
+</div>
+
+
 
 <div id="tabtrustlineconfirm" class="screentab" data-primarytab="false" data-title="Confirm Trustline" style="display: none;">
 	<div class="paygrouping">
@@ -725,17 +764,22 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 			</span>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
-		<center>
+        <center>
+        <div class="accdetailbuttons">
 
 			<button  id="btnbackupkey" type="button" class="accopt btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); })">Show Secret</button>
-			<!-- button  type="button" id="btnrekeyacc" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button--><br>
-		<button  id="btnaddtrustline" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#atladdress').data('content', $('#accdetailsaddress').data('content') ); $('#atladdress').val( $('#accdetailsaddress').val() ); showTab('#tabaddtrustline', true); })">Add Trustline</button>
-        <br>
-        <button id="btnsetflags" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ showAccountFlags($('#accdetailsaddress').data('content')); })">Modify Flags</button>
-        <br>
-            <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Change Nickname</button><br>
-			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');})">Delete Address</button>
-		</center>
+            <br>
+            <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Change Nickname</button>
+            <br>
+    		<button  id="btnaddtrustline" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#atladdress').data('content', $('#accdetailsaddress').data('content') ); $('#atladdress').val( $('#accdetailsaddress').val() ); showTab('#tabaddtrustline', true); })">Add Trustline</button>
+            <br>            
+            <button id="btnsetflags" type="button" class="accopt btn btn-warning" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ showAccountFlags($('#accdetailsaddress').data('content')); })">Modify Flags</button>
+            <br>
+            <button  type="button" id="btnrekeyacc" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button>
+            <br>
+ 			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerText = $('#accdetailsaddress').data('content'); showTab('#tabaccountdelete');})">Delete Address</button>
+		</div>
+        </center>
 	</div>
     <div id="accdetailstransactiondetails" class="innertab" style="display:none"></div>
     <div id="accdetailstrustlinedetails" class="innertab" style="display:none"><ul id="adtrustlines"></ul></div>
@@ -1212,18 +1256,25 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabsettings" class="screentab" data-primarytab="true" data-title="Settings" style="display:none">
-	<div><center><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open('https://toastwallet.com/faq', '_system');})">FAQ / Help</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrecovery');})">Change PIN</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabchangepassphrase');})">Change Passphrase</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button></center></div>
-	<div><center><button  type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore Wallet</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
-	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.53</div>
-	<div><center style="color:black;" class="deviceversion"></center></div>
-	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
+    <center>
+        <div class="settingsbuttons">
+            <button type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
+            <button type="button" class="btn btn-primary" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open('https://toastwallet.com/faq', '_system');})">FAQ / Help</button>
+            <button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrecovery');})">Change PIN</button>
+            <button type="button" class="btn btn-primary" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabchangepassphrase');})">Change Passphrase</button>
+            <button type="button" class="btn btn-primary" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
+            <button type="button" class="btn btn-primary" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore Wallet</button>
+            <button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button>
+            <button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button>
+            <button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button>
+        </div>
+    </center>
+
+    <div>
+        <center style="color:black;" data-version="version">Version: 2.2.54</center>
+    	<center style="color:black;" class="deviceversion"></center>
+	    <center style="color:black;" class="currentgateway">Connected to: </center>
+    </div>
 </div>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
@@ -1410,7 +1461,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.53</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.54</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2664,7 +2715,7 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', \'' + $('#grp-'+currency+'-'+issuer).data('bid') + '\', $(\'#grp-\''+currency+'-'+issuer+'\').data(\'ask\')\');})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton"  ontouchstart="te(event,()=>{showNewOrder(\'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', \'' + $('#grp-'+currency+'-'+issuer).data('bid') + '\', $(\'#grp-\''+currency+'-'+issuer+'\').data(\'ask\')\');})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton"><i class="fa fa-paper-plane"></i></button></div></center></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
             }
 
         } else {
@@ -2684,7 +2735,7 @@ function refreshTrustlines(account, after) {
             remote.getOrderbook(
                 issuer, 
                 {"base": {"currency": currency, "counterparty": issuer}, 
-                "counter": {"currency":"XRP"}},  { limit: 15 }
+                "counter": {"currency":"XRP"}},  { limit: 25 }
             ).then(orders => {
                renderOrderbookChart(orders, '#grp-'+currency+'-'+issuer);
             });           
@@ -2724,6 +2775,31 @@ function onToggleIssueOwnCurrency() {
 }
 
 
+function showPaymentTab(account, currency, issuer, balance) {
+    if (debug) console.log("showPaymentTab - account: " + account + ", currency: " + currency + ", issuer: " + issuer + ", balance: " + balance); 
+
+}
+
+function showNewOrder(direction, currency, issuer, balance, bid, ask) {
+    if (debug) console.log("showNewOrder - direction: " + direction + ", currency: " + currency + ", issuer: " + issuer + ", balance: " + balance + ", bid: " + bid + ", ask: " + ask); 
+
+}
+
+function showModifyTrustline(account, currency, issuer, limit) {
+    if (debug) console.log("showModifyTrustline - account: " + account + ", currency: " + currency + ", issuer: " + issuer + ", limit: " + limit); 
+
+    $('#mtladdress').val(account);
+    $('#mtladdress').data('content', account);
+    $('#mtlissueraddr').val(issuer);
+    $('#mtlissueraddr').data('content', issuer);    
+    $('#mtlcurrency').val(currency);
+    $('#mtlcurrency').data('content', currency);        
+    $('#mtllimit').val(limit);
+    $('#mtllimit').data('content', limit);        
+
+    showTab('#tabmodifytrustline', true);
+
+}
 
 
 var trustlinesdropdown = {};
@@ -3156,9 +3232,9 @@ function showTab(tab, dontClearText) {
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
 
-        $("#accsecret").val('');
-        $("#accsecret").data('content', '');
-        $("#accsecretqr").empty();
+    $("#accsecret").val('');
+    $("#accsecret").data('content', '');
+    $("#accsecretqr").empty();
 	$("#accsecret").hide();
 
 
@@ -3171,6 +3247,7 @@ function showTab(tab, dontClearText) {
 			$("textarea").val("");
             $('#paytabredqr').empty();
             $('#atltabredqr').empty();
+            $('#mtltabredqr').empty();
             $('#paytabgreenqr').empty();
 		}
 	}
@@ -3227,6 +3304,13 @@ function showTab(tab, dontClearText) {
         $("#atltabredqr").empty();
         $("#atltabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $('#atlofflinecodediv').css('display', 'block')
+
+    } else if (tab == '#tabamodifytrustline' && offlinemode) {
+
+        var account = $("#mtladdress").data('content');
+        $("#mtltabredqr").empty();
+        $("#mtltabredqr").append(kjua({text: account, fill:"#ff0000"}));    
+        $('#mtlofflinecodediv').css('display', 'block')
 
     } else if (tab == '#tabaccountflags' && offlinemode) {
 
@@ -3776,7 +3860,7 @@ function doConfirmTrustline(passphrase) {
 				function(){
 					sendTrustLineTx(passphrase, confirmtl.atladdress, confirmtl.atlissueraddr, confirmtl.atlcurrency, confirmtl.atllimit, confirmtl.atlrippling, 
 						function(wasqueued){
-								navigator.notification.alert("Your trustline creation was successfully " + ( wasqueued ? "queued, and should be executed shortly." : "executed." ), 
+								navigator.notification.alert("Your trustline instruction was successfully " + ( wasqueued ? "queued, and should be executed shortly." : "executed." ), 
 									function(){
 										clearPaymentScreen();
 										showTab("#tabaccounts");
@@ -3823,9 +3907,152 @@ function validateCurrency(cur) {
     return /^[A-Z0-9?!@#$%^&*<>(){}[\]|]{3}$/.test(""+cur);
 }
 
+
+
+
 var lasttrustlinenonce;
 var confirmtl = {};
 var confirmtlhash = "";
+
+
+
+function doModifyTrustline(nonce) {
+    
+	if (debug) console.log("doModifyTrustline");
+	blockInput();
+
+	var mtladdress = $("#mtladdress").val().trim();
+	var mtlissueraddr = $("#mtlissueraddr").val().trim();
+	var mtlcurrency = (""+$("#mtlcurrency").val()).trim().toUpperCase();
+	var mtllimit = $("#mtllimit").val().trim();
+
+
+    var offlinecode = $('#mtlofflinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accID = '';
+    var ledID = '';
+    var fee = '';
+
+
+    if (mtllimit == $("#mtllimit").data("content")) {
+        // disallow continuing if unmodified
+		return navigator.notification.alert("You must enter a new trustline limit or 0 if you wish to delete the trustline.", 
+			function(){
+				$("#mtllimit").focus();
+				unblockInput();
+			}, 
+			"Nothing Changed", 
+			"OK"
+		);           
+    }
+
+
+    if (mtllimit == undefined) mtllimit = "0";
+
+    // the below validations arent strictly necessary because these fields should be read only
+    // however there could be circumstances under which they were incorrectly populated so check anyway
+
+    if (!validateAddress(mtladdress)) {
+		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid Ripple address.", 
+			function(){
+				$("#mtladdress").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);    
+    }
+
+
+    if (!validateAddress(mtlissueraddr)) {
+		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid Ripple address.", 
+			function(){
+				$("#mtlissueraddr").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);    
+    }
+
+    if (!validateCurrency(mtlcurrency)) {
+		return navigator.notification.alert("Invalid currency code. Must be 3 characters A-Z, 0-9 or any of the following ? ! @ # $ % ^ & * < > ( ) { } [ ] |", 
+			function(){
+				$("#mtlcurrency").focus();
+				unblockInput();
+			}, 
+			"Invalid currency code", 
+			"OK"
+		);    
+    }
+
+
+    var invalidLimit = ()=>{
+		return navigator.notification.alert("Invalid limit. Must be greater than or equal to 0.", 
+			function(){
+				$("#mtllimit").focus();
+				unblockInput();
+			}, 
+			"Invalid limit", 
+			"OK"
+		);
+    };
+
+    try {
+        var x = new BN(mtllimit);
+        if (x.isNeg()) return invalidLimit();
+    } catch (E) {
+        return invalidLimit();
+    }
+
+
+    if (offlinemode) {
+
+        ofl = validateOfflineCode(offlinecode, '#mtlofflinecode');
+        if (ofl === false) return;
+
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
+    }
+
+
+
+    // if execution reaches this point the validation has completed successfully
+
+
+    // re-use existing add trustline sequence from here
+
+    var nextscreen = function() {
+        confirmtl = { 
+            atladdress: mtladdress,
+            atlissueraddr: mtlissueraddr,
+            atlcurrency: mtlcurrency,
+            atllimit: mtllimit,
+            atlrippling: undefined,
+            nonce: nonce,
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
+        };
+
+        confirmtlhash = sodium.crypto_generichash(16, JSON.stringify(confirmtl), ''+nonce, 'hex');
+
+        $('#ctladdress')[0].innerText = mtladdress;
+        $('#ctlissueraddr')[0].innerText = mtlissueraddr;
+        $('#ctlcurrency')[0].innerText = mtlcurrency;
+        $('#ctllimit')[0].innerText = mtllimit;
+        $('#ctlrippling')[0].innerText = 'UNCHANGED';
+
+        showTab("#tabtrustlineconfirm");
+        
+        unblockInput();
+    };
+
+	return nextscreen();
+}
+
+
+
 
 function doAddTrustline(nonce) {
     
@@ -6502,9 +6729,13 @@ function sendTrustLineTx(passphrase, fromacc, issuer, currency, limit, rippling,
 			var trustline = {
                 "currency" : currency,
                 "counterparty" : issuer,
-                "limit" : limit,
-                "ripplingDisabled" : !rippling
+                "limit" : limit
 			};
+
+            if (rippling != undefined) {
+                trustline["ripplingDisabled"] = !rippling;
+            }
+
 
 			var preparetrustline = function(fromacc, trustline, instructions, ptries) {
 				return remote.prepareTrustline(fromacc, trustline, instructions).then(prepared => {
@@ -6562,9 +6793,11 @@ function sendTrustLineTxOffline(passphrase, fromacc, issuer, currency, limit, ri
                 "currency" : currency,
                 "counterparty" : issuer,
                 "limit" : limit,
-                "ripplingDisabled" : !rippling
 			};
 
+            if (rippling != undefined) {
+                trustline["ripplingDisabled"] = !rippling;
+            }
 
             remote.prepareTrustline(fromacc, trustline, instructions).then(prepared => {
                 console.log('Trustline transaction prepared...');
