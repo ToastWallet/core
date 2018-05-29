@@ -683,6 +683,7 @@ i.fa.fa-exchange {
 }
 
 .adtlgraph {
+    position: relative;
     max-width: 100%;
     height: 4em;
     white-space: nowrap;

@@ -1221,7 +1221,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button></center></div>
 	<div><center><button type="button" class="btn btn-primary" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button></center></div>
-	<div><center style="color:black;" data-version="version">Version: 2.2.52</div>
+	<div><center style="color:black;" data-version="version">Version: 2.2.53</div>
 	<div><center style="color:black;" class="deviceversion"></center></div>
 	<div><center style="color:black;" class="currentgateway">Connected to: </center></div>
 </div>
@@ -1410,7 +1410,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.52</p>
+<p><center style="color:white;" data-version="version">Version: 2.2.53</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2508,119 +2508,130 @@ function renderOrderbookChart(orders, eleid) {
 
     var o = orders;
 
-    var bids = o.bids;
-    var asks = o.asks;
+    var bids_raw = o.bids;
+    var asks_raw = o.asks;
 
-    var smallestx = Number.MAX_SAFE_INTEGER;
-    var largestx = 0;
 
-    var smallesty = Number.MAX_SAFE_INTEGER;
-    var largesty = 0;
+    var bids_unordered = {};
+    var asks_unordered = {};
+    for (var x in bids_raw) bids_unordered[1.0/parseFloat(""+o.bids[x].properties.makerExchangeRate)] = parseFloat(""+o.bids[x].specification.totalPrice.value);
+    for (var x in asks_raw) asks_unordered[parseFloat(""+o.asks[x].properties.makerExchangeRate)] = parseFloat(""+o.asks[x].specification.totalPrice.value);
 
-    var data = [];
+    var bids = {};
+    var asks = {};
 
-    var buyaccumulator = 0;
-    for (var x = bids.length - 1; x >= 0; x--) {
-        var val = 1.0/parseFloat(""+o.bids[x].properties.makerExchangeRate);
-        if ( x != bids.length - 1 && val > largestx) largestx = val;
-        if ( x != bids.length - 1 && val < smallestx) smallestx = val;
-        var y = parseFloat(""+o.bids[x].specification.totalPrice.value);
-        data.push([val, y]);
-        if (x == 0) continue;
-        if (y < smallesty) smallesty = y;     
-        buyaccumulator += y;   
+    Object.keys(bids_unordered).sort().forEach((key)=>{bids[key] = bids_unordered[key]});
+    Object.keys(asks_unordered).sort().forEach((key)=>{asks[key] = asks_unordered[key]});
+
+
+    // precalculate the sum of horizontal widths and total height of bids and asks
+    var bidacc = 0;
+    var askacc = 0;
+
+    var range = 0;
+    var smallestamount = Number.MAX_SAFE_INTEGER;
+
+    // first the bids (next price - previous price)
+    var last = -1;
+    for (var x in bids) {
+        if (last > -1) {
+            range += x - last;
+            bidacc += bids[x];
+        }
+        last = x;
+        if (bids[x] < smallestamount) smallestamount = bids[x];
     }
 
-    var halfway = data.length;
+    // calculate center width (first ask - last bid)
+    var lastbid = last;
+    var firstask = -1;
+    for (var x in asks) { firstask = x; break }
+    range += firstask - lastbid;
 
-    var sellaccumulator = 0;
-    for (x in asks) {
-        var val = parseFloat(""+o.asks[x].properties.makerExchangeRate);
-        if (val > largestx) largestx = val;
-        if (val < smallestx) smallestx = val;
-        var y = parseFloat(""+o.asks[x].specification.totalPrice.value);
-        data.push([val, y]);
-
-        if (x == asks.length - 1) continue;
-        if (y < smallesty) smallesty = y;
-        sellaccumulator += y;
+    // finally the asks (next price - previous price)
+    last = -1;
+    for (var x in asks) {
+        if (last > -1) {
+            range += x - last;
+        }
+        askacc += asks[x];
+        last = x;
+        if (asks[x] < smallestamount) smallestamount = asks[x];
     }
+    askacc -= asks[last];
 
-    if (sellaccumulator > largesty) largesty = sellaccumulator;
-    if (buyaccumulator > largesty) largesty = buyaccumulator;
+    // turn the range into a percent
+    range = 100.00 / range;
 
-    var range = largestx - smallestx;
+    // calculate the vertical range
+    var vertrange = 100.00 / (Math.max(askacc, bidacc) - smallestamount);
 
-    var vertrange = largesty - smallesty;
-
+    // percentage accumulator helps us debug the drawing calculations
+    var pcacc = 0;
 
     var chart = $(eleid);
     chart.empty();
 
-    var pcaccumulator = 0;
+    // draw bids
+    last = -1;
+    for (var x in bids) {
+        if (last > -1) {
+            var width_raw = x - last;
+            var height_raw = bidacc - smallestamount;
 
-    for (var x = 1; x < halfway; x++) {
-        var price = data[x][0];
-        var amount = data[x][1];
+            var amount = bids[x];
+            var pc = width_raw * range;
+            pcacc += pc;
 
-        var lastprice = data[x-1][0];
+            var width = display_currency_amount(pc);
+            var height = display_currency_amount( height_raw * vertrange );
 
-        buyaccumulator -= amount;
+            chart[0].innerHTML += '<span class="chartelegreen" style="width: '+width+'%; height: '+height+'%;"></span>';
 
-
-        var pc = ((price - lastprice) / range) * 100;
-        pcaccumulator += pc;
-
-        var width = display_currency_amount(pc);
-        var height = display_currency_amount(((buyaccumulator - smallesty) / vertrange)*100);
-  
-
-
-        chart[0].innerHTML += '<span class="chartelegreen" style="width: '+width+'%; height: '+height+'%;"></span>';
-
+            bidacc -= amount;
+        }
+        last = x;
     }
 
-
-    for (var x = halfway; x < data.length-1; x++) pcaccumulator += (( data[x+1][0] - data[x][0]) / range) * 100;
-
-    // half way gap
-
-    var pc = 100-pcaccumulator;
-    if (pc < 0) pc = 0;
+    // draw gap between bids and asks
+    var width_raw = firstask - lastbid;
+    var pc = width_raw * range;
+    pcacc += pc;
     var hwidth = display_currency_amount(pc);
     chart[0].innerHTML += '<span class="charteleblank" style="min-width: 1px; min-width: 1px; width: '+hwidth+'%; background: rgba(0,0,0,0); height: 100%;"></span>';
 
 
+    // draw the asks
+    askacc = 0;
+    last = -1;
+    for (var x in asks) {
+        if (last > -1) {
+            var width_raw = x - last;
+            var amount = asks[last];
+            askacc += amount;
 
-    sellaccumulator = 0;
-    for (var x = halfway; x < data.length-1; x++) {
-        var price = data[x][0];
-        var amount = data[x][1];
+            var height_raw = askacc - smallestamount;
 
-        var nextprice = data[x+1][0];
+            var pc = width_raw * range;
+            pcacc += pc;
+            var width = display_currency_amount(pc);
+            var height = display_currency_amount( height_raw * vertrange );
+            
 
-        sellaccumulator += amount;
-        var pc = ((nextprice - price) / range) * 100;
-
-        pcaccumulator+= pc;
-
-        var width = display_currency_amount(pc);
-        var height = display_currency_amount(((sellaccumulator - smallesty) / vertrange)*100);
-   
-
-
-        chart[0].innerHTML += '<span class="chartelered" style="width: '+width+'%; height: '+height+'%;"></span>';
-
+            chart[0].innerHTML += '<span class="chartelered" style="width: '+width+'%; height: '+height+'%;"></span>';
+        }
+        last = x;
     }
 
 
-    var currency = bids[0]['specification']['totalPrice']['currency'];
-    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(data[halfway-1][0]);
-    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(data[halfway][0]);
 
-    $(eleid).data('bid', display_currency_amount(data[halfway-1][0]));
-    $(eleid).data('ask', display_currency_amount(data[halfway][0]));
+    var currency = bids_raw[0]['specification']['totalPrice']['currency'];
+    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(parseFloat(lastbid));
+    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(parseFloat(firstask));
 
+    $(eleid).data('bid', display_currency_amount(lastbid));
+    $(eleid).data('ask', display_currency_amount(firstask));
+   
 
 }
 
