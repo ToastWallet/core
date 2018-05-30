@@ -1270,7 +1270,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.2.56</center>
+        <center style="color:black;" data-version="version">Version: 2.3.1</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1460,7 +1460,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.2.56</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.1</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2508,11 +2508,31 @@ function getAccountInfo(address, successfunc, failurefunc) {
 
         // check for trustlines and add as 'trustlines' key if found
 
+        var get_exchange_rates = (address, result) => {
+            for (var i in result.account_data['trustlines']) {
+                var tl = result.account_data['trustlines'][i];
+                if (tl['exchangerate'] != undefined) continue;
+
+                var issuer = tl['specification']['counterparty'];
+                var currency = tl['specification']['currency'];
+
+                return getExchangeRate(currency, issuer, (exchangerate, data)=> {
+                    data.result.account_data['trustlines'][data.index]['exchangerate'] = exchangerate;
+                    return get_exchange_rates(data.address, data.result);
+                }, {address: address, result: result, currency: currency, issuer: issuer, index: i} );
+            }
+
+            // execution reaching here means all the trustline exchange rates are populated
+            return successfunc(result.account_data);
+        }
 
         var t = (address, result)=>{remote.getTrustlines(address).then( 
             (trustlines) => {
+                // if trustlines are present on the account attach them to the account data
                 result.account_data['trustlines'] = trustlines;
-                return successfunc(result.account_data);
+
+                // then recursively async fetch exchange rates for the trustlines
+                return get_exchange_rates(address, result);
             }
         ).catch((E)=>{
                 return successfunc(result.account_data);
@@ -2581,9 +2601,12 @@ function renderOrderbookChart(orders, eleid, exchangerate, tlbalance) {
     var range = 0;
     var smallestamount = Number.MAX_SAFE_INTEGER;
 
+
     // first the bids (next price - previous price)
     var last = -1;
     for (var x in bids) {
+
+
         if (last > -1) {
             range += x - last;
             bidacc += bids[x];
@@ -2681,24 +2704,36 @@ function renderOrderbookChart(orders, eleid, exchangerate, tlbalance) {
 
     $(eleid).data('bid', display_currency_amount(lastbid));
     $(eleid).data('ask', display_currency_amount(firstask));
+
+    // calculate exchange rate from the data we already have
+    var valuationrate = 0;
+    var bidcount = 0;
+    for (var x in bids) bidcount++;
+    for (var x in bids) if (--bidcount < 10) valuationrate += parseFloat(""+x);
+    valuationrate /= 10.0;    
   
-    $(eleid).parent().find(".tlvaluation>.currency")[0].innerText = 'USD ' + display_currency_amount(exchangerate * tlbalance * lastbid);
+    $(eleid).parent().find(".tlvaluation>.currency")[0].innerText = 'USD ' + display_currency_amount(exchangerate * tlbalance * valuationrate);
     $(eleid).parent().find(".tlvaluation").show();
 }
 
 
 
-function getExchangeRate(then) {
+function getExchangeRate(currency, counterparty, then, then2) {
+    if (currency == "") currency = 'USD';
+    if (counterparty == "") counterparty = 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B';
+
 	remote.getOrderbook(
-		"rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
-		{"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
+		counterparty, 
+		{"base": {"currency":currency, "counterparty": counterparty}, 
 		"counter": {"currency":"XRP"}},  { limit: 10 }
 	).then(orders => {
 		var exchangerate = 0;
-		for (var i = 0; i < 10; i++) 
-			exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
-        exchangerate = 10.0/exchangerate;
-        then(exchangerate);   
+		for (var i in orders.bids) 
+			exchangerate += parseFloat("" + orders.bids[i].properties.makerExchangeRate);
+        exchangerate /= 10.0;
+        return then(exchangerate, then2);   
+    }).catch( (e)=>{
+        return then(0, then2);
     });
 }
 
@@ -2707,12 +2742,8 @@ function getExchangeRate(then) {
   */
 function refreshTrustlines(account, after) {
 
-    $('#adtrustlines').empty();
 
-    if (offlinemode) {
-        $('#adtrustlines')[0].innerHTML = '<li>Cannot display trustlines in offline mode</li>';
-        return;
-    }
+    $('#adtrustlines')[0].innerHTML = '<li><center><i>Loading...</i></center></li>';
 
 
 
@@ -2740,7 +2771,7 @@ function refreshTrustlines(account, after) {
         $('#adtrustlines')[0].innerHTML = trustlines;
                           
         // get current exchange rate
-       getExchangeRate( (exchangerate) => { 
+       getExchangeRate( "", "", (exchangerate) => { 
 
 
            // render graphs 
@@ -2835,11 +2866,15 @@ function showModifyTrustline(account, currency, issuer, limit) {
 var trustlinesdropdown = {};
 
 function refreshAccounts(after) {
-	// delete all accounts in the list then readd them from puchdb	
-	var acc = $(".accountitem");
-	for (var i = 0; i < acc.length; i++) {
-		acc[i].remove();
-	}
+
+
+    // mark and sweep to remove any dead accounts
+    
+    var nonce = sodium.randombytes_random();
+    var acc = $(".accountitem");
+	for (var i = 0; i < acc.length; i++) 
+        $(acc[i]).data('markforupdate', nonce);
+	
 
 	$("#payfromaccount").empty();
 
@@ -2863,18 +2898,13 @@ function refreshAccounts(after) {
 
                             if (debug) console.log("received account info for: " + account);
                             try {
-                                var usdbalance = "";
-                                if (exchangerate != -1) {
-                                    var amount = Math.floor(100.00 * exchangerate * parseFloat("" + xrpBalance))/100.0;
-                                    var stramount =  display_currency_amount(amount);
-
-                                    usdbalance = '<span class="mono" style="opacity:0.7"><div class="currency"><span>USD ' + stramount + '</span></div></span>';
-                                }
 
                                 var trustlines = "";
                                 var tlcount = 0;
 
+                                var xrpvalueoftrustlinebalances = 0;
 
+                                    
                                 trustlinesdropdown[account] = {};
 
                                 accountbalancestl[account] = {};
@@ -2894,9 +2924,13 @@ function refreshAccounts(after) {
 
                                     for (t in res['trustlines']) {
                                         var tl = res['trustlines'][t];
-                                        var issuer, currency, balance;
+                                        var issuer, currency, balance, tlexchangerate;
                                         if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                                             (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
+
+                                        tlexchangerate = tl['exchangerate'];
+                                        if (tlexchangerate != undefined && tlexchangerate > 0) 
+                                            xrpvalueoftrustlinebalances += parseFloat("" + balance) / parseFloat("" + tlexchangerate);
 
                                         // in the specification there is an optional 40 character setting for currency, we can't display that here and displaying a turncated 
                                         // version may lead to people being manipulated into thinking they have another currency. 
@@ -2928,12 +2962,24 @@ function refreshAccounts(after) {
 
                                 trustlines = '<div class="trustline"><div class="amount"><span class="mono" style=""><div class="currency">XRP</div> ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
 
+                                var usdbalance = "";
+                                if (exchangerate > 0) {
+                                    var amount =  exchangerate * ( parseFloat("" + xrpBalance) + xrpvalueoftrustlinebalances );
+                                    var stramount =  display_currency_amount(amount);
+
+                                    usdbalance = '<span class="mono" style="opacity:0.7"><div class="currency"><span>USD ' + stramount + '</span></div></span>';
+                                }
+
+
                                 $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
                                 if (trustlines != "")  {
                                     $("#ra" + account + ">.trustlines")[0].innerHTML = trustlines;
-                                     $("#ra" + account + ">.trustlines").data('tlcount', tlcount);
+                                    $("#ra" + account + ">.trustlines").data('tlcount', tlcount);
                                 }
 
+
+                                $('#ra' + account + ' .accloadspinner').hide();
+                                $("#ra" + account).removeData('markforupdate');
 
                             } catch(e) {handle_error(e);}
                             accountbalances[account] = parseFloat(xrpBalance);
@@ -2954,7 +3000,16 @@ function refreshAccounts(after) {
                             }
 
 
-                            if (after != undefined && typeof(after) == 'function' && lastacc == account) after();
+                            if (lastacc == account) {
+
+                                // if any accounts in the list haven't been updated then they no longer exist so remove them
+                                var acc = $(".accountitem");
+                            	for (var i = 0; i < acc.length; i++) 
+                                    if ($(acc[i]).data('markforupdate') == nonce) 
+                                        acc[i].remove();
+
+                                if (after != undefined && typeof(after) == 'function') after();
+                            }
                         };
 
                         var e =
@@ -2962,6 +3017,8 @@ function refreshAccounts(after) {
                             if (debug) console.log("account refresh error: " + e);
                             try {
                                 $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<small style="opacity:0.7">not activated</small>';
+                                $('#ra' + account + ' .accloadspinner').hide();
+                                $("#ra" + account).removeData('markforupdate');
                             } catch(e) {handle_error(e);}					
                         };
 
@@ -2973,26 +3030,41 @@ function refreshAccounts(after) {
             });
         };
 
-        remote.getOrderbook(
-            "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
-            {"base": {"currency":"USD", "counterparty": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B"}, 
-            "counter": {"currency":"XRP"}},  { limit: 10 }
-        ).then(orders => {
-            var exchangerate = 0;
-            for (var i = 0; i < 10; i++) 
-                exchangerate += parseFloat("" + orders.asks[i].properties.makerExchangeRate);
-            exchangerate = 10.0/exchangerate;
-            updateaccs(exchangerate, after);
-        }).catch( function(e) {
-            updateaccs(-1, after);		
-        });
+        getExchangeRate("", "", updateaccs, after);
     };
 
 	getAccounts(function(acc) {
 		accountbalances = {};
 		for (var i in acc) {
 			var nickname = ( acc[i].nickname == undefined ? "" : acc[i].nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim() );
-            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\', false);})"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : 'loading') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})"></div></li>');
+
+            var toptouchend = 'te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\', false);})';
+            var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
+            if ($('#ra' + i).length == 0) {
+            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fa fa-refresh fa-spin accloadspinner"></i></li>');
+            } else {
+
+                // passively update without rewriting the dom
+
+                if (activeaccount == i) {
+                    $('#ra' + i).addClass('active');
+                } else {
+                    $('#ra' + i).removeClass('active');
+                }
+
+                // may have changed nickname since last update
+                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? i : nickname);
+
+                // update touchend event handlers
+                $('#ra' + i + ' .accountline').removeAttr('ontouchend');
+                $('#ra' + i + ' .accountline').attr('ontouchend', toptouchend);
+
+                $('#ra' + i + ' .trustlines').removeAttr('ontouchend');
+                $('#ra' + i + ' .trustlines').attr('ontouchend', bottomtouchend);
+
+                $('#ra' + i + ' .accloadspinner').show();
+                
+            }
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
@@ -3337,7 +3409,7 @@ function showTab(tab, dontClearText) {
         $("#atltabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $('#atlofflinecodediv').css('display', 'block')
 
-    } else if (tab == '#tabamodifytrustline' && offlinemode) {
+    } else if (tab == '#tabmodifytrustline' && offlinemode) {
 
         var account = $("#mtladdress").data('content');
         $("#mtltabredqr").empty();
@@ -3420,7 +3492,8 @@ function showTab(tab, dontClearText) {
 
 
 	$(tab).show();
-    $(tab).scrollTop(0);
+
+    if (tab != '#tabaccounts') $(tab).scrollTop(0);
 
 
 

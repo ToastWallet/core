@@ -208,6 +208,8 @@ span.adtlorder {
     line-height: 1.8em;
     overflow-wrap: none;
     white-space: nowrap;
+    margin-left: 0.5em;
+    margin-right: 0.5em;    
     flex: 1;
 }
 
@@ -733,12 +735,21 @@ i.fa.fa-exchange {
     overflow: hidden;
 }
 
+.accloadspinner {
+    opacity: 0.4;
+    font-size: 0.9em !important;
+    position: absolute;
+    right: 0.7em;
+    bottom: 0.15em;
+}
+
 .bidask { 
     font-size: 0.9em;
     display: flex;
     justify-content: space-around;
     margin-bottom: 0.5em;
     margin-top: 0.3em;
+    min-height: 1.4em;    
 }
 
 .ask{
