@@ -1016,7 +1016,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <br>
     
     <label>Amount</label><div class="input-group">
-	<input ontouchend="te(event, quickSelectInput)" type="text" id="ntloamount" class="form-control" placeholder="">
+        <input ontouchend="te(event, quickSelectInput)" ontouchstart="ts(event, renderOrderPreview)" type="text" id="ntloamount" class="form-control" placeholder="" onkeypress="renderOrderPreview()" onchange="renderOrderPreview()">
 	<span class="input-group-btn">
         <button class="btn btn-info" id="btnntloall" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button">All</button>
 	</span>
@@ -1028,11 +1028,18 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="input-group-btn">
             <button class="btn btn-danger" id="btnntlodownprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{adjustOrderPrice(-1)}) " type="button"><i class="fa fa-chevron-down" style="font-size: 1em !important;"></i></button>
     	</span>
-	    <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloprice" class="form-control" placeholder="">
+	    <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloprice" class="form-control" placeholder="" onkeypress="renderOrderPreview()" onchange="renderOrderPreview()">
     	<span class="input-group-btn">
             <button class="btn btn-success" id="btnntloupprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{adjustOrderPrice(+1)})" type="button"><i class="fa fa-chevron-up" style="font-size: 1em !important;"></i></button>
     	</span>
 	</div>
+
+    <br>
+    <label>Preview</label>
+    <center>
+        <div id="ntlopriceupdate" class="orderpreview">
+        </div>
+    </center>
     
     <br>
     <label>Expiry</label>
@@ -1060,7 +1067,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <option id="ntloexpiry-30m" data-hours="0" data-minutes="30">Half Hour (30 minutes)</option>
             <option id="ntloexpiry-1h" data-hours="1" data-minutes="0">Full Hour (1 hour)</option>
             <option id="ntloexpiry-12h" data-hours="12" data-minutes="0">Half Day (12 hours)</option>
-            <option id="ntloexpiry-24h" data-hours="24" selected="selected">Full Day (24 hours)</option>
+            <option id="ntloexpiry-24h" data-hours="24" data-minutes="0" selected="selected">Full Day (24 hours)</option>
             <option id="ntloexpiry-84h" data-hours="84" data-minutes="0">Half Week (84 hours)</option>
             <option id="ntloexpiry-168h" data-hours="168" data-minutes="0">Full Week (168 hours)</option>
             <option id="ntloexpiry-336h" data-hours="336" data-minutes="0">Fortnight (336 hours)</option>
@@ -1076,7 +1083,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </div>
     <br>
     <div id="divntlomore" style="display:none;">
-        <br>
         <div style="color:black;">
         	<span class="toggleswitch" data-after="onToggleNewOrder()" id="tglntloioc"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Immediate or Cancel</div>
         </div>
@@ -1099,7 +1105,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 </div>
 
-<div id="taborderconfirm" class="screentab" data-primarytab="false" data-title="Confirm New Order" style="display: none;">
+<div id="taborderconfirm" class="screentab" data-primarytab="false" data-hasback="true" data-title="Confirm New Order" style="display: none;">
 	<div class="paygrouping">
     <label>Account</label>
 	<div id="confirmorderaccount"></div>
@@ -1131,6 +1137,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div class="paygrouping">
 	<label>Expiry</label>
     <div id="confirmorderexpiry"></div></div>
+
+    <div class="paygrouping">
+	<label>Extra Flags</label>
+    <div id="confirmorderextra"></div></div>
 
     <br>
     <label>Enter your Passphrase</label>    
@@ -1345,7 +1355,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.2</center>
+        <center style="color:black;" data-version="version">Version: 2.3.3</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1535,7 +1545,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.2</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.3</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2967,7 +2977,7 @@ function showNewOrder(account, direction, currency, issuer, balance, bid, ask) {
 
 
     $('#btnntloall').removeAttr('ontouchend');
-    $('#btnntloall').attr('ontouchend', "te(event, ()=>{$('#ntloamount').val("+balance+");})");
+    $('#btnntloall').attr('ontouchend', "te(event, ()=>{$('#ntloamount').val("+balance+"); renderOrderPreview();})");
 
 
     if (direction == 'buy') {
@@ -2979,11 +2989,16 @@ function showNewOrder(account, direction, currency, issuer, balance, bid, ask) {
     }
 
 
+    $('#ntloamount').val('1');
+    $('#customexpirydiv').hide();
+    $('#ntloexpiry').show();
+    $('#ntloexpiry > option').removeAttr('selected');
+    $('#ntloexpiry-24h').attr('selected', 'selected');
+
+    renderOrderPreview(direction == 'sell');
 
     showTab('#tabneworder', true);
     
-
-
 }
 
 function showModifyTrustline(account, currency, issuer, limit) {
@@ -3470,7 +3485,7 @@ function showTab(tab, dontClearText) {
 	$(".pinpad").removeClass("shake");
 	enteredpin = ""; renderEnteredPin();
 
-	$('.fa-toggle-on').addClass('fa-toggle-off').removeClass('fa-toggle-on');
+	
 
 	$("#morecontentindicator").removeClass("moreindicatorabovenav");
 	$("#morecontentindicator").removeClass("moreindicatordark");
@@ -3481,22 +3496,23 @@ function showTab(tab, dontClearText) {
 	$("#accsecret").hide();
 
 
-	if (tab == -1 && currenttab == "#tabqrscan") {
+	if ( (tab == -1 && currenttab == "#tabqrscan") || currenttab == '#taborderconfirm' || currenttab == '#tabneworder' ) {
 		// if the user has gone for a QR scan we dont want to wipe their form.
-	} else {
-		if (!dontClearText) {
-			$("input[type='password']").val("");
-			$("input[type='text']").val("");
-			$("textarea").val("");
-            $('#paytabredqr').empty();
-            $('#atltabredqr').empty();
-            $('#mtltabredqr').empty();
-            $('#paytabgreenqr').empty();
-		}
+        // we also make a special exception allowing a market order to go backward from confirmation
+        dontClearText = true;
 	}
 
 
-
+    if (!dontClearText) {
+        $("input[type='password']").val("");
+        $("input[type='text']").val("");
+        $("textarea").val("");
+        $('#paytabredqr').empty();
+        $('#atltabredqr').empty();
+        $('#mtltabredqr').empty();
+        $('#paytabgreenqr').empty();
+        $('.fa-toggle-on').addClass('fa-toggle-off').removeClass('fa-toggle-on');
+    }
 
 	$("#navheader").show();
 
@@ -4641,6 +4657,18 @@ function validateOfflineCode(offlinecode, offlinecodefield) {
 }
 
 
+function renderOrderPreview(sell) {
+    if (typeof(sell) == 'undefined') sell = $('#lblntlosell').is(':visible');
+    var currency = $('#ntloissuer').data('currency');
+    var amount1 = $('#ntloamount').val();
+    if ((amount1=parseFloat(amount1 + '')) + '' == 'NaN') amount1 = 0;
+    var price = $('#ntloprice').val();
+    if ((price=parseFloat(price + '')) + '' == 'NaN') price = 0;
+    var amount2 = price * amount1;
+    $('#ntlopriceupdate')[0].style.border = ( sell ? '1px solid rgb(217, 83, 79)' : '1px solid rgb(92, 184, 92)' );
+    $('#ntlopriceupdate')[0].innerHTML ='<b>'+(sell ? 'SELL' : 'BUY')+'</b> '+display_currency_amount(amount1)+' <span class="currency">'+currency+'</span> for '+display_currency_amount(amount2)+' <span class="currency">XRP</span>';
+}
+
 // adjust the price by 0.1% positively if x > 0, negatively otherwise
 function adjustOrderPrice(x) {
     var previous = parseFloat(''+$('#ntloprice').val());
@@ -4657,6 +4685,7 @@ function adjustOrderPrice(x) {
     if (next + '' == 'NaN' || next <= 0) next = previous;
 	$('#ntloprice').val("" + next);
 
+    renderOrderPreview();
 }
 
 var confirmorder = {};
@@ -4672,6 +4701,10 @@ function doPlaceOrder(nonce) {
 	var amount = $('#ntloamount').val().trim();
 	var price = $('#ntloprice').val().trim();    
     var sell = $('#lblntlosell').is(':visible');
+
+    var fok = $('#tglntlofok').data('checked') == 'true';
+    var ioc = $('#tglntloioc').data('checked') == 'true';
+    var passive = $('#tglntlopas').data('checked') == 'true';
 
     var expiry;
     var expiryunits;
@@ -4708,6 +4741,17 @@ function doPlaceOrder(nonce) {
         fee = ofl.fee;
     }
 
+
+    // this shouldnt happen due to interface constraints
+    if (ioc && fok) {
+		return navigator.notification.alert("You cannot select both Immediate-or-Cancel and Fill-or-Kill.", 
+			function(){
+				unblockInput();
+			}, 
+			"Invalid selection", 
+			"OK"
+		)
+    }
 
     var invalidAmount = ()=>{
 		return navigator.notification.alert("Invalid amount. Must be greater than or equal to 0.", 
@@ -4830,11 +4874,16 @@ function doPlaceOrder(nonce) {
 			amount: amount,
 			price: price,            
             sell: sell,
+            fok: fok,
+            ioc: ioc,
+            passive: passive,
 			nonce: nonce,
             accseqid: accID, // used for offline tx
             ledseqid: ledID,
             fee: fee
 		};
+
+
 
 		confirmorderhash = sodium.crypto_generichash(16, JSON.stringify(confirmorder), ''+nonce, 'hex');
 
@@ -4845,6 +4894,15 @@ function doPlaceOrder(nonce) {
         $('#confirmorderprice')[0].innerText = price;
 		$('#confirmorderdirection')[0].innerText = ( sell ? 'SELL' : 'BUY' );
         $('#confirmorderexpiry')[0].innerText = expirydisplay;
+
+        $('#confirmorderextra')[0].innerText = (passive ? 'PASSIVE' : '');
+
+        if (fok || ioc) $('#confirmorderextra')[0].innerText += '' + ( passive ? ' + ' : '' ) + ( fok ? 'FILL-OR-KILL' : 'IMMEDIATE-OR-CANCEL' );
+        
+        if (!passive && !fok && !ioc) {
+            $('#confirmorderextra')[0].innerText = 'NONE';
+        }
+
 
 		showTab("#taborderconfirm");
 		

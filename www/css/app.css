@@ -735,6 +735,13 @@ i.fa.fa-exchange {
     overflow: hidden;
 }
 
+.orderpreview {
+    color:black;
+    text-align:center;
+    border: 1px solid red;
+    padding: 0.2em;
+    border-radius:2px;
+}
 .accloadspinner {
     opacity: 0.4;
     font-size: 0.9em !important;
