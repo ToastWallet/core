@@ -994,6 +994,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <center>
             <div id="atltabredqr"></div>
         </center>
+        <br>
+        <p style="color:black;">Please ensure the clock on your offline device is set correctly, otherwise your order's expiry date will be wrong when submitted to the XRP Ledger.</p>
       	<br>    
         <label>Confirmation Code (from Online Toast Wallet)</label>
         <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloofflinecode" class="form-control" placeholder="">
@@ -1016,7 +1018,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label>Amount</label><div class="input-group">
 	<input ontouchend="te(event, quickSelectInput)" type="text" id="ntloamount" class="form-control" placeholder="">
 	<span class="input-group-btn">
-        <button class="btn btn-info" id="btnpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button">All</button>
+        <button class="btn btn-info" id="btnntloall" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button">All</button>
 	</span>
 	</div>
     <br>
@@ -1024,11 +1026,11 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label>Price</label>
 	<div class="input-group">
         <span class="input-group-btn">
-            <button class="btn btn-danger" id="btnntlodownprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button"><i class="fa fa-chevron-down" style="font-size: 1em !important;"></i></button>
+            <button class="btn btn-danger" id="btnntlodownprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{adjustOrderPrice(-1)}) " type="button"><i class="fa fa-chevron-down" style="font-size: 1em !important;"></i></button>
     	</span>
 	    <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloprice" class="form-control" placeholder="">
     	<span class="input-group-btn">
-            <button class="btn btn-success" id="btnntloupprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button"><i class="fa fa-chevron-up" style="font-size: 1em !important;"></i></button>
+            <button class="btn btn-success" id="btnntloupprice" ontouchstart="ts(event)" ontouchend="te(event, ()=>{adjustOrderPrice(+1)})" type="button"><i class="fa fa-chevron-up" style="font-size: 1em !important;"></i></button>
     	</span>
 	</div>
     
@@ -1036,24 +1038,55 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label>Expiry</label>
     <br>
     <div class="input-group">
-        <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloexpiry" class="form-control" placeholder="24 hours">
+        <span id="customexpirydiv" style="display:none;">
+            <div class="input-group" style="display: flex;">
+                <input ontouchend="te(event, quickSelectInput)" type="text" id="ntloexpirycustom" class="form-control" placeholder="" style="flex: 2;" >
+                <select id="ntloexpirycustomunit" ontouchstart="ts(event,()=>{})" ontouchend="te(event, quickSelectInput)" class="form-control" style="flex: 1; max-width: 7.5em; width: 7.5em; margin-left: -1px; border-radius: 0 0 0 0 !important;" onchange="($('#ntloexpirycustomunit').find(':selected')[0].id == 'ntloexpirycustomunit-nocustom' ? $('#customexpirydiv').hide() + $('#ntloexpiry').show() + $('#ntloexpiry > option').removeAttr('selected') + $('#ntloexpiry-24h').attr('selected', 'selected') : $('#customexpirydiv').show() + $('#ntloexpiry').hide() )">
+                    <option id="ntloexpirycustomunit-minute" data-unit="minute">Minute(s)</option>
+                    <option id="ntloexpirycustomunit-hour" data-unit="hour">Hour(s)</option>
+                    <option id="ntloexpirycustomunit-day" data-unit="day">Day(s)</option>
+                    <option id="ntloexpirycustomunit-week" data-unit="week">Week(s)</option>
+                    <option id="ntloexpirycustomunit-month" data-unit="month">Month(s)</option>                
+                    <option id="ntloexpirycustomunit-year" data-unit="year">Years(s)</option>
+                    <option id="ntloexpirycustomunit-nocustom" data-unit="">Presets ...</option>                                
+                </select>
+            </div>
+        </span>        
+        <select id="ntloexpiry" ontouchstart="ts(event,()=>{})" ontouchend="te(event, quickSelectInput)" class="form-control" onchange="($('#ntloexpiry').find(':selected')[0].id == 'ntloexpiry-opt-custom' ? $('#customexpirydiv').show() + $('#ntloexpiry').hide() + $('#ntloexpirycustomunit > option').removeAttr('selected') + $('#ntloexpirycustomunit-hour').attr('selected', 'selected') : $('#customexpirydiv').hide() + $('#ntloexpiry').show() )">
+            <option id="ntloexpiry-opt-custom" data-hours="0" data-minutes="0">Custom ...</option>
+            <option id="ntloexpiry-1m" data-hours="0" data-minutes="1">1 minute</option>
+            <option id="ntloexpiry-5m" data-hours="0" data-minutes="5">5 minutes</option>
+            <option id="ntloexpiry-15m" data-hours="0" data-minutes="15">Quarter Hour (15 minutes)</option>
+            <option id="ntloexpiry-30m" data-hours="0" data-minutes="30">Half Hour (30 minutes)</option>
+            <option id="ntloexpiry-1h" data-hours="1" data-minutes="0">Full Hour (1 hour)</option>
+            <option id="ntloexpiry-12h" data-hours="12" data-minutes="0">Half Day (12 hours)</option>
+            <option id="ntloexpiry-24h" data-hours="24" selected="selected">Full Day (24 hours)</option>
+            <option id="ntloexpiry-84h" data-hours="84" data-minutes="0">Half Week (84 hours)</option>
+            <option id="ntloexpiry-168h" data-hours="168" data-minutes="0">Full Week (168 hours)</option>
+            <option id="ntloexpiry-336h" data-hours="336" data-minutes="0">Fortnight (336 hours)</option>
+            <option id="ntloexpiry-730h" data-hours="730" data-minutes="0">Month (730 hours)</option>
+            <option id="ntloexpiry-2190h" data-hours="2190" data-minutes="0">Quarter Year (2190 hours)</option>
+            <option id="ntloexpiry-4380h" data-hours="4380" data-minutes="0">Half Year (4380 hours)</option>
+            <option id="ntloexpiry-8760h" data-hours="8760" data-minutes="0">Full Year (8760 hours)</option>
+        </select>        
+       
         <span class="input-group-btn">
             <button class="btn btn-default" id="btnntlomore" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ if ($('#divntlomore').is(':visible')) { $('#divntlomore').hide(); $('#btnntlomore')[0].innerText = 'More'; } else { $('#divntlomore').show(); $('#btnntlomore')[0].innerText = 'Less'; }})" type="button">More</button>
 	    </span>
     </div>
     <br>
-
     <div id="divntlomore" style="display:none;">
+        <br>
         <div style="color:black;">
-        	<span class="toggleswitch" data-after="" id="tglntloioc"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Immediate or Cancel</div>
+        	<span class="toggleswitch" data-after="onToggleNewOrder()" id="tglntloioc"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Immediate or Cancel</div>
         </div>
         <br>
         <div style="color:black;">
-        	<span class="toggleswitch" data-after="" id="tglntlofok"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Fill or Kill</div>
+        	<span class="toggleswitch" data-after="onToggleNewOrder()" id="tglntlofok"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Fill or Kill</div>
         </div>
         <br>
         <div style="color:black;">
-        	<span class="toggleswitch" data-after="" id="tglntlopas"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Passive</div>
+        	<span class="toggleswitch" data-after="onToggleNewOrder()" id="tglntlopas"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Passive</div>
         </div>
         <br>   
     </div>
@@ -1061,12 +1094,54 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
     <center>
         <div>
-			<button type="button" class="btn btn-primary" id="btnntloplaceorder" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPlaceSellOrder(sodium.randombytes_random());})">Place Order</button>
+			<button type="button" class="btn btn-primary" id="btnntloplaceorder" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPlaceOrder(sodium.randombytes_random());})">Place Order</button>
         </div>
     </center>
 </div>
 
+<div id="taborderconfirm" class="screentab" data-primarytab="false" data-title="Confirm New Order" style="display: none;">
+	<div class="paygrouping">
+    <label>Account</label>
+	<div id="confirmorderaccount"></div>
+    </div>
 
+	<div class="paygrouping">
+    <label>Action</label>
+	<div id="confirmorderdirection"></div>
+    </div>
+
+    <div class="paygrouping">
+    <label>Currency</label>
+    <div id="confirmorderasset"></div>
+    </div>
+
+    <div class="paygrouping">
+    <label>Issuer</label>
+    <div id="confirmorderissuer"></div>
+    </div>
+
+    <div class="paygrouping">
+	<label>Price</label>
+    <div id="confirmorderprice"></div></div>
+
+    <div class="paygrouping">
+	<label>Amount</label>
+    <div id="confirmorderamount"></div></div>
+
+    <div class="paygrouping">
+	<label>Expiry</label>
+    <div id="confirmorderexpiry"></div></div>
+
+    <br>
+    <label>Enter your Passphrase</label>    
+    <div class="input-group">
+	<input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmorderpassword" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmOrder(content);  }  );})" id="btnqrpassconfirmorder" type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div><br>
+	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmOrder($('#confirmorderpassword').val());})">Confirm Order</button></div></center>
+</div>
 
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
 	<div class="paygrouping">
@@ -1270,7 +1345,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.1</center>
+        <center style="color:black;" data-version="version">Version: 2.3.2</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1460,7 +1535,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.1</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.2</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2699,8 +2774,10 @@ function renderOrderbookChart(orders, eleid, exchangerate, tlbalance) {
 
 
     var currency = bids_raw[0]['specification']['totalPrice']['currency'];
-    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(parseFloat(lastbid));
-    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(parseFloat(firstask));
+    lastbid = parseFloat(lastbid + "");
+    firstask = parseFloat(firstask + ""); 
+    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(lastbid);
+    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(firstask);
 
     $(eleid).data('bid', display_currency_amount(lastbid));
     $(eleid).data('ask', display_currency_amount(firstask));
@@ -2760,7 +2837,7 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
             }
 
         } else {
@@ -2771,16 +2848,16 @@ function refreshTrustlines(account, after) {
         $('#adtrustlines')[0].innerHTML = trustlines;
                           
         // get current exchange rate
-       getExchangeRate( "", "", (exchangerate) => { 
+       getExchangeRate( "", "", (exchangerate, data) => { 
 
 
            // render graphs 
-            for (t in res['trustlines']) {
-               var tl = res['trustlines'][t];
+            for (t in data.tls) {
+               var tl =  data.tls[t];
                var issuer, currency, balance;
                if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
-               ((currency, issuer) => {
+               ((currency, issuer, exchangerate, balance) => {
                 remote.getOrderbook(
                     issuer, 
                     {"base": {"currency": currency, "counterparty": issuer}, 
@@ -2788,10 +2865,10 @@ function refreshTrustlines(account, after) {
                 ).then(orders => {
                    renderOrderbookChart(orders, '#grp-'+currency+'-'+issuer, exchangerate, balance);
                 });           
-               })(currency, issuer);
+               })(currency, issuer, exchangerate, parseFloat(""+balance));
             }
 
-        });
+            }, {tls:  res['trustlines']});
 
         
 
@@ -2841,8 +2918,71 @@ function showPaymentTab(account, currency, issuer, balance) {
 
 }
 
-function showNewOrder(direction, currency, issuer, balance, bid, ask) {
+function onToggleNewOrder() {
+    if (debug) console.log("onToggleNewOrder()");
+
+    blockInput();
+
+    // enforce the mutually exclusive options in the order screen toggles
+    //https://github.com/ripple/rippled/blob/817d2339b8632cb2f97d3edd6f7af33aa7631744/src/ripple/app/tx/impl/CreateOffer.cpp#L63
+    
+    var ioc = $('#tglntloioc').data('checked') == 'true';
+    var fok = $('#tglntlofok').data('checked') == 'true';  
+
+    if (ioc && fok) {
+        return navigator.notification.alert("An order can have Fill-or-Kill or Immediate-or-Cancel but not both.", 
+				function(){
+                    setToggleSwitch('#tglntloioc', false);
+                    setToggleSwitch('#tglntlofok', false);                    
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+		);
+    }
+
+    unblockInput();  
+
+}
+
+function showNewOrder(account, direction, currency, issuer, balance, bid, ask) {
     if (debug) console.log("showNewOrder - direction: " + direction + ", currency: " + currency + ", issuer: " + issuer + ", balance: " + balance + ", bid: " + bid + ", ask: " + ask); 
+
+    $('#ntloaddress').val(account);
+    $('#ntloaddress').data('account', account);
+
+    $('#ntloaddress').data('direction', direction);
+
+    if (direction == 'sell') {
+        $('#lblntlosell').show();
+        $('#lblntlobuy').hide();
+    } else {
+        $('#lblntlosell').hide();
+        $('#lblntlobuy').show();
+    }
+
+    $('#ntloissuer').val(currency + ' - ' + issuer);
+    $('#ntloissuer').data('currency', currency);
+    $('#ntloissuer').data('issuer', issuer);
+
+
+    $('#btnntloall').removeAttr('ontouchend');
+    $('#btnntloall').attr('ontouchend', "te(event, ()=>{$('#ntloamount').val("+balance+");})");
+
+
+    if (direction == 'buy') {
+        // use minimum ask
+        $('#ntloprice').val(ask);
+    } else {
+        // use minimum bid
+        $('#ntloprice').val(bid);
+    }
+
+
+
+    showTab('#tabneworder', true);
+    
+
 
 }
 
@@ -3000,16 +3140,8 @@ function refreshAccounts(after) {
                             }
 
 
-                            if (lastacc == account) {
-
-                                // if any accounts in the list haven't been updated then they no longer exist so remove them
-                                var acc = $(".accountitem");
-                            	for (var i = 0; i < acc.length; i++) 
-                                    if ($(acc[i]).data('markforupdate') == nonce) 
-                                        acc[i].remove();
-
-                                if (after != undefined && typeof(after) == 'function') after();
-                            }
+                            if (lastacc == account && after != undefined && typeof(after) == 'function') after();
+                            
                         };
 
                         var e =
@@ -3041,7 +3173,7 @@ function refreshAccounts(after) {
             var toptouchend = 'te(event, ()=>{doSelectAccount(\''+i+'\', \''+nickname+'\', false);})';
             var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
             if ($('#ra' + i).length == 0) {
-            $("#accountslist").prepend('<li class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fa fa-refresh fa-spin accloadspinner"></i></li>');
+                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fa fa-refresh fa-spin accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
             } else {
 
                 // passively update without rewriting the dom
@@ -3062,12 +3194,19 @@ function refreshAccounts(after) {
                 $('#ra' + i + ' .trustlines').removeAttr('ontouchend');
                 $('#ra' + i + ' .trustlines').attr('ontouchend', bottomtouchend);
 
-                $('#ra' + i + ' .accloadspinner').show();
+                if (!offlinemode) $('#ra' + i + ' .accloadspinner').show();
                 
             }
 
 			$("#payfromaccount").append('<option data-account="'+i+'" id="opt'+i+'"'+( i == activeaccount ? ' selected=selected' : '' )+'>' + (nickname == "" ? i : nickname) + '</option>');
 		}
+
+        // check to see if there are any accounts on the stack which shouldn't be (i.e. one has been deleted)
+        var list = $('.accountitem');
+        for (var i = 0; i < list.length; i++) 
+            if (!( $(list[i]).data('account') in acc)) list[i].remove();
+
+
 		if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
 
         if (offlinemode) return after();
@@ -4498,6 +4637,221 @@ function validateOfflineCode(offlinecode, offlinecodefield) {
 
         return { accID: accID, ledID: ledID, fee: fee };
        
+
+}
+
+
+// adjust the price by 0.1% positively if x > 0, negatively otherwise
+function adjustOrderPrice(x) {
+    var previous = parseFloat(''+$('#ntloprice').val());
+    if (previous + '' == 'NaN' || (previous == 0 && x > 0)) previous  = 0.000001;
+	
+    x = ( x >= 0 ? 1 : -1 );
+    var next = previous + x * Math.pow(10, Math.floor(Math.log(previous)/Math.log(10))-3);
+    var roundingpower = Math.pow(10, -Math.floor(Math.log(previous)/Math.log(10)) + 3);
+
+    next *= roundingpower;
+    next = Math.round(next);
+    next /= roundingpower;
+
+    if (next + '' == 'NaN' || next <= 0) next = previous;
+	$('#ntloprice').val("" + next);
+
+}
+
+var confirmorder = {};
+var confirmorderhash = "";
+var lastordernonce;
+function doPlaceOrder(nonce) {
+	if (debug) console.log("doPlaceOrder");
+	blockInput();
+
+	var account = $('#ntloaddress').data('account');
+	var asset = $('#ntloissuer').data('currency');
+	var issuer = $('#ntloissuer').data('issuer');
+	var amount = $('#ntloamount').val().trim();
+	var price = $('#ntloprice').val().trim();    
+    var sell = $('#lblntlosell').is(':visible');
+
+    var expiry;
+    var expiryunits;
+    var expirydisplay; // what to show the user
+    var expiryfocus; // what to focus on expiry entry error
+
+    if ($('#ntloexpiry').is(":visible")) {
+        // using presets
+        expiry = parseInt($($('#ntloexpiry').find(":selected")[0]).data('hours')) * 60.0 + parseInt($($('#ntloexpiry').find(":selected")[0]).data('minutes'));
+        expiryunits = 'minute';
+        expirydisplay = $('#ntloexpiry').find(":selected")[0].innerText;
+        expiryfocus = '#ntloexpiry';
+    } else {
+        // using custom
+        expiry = $('#ntloexpirycustom').val();
+        expiryunits = $($('#ntloexpirycustomunit').find(':selected')[0]).data('unit');
+        expirydisplay = parseInt(expiry) + ' ' + $('#ntloexpirycustomunit').find(":selected")[0].innerText;
+        expiryfocus = '#ntloexpirycustom';
+    }
+
+
+    var offlinecode = $('#ntloofflinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accID = '';
+    var ledID = '';
+    var fee = '';
+
+	if (amount != undefined && (amount+"").charAt(0) == '.') amount = "0" + amount;
+
+    if (offlinemode) {
+        ofl = validateOfflineCode(offlinecode, '#ntloofflinecode');
+        if (ofl === false) return;
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
+    }
+
+
+    var invalidAmount = ()=>{
+		return navigator.notification.alert("Invalid amount. Must be greater than or equal to 0.", 
+			function(){
+				$("#ntloamount").focus();
+				unblockInput();
+			}, 
+			"Invalid amount", 
+			"OK"
+		);
+    };
+
+    // ensure theres no garbage in the amount field
+    if (!/^[0-9\.]+$/m.test(amount) ) return invalidAmount();  
+
+    try {
+        var x = new BN(amount);
+        if (x.isNeg() || x.isZero()) return invalidAmount();
+    } catch (E) {
+        return invalidAmount();
+    }
+
+    var invalidPrice = ()=>{
+		return navigator.notification.alert("Invalid price. Must be greater than or equal to 0.", 
+			function(){
+				$("#ntloprice").focus();
+				unblockInput();
+			}, 
+			"Invalid amount", 
+			"OK"
+		);
+    };
+
+    // ensure theres no garbage in the price field
+    if (!/^[0-9\.]+$/m.test(price) ) return invalidPrice();  
+
+    try {
+        var x = new BN(amount);
+        if (x.isNeg() || x.isZero()) return invalidPrice();
+    } catch (E) {
+        return invalidPrice();
+    }
+
+
+    // it should not be possible for this to happen but check anyway
+	if (validateAddress(account)) {
+		// valid
+	} else {
+		navigator.notification.alert("The account specified is not a valid XRP Ledger account.", 
+			function(){
+				$("#ntloaddress").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);
+	}
+
+	if (validateAddress(issuer)) {
+		// valid
+	} else {
+		navigator.notification.alert("The issuer specified is not a valid XRP Ledger account.", 
+			function(){
+				$("#ntloissuer").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);
+	}
+
+
+    if (!validateCurrency(asset)) {
+		return navigator.notification.alert("Invalid currency code. Must be 3 characters A-Z, 0-9 or any of the following ? ! @ # $ % ^ & * < > ( ) { } [ ] |", 
+			function(){
+				$("#ntloissuer").focus();
+				unblockInput();
+			}, 
+			"Invalid currency code", 
+			"OK"
+		);    
+    }
+
+
+    if (!/^[0-9]+$/m.test(expiry) || (expiry = parseInt(expiry) ) <= 0 ) {
+        return navigator.notification.alert("Invalid expiry. Must be a whole number greater than 0.", 
+            function(){
+                $(expiryfocus).focus();
+                unblockInput();
+            }, 
+            "Invalid expiry", 
+            "OK"
+        );
+    }
+
+
+    var expirylookup = { 'minute': 1, 'hour': 60, 'day': 1440, 'week': 10080, 'month': 43800, 'year': 525600 };
+
+    // this shouldnt happen check anyway
+    if (!(expiryunits in expirylookup)) {
+        return navigator.notification.alert("Invalid expiry. Invalid expiry unit.", 
+            function(){
+                $(expiryfocus).focus();
+                unblockInput();
+            }, 
+            "Invalid expiry", 
+            "OK"
+        );        
+    }
+
+    expiry = expiry * expirylookup[expiryunits]; // now expiry is in minutes
+    expiryunits = "";
+
+
+	var nextscreen = function() {
+		confirmorder = { 
+			account: account,
+			asset: asset,
+			issuer: issuer,
+			amount: amount,
+			price: price,            
+            sell: sell,
+			nonce: nonce,
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
+		};
+
+		confirmorderhash = sodium.crypto_generichash(16, JSON.stringify(confirmorder), ''+nonce, 'hex');
+
+		$('#confirmorderaccount')[0].innerText = account;
+		$('#confirmorderasset')[0].innerText = asset;
+		$('#confirmorderissuer')[0].innerText = issuer;
+        $('#confirmorderamount')[0].innerText = amount;
+        $('#confirmorderprice')[0].innerText = price;
+		$('#confirmorderdirection')[0].innerText = ( sell ? 'SELL' : 'BUY' );
+        $('#confirmorderexpiry')[0].innerText = expirydisplay;
+
+		showTab("#taborderconfirm");
+		
+		unblockInput();
+	};
+
+    return nextscreen();
 
 }
 
