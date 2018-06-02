@@ -27,7 +27,6 @@
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <platform name="android">
-        <hook src="hooks/copy-build-extras-gradle.js" type="before_build" />
         <icon density="ldpi" src="www/res/icon/android/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="www/res/icon/android/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="www/res/icon/android/drawable-hdpi-icon.png" />
@@ -149,4 +148,5 @@
     <plugin name="cordova-android-support-gradle-release" spec="~1.4.3">
         <variable name="ANDROID_SUPPORT_VERSION" value="23.+" />
     </plugin>
+    <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6" />
 </widget>
