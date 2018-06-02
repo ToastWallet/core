@@ -1180,7 +1180,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button  class="btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmCancelOrder(content);  }  );})" id="btnqrpasscancelconfirmorder" type="button" style="min-width: 5em !important;">QR</button>
 	</span>
     </div><br>
-	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmCancelOrder($('#confirmcancelorderpassword').val());})">Confirm Order</button></div></center>
+	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmCancelOrder($('#confirmcancelorderpassword').val());})">Confirm Cancel Order</button></div></center>
 </div>
 
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
@@ -1342,7 +1342,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em;">
     <center>
         <h1>Connection Issue</h1>
-	<p>Toast Wallet is unable to connect either because your device has no network connectivity, or because the public gateway servers Toast Wallet uses to connect to the Ripple network are down or under heavy load&mdash;this has nothing to do with the Ripple network itself, only the servers that Toast Wallet uses to <i>access</i> the network.</p><br>
+	<p>Toast Wallet is unable to connect either because your device has no network connectivity, or because the public gateway servers Toast Wallet uses to connect to the XRP Ledger are down or under heavy load&mdash;this has nothing to do with the XRP Ledger itself, only the servers that Toast Wallet uses to <i>access</i> the network.</p><br>
         <div>
 		<div align="left">
 	        	<label style="color:white; text-align:left;">Specify a different gateway server (optional)</label>
@@ -1385,7 +1385,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.6</center>
+        <center style="color:black;" data-version="version">Version: 2.3.7</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1463,13 +1463,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
    <center>
 	<div style="padding: 0.4em;background: rgba(255,0,0,0.7);border-radius: 3px;margin-bottom: 1em;">
 		<p>IMPORTANT NOTICE&mdash;</p>
-		<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the Ripple network. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
+		<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the XRP Ledger. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
 		<p>Toast Wallet keeps your data on your devices. It does not send your data back to our servers&mdash;we cannot help you if you lose your phrases or backup.</p>
 	</div>
     <h1>Toast Wallet</h1>
 
 	<p>This software is licensed under the GPL 2.0 <br><b>without any warranty. Use at own risk.</b></p>
-	<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the Ripple network. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
+	<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the XRP Ledger. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
 	<p>Toast Wallet keeps all data on your devices. It does not send any data back to our servers. If you do not keep your phrases and backup secure you will lose your funds.</p>
 <p><a href="https://github.com/ToastWallet/core" target="_blank" style="color:lime; ">Tap here to view full source code on GitHub</a></p></center> 
 <blockquote style="font-size:0.8em; text-align:justify;">GNU GENERAL PUBLIC LICENSE
@@ -1575,7 +1575,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.6</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.7</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1669,7 +1669,7 @@ function doSubmitOfflineTransaction(stage, content) {
 
         var failurefunc = function(fail) {
 
-	        return navigator.notification.alert("An error occured when trying to query the Ripple network. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your device has no connectivity. " + fail,
+	        return navigator.notification.alert("An error occured when trying to query the XRP Ledger. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your device has no connectivity. " + fail,
 				function() {
                     doSubmitOfflineTransaction(0);
                     unblockInput();
@@ -2933,7 +2933,14 @@ function refreshTrustlines(account, after) {
 
                     for (o in orders) {
                         var order = orders[o];
+
                         var currency1 = order.specification.quantity.currency.toUpperCase();
+
+                        if (currency1 == currency && issuer == order.specification.quantity.counterparty) {
+                            // this is an order that relates to the current graph so pass
+                        } else continue;
+
+
                         var amount1 = parseFloat(''+order.specification.quantity.value);
                         var currency2 = order.specification.totalPrice.currency.toUpperCase();
                         var amount2 = parseFloat(''+order.specification.totalPrice.value);
@@ -4528,7 +4535,7 @@ function doAddTrustline(nonce) {
 
 
     checkAccountIsFunded(atladdress, 5, 'XRP', '', function(){
-			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+            navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a XRP Ledger requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a XRP Ledger fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
 					if (b == 1) {
@@ -4652,7 +4659,7 @@ function doSetAccountFlags(nonce) {
 
 
     checkAccountIsFunded(afaddress, 0.1, 'XRP', '', function(){
-			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a XRP Ledger requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a XRP Ledger fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
 					if (b == 1) {
@@ -5414,7 +5421,7 @@ function doPay(nonce) {
 		// valid
 	} else {
 
-		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the Ripple network will charge a fee on failure.", 
+		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the XRP Ledger will charge a fee on failure.", 
 			function(){
 				$("#toaddress").focus();
 				unblockInput();
@@ -5513,7 +5520,7 @@ function doPay(nonce) {
 	};
 
     checkAccountIsFunded(payfrom, amount, asset, issuer, function(){
-			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a Ripple network requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a Ripple network fee." , 
+			navigator.notification.confirm("You must leave " + xrpreserve + " XRP reserve in the account you are sending from. This is a XRP Ledger requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a XRP Ledger fee." , 
 				function(b){
 					if (debug) console.log("button selected: " + b);
 					if (b == 1) {
@@ -8037,7 +8044,7 @@ function sendOfferCancel(passphrase, fromacc, seq, successfunc, failurefunc) {
 
 
 
-/* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
+/* This function actually executes the XRP send on the XRP Ledger. You must ensure the passphrase is valid
 ** before calling.
 */
 function sendPayment(passphrase, fromacc, xrpAmount, destination, sourceTag, destTag, invoiceID, asset, issuer, successfunc, failurefunc) {
@@ -8140,7 +8147,7 @@ function doGetTransactions(address, marker) {
 	$.ajax({
 		complete: function() { unblockInput(); },
 		url: 'https://data.ripple.com/v2/accounts/' + 
-		address + '/payments?currency=XRP&limit=10&descending=true&marker=' +
+		address + '/payments?currency=XRP&limit=10&marker=' +
 		marker
 	}).done(function(x){
 		console.log(x);
