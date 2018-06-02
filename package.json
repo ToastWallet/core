@@ -30,7 +30,8 @@
       "backgroundColor": "#1565b1"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "arch": ["ia32", "x64"]
     },
     "mac": {
       "icon": "www/res/icon/icon.icns"
