@@ -20,6 +20,8 @@ def IGNORED = [
     'multidex-instrumentation'
 ]
 
+ANDROID_SUPPORT_VERSION = "23.+"
+
 println("+-----------------------------------------------------------------");
 println("| " + PLUGIN_NAME + ": " + ANDROID_SUPPORT_VERSION);
 println("+-----------------------------------------------------------------");
