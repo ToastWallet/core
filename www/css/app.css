@@ -578,6 +578,8 @@ button, button:focus, button:active, button:hover {
     text-align: left;
     display: inline-flex;
     white-space: nowrap;
+    margin-right: 0.25em;
+    margin-left:0.25em;
 }
 
 span#accdetailsamount {
