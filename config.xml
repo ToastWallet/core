@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.toastwallet.core" version="2.3.8" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.toastwallet.core" version="2.3.9" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
 	Toast Wallet is a Ripple wallet for Android and iOS.
@@ -18,7 +18,7 @@
     <preference name="android-minSdkVersion" value="16" />
     <preference name="buildArchitecture" value="armv7" />
     <preference name="xwalkMultipleApk" value="true" />
-    <preference name='phonegap-version' value='cli-6.5.0' />
+    <preference name="phonegap-version" value="cli-6.5.0" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-orientation" source="npm" spec="~1.0.2" />
@@ -80,14 +80,14 @@
         <splash height="1334" src="www/res/screen/ios/LaunchImage-800-667h@2x.png" width="750" />
         <splash height="1242" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" width="2208" />
         <splash height="2208" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" width="1242" />
-        <splash src="www/res/screen/ios/Default@2x~iphone~anyany.png" width="1334" height="1334"/>
-        <splash src="www/res/screen/ios/Default@2x~iphone~comany.png" width="750" height="1334" />
-        <splash src="www/res/screen/ios/Default@2x~iphone~comcom.png" width="1334" height="750" />
-        <splash src="www/res/screen/ios/Default@3x~iphone~anyany.png" width="2208" height="2208" />
-        <splash src="www/res/screen/ios/Default@3x~iphone~anycom.png" width="2208" height="1242" />
-        <splash src="www/res/screen/ios/Default@3x~iphone~comany.png" width="1242" height="2208" />
-        <splash src="www/res/screen/ios/Default@2x~ipad~anyany.png" width="2732" height="2732" />
-        <splash src="www/res/screen/ios/Default@2x~ipad~comany.png" width="1278" height="2732" />        
+        <splash height="1334" src="www/res/screen/ios/Default@2x~iphone~anyany.png" width="1334" />
+        <splash height="1334" src="www/res/screen/ios/Default@2x~iphone~comany.png" width="750" />
+        <splash height="750" src="www/res/screen/ios/Default@2x~iphone~comcom.png" width="1334" />
+        <splash height="2208" src="www/res/screen/ios/Default@3x~iphone~anyany.png" width="2208" />
+        <splash height="1242" src="www/res/screen/ios/Default@3x~iphone~anycom.png" width="2208" />
+        <splash height="2208" src="www/res/screen/ios/Default@3x~iphone~comany.png" width="1242" />
+        <splash height="2732" src="www/res/screen/ios/Default@2x~ipad~anyany.png" width="2732" />
+        <splash height="2732" src="www/res/screen/ios/Default@2x~ipad~comany.png" width="1278" />
     </platform>
     <platform name="wp8">
         <icon height="99" platform="wp8" src="www/res/icon/wp8/ApplicationIcon.png" width="99" />
@@ -146,4 +146,5 @@
     <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.1" />
     <plugin name="cordova-plugin-battery-status" spec="~1.2.4" />
     <engine name="browser" spec="~4.1.0" />
+    <plugin name="cordova-android-support-gradle-release" spec="~1.4.3" />
 </widget>
