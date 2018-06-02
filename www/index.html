@@ -1203,7 +1203,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>  
 </div>
 
-<div id="tabpayments" class="screentab" data-primarytab="true" data-title="Send" style="display:none">
+<div id="tabpayments" class="screentab" data-primarytab="false" data-hasback="true" data-title="Send" style="display:none">
 	<label >From Account</label>
 	<div>
 	<select ontouchend="te(event, quickSelectInput)" id="payfromaccount" class="form-control" onchange="onPaymentSelectFromAccount();">
@@ -1355,7 +1355,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.3</center>
+        <center style="color:black;" data-version="version">Version: 2.3.4</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1545,7 +1545,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.3</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.4</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1553,7 +1553,7 @@ NO WARRANTY
 <ul id="navheader" style="display:none"><li class="headerleft"></li><li class="headermiddle"></li><li class="headerright"><i class="fa fa-lock" aria-hidden="true">&nbsp;</i>&nbsp;</li></ul>
 
 <ul id="navfooter" style="display:none">
-	<li id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></li>
+    <li id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></li>
 	<li id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fa fa-usd" aria-hidden="true"></i></li>
 	<li id="navsettings" ontouchstart="showTab('#tabsettings');"><i class="fa fa-cog" aria-hidden="true"></i></li>
 </ul>
@@ -3502,9 +3502,11 @@ function showTab(tab, dontClearText) {
         dontClearText = true;
 	}
 
+    // always clear password field even if no clear is set
+    $("input[type='password']").val("");
 
     if (!dontClearText) {
-        $("input[type='password']").val("");
+   
         $("input[type='text']").val("");
         $("textarea").val("");
         $('#paytabredqr').empty();
@@ -3652,7 +3654,10 @@ function showTab(tab, dontClearText) {
 
 
 
-	if ($(tab).data('hasback')) {
+    if ($(tab).data('hasback') && previoustabs.length > 0 && 
+            !( currenttab == '#tabpayments' && previoustabs.length == 1 && (previoustabs[0] == '#tabaccounts' || previoustabs[0] == '#tabsettings' ) )
+    ) {
+        console.log("previous tabs: "); console.log(previoustabs);
 		$(".headerleft")[0].innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>';
 		$(".headerleft").off();
 		$(".headerleft").on('touchstart', function() {showTab(-1);});
@@ -4912,6 +4917,95 @@ function doPlaceOrder(nonce) {
     return nextscreen();
 
 }
+
+
+
+function doConfirmOrder(passphrase) {
+	if (debug) console.log("doConfirmOrder");
+	if (confirmorder.nonce == lastordernonce) {
+		// this is an accidental double tap
+		return;
+	} 
+	blockInput();
+
+	lastordernonce = confirmorder.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmorder == undefined || confirmorder.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmorder), ''+confirmorder.nonce, 'hex') != confirmorderhash ) {
+				navigator.notification.alert("An error occured when trying to make your payment. No payment was made.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
+				return;
+			}
+
+
+            if (offlinemode) {
+                // we're just going to create the payment as a QR code and display it
+
+				navigator.notification.alert("A QR code of this signed transaction has been generated. Scan it using your online device to complete the transaction.", 
+					function(){
+                        return sendOfferCreateOffline(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, confirmorder.accseqid, confirmorder.ledseqid, confirmorder.fee);					
+                    }, 
+					"Offline Transaction", 
+					"OK"
+				);            
+
+                return;
+            }
+
+			checkConnection(
+				function(){
+					sendOfferCreate(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, 
+						function(wasqueued){
+
+                            navigator.notification.alert("Your order was successfully " + ( wasqueued ? "queued, and will be " : "" ) + "submitted to the XRP Ledger" + ( wasqueued ? " shortly." : "." ), 
+                                function(){
+                                    clearPaymentScreen();
+                                    showTab("#tabaccounts");
+                                    unblockInput();
+                                }, "Success", "OK"); 
+						
+						}, 
+						function(err) {
+							navigator.notification.alert("An error occured when trying to submit your transaction. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your transaction details are incorrect or the receiving address has not been activated. " + err, 
+							function(){
+								lastpaidnonce = "";
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error", "OK");
+						}
+					);
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lastpaidnonce = "";
+					unblockInput();
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lastpaidnonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
 
 
 var confirmpay = {};
@@ -7362,6 +7456,164 @@ function sendTrustLineTxOffline(passphrase, fromacc, issuer, currency, limit, ri
             );
 		}
     );
+}
+
+
+/** rounds up an XRP value to the nearest drop to prevent ripplelib complaining about long/irrational xrp fractions */
+function roundXRP(x) {
+    return (Math.ceil(x * 1000000.0)/1000000.0);
+}
+
+
+
+function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, accSeqID, ledSeqID, fee) {
+
+	
+	if (debug) console.log("sendPaymentOffline - " + xrpAmount);
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+            try {
+			var instructions = {
+                maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
+                sequence: (accSeqID),
+                fee: fee + ""
+            };
+
+			var order = {
+			  direction: (sell ? 'sell' : 'buy'),
+              quantity: {
+                    currency: asset,
+                    counterparty: issuer,
+                    value: "" + amount 
+              },
+              totalPrice: {
+                    currency: 'XRP',
+                    value:  roundXRP( price * amount ) + '' 
+              }
+			};
+
+
+            if (passive) order['passive'] = true;
+            if (fok) order['fillOrKill'] = true;
+            if (ioc && !fok) order['immediateOrCancel'] = true;
+            
+
+            console.log(order)
+            remote.prepareOrder(fromacc, order, instructions).then(prepared => {
+ 				    console.log('Order transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+				    
+                    secret = "";
+				    
+                    console.log('Order transaction signed...');
+
+                    $('#divgreenqrdisplay').empty();
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
+                    showTab('#tabgreenqr');
+                    unblockInput();
+            },
+            E => {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );            
+            });
+
+            } catch (E) {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );
+            }
+        },
+		function() {
+            navigator.notification.alert("Could not load secret. Wallet may be corrupted.", 
+                function(){
+                    unblockInput();
+                }, 
+                "Failure", 
+                "OK"
+            );
+		}
+    );
+}
+
+function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, successfunc, failurefunc) {
+	
+	if (debug) console.log("sendOfferCreate - " + fromacc + " asset: " + asset + " issuer: " + issuer + " price: " + price + " sell: " + sell + " fok: " + fok + " ioc: " + ioc + " passive: " + passive);
+
+	
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+			var instructions = {maxLedgerVersionOffset: 30};
+			var order = {
+			  direction: (sell ? 'sell' : 'buy'),
+              quantity: {
+                    currency: asset,
+                    counterparty: issuer,
+                    value: "" + amount
+              },
+              totalPrice: {
+                    currency: 'XRP',
+                    value:  roundXRP( price * amount )  + ''
+              }
+			};
+
+
+            if (passive) order['passive'] = true;
+            if (fok) order['fillOrKill'] = true;
+            if (ioc && !fok) order['immediateOrCancel'] = true;
+            
+
+            console.log(order);
+
+			var prepareorder = function(fromacc, order, instructions, ptries) {
+				return remote.prepareOrder(fromacc, order, instructions).then(prepared => {
+				    console.log('Payment transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+
+                    secret = "";
+
+				    console.log('Order transaction signed...');
+				    
+				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
+				    
+				}, (fail) => 	 {
+					console.log('Prepare order failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return serverCycle(
+							function() {
+								prepareorder(fromacc, order, instructions, ptries + 1);
+							}, ptries + 1, failurefunc);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+				});
+			}
+
+			return prepareorder(fromacc, order, instructions, 0);
+		
+		},
+		function() {
+			unblockInput();
+			failurefunc("Could not load secret. Wallet may be corrupted.");
+		});
+
 }
 
 
