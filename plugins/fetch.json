@@ -236,11 +236,11 @@
     "cordova-android-support-gradle-release": {
         "source": {
             "type": "registry",
-            "id": "cordova-android-support-gradle-release"
+            "id": "cordova-android-support-gradle-release@~1.4.3"
         },
         "is_top_level": true,
         "variables": {
-            "ANDROID_SUPPORT_VERSION": "27.+"
+            "ANDROID_SUPPORT_VERSION": "23.+"
         }
     }
 }
