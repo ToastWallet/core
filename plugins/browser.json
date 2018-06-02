@@ -52,10 +52,10 @@
         "cordova-plugin-battery-status": {
             "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "cordova-android-support-gradle-release": {
+        "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "phonegap-plugin-barcodescanner": {
+        "cordova-android-support-gradle-release": {
             "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
