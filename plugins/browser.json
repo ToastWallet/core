@@ -49,10 +49,13 @@
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "phonegap-plugin-barcodescanner": {
+        "cordova-plugin-battery-status": {
             "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "cordova-plugin-battery-status": {
+        "cordova-android-support-gradle-release": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.toastwallet.core"
         }
     },

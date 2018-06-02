@@ -7,68 +7,21 @@
         "files": {}
     },
     "installed_plugins": {
+        "com.verso.cordova.clipboard": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-android-support-gradle-release": {
+            "ANDROID_SUPPORT_VERSION": "27.+",
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-build-architecture": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
         "cordova-plugin-battery-status": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "com.toastwallet.core"
         },
         "cordova-plugin-camera": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-contacts": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-device-motion": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-device-orientation": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-geolocation": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-inappbrowser": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-media": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-media-capture": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-vibration": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "phonegap-plugin-barcodescanner": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-sqlite-2": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-screen-orientation": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "com.toastwallet.core"
         },
         "cordova-plugin-crosswalk-webview": {
             "XWALK_VERSION": "23+",
@@ -76,27 +29,48 @@
             "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "com.verso.cordova.clipboard": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-device-motion": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-device-orientation": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-screen-orientation": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-sqlite-2": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.toastwallet.core"
         },
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.toastwallet.core"
         },
-        "cordova-build-architecture": {
+        "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "com.toastwallet.core"
         }
     },
     "dependent_plugins": {
-        "cordova-plugin-compat": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
-        },
         "es6-promise-plugin": {
-            "PACKAGE_NAME": "com.phonegap.helloworld"
+            "PACKAGE_NAME": "com.toastwallet.core"
+        },
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "com.toastwallet.core"
         }
     }
 }

@@ -2,7 +2,7 @@
     "phonegap-plugin-barcodescanner": {
         "source": {
             "type": "registry",
-            "id": "phonegap-plugin-barcodescanner"
+            "id": "phonegap-plugin-barcodescanner@~6.0.6"
         },
         "is_top_level": true,
         "variables": {}
@@ -190,7 +190,13 @@
             "id": "cordova-plugin-crosswalk-webview@2.3.0"
         },
         "is_top_level": true,
-        "variables": {}
+        "variables": {
+            "XWALK_VERSION": "23+",
+            "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
+            "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
+            "XWALK_MODE": "embedded",
+            "XWALK_MULTIPLEAPK": "true"
+        }
     },
     "com.verso.cordova.clipboard": {
         "source": {
@@ -226,5 +232,15 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-android-support-gradle-release": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-android-support-gradle-release"
+        },
+        "is_top_level": true,
+        "variables": {
+            "ANDROID_SUPPORT_VERSION": "27.+"
+        }
     }
 }
