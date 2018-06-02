@@ -1155,6 +1155,34 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmOrder($('#confirmorderpassword').val());})">Confirm Order</button></div></center>
 </div>
 
+
+<div id="tabcancelorderconfirm" class="screentab" data-primarytab="false" data-hasback="true" data-title="Confirm Cancel Order" style="display: none;">
+	<div class="paygrouping">
+    <label>Account</label>
+	<div id="confirmcancelorderaccount"></div>
+    </div>
+
+	<div class="paygrouping">
+    <label>Order</label>
+	<div id="confirmcancelorderpreview"></div>
+    </div>
+
+    <div class="paygrouping">
+    <label>Sequence Number</label>
+    <div id="confirmcancelordersequence"></div>
+    </div>
+
+    <br>
+    <label>Enter your Passphrase</label>    
+    <div class="input-group">
+	<input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmcancelorderpassword" class="form-control" placeholder="">
+	<span class="input-group-btn">
+        <button  class="btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('', '', '', (content, intofield1, intofield2, intofield3, after) => { doConfirmCancelOrder(content);  }  );})" id="btnqrpasscancelconfirmorder" type="button" style="min-width: 5em !important;">QR</button>
+	</span>
+    </div><br>
+	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmCancelOrder($('#confirmcancelorderpassword').val());})">Confirm Order</button></div></center>
+</div>
+
 <div id="tabpaymentconfirm" class="screentab" data-primarytab="false" data-title="Confirm Send" style="display: none;">
 	<div class="paygrouping">
     <label>From Account</label>
@@ -1357,7 +1385,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.5</center>
+        <center style="color:black;" data-version="version">Version: 2.3.6</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1547,7 +1575,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.5</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.6</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2910,10 +2938,10 @@ function refreshTrustlines(account, after) {
                         var currency2 = order.specification.totalPrice.currency.toUpperCase();
                         var amount2 = parseFloat(''+order.specification.totalPrice.value);
                         var seq = order.properties.sequence;
-
+                        var direction = order.specification.direction;
                         var rate = amount2/amount1;
 
-                        ordersele.innerHTML += '<li><span class="offer">#'+seq+'</span> <span class="orderentry"><span class="orderdirection">'+order.specification.direction.toUpperCase()+'</span> <span class="currency existingorder'+order.specification.direction+'">'+currency1+' ' + display_currency_amount(amount1) + '</span> @ <span class="currency">'+currency2+' '+display_currency_amount(rate)+'</span></span> <a class="orderkill" href="" ontouchend="te(event, (e)=>{doCancelOrder(\''+account+'\', '+seq+', \''+currency1+'\', '+amount1+', \''+currency2+'\', '+amount2+')})"><i class="fa fa-times-circle" style="color:red;"></i></a></li>';
+                        ordersele.innerHTML += '<li><span class="offer">#'+seq+'</span> <span class="orderentry"><span class="orderdirection">'+direction.toUpperCase()+'</span> <span class="currency existingorder'+order.specification.direction+'">'+currency1+' ' + display_currency_amount(amount1) + '</span> @ <span class="currency">'+currency2+' '+display_currency_amount(rate)+'</span></span> <a class="orderkill" href="" ontouchend="te(event, (e)=>{doPlaceCancelOrder(sodium.randombytes_random(), confirmcancelorder={account:\''+account+'\', seq: '+seq+', currency1: \''+currency1+'\', amount1: '+amount1+', currency2: \''+currency2+'\', amount2: '+amount2+', sell: '+(direction == 'sell')+'} );})"><i class="fa fa-times-circle" style="color:red;"></i></a></li>';
 
 
                     }
@@ -4754,6 +4782,118 @@ function adjustOrderPrice(x) {
     renderOrderPreview();
 }
 
+
+var confirmcancelorder = {};
+var confirmcancelorderhash = "";
+var lastcancelordernonce;
+//(sodium.randombytes_random(), confirmcancelorder={account:\''+account+'\', seq: '+seq+', currency1: \''+currency1+'\', amount1: '+amount1+', currency2: \''+currency2+'\', amount2: '+amount2+', sell: '+(direction == 'sell')+'} )
+function doPlaceCancelOrder(nonce, dataset) {
+
+    // needed
+    var account;
+    var seq;
+    var offlinecode;// = $('#---offlinecode').val().trim().replace(/ /g, "").toUpperCase();
+    var accID = '';
+    var ledID = '';
+    var fee = '';
+
+    // extra
+    var currency1;
+    var amount1;
+    var currency2;
+    var amount2;
+    var direction;
+
+    
+
+	if (debug) console.log("doPlaceCancelOrder");
+	blockInput();
+
+    if (typeof(dataset) !== 'undefined') {
+       account = dataset.account;
+       seq = dataset.seq;
+
+       issuer = dataset.issuer;
+       currency1 = dataset.currency1;
+       amount1 = dataset.amount1;
+       currency2 = dataset.currency2;
+       amount2 = dataset.amount2;
+       sell = dataset.sell;
+    } else {
+    /*
+   //todo: offline mode way to cancel orders -- when implemented pull in data here
+
+    if (offlinemode) {
+        ofl = validateOfflineCode(offlinecode, '#---offlinecode');
+        if (ofl === false) return;
+        accID = ofl.accID;
+        ledID = ofl.ledID;
+        fee = ofl.fee;
+    }
+
+
+
+
+    // it should not be possible for this to happen but check anyway
+	if (validateAddress(account)) {
+		// valid
+	} else {
+		navigator.notification.alert("The account specified is not a valid XRP Ledger account.", 
+			function(){
+				$("#---address").focus();
+				unblockInput();
+			}, 
+			"Unusual address format", 
+			"OK"
+		);
+	}
+
+
+    if (!/^[0-9]+$/m.test(seq) || (seq = parseInt(expiry) ) < 0 ) {
+        return navigator.notification.alert("Invalid sequence number. Must be a whole number greater than 0.", 
+            function(){
+                $('#---seq').focus();
+                unblockInput();
+            }, 
+            "Invalid expiry", 
+            "OK"
+        );
+    }
+    */
+    }
+
+	var nextscreen = function() {
+
+
+        confirmcancelorder = { 
+            account: account,
+            seq: seq,
+            nonce: nonce,
+            accseqid: accID, // used for offline tx
+            ledseqid: ledID,
+            fee: fee
+        };
+
+
+		confirmcancelorderhash = sodium.crypto_generichash(16, JSON.stringify(confirmcancelorder), ''+nonce, 'hex');
+
+		$('#confirmcancelorderaccount')[0].innerText = account;
+
+        $('#confirmcancelorderpreview')[0].innerText = (sell ? 'SELL ' : 'BUY ') +  currency1 + ' ' + display_currency_amount(parseFloat(''+amount1)) + ' @ ' + currency2 + ' ' + display_currency_amount(parseFloat(''+amount2)/parseFloat(''+amount1));
+
+        $('#confirmcancelordersequence')[0].innerText = '#' + seq;
+
+
+		showTab("#tabcancelorderconfirm");
+		
+		unblockInput();
+	};
+
+    return nextscreen();
+
+}
+
+
 var confirmorder = {};
 var confirmorderhash = "";
 var lastordernonce;
@@ -4981,6 +5121,91 @@ function doPlaceOrder(nonce) {
 }
 
 
+function doConfirmCancelOrder(passphrase) {
+	if (debug) console.log("doConfirmCancelOrder");
+	if (confirmcancelorder.nonce == lastcancelordernonce) {
+		// this is an accidental double tap
+		return;
+	} 
+	blockInput();
+
+	lastcancelordernonce = confirmcancelorder.nonce;
+	validatePassphrase(passphrase, false,
+		function() {
+			if (confirmcancelorder == undefined || confirmcancelorder.nonce == undefined || sodium.crypto_generichash(16, JSON.stringify(confirmcancelorder), ''+confirmcancelorder.nonce, 'hex') != confirmcancelorderhash ) {
+				navigator.notification.alert("An error occured when trying to submit your order cancellation. No change was made.", 
+					function(){
+						showTab(-1);
+						unblockInput();
+					}, 
+					"Error", 
+					"OK"
+				);
+				return;
+			}
+
+            if (offlinemode) {
+                // we're just going to create the payment as a QR code and display it
+
+				navigator.notification.alert("A QR code of this signed transaction has been generated. Scan it using your online device to complete the transaction.", 
+					function(){
+                        return sendOfferCancelOffline(passphrase, confirmcancelorder.account, confirmcancelorder.seq, confirmcancelorder.accseqid, confirmcancelorder.ledseqid, confirmcancelorder.fee);					
+                    }, 
+					"Offline Transaction", 
+					"OK"
+				);            
+
+                return;
+            }
+
+			checkConnection(
+				function(){
+					sendOfferCancel(passphrase, confirmcancelorder.account, confirmcancelorder.seq,
+						function(wasqueued){
+
+                            navigator.notification.alert("Your cancel order request was successfully " + ( wasqueued ? "queued, and will be " : "" ) + "submitted to the XRP Ledger" + ( wasqueued ? " shortly." : "." ), 
+                                function(){
+                                    clearPaymentScreen();
+                                    showTab("#tabaccounts");
+                                    unblockInput();
+                                }, "Success", "OK"); 
+						
+						}, 
+						function(err) {
+							navigator.notification.alert("An error occured when trying to submit your transaction. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your transaction details are incorrect or the receiving address has not been activated. " + err, 
+							function(){
+								lastcancelordernonce = "";
+								showTab(-1);
+								unblockInput();
+							}, 
+							"Error", "OK");
+						}
+					);
+				}
+			);
+		},
+		function() { 
+			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
+				function(){
+					lastcancelordernonce = "";
+					unblockInput();
+				},				
+				"Error", "OK"
+			);
+		},
+		function() { 
+			navigator.notification.alert("Could not submit transaction due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+				function(){
+					lastcancelordernonce = "";
+					unblockInput();
+				}, 
+				"Error", 
+				"OK"
+			);
+		}
+	);
+}
+
 
 function doConfirmOrder(passphrase) {
 	if (debug) console.log("doConfirmOrder");
@@ -5037,7 +5262,7 @@ function doConfirmOrder(passphrase) {
 						function(err) {
 							navigator.notification.alert("An error occured when trying to submit your transaction. This can occur if the gateways Toast Wallet connects to are overloaded, it can also occur if your transaction details are incorrect or the receiving address has not been activated. " + err, 
 							function(){
-								lastpaidnonce = "";
+								lastordernonce = "";
 								showTab(-1);
 								unblockInput();
 							}, 
@@ -5050,16 +5275,16 @@ function doConfirmOrder(passphrase) {
 		function() { 
 			navigator.notification.alert("Your passphrase is incorrect. You cannot use a recoveryphrase here.", 
 				function(){
-					lastpaidnonce = "";
+					lastordernonce = "";
 					unblockInput();
 				},				
 				"Error", "OK"
 			);
 		},
 		function() { 
-			navigator.notification.alert("Could not make payment due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
+			navigator.notification.alert("Could not create order due to possible wallet corruption. We recommend backing up your wallet and reinstalling.", 
 				function(){
-					lastpaidnonce = "";
+					lastordernonce = "";
 					unblockInput();
 				}, 
 				"Error", 
@@ -7532,7 +7757,7 @@ function roundXRP(x) {
 function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, expiry, accSeqID, ledSeqID, fee) {
 
 	
-	if (debug) console.log("sendPaymentOffline - " + xrpAmount);
+	if (debug) console.log("sendOfferCreateOffline - " + fromacc + " asset: " + asset + " issuer: " + issuer + " price: " + price + " sell: " + sell + " fok: " + fok + " ioc: " + ioc + " passive: " + passive + ", accSeqId: " + accSeqId + ", ledSeqID: " + ledSeqID + ", fee: " + fee);
 	blockInput();
 	
 	getSecretForAccount(passphrase, fromacc, 
@@ -7650,12 +7875,12 @@ function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell
 
 			var prepareorder = function(fromacc, order, instructions, ptries) {
 				return remote.prepareOrder(fromacc, order, instructions).then(prepared => {
-				    console.log('Payment transaction prepared...');
+				    console.log('OfferCreate transaction prepared...');
 				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
 
                     secret = "";
 
-				    console.log('Order transaction signed...');
+				    console.log('OfferCreate transaction signed...');
 				    
 				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
 				    
@@ -7681,6 +7906,135 @@ function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell
 		});
 
 }
+
+
+////
+
+
+function sendOfferCancelOffline(passphrase, fromacc, seq, accSeqID, ledSeqID, fee) {
+
+	
+	if (debug) console.log("sendOfferCancelOffline - " + seq + ", accSeqID: " + accSeqID + ", ledSeqID: " + ledSeqID + ", fee: " + fee);
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+            try {
+			var instructions = {
+                maxLedgerVersion: (ledSeqID + 1029 + toastepoc ), // valid for one hour
+                sequence: (accSeqID),
+                fee: fee + ""
+            };
+
+			var cancel = {
+                orderSequence: seq
+            };
+
+          
+
+            console.log(cancel);
+            remote.prepareOrderCancellation(fromacc, cancel, instructions).then(prepared => {
+ 				    console.log('OfferCancel transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+				    
+                    secret = "";
+				    
+                    console.log('OfferCancel transaction signed...');
+
+                    $('#divgreenqrdisplay').empty();
+                    $('#divgreenqrdisplay').append(kjua({text: 'ripple:signed-transaction:' + signedTransaction, fill: "#008000", ecLevel: 'L', size: 340}));
+                    showTab('#tabgreenqr');
+                    unblockInput();
+            },
+            E => {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );            
+            });
+
+            } catch (E) {
+                console.log(E);
+                navigator.notification.alert("Unexpected error " + E, 
+                    function(){
+                        unblockInput();
+                    }, 
+                "Failure", 
+                "OK"
+                );
+            }
+        },
+		function() {
+            navigator.notification.alert("Could not load secret. Wallet may be corrupted.", 
+                function(){
+                    unblockInput();
+                }, 
+                "Failure", 
+                "OK"
+            );
+		}
+    );
+}
+
+function sendOfferCancel(passphrase, fromacc, seq, successfunc, failurefunc) {
+	
+	if (debug) console.log("sendOfferCancel - " + fromacc + " seq: " + seq);
+
+	
+	blockInput();
+	
+	getSecretForAccount(passphrase, fromacc, 
+		function(secret) {
+
+
+			var instructions = {maxLedgerVersionOffset: 30};
+			var cancel = {
+                orderSequence: seq
+            };
+
+
+
+            console.log(cancel);
+
+			var preparecancelorder = function(fromacc, cancel, instructions, ptries) {
+				return remote.prepareOrderCancellation(fromacc, cancel, instructions).then(prepared => {
+				    console.log('OfferCancel transaction prepared...');
+				    const {signedTransaction} = remote.sign(prepared.txJSON, secret);
+
+                    secret = "";
+
+				    console.log('OfferCancel transaction signed...');
+				    
+				    submitSignedTransaction(signedTransaction, successfunc, failurefunc, ptries);
+				    
+				}, (fail) => 	 {
+					console.log('Prepare cancelorder failed: ' + fail);
+					if ((fail + "").toLowerCase().indexOf("notconnected") != -1) {
+						return serverCycle(
+							function() {
+								preparecancelorder(fromacc, cancel, instructions, ptries + 1);
+							}, ptries + 1, failurefunc);
+					}
+					unblockInput();
+					failurefunc("" + fail);
+				});
+			}
+
+			return preparecancelorder(fromacc, cancel, instructions, 0);
+		
+		},
+		function() {
+			unblockInput();
+			failurefunc("Could not load secret. Wallet may be corrupted.");
+		});
+
+}
+
 
 
 /* This function actually executes the XRP send on the Ripple network. You must ensure the passphrase is valid
