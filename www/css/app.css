@@ -735,6 +735,47 @@ i.fa.fa-exchange {
     overflow: hidden;
 }
 
+.adtlorderslist > li {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25em;
+    margin-top: 0.25em;
+}
+
+
+.offer {
+    flex: 1;
+    text-align: left;
+    font-size: 0.9em;
+    margin-top: 0.1em;
+    font-style: italic;
+}
+
+.orderkill {
+    text-align: right;
+    flex:1;
+}
+
+.orderdirection {
+    font-size: 0.9em;
+}
+
+.adtlorderslist > li:not(:last-of-type) {
+    border-bottom: 1px solid #00000026;
+}
+.orderentry {
+    flex:2;
+    white-space: nowrap;
+}
+
+.adtlgraph > span:first-of-type:last-of-type:before {
+    content: "no orders";
+    display: block;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
 .orderpreview {
     color:black;
     text-align:center;

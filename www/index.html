@@ -781,7 +781,9 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         </center>
 	</div>
     <div id="accdetailstransactiondetails" class="innertab" style="display:none"></div>
-    <div id="accdetailstrustlinedetails" class="innertab" style="display:none"><ul id="adtrustlines"></ul></div>
+    <div id="accdetailstrustlinedetails" class="innertab" style="display:none">
+        <ul id="adtrustlines"></ul>
+    </div>
 </div>
 
 <div id="tabaddaccount" class="screentab" data-hasback="true" data-title="Add Account" style="display:none">
@@ -1355,7 +1357,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.4</center>
+        <center style="color:black;" data-version="version">Version: 2.3.5</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1545,7 +1547,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.4</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.5</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2639,7 +2641,7 @@ function getAccountInfo(address, successfunc, failurefunc) {
 		failurefunc();
 	}
 		  
-	});
+    }).catch((e)=>{ console.log(e); failurefunc(e)});
 }
 
 
@@ -2783,11 +2785,22 @@ function renderOrderbookChart(orders, eleid, exchangerate, tlbalance) {
 
 
 
-    var currency = bids_raw[0]['specification']['totalPrice']['currency'];
+
+
     lastbid = parseFloat(lastbid + "");
     firstask = parseFloat(firstask + ""); 
-    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(lastbid);
-    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">'+currency+'</span> ' + display_currency_amount(firstask);
+    $(eleid).parent().find(".bidask>.bid")[0].innerHTML = '<span class="currency">XRP</span> ' + ( lastbid == -1 ? 'N/A' : display_currency_amount(lastbid) ) ;
+    $(eleid).parent().find(".bidask>.ask")[0].innerHTML = '<span class="currency">XRP</span> ' + ( firstask == -1 ? 'N/A' : display_currency_amount(firstask) );
+ 
+    // set these for order creation in the event of an empty book 
+    if (lastbid == -1 && firstask == -1) {
+        lastbid = 0.000001;
+        firstask = 0.000001;
+    } else if (lastbid != -1 && firstask == -1) {
+        firstask = lastbid;
+    } else if (firstask != -1 && lastbid == -1) {
+        lastbid = firstask;
+    }
 
     $(eleid).data('bid', display_currency_amount(lastbid));
     $(eleid).data('ask', display_currency_amount(firstask));
@@ -2797,12 +2810,16 @@ function renderOrderbookChart(orders, eleid, exchangerate, tlbalance) {
     var bidcount = 0;
     for (var x in bids) bidcount++;
     for (var x in bids) if (--bidcount < 10) valuationrate += parseFloat(""+x);
-    valuationrate /= 10.0;    
-  
+    valuationrate /= 10.0;
+    
     $(eleid).parent().find(".tlvaluation>.currency")[0].innerText = 'USD ' + display_currency_amount(exchangerate * tlbalance * valuationrate);
     $(eleid).parent().find(".tlvaluation").show();
 }
 
+
+function getOrders(account, then, then2) {
+    remote.getOrders(account).then( (o) => { then(o, then2); } ).catch( (e)=> { console.log(e); then([], then2); } );
+}
 
 
 function getExchangeRate(currency, counterparty, then, then2) {
@@ -2830,6 +2847,9 @@ function getExchangeRate(currency, counterparty, then, then2) {
 function refreshTrustlines(account, after) {
 
 
+
+    if (offlinemode) return $('#adtrustlines')[0].innerHTML = '<li><center><i>Offline trading not yet supported.<br>You can still send from a trustline balance and/or create a trustline.</i></center></li>';
+    
     $('#adtrustlines')[0].innerHTML = '<li><center><i>Loading...</i></center></li>';
 
 
@@ -2847,11 +2867,12 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency">USD xxxx</div></div></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency">USD xxxx</div></div></div><div class="adtlorders"><ul class="adtlorderslist" id="olt-'+currency+'-'+issuer+'"></ul></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-up" ></i></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><i class="fa fa-chevron-down"></i></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
             }
 
         } else {
-            trustlines = '<li><center><i>No trustlines on this account yet.</i></center></li>';
+            trustlines = '<li><center><i>No trustlines on this account.</i></center></li>';
+            $('#adtrustlines')[0].innerHTML = trustlines;
             return;
         }
 
@@ -2860,32 +2881,72 @@ function refreshTrustlines(account, after) {
         // get current exchange rate
        getExchangeRate( "", "", (exchangerate, data) => { 
 
+           // get account orders
 
-           // render graphs 
-            for (t in data.tls) {
-               var tl =  data.tls[t];
-               var issuer, currency, balance;
-               if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
-               (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
-               ((currency, issuer, exchangerate, balance) => {
-                remote.getOrderbook(
-                    issuer, 
-                    {"base": {"currency": currency, "counterparty": issuer}, 
-                    "counter": {"currency":"XRP"}},  { limit: 25 }
-                ).then(orders => {
-                   renderOrderbookChart(orders, '#grp-'+currency+'-'+issuer, exchangerate, balance);
-                });           
-               })(currency, issuer, exchangerate, parseFloat(""+balance));
-            }
 
-            }, {tls:  res['trustlines']});
+            getOrders(account, (orders)=>{            
+
+
+
+               // render graphs 
+                for (t in data.tls) {
+                   var tl =  data.tls[t];
+                   var issuer, currency, balance;
+                   if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
+                   (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
+
+                    // render orders
+
+                    console.log("orders - " + account + ": ");
+                    console.log(orders);
+
+                    ordersele = $('#olt-' + currency + '-' + issuer)[0];
+                    ordersele.innerHTML = '';
+
+                    for (o in orders) {
+                        var order = orders[o];
+                        var currency1 = order.specification.quantity.currency.toUpperCase();
+                        var amount1 = parseFloat(''+order.specification.quantity.value);
+                        var currency2 = order.specification.totalPrice.currency.toUpperCase();
+                        var amount2 = parseFloat(''+order.specification.totalPrice.value);
+                        var seq = order.properties.sequence;
+
+                        var rate = amount2/amount1;
+
+                        ordersele.innerHTML += '<li><span class="offer">#'+seq+'</span> <span class="orderentry"><span class="orderdirection">'+order.specification.direction.toUpperCase()+'</span> <span class="currency existingorder'+order.specification.direction+'">'+currency1+' ' + display_currency_amount(amount1) + '</span> @ <span class="currency">'+currency2+' '+display_currency_amount(rate)+'</span></span> <a class="orderkill" href="" ontouchend="te(event, (e)=>{doCancelOrder(\''+account+'\', '+seq+', \''+currency1+'\', '+amount1+', \''+currency2+'\', '+amount2+')})"><i class="fa fa-times-circle" style="color:red;"></i></a></li>';
+
+
+                    }
+
+                    
+		            if ((device.platform + "").toLowerCase() == 'browser') clickProxy();	
+
+                   ((currency, issuer, exchangerate, balance) => {
+
+
+
+
+
+                    remote.getOrderbook(
+                        issuer, 
+                        {"base": {"currency": currency, "counterparty": issuer}, 
+                        "counter": {"currency":"XRP"}},  { limit: 25 }
+                    ).then(orders => {
+                       renderOrderbookChart(orders, '#grp-'+currency+'-'+issuer, exchangerate, balance);
+                    });           
+                   })(currency, issuer, exchangerate, parseFloat(""+balance));
+                }
+
+            });
+
+        }, {tls:  res['trustlines']});
 
         
 
     };
 
     var e = ()=>{
-        $('#adtrustlines')[0].innerHTML = '<li>There was an error loading the account. Check your connection or restart Toast Wallet.</li>';
+        $('#adtrustlines')[0].innerHTML = '<li><center><i>There was an error loading the account. It may not be activated. If you know it is then check your connection or restart Toast Wallet.</i></center></li>';
         return;
     }
 
@@ -4671,7 +4732,7 @@ function renderOrderPreview(sell) {
     if ((price=parseFloat(price + '')) + '' == 'NaN') price = 0;
     var amount2 = price * amount1;
     $('#ntlopriceupdate')[0].style.border = ( sell ? '1px solid rgb(217, 83, 79)' : '1px solid rgb(92, 184, 92)' );
-    $('#ntlopriceupdate')[0].innerHTML ='<b>'+(sell ? 'SELL' : 'BUY')+'</b> '+display_currency_amount(amount1)+' <span class="currency">'+currency+'</span> for '+display_currency_amount(amount2)+' <span class="currency">XRP</span>';
+    $('#ntlopriceupdate')[0].innerHTML ='<b>'+(sell ? 'SELL' : 'BUY')+'</b> <span class="currency">'+currency+'</span> '+display_currency_amount(amount1)+' for <span class="currency">XRP</span>'+display_currency_amount(amount2);
 }
 
 // adjust the price by 0.1% positively if x > 0, negatively otherwise
@@ -4867,7 +4928,7 @@ function doPlaceOrder(nonce) {
         );        
     }
 
-    expiry = expiry * expirylookup[expiryunits]; // now expiry is in minutes
+    expiry = expiry * expirylookup[expiryunits] * 60000.0; // now expiry is in miliseconds
     expiryunits = "";
 
 
@@ -4882,6 +4943,7 @@ function doPlaceOrder(nonce) {
             fok: fok,
             ioc: ioc,
             passive: passive,
+            expiry: expiry,
 			nonce: nonce,
             accseqid: accID, // used for offline tx
             ledseqid: ledID,
@@ -4943,13 +5005,14 @@ function doConfirmOrder(passphrase) {
 				return;
 			}
 
+            var expiry = new Date(new Date().getTime() + confirmorder.expiry).toISOString();
 
             if (offlinemode) {
                 // we're just going to create the payment as a QR code and display it
 
 				navigator.notification.alert("A QR code of this signed transaction has been generated. Scan it using your online device to complete the transaction.", 
 					function(){
-                        return sendOfferCreateOffline(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, confirmorder.accseqid, confirmorder.ledseqid, confirmorder.fee);					
+                        return sendOfferCreateOffline(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, expiry, confirmorder.accseqid, confirmorder.ledseqid, confirmorder.fee);					
                     }, 
 					"Offline Transaction", 
 					"OK"
@@ -4960,7 +5023,7 @@ function doConfirmOrder(passphrase) {
 
 			checkConnection(
 				function(){
-					sendOfferCreate(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, 
+					sendOfferCreate(passphrase, confirmorder.account, confirmorder.amount, confirmorder.asset, confirmorder.issuer, confirmorder.price, confirmorder.sell, confirmorder.fok, confirmorder.ioc, confirmorder.passive, expiry,
 						function(wasqueued){
 
                             navigator.notification.alert("Your order was successfully " + ( wasqueued ? "queued, and will be " : "" ) + "submitted to the XRP Ledger" + ( wasqueued ? " shortly." : "." ), 
@@ -7466,7 +7529,7 @@ function roundXRP(x) {
 
 
 
-function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, accSeqID, ledSeqID, fee) {
+function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, expiry, accSeqID, ledSeqID, fee) {
 
 	
 	if (debug) console.log("sendPaymentOffline - " + xrpAmount);
@@ -7495,6 +7558,7 @@ function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, pric
               }
 			};
 
+            if (typeof(expiry) === 'string') order['expirationTime'] = expiry;
 
             if (passive) order['passive'] = true;
             if (fok) order['fillOrKill'] = true;
@@ -7549,7 +7613,7 @@ function sendOfferCreateOffline(passphrase, fromacc, amount, asset, issuer, pric
     );
 }
 
-function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, successfunc, failurefunc) {
+function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell, fok, ioc, passive, expiry, successfunc, failurefunc) {
 	
 	if (debug) console.log("sendOfferCreate - " + fromacc + " asset: " + asset + " issuer: " + issuer + " price: " + price + " sell: " + sell + " fok: " + fok + " ioc: " + ioc + " passive: " + passive);
 
@@ -7574,6 +7638,8 @@ function sendOfferCreate(passphrase, fromacc, amount, asset, issuer, price, sell
               }
 			};
 
+
+            if (typeof(expiry) === 'string') order['expirationTime'] = expiry;
 
             if (passive) order['passive'] = true;
             if (fok) order['fillOrKill'] = true;
