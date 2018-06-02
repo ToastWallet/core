@@ -131,8 +131,8 @@
             <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
         </gap:config-file>
     </platform>
-    <!--plugin name="cordova-plugin-sqlite-2" spec="~1.0.4" /-->
-    <!--plugin name="cordova-plugin-screen-orientation" spec="~2.0.1" /-->
+    <plugin name="cordova-plugin-sqlite-2" spec="~1.0.4" />
+    <plugin name="cordova-plugin-screen-orientation" spec="~2.0.1" />
     <!--<plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0"> -->
 <!--    <variable name="XWALK_VERSION" value="23+" /> -->
 <!--        <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" /> -->
