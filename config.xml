@@ -19,7 +19,6 @@
     <preference name="buildArchitecture" value="armv7" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="phonegap-version" value="cli-6.5.0" />
-    <framework src="com.android.support:support-v4:27.1.0" />  
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" source="npm" spec="~1.1.1" />
     <plugin name="cordova-plugin-device-orientation" source="npm" spec="~1.0.2" />
@@ -131,9 +130,10 @@
             <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
         </gap:config-file>
     </platform>
+    <framework src="build-extras.gradle" custom="true" type="gradleReference" />
     <plugin name="cordova-plugin-sqlite-2" spec="~1.0.4" />
     <plugin name="cordova-plugin-screen-orientation" spec="~2.0.1" />
-    <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0">
+    <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0"> <!-- also causing font attribute error -->
         <variable name="XWALK_VERSION" value="23+" />
         <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
         <variable name="XWALK_COMMANDLINE" value="-disable-pull-to-refresh-effect" />
