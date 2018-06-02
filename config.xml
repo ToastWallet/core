@@ -27,6 +27,7 @@
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <platform name="android">
+        <hook src="hooks/copy-build-extras-gradle.js" type="before_build" />
         <icon density="ldpi" src="www/res/icon/android/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="www/res/icon/android/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="www/res/icon/android/drawable-hdpi-icon.png" />
@@ -130,7 +131,6 @@
             <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
         </gap:config-file>
     </platform>
-    <framework src="build-extras.gradle" custom="true" type="gradleReference" />
     <plugin name="cordova-plugin-sqlite-2" spec="~1.0.4" />
     <plugin name="cordova-plugin-screen-orientation" spec="~2.0.1" />
     <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0"> <!-- also causing font attribute error -->
