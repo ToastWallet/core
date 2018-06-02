@@ -140,7 +140,7 @@
         <variable name="XWALK_MODE" value="embedded" />
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
-    <plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" />
+    <!--plugin name="com.verso.cordova.clipboard" spec="https://github.com/VersoSolutions/CordovaClipboard" /-->
     <!-- plugin name="ionic-plugin-keyboard" spec="~2.2.1" / -->
     <!-- plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.1" / -->
     <!-- plugin name="cordova-plugin-battery-status" spec="~1.2.4" / -->
