@@ -571,6 +571,12 @@ button, button:focus, button:active, button:hover {
     max-width: 50%;
 }
 
+
+*[ontouchend], *[ontouchstart], .headerleft, .headerright {
+    cursor: pointer;
+}
+
+
 .trustline {
     border-radius: 2px;
     padding-top: 2px;
