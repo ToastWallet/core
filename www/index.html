@@ -1385,7 +1385,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.9</center>
+        <center style="color:black;" data-version="version">Version: 2.3.10</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1448,10 +1448,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <p style="text-align:center;">Please consider supporting us:</p><br>
 	<br>
 	<div>
-		<button class="btn btn-primary" type="button" id="btndonatecustom" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val(''); showTab('#tabpayments', false); $('#payamount').focus();})" style="min-width: 20em;">Donate Custom Amount</button><br><br>
-		<button class="btn btn-success" type="button" id="btndonate20" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate20').data('amount')); showTab('#tabpayments', false);})" style="min-width: 20em;">Donate $20</button><br><br>
-<button class="btn btn-info" type="button" id="btndonate10" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate10').data('amount')); showTab('#tabpayments', false);})" style="min-width: 20em;">Donate $10</button><br><br>
-<button class="btn btn-warning" type="button" id="btndonate5" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y'); $('#payamount').val($('#btndonate5').data('amount')); showTab('#tabpayments', false);})" style="min-width: 20em;">Donate $5</button><br><br>
+		<button class="btn btn-primary" type="button" id="btndonatecustom" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPopulateDonation('')})" style="min-width: 20em;">Donate Custom Amount</button><br><br>
+		<button class="btn btn-success" type="button" id="btndonate20" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPopulateDonation($('#btndonate20').data('amount'))})" style="min-width: 20em;">Donate $20</button><br><br>
+<button class="btn btn-info" type="button" id="btndonate10" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPopulateDonation($('#btndonate10').data('amount'))})" style="min-width: 20em;">Donate $10</button><br><br>
+<button class="btn btn-warning" type="button" id="btndonate5" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPopulateDonation($('#btndonate5').data('amount'))})" style="min-width: 20em;">Donate $5</button><br><br>
 <button class="btn btn-danger" type="button" id="btndonate0" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaccounts');})" style="min-width: 20em;">Not at this time</button><br>
 	</div>
 	<br>
@@ -1575,7 +1575,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.9</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.10</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -3008,6 +3008,13 @@ function onToggleIssueOwnCurrency() {
     }
 }
 
+function doPopulateDonation(amount) {
+	clearPaymentScreen();
+	$('#toaddress').val('rToastMYRQh8boeo5Ys1CnPySmt3c9x3Y');
+	$('#payamount').val('' + amount);
+	showTab('#tabpayments', true); 
+	$('#payamount').focus();
+}
 
 function showPaymentTab(account, currency, issuer, balance) {
     if (debug) console.log("showPaymentTab - account: " + account + ", currency: " + currency + ", issuer: " + issuer + ", balance: " + balance); 
