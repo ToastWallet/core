@@ -109,7 +109,7 @@
 
 	        window.screen.orientation.lock('portrait');
 
-		if (window.Keyboard != undefined) {
+		if (typeof(window.Keyboard) != "undefined" && typeof(window.Keyboard.shrinkView) != "undefined") {
 			Keyboard.shrinkView(true);
 			Keyboard.disableScrollingInShrinkView(true);
 		}
@@ -413,7 +413,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         </div>
     </div><br>
 	<center>
-		<div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());})">Reveal Ripple Secret</button></div>
+		<div><button  type="button" class="btn btn-primary" id="btnrevealsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());})">Reveal Secret</button></div>
 	</center>
 	<center>
 		<label id="lblaccsecret">Account Secret</label>
@@ -442,7 +442,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabnickchange" class="screentab" data-hasback="true" data-title="Change Nickname" style="display:none">
-	<label >Ripple Address</label>
+	<label >Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="nickchangeaddress">
 	<br>
         <label >Account Nickname (optional)</label>
@@ -465,10 +465,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabaccountflags" class="screentab" data-hasback="true" data-title="Set Account Flags" style="display:none">
 
-    <label >Ripple Address</label>   
+    <label >Account Address</label>   
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="afaddress">
     	<br>
-        <div style="color:black; text-align:justify;">These are your Ripple Account's global flags. You are strongly advised to research each setting before enabling it. To submit your changes scroll to the bottom.</div>
+        <div style="color:black; text-align:justify;">These are your XRP Account's global flags. You are strongly advised to research each setting before enabling it. To submit your changes scroll to the bottom.</div>
         <br>
 
         <div id="afoflwarningdiv" style="display:none; color:red; text-align:justify;">Warning: You are in offline mode and your account flags cannot be read from the XRP Ledger. Please ensure you are aware of the current flags before changing them.<br></div>
@@ -599,8 +599,59 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center><div><button  type="button" class="btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doConfirmAccountFlags($('#confirmafpassword').val());})">Submit Settings</button></div></center>
 </div>
 
+
+<div id="tabviewtransaction" class="screentab" data-hasback="true" data-title="Transaction Details" style="display:none">
+    <label>Transaction Hash (ID)</label>
+		<div class="input-group">
+			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxhash" style="color:black">
+			<span class="input-group-btn">
+				<button type="button" id="btncopyvtxhash" class="btn copybtn copybtnaction" data-clipboard-target="#vtxhash"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+			</span>
+		</div>        
+    <br>
+    <label>Type &amp; Status</label>
+		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="vtxstatus">
+    <br>
+    <div id="vtxdetails">
+    <label>From Address</label>
+		<div class="input-group">
+			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxfrom" style="color:black">
+			<span class="input-group-btn">
+				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" data-clipboard-target="#vtxfrom"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+			</span>
+		</div> 
+    <br>
+    <label>To Address</label>
+		<div class="input-group">
+			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxto" style="color:black">
+			<span class="input-group-btn">
+				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" data-clipboard-target="#vtxto"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+			</span>
+		</div> 
+    <br>
+    <label>Destination Tag</label>
+		<div class="input-group">
+			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxdtag" style="color:black">
+			<span class="input-group-btn">
+				<button type="button" id="btncopyvtxdtag" class="btn copybtn copybtnaction" data-clipboard-target="#vtxdtag"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+			</span>
+		</div> 
+    <br>
+    <label id="vtxlbldeliveredamount">Delivered Amount</label>
+	    <input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="vtxdeliveredamount">
+    <br>
+    <label id="vtxlbldeliveredamount">Raw Transaction</label>
+
+	<div id="vtxraw" class="textarealikediv">
+            <div id='vtxrawtx'></div>
+    </div>
+    </div>
+    <br>
+
+</div>
+
 <div id="tabaddtrustline" class="screentab" data-hasback="true" data-title="Add Trustline" style="display:none">
-    <label >Ripple Address</label>
+    <label >Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="atladdress">
 	<br>
 
@@ -650,7 +701,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabmodifytrustline" class="screentab" data-hasback="true" data-title="Modify Trustline" style="display:none">
-    <label >Ripple Address</label>
+    <label >Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="mtladdress">
 	<br>
 
@@ -733,11 +784,11 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 <div id="tabrekeyaccount" class="screentab" data-hasback="true" data-title="Rekey Account" style="display:none">
-	<p style="color:red; text-align:justify;"><b>WARNING</b>&mdash;This will set a new Ripple secret for the below Ripple address and will make <b>old backups invalid</b>. Only use this if your backup or Ripple secret is compromised!</p>
+	<p style="color:red; text-align:justify;"><b>WARNING</b>&mdash;This will set a new secret for the below XRP Ledger address and will make <b>old backups invalid</b>. Only use this if your backup or secret is compromised!</p>
 	<p style="color:red; text-align:justify;">
 	<span class="toggleswitch"><i class="fa fa-toggle-off" aria-hidden="true"></i></span>
 	I understand there's no way to undo this action and my old backups will be rendered useless.</p>
-	<label >Ripple Address</label>
+	<label >Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="rekeyaddress">
         <br><label>Enter your Passphrase</label>
         <div>
@@ -756,7 +807,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <li id="btnaccdetailsselecttransactions" ontouchstart="ts(event)" ontouchend="te(event, (x)=>{selectAccountDetailsSubTab(x, 'transactions')})">Transactions</li>
 	</ul>
 	<div id="accdetailsaddressdetails" class="innertab">
-		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">Ripple address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
+		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">XRP address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
 			<span class="input-group-btn">
@@ -795,13 +846,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
-	<label >Ripple Secret</label>
+	<label >Account Secret</label>
 	<div class="input-group">
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Enter your secret key here"  id="txtsecret">
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('#txtsecret', '#vanityaddr', '#txtsecret', decodeSecretAddressURI, existingAddrSecretSwap);})">QR</button></span>
 	</div>
 	<br>
-	<label >Ripple Address</label>
+	<label >Account Address</label>
 	<div class="input-group">
 		<input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Only if rekeyed"  id="vanityaddr">
 		<span class="input-group-btn"><button  class="btn btn-primary" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR('#txtsecret', '#vanityaddr', '#vanityaddr', decodeSecretAddressURI, existingAddrSecretSwap);})">QR</button></span>
@@ -988,7 +1039,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </div>
 
     <div id="tabneworder" class="screentab" data-hasback="true" data-title="New Order" style="padding-bottom: 4em;">
-    <label>Ripple Address</label>
+    <label>Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="ntloaddress">
 	
 
@@ -1385,7 +1436,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.10</center>
+        <center style="color:black;" data-version="version">Version: 2.3.11</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1463,14 +1514,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
    <center>
 	<div style="padding: 0.4em;background: rgba(255,0,0,0.7);border-radius: 3px;margin-bottom: 1em;">
 		<p>IMPORTANT NOTICE&mdash;</p>
-		<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the XRP Ledger. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
+		<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all accounts on the XRP Ledger. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
 		<p>Toast Wallet keeps your data on your devices. It does not send your data back to our servers&mdash;we cannot help you if you lose your phrases or backup.</p>
 	</div>
     <h1>Toast Wallet</h1>
 
 	<p>This software is licensed under the GPL 2.0 <br><b>without any warranty. Use at own risk.</b></p>
-	<p>There is a <b><span id="minxrp3">20</span> XRP reserve requirement</b> for all Ripple accounts on the XRP Ledger. When you activate an account you will not get these funds back until the network lowers the reserve requirement.</p>
-	<p>Toast Wallet keeps all data on your devices. It does not send any data back to our servers. If you do not keep your phrases and backup secure you will lose your funds.</p>
 <p><a href="https://github.com/ToastWallet/core" target="_blank" style="color:lime; ">Tap here to view full source code on GitHub</a></p></center> 
 <blockquote style="font-size:0.8em; text-align:justify;">GNU GENERAL PUBLIC LICENSE
 
@@ -1575,7 +1624,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.10</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.11</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1658,7 +1707,7 @@ function doSubmitOfflineTransaction(stage, content) {
         console.log("RED QR: " + account);
         if (account == "" || !validateAddress(account)) {
 
-			return navigator.notification.alert("The QR code you scanned was not a valid Ripple Account", 
+			return navigator.notification.alert("The QR code you scanned was not a valid XRP address", 
 				function() {
                     doSubmitOfflineTransaction(0);
                     unblockInput();
@@ -2401,7 +2450,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#accdetailsqr").empty();
 	$("#accdetailsqr").append(kjua({text: accselected}));
 	
-	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "Ripple address" : nickname);
+	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "XRP address" : nickname);
 
 	
 	$("#accdetailsaddress").val( accselected );
@@ -3903,7 +3952,7 @@ function doImportExistingAccount(passphrase, nickname, secret, vanityaddr) {
 	generatedAccount.secret = secret;
 	if (vanityaddr != "" && vanityaddr != undefined) {
 		if (!validateAddress(vanityaddr)) {
-			navigator.notification.alert("The Ripple address you've specified is invalid. If you have an ordinary address do not put anything in this field, it will be generated from your secret. If you have a vanity or setRegularKey address then you should use this field.", 
+			navigator.notification.alert("The XRP address you've specified is invalid. If you have an ordinary address do not put anything in this field, it will be generated from your secret. If you have a vanity or setRegularKey address then you should use this field.", 
 				function(){
 					$('#vanityaddr').focus();
 					unblockInput();
@@ -4321,7 +4370,7 @@ function doModifyTrustline(nonce) {
     // however there could be circumstances under which they were incorrectly populated so check anyway
 
     if (!validateAddress(mtladdress)) {
-		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid Ripple address.", 
+		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid XRP address.", 
 			function(){
 				$("#mtladdress").focus();
 				unblockInput();
@@ -4333,7 +4382,7 @@ function doModifyTrustline(nonce) {
 
 
     if (!validateAddress(mtlissueraddr)) {
-		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid Ripple address.", 
+		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid XRP address.", 
 			function(){
 				$("#mtlissueraddr").focus();
 				unblockInput();
@@ -4445,7 +4494,7 @@ function doAddTrustline(nonce) {
     if (atllimit == undefined) atllimit = "0";
 
     if (!validateAddress(atladdress)) {
-		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid Ripple address.", 
+		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid XRP address.", 
 			function(){
 				$("#atladdress").focus();
 				unblockInput();
@@ -4457,7 +4506,7 @@ function doAddTrustline(nonce) {
 
 
     if (!validateAddress(atlissueraddr)) {
-		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid Ripple address.", 
+		return navigator.notification.alert("The counterparty / issuer address for the trustline is not a valid XRP address.", 
 			function(){
 				$("#atlissueraddr").focus();
 				unblockInput();
@@ -4852,7 +4901,7 @@ function doPlaceCancelOrder(nonce, dataset) {
 	if (validateAddress(account)) {
 		// valid
 	} else {
-		navigator.notification.alert("The account specified is not a valid XRP Ledger account.", 
+		navigator.notification.alert("The account specified is not a valid XRP address.", 
 			function(){
 				$("#---address").focus();
 				unblockInput();
@@ -5020,7 +5069,7 @@ function doPlaceOrder(nonce) {
 	if (validateAddress(account)) {
 		// valid
 	} else {
-		navigator.notification.alert("The account specified is not a valid XRP Ledger account.", 
+		navigator.notification.alert("The account specified is not a valid XRP address.", 
 			function(){
 				$("#ntloaddress").focus();
 				unblockInput();
@@ -5033,7 +5082,7 @@ function doPlaceOrder(nonce) {
 	if (validateAddress(issuer)) {
 		// valid
 	} else {
-		navigator.notification.alert("The issuer specified is not a valid XRP Ledger account.", 
+		navigator.notification.alert("The issuer specified is not a valid XRP address.", 
 			function(){
 				$("#ntloissuer").focus();
 				unblockInput();
@@ -5428,7 +5477,7 @@ function doPay(nonce) {
 		// valid
 	} else {
 
-		navigator.notification.alert("The destination address you have entered does not appear to be a valid Ripple address. You can still attempt to send but the XRP Ledger will charge a fee on failure.", 
+		navigator.notification.alert("The destination address you have entered does not appear to be a valid XRP address. You can still attempt to send but the XRP Ledger will charge a fee on failure.", 
 			function(){
 				$("#toaddress").focus();
 				unblockInput();
@@ -5440,7 +5489,7 @@ function doPay(nonce) {
 	}
 
 	if (payto == payfrom) {
-		navigator.notification.alert("A Ripple address cannot pay XRP from itself to itself.", 
+		navigator.notification.alert("A XRP address cannot pay XRP from itself to itself.", 
 			function(){
 				$("#toaddress").focus();
 				unblockInput();
@@ -6479,7 +6528,7 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 				};
 
 				db.upsert("accounts", function(doc) { return { data: JSON.stringify(accounts)}; }).then(function(x){
-					navigator.notification.alert("Ripple address added successfully.", function(){}, "Success", "OK");
+					navigator.notification.alert("XRP address added successfully.", function(){}, "Success", "OK");
 					successfunc();
 				}).catch(function(x){
 					navigator.notification.alert("Failed to add address.", function(){}, "Error", "OK");
@@ -6500,7 +6549,7 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 	if (address == undefined) address = "";
 
 	if (!validateSecret(secret)) {
-		navigator.notification.alert("Invalid Ripple secret.", failurefunc, "Error", "OK");
+		navigator.notification.alert("Invalid secret.", failurefunc, "Error", "OK");
 		return;
 	}
 
@@ -6515,7 +6564,7 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
             console.log(settings);
             if ('disableMasterKey' in settings && settings['disableMasterKey']) {
                 // they are trying to add an account using a secret that has been disabled
-                navigator.notification.alert("The secret you are attempting to add has been disabled on the corresponding Ripple account, and therefore cannot be used. If this is an account you own then you need to add it using the current regular key.", failurefunc, "Failure", "OK");
+                navigator.notification.alert("The secret you are attempting to add has been disabled on the corresponding XRP address, and therefore cannot be used. If this is an account you own then you need to add it using the current regular key.", failurefunc, "Failure", "OK");
             } else {
                 // this is fine, the account already exists but the master key is still valid
                 return _import(secret, address, nickname, passphrase, successfunc, failurefunc);
@@ -6542,7 +6591,7 @@ function importAddress(secret, address, nickname, passphrase, successfunc, failu
 		} else {
             
             if (offlinemode) {
-                return navigator.notification.alert("You are adding an account with a regular key in offline mode. Toast Wallet has no way to ensure this regular key corresponds to your Ripple account. The account will be added however transactions may fail if the regular key is incorrect.", ()=>{return _import(secret, address, nickname, passphrase, successfunc, failurefunc);}, "Warning", "OK");
+                return navigator.notification.alert("You are adding an account with a regular key in offline mode. Toast Wallet has no way to ensure this regular key corresponds to your XRP address. The account will be added however transactions may fail if the regular key is incorrect.", ()=>{return _import(secret, address, nickname, passphrase, successfunc, failurefunc);}, "Warning", "OK");
             }
 
 			// this could be a set regular key account, check the regular key
@@ -8148,6 +8197,52 @@ function validateSecret(x) {
 }
 
 
+function doViewTransaction(hash) {
+
+
+
+    if (debug) console.log('doViewTransaction -- ' + hash);
+    blockInput();	
+
+    $('#vtxhash').val(hash);
+    $.ajax({
+		complete: function() { unblockInput(); },
+		url: 'https://data.ripple.com/v2/transactions/' + hash
+	}).done(function(x){
+        //todo: better server error handling here
+
+        if (x.result == 'error' || typeof(x.transaction) == "undefined" || typeof(x.transaction.tx) == "undefined" || typeof(x.transaction.meta) == "undefined") {
+            $('#vtxstatus').val('Unknown / Not Found');
+            $('#vtxdetails').hide();
+            
+            showTab('#tabviewtransaction', true);
+            unblockInput();
+            return;
+        }
+
+        // execution to here means the tx details were returned
+        $('#vtxdetails').show();
+        $('#vtxstatus').val(x.transaction.tx.TransactionType + ( typeof(x.transaction.meta.TransactionResult) != undefined ? ' - ' + x.transaction.meta.TransactionResult : ' - Unknown Status')); 
+
+        $('#vtxfrom').val(x.transaction.tx.Account);
+        $('#vtxto').val(x.transaction.tx.Destination);
+
+        $('#vtxdtag').val( typeof(x.transaction.tx.DestinationTag) == 'undefined' ? 'not specified' :   x.transaction.tx.DestinationTag);
+
+        $('#vtxdeliveredamount').val( typeof(x.transaction.meta.delivered_amount) != undefined ?  x.transaction.meta.delivered_amount/1000000.0 : 'not specified') ;
+
+        $('#vtxrawtx')[0].innerText = JSON.stringify(x, null, 4) + '';
+        showTab('#tabviewtransaction', true);
+        unblockInput();
+        return;
+
+
+    });
+
+    //
+
+}
+
 function doGetTransactions(address, marker) {
 	if (debug) console.log("doGetTransactions");
 	//blockInput();
@@ -8164,7 +8259,7 @@ function doGetTransactions(address, marker) {
 		var count = 0;
 		if (x.payments != undefined) {
 			for (var i in x.payments) {
-				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open(\'https://ripple.com/build/ripple-info-tool/?'+x.payments[i].tx_hash+'#'+x.payments[i].tx_hash+'\', \'_system\');})">';
+				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doViewTransaction(\''+x.payments[i].tx_hash+'\')})">';
 				var outgoing = (x.payments[i].source == address);
 
 				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane-o' : 'fa-inbox' ) + '" aria-hidden="true"></i>';

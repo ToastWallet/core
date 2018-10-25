@@ -577,6 +577,18 @@ button, button:focus, button:active, button:hover {
 }
 
 
+.textarealikediv {
+    color: black;
+    font-family: monospace;
+    font-size: 0.8em;
+    word-break: break-all;
+    border: 1px solid #cccccc;
+    padding: 0.5em;
+    background: #eeeeee;
+    border-radius: 0.5em;
+    user-select: text !important;
+}
+
 .trustline {
     border-radius: 2px;
     padding-top: 2px;
