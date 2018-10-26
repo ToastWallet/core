@@ -11,7 +11,20 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+
 function createWindow () {
+
+
+    var portable = (    typeof(process) != "undefined" && 
+                        typeof(process.env) != "undefined" && 
+                        typeof(process.env.PORTABLE_EXECUTABLE_DIR) != "undefined" &&
+                        process.env.PORTABLE_EXECUTABLE_DIR != "" 
+                    );
+
+
+    if (portable) {
+        app.setPath('userData', process.env.PORTABLE_EXECUTABLE_DIR + "\\walletdata")
+    }
 
 
   /* the below patch allows electron to load the application without changing the structure away from cordova
