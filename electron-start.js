@@ -6,10 +6,14 @@ const BrowserWindow = electron.BrowserWindow
 var Menu = electron.Menu;
 const path = require('path')
 const url = require('url')
+const dialog = require('electron').dialog
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+const WEB_FOLDER = 'www';
+const PROTOCOL = 'file';
 
 
 function createWindow () {
@@ -30,8 +34,7 @@ function createWindow () {
   /* the below patch allows electron to load the application without changing the structure away from cordova
   ** credit: https://github.com/bertyhell : https://github.com/electron/electron/issues/2242
   */
-  const WEB_FOLDER = 'www';
-  const PROTOCOL = 'file';
+
 
   electron.protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
       /* Strip protocol */
@@ -55,14 +58,22 @@ function createWindow () {
 	icon: '/img/64.png'
   })
 
+  var paylink = ( process.argv.length > 1 ? "?paylink=" + Buffer.from(process.argv[1]).toString('hex') : "" );
+
+
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     pathname: 'index.html',
     protocol: PROTOCOL + ':',
     slashes: true
-  }));
+  }) + paylink);
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
+  app.setAsDefaultProtocolClient("xrp");
+  app.setAsDefaultProtocolClient("ripple");
+
+
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -102,6 +113,8 @@ var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) 
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
+    if (commandLine.length > 1)
+        mainWindow.webContents.send('pay-link', commandLine[1]);
   }
 });
 
@@ -110,10 +123,14 @@ if (shouldQuit) {
   return;
 }
 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function() {
+    createWindow();
+    
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

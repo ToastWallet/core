@@ -75,6 +75,9 @@
 
 	var timepaused = 0;
 
+    var paylink_pending = null;
+
+
 	function refreshWebView() {
 	}
 
@@ -170,7 +173,7 @@
 		});
 
 	
-		
+
 
 		/* This is a visual patch for iOS devices where the phone uses a margin at the top
 		** for various status indicators. 
@@ -293,6 +296,54 @@
 
 
 		if (ontestnet) $('#testnetwarning').show();
+
+
+
+        var paylink_handler = function(e,s) {
+            var link = s.replace(/^.*?:\/\//g, "");
+
+            console.log("incoming pay-link: " + link);
+
+			if (
+				currenttab == "#tabpinset1" && 
+				currenttab == "#tabpinset2"  && 
+				currenttab == "#tabsetpassphrase" && 
+				currenttab == "#tabrecovery" && 
+				currenttab == "#tabconnectionselect" && 
+				currenttab == "#tabbackupreminder" && 
+				currenttab == "#tabcorruptionprompt" &&
+				currenttab == "#tablicense" &&
+				currenttab == "#tabshowrecovery" &&
+				currenttab == "#tabqrscan" &&
+                currenttab == "#tabsubmitofflinetx" &&
+                currenttab == "#tabrestore2" &&
+                currenttab == "#tabgreenqr" ) {
+                console.log("will not interrupt pin or passphrase or backup prompt, discarding pay link"); 
+                return;
+            }
+
+            paylink_pending = link;
+            $('#tablogin>center>div').addClass('pinpad_pending')
+
+            if (!$('#tablogin').is(":visible") && e !== "boot") {
+                doShowLogin();
+            }
+
+        };
+
+        // in builds that support xrp:// and ripple:// protocol handling we will receive those events here
+        if (typeof(require) == 'function' && typeof(require('electron')) == 'object' && typeof(require('electron').ipcRenderer) == 'object' && typeof(require('electron').ipcRenderer.on) == 'function') {
+            require('electron').ipcRenderer.on('pay-link', paylink_handler);
+        }
+
+        // since we're booting, if the wallet was started with a pay link we need to process that now
+
+        if (typeof(document.location) == 'object' && typeof(document.location.search) == 'string') {
+            console.log("paylink passed on boot: " + document.location.search);
+            var pieces = document.location.search.split("?paylink=");
+            if (pieces.length > 1 && /^[a-fA-f0-9]+$/.test(pieces[1])) paylink_handler("boot", Buffer.from(pieces[1], 'hex').toString());
+        }
+
 
 	}
 </script>
@@ -1436,7 +1487,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.12</center>
+        <center style="color:black;" data-version="version">Version: 2.3.13</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1624,7 +1675,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.12</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.13</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2307,6 +2358,7 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 
 function decodePaymentURI(uri, addrfield, dtagfield, amountfield, after) {
 	// remove preceeding garbage
+    uri = uri.replace("/", "");
 	uri = uri.replace(/^(?:[^?&]*send)?(.+)$/mg, "$1");
 
 	var paymentsRegex = /(?:[?&]?([a-z]+)=|^)([^&?\r\n]*)/mg;
@@ -2316,7 +2368,7 @@ function decodePaymentURI(uri, addrfield, dtagfield, amountfield, after) {
 		var val = ( match[2] == undefined ? "" : match[2] );
 		if ((key == "" || key == "to") && addrfield != undefined) {
 			$(addrfield).val(val);
-		} else if (key == "dt" && dtagfield != undefined) {
+		} else if ( (key == "dt" || key == "destinationtag" || key == "dtag" || key == "tag") && dtagfield != undefined) {
 			$(dtagfield).val(val);
 		} else if ((key == "amount" || key == "amt") && amountfield != undefined) {
 			$(amountfield).val(val);
@@ -3386,6 +3438,17 @@ function refreshAccounts(after) {
 
 }
 
+
+// decode a payment URI passed to the application from the OS and display payment tab
+function doPayLink(paylink) {
+    showTab("#tabpayments");
+    decodePaymentURI(paylink,'#toaddress','#desttag','#payamount', ()=>{});
+
+    if (activeaccount == "") 
+        refreshAccounts();
+}
+
+
 var pinpadvalidate = function(pin) { return false ; }
 var pinpadsuccess = function() {}
 var pinpadfailure = function() {}
@@ -3409,10 +3472,20 @@ function runPinPad(tab, validationfunc, successfunc, failurefunc) {
 **/
 function doShowLogin() {
 	if (debug) console.log("doShowLogin");
-	runPinPad("#tablogin", function(pin) {
+
+    if (paylink_pending != null) $('#tablogin>center>div').addClass('pinpad_pending');
+
+    runPinPad("#tablogin", function(pin) {
 		validatePin(pin, function() {
 			$("#btnbootstrapsequence").hide();
-			showTab("#tabaccounts");
+
+            if (paylink_pending == null) {
+                showTab("#tabaccounts");
+            } else {
+                $('#tablogin>center>div').removeClass('pinpad_pending');
+                doPayLink(paylink_pending); 
+                paylink_pending = null;
+            }
 		}, function() {
 			$("#btnbootstrapsequence").hide();
                         setTimeout(function() {
