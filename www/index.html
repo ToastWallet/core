@@ -5481,18 +5481,62 @@ function doPay(nonce) {
 		payto = oldpayto.replace(/^(.*)[?&][^=]*=(.*)$/mg, "$1");
 	}
 
-	if (dest == "") dest = 0;
 
-	if (dest + "" != "" + parseInt(dest)) {
-		navigator.notification.alert("Destination tag must be either blank or an integer", 
+
+	function parseDestinationTag(value) {
+		var cleaned = _.trim(value);
+		if(cleaned === '' || _.isNil(cleaned)) {
+			return null;
+		} else {
+			return value;
+		}
+	}
+
+	function validateDestinationTag(value) {
+		if(_.isNull(value)) {
+			return {
+				valid: true,
+				error: null
+			}
+		}
+
+		if(!_.isInteger(value)) {
+			parsed = parseInt(value, 10);
+			if(('' + parseInt(value, 10)) !== value + '') {
+				return {
+					valid: false,
+					error: 'Cannot parse destination tag'
+				}
+			}
+		}
+
+		var MAX_INT = 4294967295;
+		if(value < 0 || value > MAX_INT) {
+			return {
+				valid: false,
+				error: 'Destination tag be either blank or between 0 and ' + MAX_INT
+			}
+		}
+
+		return {
+			valid: true,
+			error: false
+		}
+	}
+
+	dest = parseDestinationTag(dest);
+	var destTagResult = validateDestinationTag(dest);
+
+	if (!destTagResult.valid) {
+		navigator.notification.alert(destTagResult.error,
 			function(){
 				$("#desttag").focus();
 				unblockInput();
-			}, 
-			"Destination tag invalid", 
+			},
+			"Destination tag invalid",
 			"OK"
 		);
-		return;		
+		return;
 	}
 
 
@@ -5546,10 +5590,7 @@ function doPay(nonce) {
 		return;
 	}
 
-	if (validateAddress(payto)) {
-		// valid
-	} else {
-
+	if (!validateAddress(payto)) {
 		navigator.notification.alert("The destination address you have entered does not appear to be a valid XRP address. You can still attempt to send but the XRP Ledger will charge a fee on failure.", 
 			function(){
 				$("#toaddress").focus();
@@ -5624,7 +5665,7 @@ function doPay(nonce) {
 
 		$('#confirmpayfromaccount')[0].innerText = payfrom;
 		$('#confirmpaytoaddress')[0].innerText = payto;
-		$('#confirmdesttag')[0].innerText = dest;
+		$('#confirmdesttag')[0].innerText = dest || '(not provided)';
 		$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
 		$('#confirmpayamount')[0].innerText = amount;
 
@@ -8194,8 +8235,7 @@ function sendPayment(passphrase, fromacc, xrpAmount, destination, sourceTag, des
 			    maxAmount: {
 			      value: xrpAmount + "",
 			      currency: asset,
-			    },
-		      	    tag: parseInt(sourceTag + "")
+			    }
 			  },
 			  destination: {
 			    address: destination,
@@ -8203,9 +8243,16 @@ function sendPayment(passphrase, fromacc, xrpAmount, destination, sourceTag, des
 			      value: xrpAmount + "",
 			      currency: asset,
 			    },
-			    tag: parseInt(destTag + "")
 			  }
 			};
+
+			if(sourceTag) {
+				payment.source.tag = parseInt(sourceTag + "");
+			}
+
+			if(destTag) {
+				payment.destination.tag = parseInt(destTag + "");
+			}
 
 			if (invoiceID !== undefined && invoiceID != "") {
 				payment.invoiceID = invoiceID;
