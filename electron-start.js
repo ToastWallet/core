@@ -58,6 +58,10 @@ function createWindow () {
 	icon: '/img/64.png'
   })
 
+  mainWindow.webContents.on('will-navigate', ev => {
+    ev.preventDefault()
+  })
+
   var paylink = ( process.argv.length > 1 ? "?paylink=" + Buffer.from(process.argv[1]).toString('hex') : "" );
 
 
