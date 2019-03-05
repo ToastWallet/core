@@ -2356,29 +2356,74 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 			
 }
 
-function decodePaymentURI(uri, addrfield, dtagfield, amountfield, after) {
-	// remove preceeding garbage
-    uri = uri.replace("/", "");
-	uri = uri.replace(/^(?:[^?&]*send)?(.+)$/mg, "$1");
 
-	var paymentsRegex = /(?:[?&]?([a-z]+)=|^)([^&?\r\n]*)/mg;
-	var match = paymentsRegex.exec(uri);
-	while (match != null) {
-		var key = ( match[1] == undefined ? "" : (match[1]+"").toLowerCase() );
-		var val = ( match[2] == undefined ? "" : match[2] );
-		if ((key == "" || key == "to") && addrfield != undefined) {
-			$(addrfield).val(val);
-		} else if ( (key == "dt" || key == "destinationtag" || key == "dtag" || key == "tag") && dtagfield != undefined) {
-			$(dtagfield).val(val);
-		} else if ((key == "amount" || key == "amt") && amountfield != undefined) {
-			$(amountfield).val(val);
-		}
-		match = paymentsRegex.exec(uri);
+//this is the draft standard for parsing XRP ledger URIs as per XLS-2d
+//https://github.com/xrp-community/standards-drafts
+function xls2d(uri) {
+
+	const cleaned_uri = uri.replace(/^(.*:.*)?\?/mg, "").replace(/\?/img, "&")
+
+	function clean() {
+		return cleaned_uri
 	}
 
-	if (after != undefined)	return after();
+	function to() {
+		//NB: this regex is case sensitive to assist in correctly matching XRP ledger addresses
+		var match =  /(?:(?:^|&)(?:to|TO|tO|To)=|^)([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55})/mg.exec(cleaned_uri)
+		return (match == null ? false : match[1])
+	}
 
-	return;
+	function dt() {
+		var match = /(?:^|&)dt=([0-9]+)|:([0-9]+)$/img.exec(cleaned_uri)
+		if (match != null) return (match[1] ? match[1] : match[2])
+		return false
+	}
+
+	function amount() {
+		var match = /(?:^|&)am(?:oun)?t=([0-9\.]+)/img.exec(cleaned_uri)
+		return (match == null ? false : match[1])
+	}
+
+	function currency() {
+		var match = /(?:^|&)cur(?:rency)?=(?:([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55}):)?([A-Z]{3}|[A-Fa-f]{40})/img.exec(cleaned_uri)
+		return (match == null ? false : { issuer: ( match[1] ? match[1] : false ), currency: match[2] } )
+	}
+
+
+	function invoiceid() {
+		var match = /(?:^|&)inv(?:oice)?(?:id)?=([a-f]{64})/img.exec(cleaned_uri)
+		return (match == null ? false : match[1])
+	}
+
+
+	return {
+		uri: uri,
+		clean: clean(),
+		to: to(),
+		dt: dt(),
+		amount: amount(),
+		currency: currency(),
+		invoiceid: invoiceid()
+	}
+}
+
+
+
+
+function decodePaymentURI(uri, addrfield, dtagfield, amountfield, after) {
+
+	// apply the draft standard
+	var parsed = xls2d(uri)
+
+	if (parsed.to) $(addrfield).val(parsed.to)
+	if (parsed.amount) $(amountfield).val(parsed.amount)
+	if (parsed.dt) $(dtagfield).val(parsed.dt)
+
+	//todo: allow currency specification
+
+	if (after != undefined) return after()
+
+	return
 }
 
 function decodeSecretAddressURI(uri, secretfield, addrfield, defaultfield, after) {
