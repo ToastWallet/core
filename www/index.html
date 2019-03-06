@@ -505,8 +505,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	</div>
         <br><label>Passphrase</label>
         <span class="pasteqr">
-            <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#nickchangepassword').val(content)})})"><i class="fa fa-paste"></i></button>
             <button class="btn btn-default textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#nickchangepassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
+            <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#nickchangepassword').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  id="nickchangepassword" type="password" class="form-control" placeholder="">
         <br>
@@ -1353,7 +1353,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>  
 </div>
 
-<div id="tabpayments" class="screentab" data-primarytab="false" data-hasback="true" data-title="Send" style="display:none">
+<div id="tabpayments" class="screentab" data-primarytab="true" data-hasback="false" data-title="Send" style="display:none">
 	<label >From Account</label>
 	<div>
 	<select ontouchend="te(event, quickSelectInput)" id="payfromaccount" class="form-control" onchange="onPaymentSelectFromAccount();">
@@ -1373,8 +1373,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 	<label >To Address</label>
     <span class="pasteqr">
-        <button class="btn btn-default textinpututil btnqrpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodePaymentURI, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default textinpututil btnqrpay" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{decodePaymentURI(content, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default textinpututil btnqrpay" id="btnqrpay1" ontouchstart="ts(event)" type="button"><i class="fa fa-camera"></i></button>
+        <button class="btn btn-default textinpututil btnqrpay" id="btnqrpay2" ontouchstart="ts(event)" type="button"><i class="fa fa-paste"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;">
@@ -1437,23 +1437,25 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<p style="color: black;">Open Toast Wallet 2.2.0 or newer on your offline device and use the send tab to create a payment then follow the steps below to submit the payment.</p><br>
 	</center>
     <div id="submitofflinetxstep1">
-	<label>Scan red QR code</label>
+	<label style="">1. Scan Red QR Code</label>
 	<span class="pasteqr">
-        <button class="btn btn-danger textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})" type="button"><i class="fa fa-camera"></i></button>        
-        <button class="btn btn-danger textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{  $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})" type="button"><i class="fa fa-camera"></i></button>        
+        <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{  $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})"><i class="fa fa-paste"></i></button>
 	</span>
     <input ontouchend="te(event, quickSelectInput)" type="text" id="txtredqr" class="form-control" placeholder="">
     </div>
     <br>
     <div id="submitofflinetxstep2">
-    <label>Enter this Confirmation Code</label><div id="lblofflinetxconfirm" style="color: blue; border: 1px dashed black; padding: 0.2em; font-size:1.3em; font-weight:bold; text-align:center;"></div>
+    <label>2. Enter this Confirmation Code</label><div id="lblofflinetxconfirm" style="color: blue; border: 1px dashed black; padding: 0.2em; font-size:1.3em; font-weight:bold; text-align:center;"></div>
+        <br>
+        <label>3. Press Pay in Offline Wallet</label>
     </div>
-	<br>
+    <br>
 	<div id="submitofflinetxstep3">
-	<label>Press Pay in Offline Wallet then Scan green QR code</label>
+        <label style="">4. Scan Green QR Code</label>
 	<span class="pasteqr">
-        <button class="btn btn-success textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})" type="button"><i class="fa fa-camera"></i></button>        
-        <button class="btn btn-success textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})" type="button"><i class="fa fa-camera"></i></button>        
+        <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})"><i class="fa fa-paste"></i></button>
 	</span>    
 	<input ontouchend="te(event, quickSelectInput)" type="text" id="txtgreenqr" class="form-control" placeholder="">
 
@@ -1483,8 +1485,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
  	<p style="color:black;">Add a custom gateway you would like Toast Wallet to connect to. A connection will be attempted and if it is successful the gateway will be stored and remembered as your preferred gateway.</p>
 	        	<label style="color:white; text-align:left;">Specify additional gateway server</label>
                 <div class="pasteqr">
-                    <button class="btn btn-default textinpututil btnqrpay" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content)=>{doAddGateway(content)})})" type="button"><i class="fa fa-camera"></i></button>
-                    <button class="btn btn-default textinpututil btnqrpay" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{doAddGateway(content)})})"><i class="fa fa-paste"></i></button>
+                    <button class="btn btn-default textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content)=>{doAddGateway(content)})})" type="button"><i class="fa fa-camera"></i></button>
+                    <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{doAddGateway(content)})})"><i class="fa fa-paste"></i></button>
                 </div>
                 <input ontouchend="te(event, quickSelectInput)" type="text" id="txtnewgateway2" class="form-control" placeholder="wss://">
     <br />
@@ -1511,7 +1513,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.3.18</center>
+        <center style="color:black;" data-version="version">Version: 2.3.19</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1519,12 +1521,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabrecovery" class="screentab" data-primarytab="false" data-hasback="true" data-title="Recovery Options"  data-noright="true" style="display: none;">  
     <div>
-	<label >Passphrase or Recovery Phrase</label>
+	<label >Passphrase</label>
 	<span class="pasteqr">
         <button class="btn btn-default textinpututil" ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); })})" type="button"><i class="fa fa-camera"></i></button>
         <button class="btn btn-default textinpututil" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); })})"><i class="fa fa-paste"></i></button>
     </span>
-    <input ontouchend="te(event, quickSelectInput)"  id="recoverypassword" type="password" class="form-control" placeholder="">
+    <input ontouchend="te(event, quickSelectInput)"  id="recoverypassword" type="password" class="form-control" placeholder="Passphrase or recovery phrase">
     </div>
 
     <center>
@@ -1698,7 +1700,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.3.18</p>
+<p><center style="color:white;" data-version="version">Version: 2.3.19</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -3900,11 +3902,14 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').css('color', 'white');
 			$('#toaddress').attr('readonly', 'readonly');
 			$('.btnqrpay').attr('disabled', 'disabled');
+            $('.btnqrpay').removeAttr('ontouchend');
 		} else {
 			$('#toaddress').css('background-color', '');
 			$('#toaddress').css('color', '');
 			$('#toaddress').attr('readonly', null);
-            $('.btnqrpay').removeAttr('disabled');
+			$('.btnqrpay').removeAttr('disabled');
+            $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR(decodePaymentURI, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})");
+            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{navigator.clipboard.readText().then((content)=>{decodePaymentURI(content, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})})");
 		}
 	}
 
