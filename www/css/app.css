@@ -52,6 +52,18 @@ textarea {
 }
 
 
+.textinpututil {
+	min-width: 5em !important;
+	vertical-align: middle;
+	
+}
+
+.textinpututil > i.fa {
+	font-size: 1.2em;
+	vertical-align: middle;
+	color: #0027ff;
+}
+
 .accopt {
     width: 10em;
     display: block;
