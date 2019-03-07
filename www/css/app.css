@@ -30,7 +30,7 @@ body {
     margin-bottom: 0 !important;
 }
 
-.pasteqr + input[type="text"], .pasteqr + input[type="password"] {
+.pasteqr + input[type="text"], .pasteqr + input[type="password"], .pasteqr + textarea {
     border-radius: 0.25em 0 0.25em 0.25em;
 }
 
@@ -45,6 +45,11 @@ body {
 
 .pasteqr > button:first-of-type:last-of-type {
     border-radius: 0.25em 0.25em 0 0;
+}
+
+.pasteqr > button:not(:first-of-type):not(:last-of-type) {
+    border-left: none;
+    border-radius: 0 0 0 0;
 }
 
 #walletbackup {
@@ -77,14 +82,18 @@ textarea {
 
 }
 
-
-.textinpututil {
-	min-width: 5em !important;
-	vertical-align: middle;
-	
+i.fa.fa-toggle-off, i.fa.fa-toggle-on {
+    font-size: 1.1em;
 }
 
-.textinpututil > i.fa {
+.pasteqr > button {
+	min-width: 4em !important;
+	vertical-align: middle;
+
+}
+
+
+.pasteqr > button > i.fa {
 	font-size: 1.2em;
 	vertical-align: middle;
 	color: #0027ff;
@@ -849,14 +858,26 @@ i.fa.fa-exchange {
     padding: 0.2em;
     border-radius:2px;
 }
-.accloadspinner {
+/*.accloadspinner {
     opacity: 0.4;
     font-size: 0.9em !important;
     position: absolute;
     right: 0.7em;
     bottom: 0.15em;
-}
+}*/
 
+.accloadspinner {
+    opacity: 0.4;
+    font-size: 1em !important;
+    line-height: 1em !important;
+    position: absolute;
+    color: #337ab7;
+    bottom: 0.2em;
+    right: 0.2em;
+}
+.active .accloadspinner {
+    color: white;
+}
 .bidask { 
     font-size: 0.9em;
     display: flex;
