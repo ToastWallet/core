@@ -378,13 +378,14 @@
     </div>
 </div>
 
-<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore an Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
-    <div id="divrestorerror" style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</div>
+<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Backup" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
+    <div style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</div>
+    <div id="divrestorerror" style="text-align:justify;"></div>
     <br>
     <div>
     <label style="color:white;">Backup code</label>
 	<span class="pasteqr">
-		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#restorebackup2').val(content)})})"><i class="fa fa-paste"></i></button>
+		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#restorebackup2').val(content)})})"><i class="fa fa-paste"></i></button>
 	</span>    
     <textarea rows="5" ontouchend="te(event, quickSelectInput)" type="text" class="form-control" id="restorebackup2" style="color:black"></textarea>
     </div>
@@ -402,7 +403,7 @@
     <div>
     <label>Backup code</label>
 	<span class="pasteqr">
-		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#restorebackup').val(content)})})"><i class="fa fa-paste"></i></button>
+		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#restorebackup').val(content)})})"><i class="fa fa-paste"></i></button>
 		
     </span><!--todo: add backup checking code to this screen as well-->
     <textarea rows="3" ontouchend="te(event, quickSelectInput)" id="restorebackup" type="text" class="form-control" placeholder=""></textarea>
@@ -413,7 +414,7 @@
 	<span class="pasteqr">
         <button class="btn btn-default" id="restorepasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#restorepassword', '#restorepasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
 		<button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#restorepassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#restorepassword').val(content)})})"><i class="fa fa-paste"></i></button>
+		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#restorepassword').val(content)})})"><i class="fa fa-paste"></i></button>
 	</span>
 	<input ontouchend="te(event, quickSelectInput)"  id="restorepassword" type="password" class="form-control" placeholder="">
     </div>
@@ -470,7 +471,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="pasteqr">
             <button class="btn btn-default" id="rsecaccpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#rsecaccpassword', '#rsecaccpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
 	    	<button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {doRevealRippleSecret(content, $('#accdetailssecretaddress').val())})})" type="button"><i class="fa fa-camera"></i></button>
-    		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){doRevealRippleSecret(content, $('#accdetailssecretaddress').val())})})"><i class="fa fa-paste"></i></button>
+    		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){doRevealRippleSecret(content, $('#accdetailssecretaddress').val())})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  id="rsecaccpassword" type="password" class="form-control" placeholder="">
     </div>
@@ -498,7 +499,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="pasteqr">
             <button class="btn btn-default" id="delaccpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#delaccpassword', '#delaccpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
     		<button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#delaccpassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#delaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#delaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  id="delaccpassword" type="password" class="form-control" placeholder="">
         <br>
@@ -517,7 +518,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="pasteqr">
             <button class="btn btn-default" id="nickchangepasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#nickchangepassword', '#nickchangepasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
             <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#nickchangepassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#nickchangepassword').val(content)})})"><i class="fa fa-paste"></i></button>
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#nickchangepassword').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  id="nickchangepassword" type="password" class="form-control" placeholder="">
         <br>
@@ -656,7 +657,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label>Passphrase</label>    
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmafpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmafpassword', '#confirmafpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{doConfirmAccountFlags(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{doConfirmAccountFlags(content)})})"><i class="fa fa-paste"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {doConfirmAccountFlags(content);})})" type="button"><i class="fa fa-camera"></i></button>	
     </span>
 
@@ -736,20 +737,20 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label >Issuer Address</label>
     <span class="pasteqr">
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#atlissueraddr').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#atlissueraddr').val(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#atlissueraddr').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>
     <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="atlissueraddr">
 	<br>
     <label >Currency</label>
     <span class="pasteqr">
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#atlcurrency').val(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#atlcurrency').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="atlcurrency">
     <br>
     <label >Trustline Limit</label>
     <span class="pasteqr">
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#atllimit').val(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#atllimit').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="atllimit">
@@ -802,7 +803,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label >Trustline Limit</label>
     <div>
         <span class="pasteqr">
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#mtllimit').val(content)})})"><i class="fa fa-paste"></i></button>            
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#mtllimit').val(content)})})"><i class="fa fa-paste"></i></button>            
         </span>
         <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder=""  id="mtllimit" >
     </div>
@@ -849,7 +850,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmatlpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmatlpassword', '#confirmatlpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {doConfirmTrustline(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{doConfirmTrustline(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{doConfirmTrustline(content)})})"><i class="fa fa-paste"></i></button>
         
     </span>
     <input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmatlpassword" class="form-control" placeholder="">
@@ -871,7 +872,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     	<span class="pasteqr">
             <button class="btn btn-default" id="rekeypasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#rekeypassword', '#rekeypasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
             <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#rekeypassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#rekeypassword').val(content)})})"><i class="fa fa-paste"></i></button>
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#rekeypassword').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>        
         <input ontouchend="te(event, quickSelectInput)"  type="password" id="rekeypassword" class="form-control" placeholder=""><!--todo: enable REKEYING!!-->
 
@@ -927,19 +928,18 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
-	<label >XRPL Seed (Secret)</label>
+	<label >Account Secret</label>
     <span class="pasteqr">
-        <button class="btn btn-default" id="txtsecreteyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#txtsecret', '#txtsecreteyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#txtsecret')})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#txtsecret')})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#txtsecret')})})"><i class="fa fa-paste"></i></button>
     </span>
 
-    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="password" placeholder="E.g shqTNuNzLjjNYH2oKNNrRLSaNK2Wr"  id="txtsecret">
+    <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="E.g shqTNuNzLjjNYH2oKNNrRLSaNK2Wr"  id="txtsecret">
 	<br>
-	<label >XRPL Address</label>
+	<label >Account Address</label>
     <span class="pasteqr">
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#vanityaddr')})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#vanityaddr')})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#vanityaddr')})})"><i class="fa fa-paste"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Optional unless a vanity address or rekeyed"  id="vanityaddr">
@@ -952,7 +952,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <span class="pasteqr">
         <button class="btn btn-default" id="extaccpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#extaccpassword', '#extaccpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#extaccpassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#extaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>            
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#extaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>            
     </span>
     <input ontouchend="te(event, quickSelectInput)"  id="extaccpassword" type="password" class="form-control" placeholder="">
 
@@ -1066,7 +1066,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <span class="pasteqr">
         <button class="btn btn-default" id="setpassword1eyebtn" ontouchend="te(event, ()=>{toggleShowPassField(['#setpassword1', '#setpassword2'], '#setpassword1eyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#setpassword1').val(content); $('#setpassword2').val(content);})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#setpassword1').val(content);$('#setpassword2').val(content);})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#setpassword1').val(content);$('#setpassword2').val(content);})})"><i class="fa fa-paste"></i></button>
     </span>      
 	<input ontouchend="te(event, quickSelectInput)"  type="password" id="setpassword1" class="form-control" placeholder="">
 	<br>
@@ -1085,7 +1085,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <span class="pasteqr">
         <button class="btn btn-default" id="setpassword3eyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#setpassword3', '#setpassword3eyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#setpassword3').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#setpassword3').val(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#setpassword3').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>
 	<input ontouchend="te(event, quickSelectInput)"  id="setpassword3" type="password" class="form-control" placeholder="">
 	<div style="text-align:center; color:black;">New Passphrases must contain at least 8 characters comprising at least 1 uppercase, 1 lowercase, 1 number and 1 non-alphanumeric character.</div>
@@ -1093,7 +1093,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="setpassword4eyebtn" ontouchend="te(event, ()=>{toggleShowPassField(['#setpassword4', '#setpassword5'], '#setpassword4eyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#setpassword4').val(content);$('#setpassword5').val(content);})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#setpassword4').val(content);$('#setpassword5').val(content);})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#setpassword4').val(content);$('#setpassword5').val(content);})})"><i class="fa fa-paste"></i></button>
 	</span>
 	<input ontouchend="te(event, quickSelectInput)"  id="setpassword4" type="password" class="form-control" placeholder="">
 
@@ -1121,7 +1121,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <span class="pasteqr">
         <button class="btn btn-default" id="genaccpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#genaccpassword', '#genaccpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#genaccpassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>        
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#genaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#genaccpassword').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>           
     <input ontouchend="te(event, quickSelectInput)"  id="genaccpassword" type="password" class="form-control" placeholder="">
     <br>
@@ -1295,7 +1295,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmorderpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmorderpassword', '#confirmorderpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { doConfirmOrder(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ doConfirmOrder(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{ doConfirmOrder(content)})})"><i class="fa fa-paste"></i></button>
     </span>
     <input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmorderpassword" class="form-control" placeholder="">
     <br>
@@ -1324,7 +1324,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmcancelorderpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmcancelorderpassword', '#confirmcancelorderpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { doConfirmCancelOrder(content)})})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ doConfirmCancelOrder(content)})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{ doConfirmCancelOrder(content)})})"><i class="fa fa-paste"></i></button>
     </span>
     <input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmcancelorderpassword" class="form-control" placeholder="">
     <br>
@@ -1367,7 +1367,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmpaypassword" ontouchend="te(event, ()=>{toggleShowPassField('#confirmpaypassword', '#confirmpaypasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {  doConfirmPay(content) })})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{  doConfirmPay(content) })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{  doConfirmPay(content) })})"><i class="fa fa-paste"></i></button>
     </span>
     <input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmpaypassword" class="form-control" placeholder="">
     <br>
@@ -1472,7 +1472,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<label style="">1. Scan Red QR Code</label>
 	<span class="pasteqr">
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})" type="button"><i class="fa fa-camera"></i></button>        
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{  $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{  $('#txtredqr').val(content); doSubmitOfflineTransaction(1, content); })})"><i class="fa fa-paste"></i></button>
 	</span>
     <input ontouchend="te(event, quickSelectInput)" type="text" id="txtredqr" class="form-control" placeholder="">
     </div>
@@ -1487,7 +1487,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <label style="">4. Scan Green QR Code</label>
 	<span class="pasteqr">
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})" type="button"><i class="fa fa-camera"></i></button>        
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{ $('#txtgreenqr').val(content);doSubmitOfflineTransaction(2, content); })})"><i class="fa fa-paste"></i></button>
 	</span>    
 	<input ontouchend="te(event, quickSelectInput)" type="text" id="txtgreenqr" class="form-control" placeholder="">
 
@@ -1518,7 +1518,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	        	<label style="color:white; text-align:left;">Specify additional gateway server</label>
                 <div class="pasteqr">
                     <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content)=>{doAddGateway(content)})})" type="button"><i class="fa fa-camera"></i></button>
-                    <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{doAddGateway(content)})})"><i class="fa fa-paste"></i></button>
+                    <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{doAddGateway(content)})})"><i class="fa fa-paste"></i></button>
                 </div>
                 <input ontouchend="te(event, quickSelectInput)" type="text" id="txtnewgateway2" class="form-control" placeholder="wss://">
     <br />
@@ -1545,7 +1545,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.2</center>
+        <center style="color:black;" data-version="version">Version: 2.4.5</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1557,7 +1557,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<span class="pasteqr">
         <button class="btn btn-default" id="recoverypasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#recoverypassword', '#recoverypasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => { doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); })})" type="button"><i class="fa fa-camera"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{ doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); })})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{ doResetPin(content, function(){showTab('#tabaccounts');}, function(){}); })})"><i class="fa fa-paste"></i></button>
     </span>
     <input ontouchend="te(event, quickSelectInput)"  id="recoverypassword" type="password" class="form-control" placeholder="Passphrase or recovery phrase">
     </div>
@@ -1574,7 +1574,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="pasteqr">
             <button class="btn btn-default " id="corruptionppeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#corruptionpp', '#corruptionppeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
             <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content)=>{$('#corruptionpp').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#corruptionpp').val(content)})})"><i class="fa fa-paste"></i></button>
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#corruptionpp').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  type="password" id="corruptionpp" class="form-control" placeholder="">
     </div>
@@ -1584,7 +1584,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <span class="pasteqr">
             <button class="btn btn-default " id="corruptionrpeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#corruptionrp', '#corruptionrpeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
             <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content)=>{$('#corruptionrp').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#corruptionrp').val(content)})})"><i class="fa fa-paste"></i></button>
+            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#corruptionrp').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  type="password" id="corruptionrp" class="form-control" placeholder="">
     </div><br>
@@ -1737,7 +1737,7 @@ NO WARRANTY
 	</div>
 	<br/>
 	<div>
-		<button class="btn btn-info" type="button" id="btnbootstrapsequence" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore2');})" style="min-width: 20em;">Restore an Existing Wallet </button>
+		<button class="btn btn-info" type="button" id="btnbootstraprestorebackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#divrestorerror')[0].innerHTML=''; showTab('#tabrestore2');})" style="min-width: 20em;">Restore an Existing Wallet </button>
 	</div>
 	<br>
 	<div>
@@ -1746,7 +1746,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.2</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.5</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1761,6 +1761,13 @@ NO WARRANTY
 
 
 <script>
+
+
+function clipboardPaste(f) {
+    if (device.platform == 'browser')
+        return navigator.clipboard.readText().then(f);
+    cordova.plugins.clipboard.paste(f);
+}
 
 
 // this function fires when an account is selected on the payments tab
@@ -4001,7 +4008,7 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').attr('readonly', null);
 			$('.btnqrpay').removeAttr('disabled');
             $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR(populatePaymentTabFromURI)})");
-            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{navigator.clipboard.readText().then((content)=>{populatePaymentTabFromURI(content)})})");
+            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{clipboardPaste((content)=>{populatePaymentTabFromURI(content)})})");
 		}
 	}
 
@@ -6192,9 +6199,18 @@ function doCheckBackup(raw) {
 
 function doRestoreBackupFreshInstall() {
 	if (debug) console.log('doRestoreBackupFreshInstall');
-    var backupcode = $('#restorebackup2').val();
+    var backupcode = $('#restorebackup2').val().trim();
 	blockInput(true);
 
+    if (backupcode == "") {
+    	return navigator.notification.alert("You must enter a backup code. This is a long code you were given when you added your first XRPL address to the wallet.", 
+			function() {
+                unblockInput();
+			}, 
+			"Failure", 
+			"OK"
+		);
+    }
 
     if (validateSecret(backupcode)) {
         // this is a secret

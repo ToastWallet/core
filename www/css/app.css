@@ -86,6 +86,10 @@ i.fa.fa-toggle-off, i.fa.fa-toggle-on {
     font-size: 1.1em;
 }
 
+i.fa.fa-chevron-circle-left, i.fa.fa-question-circle {
+    transform: translateY(0.1em);
+}
+
 .pasteqr > button {
 	min-width: 4em !important;
 	vertical-align: middle;
