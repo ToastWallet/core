@@ -103,6 +103,35 @@
 	}
 
 
+    function handleOpenURL(link) {                 
+        console.log("incoming pay-link: " + link);
+
+        if (
+            currenttab == "#tabpinset1" && 
+            currenttab == "#tabpinset2"  && 
+            currenttab == "#tabsetpassphrase" && 
+            currenttab == "#tabrecovery" && 
+            currenttab == "#tabconnectionselect" && 
+            currenttab == "#tabbackupreminder" && 
+            currenttab == "#tabcorruptionprompt" &&
+            currenttab == "#tablicense" &&
+            currenttab == "#tabshowrecovery" &&
+            currenttab == "#tabqrscan" &&
+            currenttab == "#tabsubmitofflinetx" &&
+            currenttab == "#tabrestore2" &&
+            currenttab == "#tabgreenqr" ) {
+            console.log("will not interrupt pin or passphrase or backup prompt, discarding pay link"); 
+            return;
+        }
+
+        paylink_pending = link;
+        $('#tablogin>center>div').addClass('pinpad_pending')
+
+        if (!$('#tablogin').is(":visible") && e !== "boot") {
+            doShowLogin();
+        }
+    }
+
 
 	var prekeyboardscrollpos = 0;
 	function afterCordovaLoad()  {
@@ -302,33 +331,7 @@
         var paylink_handler = function(e,s) {
             var link = s.replace(/^.*?:\/\//g, "");
 
-            console.log("incoming pay-link: " + link);
-
-			if (
-				currenttab == "#tabpinset1" && 
-				currenttab == "#tabpinset2"  && 
-				currenttab == "#tabsetpassphrase" && 
-				currenttab == "#tabrecovery" && 
-				currenttab == "#tabconnectionselect" && 
-				currenttab == "#tabbackupreminder" && 
-				currenttab == "#tabcorruptionprompt" &&
-				currenttab == "#tablicense" &&
-				currenttab == "#tabshowrecovery" &&
-				currenttab == "#tabqrscan" &&
-                currenttab == "#tabsubmitofflinetx" &&
-                currenttab == "#tabrestore2" &&
-                currenttab == "#tabgreenqr" ) {
-                console.log("will not interrupt pin or passphrase or backup prompt, discarding pay link"); 
-                return;
-            }
-
-            paylink_pending = link;
-            $('#tablogin>center>div').addClass('pinpad_pending')
-
-            if (!$('#tablogin').is(":visible") && e !== "boot") {
-                doShowLogin();
-            }
-
+            handleOpenURL(link);
         };
 
         // in builds that support xrp:// and ripple:// protocol handling we will receive those events here
@@ -376,7 +379,8 @@
 </div>
 
 <div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore an Existing Wallet" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
-    <p style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</p>
+    <div id="divrestorerror" style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</div>
+    <br>
     <div>
     <label style="color:white;">Backup code</label>
 	<span class="pasteqr">
@@ -400,9 +404,8 @@
 	<span class="pasteqr">
 		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then(function(content){$('#restorebackup').val(content)})})"><i class="fa fa-paste"></i></button>
 		
-	</span>
-    <input ontouchend="te(event, quickSelectInput)" id="restorebackup" type="text" class="form-control" placeholder="">
-    <!--todo: make this a textarea-->
+    </span><!--todo: add backup checking code to this screen as well-->
+    <textarea rows="3" ontouchend="te(event, quickSelectInput)" id="restorebackup" type="text" class="form-control" placeholder=""></textarea>
     </div>
     <br>
     <div>
@@ -870,7 +873,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#rekeypassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
             <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{navigator.clipboard.readText().then((content)=>{$('#rekeypassword').val(content)})})"><i class="fa fa-paste"></i></button>
         </span>        
-        <input ontouchend="te(event, quickSelectInput)"  type="password" id="rekeypassword" class="form-control" placeholder=""><!--todo: add QR here, enable REKEYING!!-->
+        <input ontouchend="te(event, quickSelectInput)"  type="password" id="rekeypassword" class="form-control" placeholder=""><!--todo: enable REKEYING!!-->
 
 	<center><div>
 			<button  type="button" class="btn btn-danger" id="btndoaccrekey" 
@@ -1403,7 +1406,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button class="btn btn-default  btnqrpay" id="btnqrpay2" ontouchstart="ts(event)" type="button"><i class="fa fa-paste"></i></button>
     </span>
 
-    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;">
+    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{populatePaymentTabFromURI(e.originalEvent.clipboardData.getData('Text'));} ">
 
 	<br />
 
@@ -1433,6 +1436,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 	<label>Currency</label>
+    <div id="currencyerror" style="display:none; color:red;"></div>
     <div id="oflcurrencydiv" style="display:none">
 	    <input ontouchend="te(event, quickSelectInput)" type="text" id="payassetofl" class="form-control" placeholder="Leave blank for XRP">
         <br />
@@ -1541,7 +1545,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.1</center>
+        <center style="color:black;" data-version="version">Version: 2.4.2</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1742,7 +1746,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.1</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.2</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2495,18 +2499,55 @@ function xls2d(uri) {
 
 
 
-function decodePaymentURI(uri, after, addrfield, dtagfield, amountfield) {
+function populatePaymentTabFromURI(uri) {
 
 	// apply the draft standard
 	var parsed = xls2d(uri)
 
-	if (parsed.to) $(addrfield).val(parsed.to)
-	if (parsed.amount) $(amountfield).val(parsed.amount)
-	if (parsed.dt) $(dtagfield).val(parsed.dt)
+    if (!parsed || !parsed.to) {
 
-	//todo: allow currency specification
+		return navigator.notification.alert("Invalid XRP ledger address or Pay URI. Check you are providing the correct text, link or QR code.", 
+            ()=>{}, 
+				"Invalid Address", 
+				"OK"
+			);
+    }
 
-	return (after ? after(parsed) : parsed.to != false )
+    clearPaymentScreen();
+
+	if (parsed.to) $('#toaddress').val(parsed.to)
+	if (parsed.amount) $('#payamount').val(parsed.amount)
+	if (parsed.dt) $('#desttag').val(parsed.dt)
+
+
+    try {
+        $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
+    } catch (e) {}
+    onPaymentSelectFromAccount();
+
+
+    if (parsed.currency.currency && parsed.currency.issuer) {
+        if (offlinemode) {
+            $('#payassetofl').val(parsed.currency.currency);
+            $('#payissuerofl').val(parsed.currency.issuer);
+        } else {
+            if ($('#optpa-'+parsed.currency.currency+'-'+ parsed.currency.issuer).length > 0) {
+                $('#optpa-'+parsed.currency.currency+'-'+ parsed.currency.issuer).attr('selected', 'selected');
+            } else {
+                $('#currencyerror')[0].innerHTML = 'Pay URI specified ' + parsed.currency.currency + ' issued by ' + parsed.currency.issuer + " but you don't have a trustline for that on this account"; //todo: add a button here to make adding a trustline easy
+                $('#currencyerror').show();
+            }
+        }
+    } 
+
+    if (parsed.invoiceid) {
+        $('#invoiceiddiv').css( 'display',  'block' );
+        $('#btnpayshowmore')[0].innerHTML = 'Less' ;        
+        $('#invoiceid').val(parsed.invoiceid);
+    }
+
+
+
 
 }
 
@@ -3580,7 +3621,8 @@ function refreshAccounts(after) {
 // decode a payment URI passed to the application from the OS and display payment tab
 function doPayLink(paylink) {
     showTab("#tabpayments");
-    decodePaymentURI(paylink,'#toaddress','#desttag','#payamount', ()=>{});
+
+    populatePaymentTabFromURI(paylink);
 
     if (activeaccount == "") 
         refreshAccounts();
@@ -3823,16 +3865,6 @@ function clickProxy() {
 }
 
 
-function errorOnInvalidPaymentURI(p) {
-    if (!p || !p.to) {
-			navigator.notification.alert("Invalid XRP ledger address. Check you are providing the correct text, link or QR code.", 
-                ()=>{}, 
-				"Invalid Address", 
-				"OK"
-			);
-    }
-}
-
 
 var currenttab = "";
 var previoustabs = [];
@@ -3968,8 +4000,8 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').css('color', '');
 			$('#toaddress').attr('readonly', null);
 			$('.btnqrpay').removeAttr('disabled');
-            $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR(decodePaymentURI, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})");
-            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{navigator.clipboard.readText().then((content)=>{decodePaymentURI(content, errorOnInvalidPaymentURI, '#toaddress', '#desttag', '#payamount')})})");
+            $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR(populatePaymentTabFromURI)})");
+            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{navigator.clipboard.readText().then((content)=>{populatePaymentTabFromURI(content)})})");
 		}
 	}
 
@@ -4235,6 +4267,9 @@ function doImportGeneratedAccount(passphrase, nickname) {
 
 function clearPaymentScreen() {
 	try {
+
+        $('#currencyerror').hide();
+        $('#currencyerror')[0].innerHTML = '';
 
         if ($('#payfromaccount').find(':selected').data('account') != activeaccount) {
             $('#payfromaccount').find(':selected').removeAttr('selected');
@@ -6045,6 +6080,116 @@ function importWallet(wallet, successfunc, failurefunc) {
 
 }
 
+
+
+// imported from https://toastwallet.com/backupcheck/
+function doCheckBackup(raw) {
+
+
+    var allowedkeys = ["walletversion", "pindata", "ppdata", "rpdata", "accounts"];
+
+    function isvalidhex(h) {
+        if (typeof h === 'object') {
+            for (var i in h) {
+                if (typeof h[i] === 'object' && !isvalidhex(h[i])) return false;
+                else if (!/^[a-f0-9]+$/m.test(h[i]) || !fromhex_chksum(h[i])) return false;
+            }
+            return true;
+        } else {
+            return h.length % 2 == 0 && /^[a-f0-9]+$/m.test(h) && fromhex_chksum(h);
+        }
+    }
+
+
+    var output = "";
+
+    raw = raw.replace(/ |\r|\n/mg, "");
+    raw = raw.replace(/;/mg, ":");
+    raw = raw.replace(/“|”|’|‘|`|´|'/mg, '"');
+    
+    $('#backupcode').val(raw);
+
+
+    var json = raw; 
+
+    // pull off the front checksum we dont need it
+    while (json != '' && json.charAt(0) != '{') json = json.slice(1);
+
+    try {
+        var backup = JSON.parse(json);
+        
+        
+        for (var i in backup) {
+            if (allowedkeys.indexOf(i) == -1) {
+                output += "JSON key: " + i + " is not valid, should be one of " + '"walletversion", "pindata", "ppdata", "rpdata", "accounts"' + "<br />";
+            }
+        }
+
+        if (backup['pindata'] == undefined) output += "pindata is missing<br/>";
+        else {
+            if (backup['pindata']['hash'] == undefined) output += "pindata.hash is missing<br/>";
+            if (backup['pindata']['salt'] == undefined) output += "pindata.salt is missing<br/>";
+            if (!isvalidhex(backup['pindata']['hash'])) output += "pindata.hash is invalid<br/>";
+            if (!isvalidhex(backup['pindata']['salt'])) output += "pindata.salt is invalid<br/>";
+        }
+
+        if (backup['ppdata'] == undefined) output += "ppdata is missing<br/>";
+        else {
+            if (backup['ppdata']['hash'] == undefined) output += "ppdata.hash is missing<br/>";
+            if (!isvalidhex(backup['ppdata']['hash'])) output += "ppdata.hash is invalid<br/>";
+            if (backup['ppdata']['salt1'] == undefined) output += "ppdata.salt1 is missing<br/>";
+            if (!isvalidhex(backup['ppdata']['salt1'])) output += "ppdata.salt1 is invalid<br/>";
+            if (backup['ppdata']['salt2'] == undefined) output += "ppdata.salt2 is missing<br/>";
+            if (!isvalidhex(backup['ppdata']['salt2'])) output += "ppdata.salt2 is invalid<br/>";
+        }
+
+        if (backup['rpdata'] == undefined) output += "rpdata is missing<br/>";
+        else {
+            if (backup['rpdata']['hash'] == undefined) output += "rpdata.hash is missing<br/>";
+            if (!isvalidhex(backup['rpdata']['hash'])) output += "rpdata.hash is invalid<br/>";
+            if (backup['rpdata']['salt1'] == undefined) output += "rpdata.salt1 is missing<br/>";
+            if (!isvalidhex(backup['rpdata']['salt1'])) output += "rpdata.salt1 is invalid<br/>";
+            if (backup['rpdata']['salt2'] == undefined) output += "rpdata.salt2 is missing<br/>";
+            if (!isvalidhex(backup['rpdata']['salt2'])) output += "rpdata.salt2 is invalid<br/>";
+            if (backup['rpdata']['erk'] == undefined) output += "rpdata.erk is missing<br/>";
+            if (!isvalidhex(backup['rpdata']['erk'])) output += "rpdata.erk is invalid<br/>";
+        }
+
+
+
+        var accounts = backup['accounts'];
+
+        for (var i in accounts) {
+            try {
+                rippleAddressCodec.decodeAccountID(i);
+                if (accounts[i]['ppsalt'] == undefined) output += "Account " + i + " ppsalt missing<br/>";
+                if (!isvalidhex(accounts[i]['ppsalt'])) output += "Account " + i + " ppsalt invalid<br/>";
+                if (accounts[i]['rpsalt'] == undefined) output += "Account " + i + " rpsalt missing<br/>";
+                if (!isvalidhex(accounts[i]['rpsalt'])) output += "Account " + i + " rpsalt invalid<br/>";
+                if (accounts[i]['ppsecret'] == undefined) output += "Account " + i + " ppsecret missing<br/>";
+                if (!isvalidhex(accounts[i]['ppsecret'])) output += "Account " + i + " ppsecret invalid<br/>";
+                if (accounts[i]['rpsecret'] == undefined) output += "Account " + i + " rpsecret missing<br/>";
+                if (!isvalidhex(accounts[i]['rpsecret'])) output += "Account " + i + " rpsecret invalid<br/>";
+            } catch (e) {
+                output += "Account " + i + " invalid, check that it was transcribed correctly<br/>";
+            }
+        }
+
+        var json = JSON.stringify(backup);
+        return {cleanedbackupcode: sodium.crypto_generichash(4, json, '', 'hex') + json, error: (output == "" ? false : output) };
+
+    } catch(e) {
+
+        output +=  "<br/><b>" + e + "</b>";	
+
+        var json = JSON.stringify(backup);
+        return {cleanedbackupcode: ( json != undefined ? sodium.crypto_generichash(4, json, '', 'hex') + json : false ), error: (output == "" ? false : output) };
+
+    }
+    
+}
+
+
 function doRestoreBackupFreshInstall() {
 	if (debug) console.log('doRestoreBackupFreshInstall');
     var backupcode = $('#restorebackup2').val();
@@ -6063,7 +6208,31 @@ function doRestoreBackupFreshInstall() {
 			"OK"
 		);
     }
-    
+
+
+    if (/^(?:(?:[aeioubcdfghjklmnprstvwxyz]|(?:qu|tt|ch|sh))+ ){5}(?:[aeioubcdfghjklmnprstvwxyz]|(?:qu|tt|ch|sh))+$/im.test(backupcode)) {
+        return navigator.notification.alert("This is a recovery phrase, not a backup code. Your backup code is a long code you were prompted to write down when you set up your wallet and added your first address.",
+            ()=>{
+                unblockInput();
+            },
+            "Failure",
+            "OK"
+        );
+    }
+
+
+    // run the backup checker
+
+    var check = doCheckBackup(backupcode);
+
+    if (check.error) {
+        $('#divrestorerror')[0].innerHTML = "Errors were found in your backup code:<br/>" + check.error + "<br/>";
+        $('#divrestorerror').css('color', '#ffeb3b');
+        $('#divrestorerror').css('text-align', 'center');
+        return navigator.notification.alert("Your backup contained errors! This could happen if you miscopied it or it has been damaged or truncated. Check you copied the whole text.", ()=>{unblockInput();}, "Failure", "OK");
+    }
+
+    var backupcode2 = check.cleanedbackupcode; // this is the rebuilt backup code returned by the checker, we'll use it only if the raw backup doesn't work
 
 	importWallet(
 		backupcode,
@@ -6084,13 +6253,39 @@ function doRestoreBackupFreshInstall() {
 			);
 		},
 		function() {
-			navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
-				function() {
-					unblockInput();
-				},
-				"Error",
-				"OK"
-			);
+
+            // try again with the cleanedbackup from the checker
+
+            importWallet(
+                backupcode2,
+                function() {
+                    db.upsert("lastbackupreminder",
+                        function(doc) {
+                            return { data: JSON.stringify({"lastreminder": "" + Math.floor(new Date().getTime()/1000) })	}; 
+                    });
+                
+                    navigator.notification.alert("Your backup was damaged. It has been repaired and restored.", 
+                        function() {
+
+                            unblockInput();
+                            doShowLogin();
+                        }, 
+                        "Warning", 
+                        "OK"
+                    );
+                },
+                function() {
+
+                    navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
+                        function() {
+                            unblockInput();
+                        },
+                        "Error",
+                        "OK"
+                    );
+                }
+            );
+            
 		}
 	);
 }
