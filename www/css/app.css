@@ -52,6 +52,34 @@ body {
     border-radius: 0 0 0 0;
 }
 
+/* active items */
+/*
+.active a {
+    color: white !important;
+}
+.accountitem.active .currency {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding-top: 1px;
+    padding-bottom: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.active .accloadspinner {
+    color: white;
+}
+.accountitem.active .trustlines {
+    background: none;
+}
+*/
+
+
+#accountslist .active {
+    color: inherit;
+    background-color: inherit !important;
+}
+
 #walletbackup {
     flex: 2;
 }
@@ -152,13 +180,14 @@ i.fa.fa-chevron-circle-left, i.fa.fa-question-circle {
 #tabbackup2 h3 {
     margin-top: 0;
 }
-#tabsettings button, #tabaddaccount button, #tabgenaccount button, 
-#tabsetpassphrase button, #tabchangepassphrase button, #tabshowrecovery button, 
-#tabcorruptionprompt button, #tabgenaccount1 button, #btnimport, #tabpaymentconfirm button,
-#tabrestore button {
-    min-width: 20em;
+
+.btnbig {
+    min-width: 20em !important;
     margin-bottom: 1em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;    
 }
+
 .toggleswitch {
     font-size: 2em;
     vertical-align: middle;
@@ -306,8 +335,8 @@ li.adtrustline:not(:first-of-type) {
 .accountdetailsselector > li {
     flex: 2;
     text-align: center;
-    padding-top: 0.3em;
-    padding-bottom: 0.3em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
     border-radius: 2px 2px 0px 0px;
 }
 
@@ -484,16 +513,11 @@ a:hover, a:visited, a:active, a:focus {
 .list-group-item {
     width: 100%;
 }
-.active a {
-    color: white !important;
-}
 
 .accountitem {
-    color: hsla(0, 0%, 35%, 1);
+    color: hsla(0, 0%, 35%, 1) !important;
 }
-#navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover {
-    color: white !important;
-}
+
 ul {
     list-style: none;
     padding-left: 0;
@@ -530,7 +554,7 @@ img.loader {
 //    min-height: 4.5em;
     border: 0;
     margin: 0;
-    border-radius: 3px;
+//    border-radius: 3px;
     padding-left: 0.4em;
     padding-right: 0.4em;    
 }
@@ -582,34 +606,9 @@ div.input-group>span.input-group-btn>button {
     min-width: 5em;
 }
 
-#navfooter {
-    position: absolute;
-    bottom: 0;
-    width: 100vw;
-    left: 0;
-    background: linear-gradient(45deg, #1959ab, #317fe2);
-    list-style: none;
-    margin: 0;
-    text-align: center;
-    z-index: 90;
-    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
-    height: 3.5em !important;
-    overflow: hidden;
-}
 
 
-#navheader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    background: linear-gradient(45deg, #1959ab, #317fe2);
-    margin: 0;
-    list-style: none;
-    z-index: 90;
-    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
-    height: 4em !important;
-}
+
 #accdetailsqr {
     padding-top: 1em;
     padding-bottom: 1em;
@@ -775,6 +774,8 @@ i.fa.fa-exchange {
     margin: 0.5em;
     min-width: 8em;
     max-width: 10em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
 }
 
 .settingsbuttons {
@@ -879,9 +880,6 @@ i.fa.fa-exchange {
     bottom: 0.2em;
     right: 0.2em;
 }
-.active .accloadspinner {
-    color: white;
-}
 .bidask { 
     font-size: 0.9em;
     display: flex;
@@ -913,22 +911,11 @@ i.fa.fa-exchange {
     text-align: center;
 }
 
-.accountitem.active .currency {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.3);
-    padding-top: 1px;
-    padding-bottom: 0px;
-    padding-left: 2px;
-    padding-right: 2px;
-}
 
 #accountslist > li:not(:first-of-type) {
     border-top: 1px solid rgba(0,0,0,0.07);
 }
 
-.accountitem.active .trustlines {
-    background: none;
-}
 
 .trustlines:empty {
     display: none;
@@ -975,23 +962,15 @@ span.trustline_issuer {
     float: right;
 }
 
-#navheader > li {
-    vertical-align: middle;
-    margin: 0;
-    display: inline-block;
-}
-#navheader > li > * {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    padding-top: 1em;
-    padding-bottom: 1em;
-}
+
 ul.iosheader > li > * {
     padding-left: 0.5em;
     padding-right: 0.5em;
     padding-top: 1.5em !important;
     padding-bottom: 0.5em !important;
 }
+
+/*
 .headerleft {
     width: 25%;
     text-align: left;
@@ -1006,6 +985,24 @@ ul.iosheader > li > * {
     width: 50%;
     text-align: center;
 }
+
+
+#navfooter {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    left: 0;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    list-style: none;
+    margin: 0;
+    text-align: center;
+    z-index: 90;
+    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
+    height: 3.5em !important;
+    overflow: hidden;
+}
+
+
 #navfooter > li {
     text-align: center;
     vertical-align: top;
@@ -1023,6 +1020,119 @@ ul.iosheader > li > * {
 }
 
 
+
+#navheader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    margin: 0;
+    list-style: none;
+    z-index: 90;
+    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
+    height: 4em !important;
+}
+
+
+
+#navheader > li {
+    vertical-align: middle;
+    margin: 0;
+    display: inline-block;
+}
+#navheader > li > * {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+*/
+
+/* flat look */
+*:not(.btnpinnumber) {
+    border-radius: 0 !important;
+}
+/* end flat look */
+
+#navfooter > span:last-of-type {
+    left: calc(500vw/6);
+}
+#navfooter > span:nth-of-type(2) {
+    left: calc(100vw/2);
+}
+#navfooter > span:first-of-type {
+    left: calc(100vw/6);
+}
+
+
+#navfooter > span {
+    position: absolute;
+    top: 0.5em;
+    transform: translateX(-50%);
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;;
+}
+
+#navfooter {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    left: 0;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    list-style: none;
+    margin: 0;
+    text-align: center;
+    z-index: 90;
+    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
+    height: 3.5em !important;
+    overflow: hidden;
+}
+
+.headerleft {
+    position: absolute;
+    vertical-align: middle;
+    line-height: 2.5em;
+    padding-right: 1em;
+    left: 1em;
+}
+
+.headermiddle {
+    left: 50%;
+    transform: translate(-50%, 0);
+    position: absolute;
+    vertical-align: middle;
+    line-height: 2em;
+}
+
+.headerright {
+    position: absolute;
+    vertical-align: middle;
+    line-height: 2.5em;
+    right: 1.5em;
+    padding-left: 1em;
+}
+
+#navheader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: linear-gradient(45deg, #1959ab, #317fe2);
+    margin: 0;
+    list-style: none;
+    z-index: 90;
+    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
+    height: 4em !important;
+    padding: 1em 1em 1em 1em;
+}
+
+#navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover, 
+#navfooter a, #navfooter a:visited, #navfooter a:active, #navfooter a:hover {
+    color: white !important;
+}
 
 .pinpad {
     text-align: center;
