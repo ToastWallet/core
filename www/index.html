@@ -1066,6 +1066,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 <div id="tabchangepassphrase" class="screentab" data-hasback="true" data-title="Change Passphrase" style="display:none">
+	<div style="text-align:center; color:black;">New Passphrases must contain at least 8 characters comprising at least 1 uppercase, 1 lowercase, 1 number and 1 non-alphanumeric character.</div>
 	<br><label>Current Passphrase</label>
     <span class="pasteqr">
         <button class="btn btn-default" id="setpassword3eyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#setpassword3', '#setpassword3eyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
@@ -1073,7 +1074,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{$('#setpassword3').val(content)})})"><i class="fa fa-paste"></i></button>
     </span>
 	<input ontouchend="te(event, quickSelectInput)"  id="setpassword3" type="password" class="form-control" placeholder="">
-	<div style="text-align:center; color:black;">New Passphrases must contain at least 8 characters comprising at least 1 uppercase, 1 lowercase, 1 number and 1 non-alphanumeric character.</div>
 	<br><label>New Passphrase</label>
 	<span class="pasteqr">
         <button class="btn btn-default" id="setpassword4eyebtn" ontouchend="te(event, ()=>{toggleShowPassField(['#setpassword4', '#setpassword5'], '#setpassword4eyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
@@ -7581,7 +7581,6 @@ function doRetryConnection(gateway) {
 function doOfflineMode(withboot) {
 	offlinemode = true;
 	remote = new ripple.RippleAPI;
-    $('#offlinemodewarning').css('top', $('#navheader').height() - 11); 
 	$('#offlinemodewarning').show();
 
 	if (withboot) normalboot();	
