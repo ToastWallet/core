@@ -401,6 +401,7 @@
 
 <div id="tabrestore" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Wallet" style="display: none;">  
     <p style="color:black; text-align:justify;">To restore a previously backed up wallet paste it below. This will DESTROY any data in your current wallet and cannot be undone. Further, this will restore your PIN, passphrase and recovery phrase AT THE TIME THE BACKUP WAS MADE.</p>
+    <b style="color:black; text-align:justify;">If you wish to reset Toast Wallet and create a new wallet type DELETE into the backup code field.</b>
     <div>
     <label>Backup code</label>
 	<span class="pasteqr">
@@ -408,16 +409,6 @@
 		
     </span><!--todo: add backup checking code to this screen as well-->
     <textarea rows="3" ontouchend="te(event, quickSelectInput)" id="restorebackup" type="text" class="form-control" placeholder=""></textarea>
-    </div>
-    <br>
-    <div>
-	<label >Passphrase or Recovery Phrase (of current wallet)</label>
-	<span class="pasteqr">
-        <button class="btn btn-default" id="restorepasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#restorepassword', '#restorepasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
-		<button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#restorepassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-		<button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#restorepassword').val(content)})})"><i class="fa fa-paste"></i></button>
-	</span>
-	<input ontouchend="te(event, quickSelectInput)"  id="restorepassword" type="password" class="form-control" placeholder="">
     </div>
     <br>
     <p style="color:black;">
@@ -515,17 +506,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div>
         <input ontouchend="te(event, quickSelectInput)"  type="text" id="nickchangenick" class="form-control" placeholder="">
 	</div>
-        <br><label>Passphrase</label>
-        <span class="pasteqr">
-            <button class="btn btn-default" id="nickchangepasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#nickchangepassword', '#nickchangepasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {$('#nickchangepassword').val(content)})})" type="button"><i class="fa fa-camera"></i></button>
-            <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste(function(content){$('#nickchangepassword').val(content)})})"><i class="fa fa-paste"></i></button>
-        </span>
-        <input ontouchend="te(event, quickSelectInput)"  id="nickchangepassword" type="password" class="form-control" placeholder="">
-        <br>
+    <br>
 	<center><div>
 			<button  type="button" class="btn btn-primary btnbig" id="btnimport" 
-				ontouchstart="ts(event)" ontouchend="te(event, ()=>{doChangeNickname($('#nickchangeaddress').val(), $('#nickchangenick').val(), $('#nickchangepassword').val());})">Change Nickname</button></div></center>
+				ontouchstart="ts(event)" ontouchend="te(event, ()=>{doChangeNickname($('#nickchangeaddress').val(), $('#nickchangenick').val());})">Change Nickname</button></div></center>
 </div>
 
 
@@ -901,7 +885,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <center>
         <div class="accdetailbuttons">
 
-			<button  id="btnbackupkey" type="button" class="accopt btn btn-info" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); })">Show Secret</button>
+			<button  id="btnbackupkey" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( $('#accdetailsaddress').val() ); showTab('#tabaccountsecret', true); })">Show Secret</button>
             <br>
             <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Change Nickname</button>
             <br>
@@ -1013,18 +997,18 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('2'); return false;})"><div>2<i class="char">abc</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('3'); return false;})"><div>3<i class="char">def</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('4'); return false;})"><div>4<i class="char">ghi</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('5'); return false;})"><div>5<i class="char">jkl</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('6'); return false;})"><div>6<i class="char">mno</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('7'); return false;})"><div>7<i class="char">prqs</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('8'); return false;})"><div>8<i class="char">tuv</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('2'); return false;})"><div>2<i class="char">abc</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('3'); return false;})"><div>3<i class="char">def</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('4'); return false;})"><div>4<i class="char">ghi</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('5'); return false;})"><div>5<i class="char">jkl</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('6'); return false;})"><div>6<i class="char">mno</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('7'); return false;})"><div>7<i class="char">prqs</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('8'); return false;})"><div>8<i class="char">tuv</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -1043,18 +1027,18 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('2'); return false;})"><div>2<i class="char">abc</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('3'); return false;})"><div>3<i class="char">def</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('4'); return false;})"><div>4<i class="char">ghi</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('5'); return false;})"><div>5<i class="char">jkl</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('6'); return false;})"><div>6<i class="char">mno</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('7'); return false;})"><div>7<i class="char">prqs</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('8'); return false;})"><div>8<i class="char">tuv</i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
-	<button  ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('2'); return false;})"><div>2<i class="char">abc</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('3'); return false;})"><div>3<i class="char">def</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('4'); return false;})"><div>4<i class="char">ghi</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('5'); return false;})"><div>5<i class="char">jkl</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('6'); return false;})"><div>6<i class="char">mno</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('7'); return false;})"><div>7<i class="char">prqs</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('8'); return false;})"><div>8<i class="char">tuv</i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -1077,7 +1061,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div style="text-align:justify; color:black;">Passphrases must contain at least 8 characters comprising at least 1 uppercase, 1 lowercase, 1 number and 1 non-alphanumeric character.</div>
     <br>
 	<center>
-		<button  class="btn btn-primary" id="btnsetpassphrase" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);})">Set Passphrase</button>
+		<button  class="btn btn-primary btnbig" id="btnsetpassphrase" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetPassphrase($('#setpassword1').val(), $('#setpassword2').val(), '', function(){blockInput(); setAndShowNewRecoveryPhrase($('#setpassword1').val());}, true);})">Set Passphrase</button>
 	</center>
 </div>
 
@@ -1535,10 +1519,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="settingsbuttons">
             <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open('https://toastwallet.com/faq', '_system');})">FAQ / Help</button>
+            <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
+            <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore or Reset Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrecovery');})">Change PIN</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabchangepassphrase');})">Change Passphrase</button>
-            <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
-            <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button>
@@ -1546,7 +1530,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.7</center>
+        <center style="color:black;" data-version="version">Version: 2.4.8</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1598,23 +1582,19 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
    <center>
     <h1>Your recovery phrase is NOT a backup</h1>
 
-	<center>
 <p style="text-align:center;">Your recovery phrase is a second passphrase. It is not a wallet backup.</p><br>
 <p style="text-align:center;">You need to create a backup when you add a new address to your wallet or if you've never made one before.</p><br>
 <p style="text-align:center;">Think of your passphrase/recovery phrase as keys which unlock your wallet. The backup is the actual wallet.</p><br>
 <p style="text-align:center;">Keep your backup in a safe place away from your passphrase and recovery phrase. We suggest printing it out.</p><br>
-	<br>
 	<div>
-	<button class="btn btn-danger btnbig" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Create a Backup Now</button><br>
+	<button class="btn btn-danger btnbig" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Create a Backup Now</button>
 	</div>
-	<br>
-	
-</center>
-    <p></p></center></div>
+    </center>
+</div>
 
 
 
-<div id="tabdonate" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
+<div id="tabdonate" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
    <center>
     <h1>Toast Wallet</h1>
 
@@ -1748,7 +1728,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.7</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.8</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -4171,46 +4151,22 @@ function doShowAndGenerateAccount() {
 }
 
 
-function doChangeNickname(address, nickname, passphrase) {
+function doChangeNickname(address, nickname) {
 	if (debug) console.log("doChangeNickname " + nickname + " for " + address);
 	blockInput();
 	if (nickname == undefined) nickname = "";
 	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
-	validatePassphrase(passphrase, false, 
-		function() {
-			passphrase = "";
-			changeNickname(address, nickname,  
-				function() {
-					// success
-					showTab('#tabaccounts'); 
-					unblockInput();
-				},
-				function() {
-					// nick change failure will produce its own message 
-					unblockInput();
-				}
-			);
-		},
-		function() {
-			navigator.notification.alert("Your passphrase was entered incorrectly. Note you cannot use a recovery phrase here.", 
-				function(){
-					$("#nickchangepassword").focus();
-					unblockInput();
-				}, 
-				"Error", 
-				"OK"
-			);
-		},
-		function() {
-			navigator.notification.alert("Your wallet data may have been corrupted. Please backup via the settings menu then restart the app to run data recovery.", 
-				function(){
-					unblockInput();
-				}, 
-				"Error", 
-				"OK"
-			);
-		}
-	);	
+    changeNickname(address, nickname,  
+        function() {
+            // success
+            showTab('#tabaccounts'); 
+            unblockInput();
+        },
+        function() {
+            // nick change failure will produce its own message 
+            unblockInput();
+        }
+    );
 }
 
 
@@ -6324,51 +6280,47 @@ function doRestoreBackup() {
 		return;
 	}
 
-	var f;	
-	validatePassphaseOrRecovery(
-		$('#restorepassword').val(),
-		f = function() {
-			importWallet(
-				$('#restorebackup').val(),
-				function() {
+    if ($('#restorebackup').val().trim().toLowerCase() == 'delete') {
 
-					db.upsert("lastbackupreminder",
-						function(doc) {
-							return { data: JSON.stringify({"lastreminder": "" + Math.floor(new Date().getTime()/1000) })	}; 
-					});
-				
-					navigator.notification.alert("Backup restored successfully!", 
-						function() {
-							unblockInput();
-							doShowLogin();
-						}, 
-						"Success", 
-						"OK"
-					);
-				},
-				function() {
-					navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
-						function() {
-							unblockInput();
-						},
-						"Error",
-						"OK"
-					);
-				}
-			);
-		},
-		function() {
-			navigator.notification.alert("Invalid pass/recovery phrase.",
-				function() {
-					unblockInput();
-				},
-				"Error",
-				"OK"
-			);
-		},
-		f // if no passphrase is set then we can restore the wallet
-	);
+        return db.upsert("accounts", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("ppdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("rpdata", function(doc) { return { data: "" }; }).then(function() {
+                        db.upsert("pindata", function(doc) { return { data: "" }; }).then(function() {
+                                unblockInput();
+                                $('#btnbootstrapsequence').show();
+                                $('#btnbootstraprestorebackup').show();
+                                normalboot();
+        })})})});
+    }
 
+    importWallet(
+        $('#restorebackup').val(),
+        function() {
+
+            db.upsert("lastbackupreminder",
+                function(doc) {
+                    return { data: JSON.stringify({"lastreminder": "" + Math.floor(new Date().getTime()/1000) })	}; 
+            });
+        
+            navigator.notification.alert("Backup restored successfully!", 
+                function() {
+                    unblockInput();
+                    doShowLogin();
+                }, 
+                "Success", 
+                "OK"
+            );
+        },
+        function() {
+            navigator.notification.alert("Invalid backup. Check that you copied the whole text.",
+                function() {
+                    unblockInput();
+                },
+                "Error",
+                "OK"
+            );
+        }
+    );
 }
 
 function dbgdumpdata() {
