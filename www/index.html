@@ -386,7 +386,7 @@
     </div>
 </div>
 
-<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Backup" style="padding-bottom: 0em;" data-dark="true" data-noright="true">  
+<div id="tabrestore2" class="screentab" data-primarytab="false" data-hasback="true" data-title="Restore Backup" data-dark="true" data-noright="true">  
     <div style="text-align:justify;">If you have a backup code you exported from another copy of Toast Wallet you can import it here. Doing so will create a copy of that wallet on this device.</div>
     <div id="divrestorerror" style="text-align:justify;"></div>
     <br>
@@ -649,8 +649,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <label>Passphrase</label>    
 	<span class="pasteqr">
         <button class="btn btn-default" id="confirmafpasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmafpassword', '#confirmafpasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{doConfirmAccountFlags(content)})})"><i class="fa fa-paste"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {doConfirmAccountFlags(content);})})" type="button"><i class="fa fa-camera"></i></button>	
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{doConfirmAccountFlags(content)})})"><i class="fa fa-paste"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)"  type="password" id="confirmafpassword" class="form-control" placeholder="">
@@ -756,6 +756,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <option selected="selected">disabled</option>
         <option>enabled</option>        
 	</select>
+    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
     </div>
     <br>
 
@@ -1126,7 +1127,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
     </div>
 
-    <div id="tabneworder" class="screentab" data-hasback="true" data-title="New Order" style="padding-bottom: 4em;">
+    <div id="tabneworder" class="screentab" data-hasback="true" data-title="New Order">
     <label>Account Address</label>
 		<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="ntloaddress">
 	
@@ -1197,7 +1198,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
                     <option id="ntloexpirycustomunit-month" data-unit="month">Month(s)</option>                
                     <option id="ntloexpirycustomunit-year" data-unit="year">Years(s)</option>
                     <option id="ntloexpirycustomunit-nocustom" data-unit="">Presets ...</option>                                
-                </select>
+                </select>                
+                <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
             </div>
         </span>        
         <select id="ntloexpiry" ontouchstart="ts(event,()=>{})" ontouchend="te(event, quickSelectInput)" class="form-control" onchange="($('#ntloexpiry').find(':selected')[0].id == 'ntloexpiry-opt-custom' ? $('#customexpirydiv').show() + $('#ntloexpiry').hide() + $('#ntloexpirycustomunit > option').removeAttr('selected') + $('#ntloexpirycustomunit-hour').attr('selected', 'selected') : $('#customexpirydiv').hide() + $('#ntloexpiry').show() )">
@@ -1217,7 +1219,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <option id="ntloexpiry-4380h" data-hours="4380" data-minutes="0">Half Year (4380 hours)</option>
             <option id="ntloexpiry-8760h" data-hours="8760" data-minutes="0">Full Year (8760 hours)</option>
         </select>        
-       
+        <span class="selectarrow"><i class="fa fa-angle-down"></i></span> 
+
         <span class="input-group-btn">
             <button class="btn btn-default" id="btnntlomore" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ if ($('#divntlomore').is(':visible')) { $('#divntlomore').hide(); $('#btnntlomore')[0].innerText = 'More'; } else { $('#divntlomore').show(); $('#btnntlomore')[0].innerText = 'Less'; }})" type="button">More</button>
 	    </span>
@@ -1380,6 +1383,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div>
 	<select ontouchend="te(event, quickSelectInput)" id="payfromaccount" class="form-control" onchange="onPaymentSelectFromAccount();">
 	</select>
+    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
+
 	</div>
 
     <div id="payofflinecodediv" style="display:none;">
@@ -1438,6 +1443,8 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	</div>
 
 	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option id="optpa-xrp" data-asset="XRP" data-issuer="">XRP</option></select>
+    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
+
     <br/>
 
 	<label >Amount</label>
@@ -1457,7 +1464,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 
-<div id="tabsubmitofflinetx" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="true" data-title="Offline Transaction" style="padding-bottom: 0em;">
+<div id="tabsubmitofflinetx" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="true" data-title="Offline Transaction">
 	<center>
 		<p style="color: black;">Open Toast Wallet 2.2.0 or newer on your offline device and use the send tab to create a payment then follow the steps below to submit the payment.</p><br>
 	</center>
@@ -1488,7 +1495,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 </div>
 
-<div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue" style="padding-bottom: 0em;">
+<div id="tabconnectionselect" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Connection Issue">
     <center>
         <h1>Connection Issue</h1>
 	<p>Toast Wallet is unable to connect either because your device has no network connectivity, or because the public gateway servers Toast Wallet uses to connect to the XRP Ledger are down or under heavy load&mdash;this has nothing to do with the XRP Ledger itself, only the servers that Toast Wallet uses to <i>access</i> the network.</p><br>
@@ -1505,7 +1512,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
-<div id="tabaddgateway" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="false" data-title="Add Gateway" style="padding-bottom: 0em;">
+<div id="tabaddgateway" class="screentab" data-primarytab="false" data-hasback="true" data-dark="false" data-noright="false" data-title="Add Gateway">
     <center>
  	<p style="color:black;">Add a custom gateway you would like Toast Wallet to connect to. A connection will be attempted and if it is successful the gateway will be stored and remembered as your preferred gateway.</p>
 	        	<label style="color:white; text-align:left;">Specify additional gateway server</label>
@@ -1538,7 +1545,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.13</center>
+        <center style="color:black;" data-version="version">Version: 2.4.14</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1586,7 +1593,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
-<div id="tabbackupreminder" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Backup Reminder" style="padding-bottom: 0em;">
+<div id="tabbackupreminder" class="screentab" data-primarytab="true" data-hasback="false" data-dark="true" data-noright="true" data-title="Backup Reminder">
    <center>
     <h1>Your recovery phrase is NOT a backup</h1>
 
@@ -1602,7 +1609,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 
 
-<div id="tabdonate" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="Support Toast Wallet" style="padding-bottom: 0em;">
+<div id="tabdonate" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="Support Toast Wallet">
    <center>
     <h1>Toast Wallet</h1>
 
@@ -1736,7 +1743,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.13</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.14</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -4085,7 +4092,7 @@ function showTab(tab, dontClearText) {
 	if ($(tab).data('recovery')) { // set recovery icon for logged out tabs
 		$(".headerright").show();
                 $("#navfooter").hide();
-		$('.screentab').css('padding-bottom', '0em');
+//		$('.screentab').css('padding-bottom', '0em');
 		screentabpaddingbottom = 0;
                 $("#dummyfooter").hide();
                 $(".headerright>i").removeClass("fa-lock");
@@ -4096,13 +4103,13 @@ function showTab(tab, dontClearText) {
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
-		$('.screentab').css('padding-bottom', '0em');
+//		$('.screentab').css('padding-bottom', '0em');
 		screentabpaddingbottom = 0;
                 $("#dummyfooter").hide();
         } else { // set logout icon for logged in tabs
 		$(".headerright").show();
                 $("#navfooter").show();
-		$('.screentab').css('padding-bottom', '4em');
+//		$('.screentab').css('padding-bottom', '4em');
 		screentabpaddingbottom = 4;
                 $("#dummyfooter").show();
                 $(".headerright>i").removeClass("fa-medkit");

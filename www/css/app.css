@@ -579,7 +579,7 @@ label {
 .screentab {
     overflow-y: scroll;
     margin-top: calc(4.0em + env(safe-area-inset-top));
-    height: calc(100vh - 4em -  env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    height: calc(100vh - 4em -  env(safe-area-inset-top) - env(safe-area-inset-bottom) - 3.5em);
     position: absolute;
     top: 0;
     left: 0;
@@ -587,7 +587,7 @@ label {
     margin-left: 1em;
     margin-right: 1em;
     padding-top: 0.5em;
-    padding-bottom: 4em;
+    padding-bottom: 1em;
     touch-action: pan-y;
     -ms-touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
@@ -605,6 +605,7 @@ label {
 ::-webkit-scrollbar {
     width: 0px;  /* remove scrollbar space */
     background: transparent;  /* optional: just make scrollbar invisible */
+    display: none;
 }
 
 div.input-group>span.input-group-btn>button {
@@ -916,6 +917,22 @@ i.fa.fa-exchange {
     text-align: center;
 }
 
+select {
+    -webkit-appearance: none;
+}
+
+
+.selectarrow {
+
+    color: black;
+    position: absolute;
+    right: 0.7em;
+    background: white;
+    padding-left: 0.3em;
+    transform: translate(0, calc(-100% - 0.3em));
+    pointer-events: none;
+
+}
 
 #accountslist > li:not(:first-of-type):not(:last-of-type) {
     border-top: 1px solid rgba(0,0,0,0.07);
@@ -1035,7 +1052,8 @@ input { /* ios patch */
     transform: translate(-50%, 0);
     position: absolute;
     vertical-align: middle;
-    line-height: 2em;
+    line-height: 1.7em;
+    font-size: 1.2em;
 }
 
 .headerright {
