@@ -129,14 +129,10 @@
         paylink_pending = link;
         $('#tablogin>center>div').addClass('pinpad_pending')
 
-        //todo: remove
-        return navigator.notification.alert("The url was: " + link, 
-            function() {},
-            "URL HANDLER", "OK"
-        );
-
-        if (!$('#tablogin').is(":visible") && e !== "boot") {
+        if (!($('#tablogin').is(":visible")) && e !== "boot") {
             doShowLogin();
+        } else {
+            doPayLink(paylink_pending);
         }
     }
 
@@ -148,7 +144,7 @@
 		for (var i = 0; i < $('.deviceversion').length; i++) $('.deviceversion')[i].innerHTML = device.model + " - " + device.platform + " - " + device.version;
 
 	        window.screen.orientation.lock('portrait');
-
+/*
 		if (typeof(window.Keyboard) != "undefined" && typeof(window.Keyboard.shrinkView) != "undefined") {
 			Keyboard.shrinkView(true);
 			Keyboard.disableScrollingInShrinkView(true);
@@ -196,7 +192,7 @@
 						$(currenttab).scrollTop(prekeyboardscrollpos);
 				}
 			);
-		}
+		}*/
 
 		$(".screentab").scroll(renderMoreContentIndicator);
 
@@ -1545,7 +1541,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.14</center>
+        <center style="color:black;" data-version="version">Version: 2.4.15</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1743,7 +1739,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.14</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.15</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -2454,7 +2450,9 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 //https://github.com/xrp-community/standards-drafts
 function xls2d(uri) {
 
-	const cleaned_uri = uri.replace(/^(.*:.*)?\?/mg, "").replace(/\?/img, "&")
+    if (!uri) uri = "";
+
+	const cleaned_uri = uri.replace(/^(?:(.*:.*)?\?|xrpl:\/\/\??)/img, "").replace(/\?/img, "&")
 
 	function clean() {
 		return cleaned_uri
@@ -4093,8 +4091,7 @@ function showTab(tab, dontClearText) {
 		$(".headerright").show();
                 $("#navfooter").hide();
 //		$('.screentab').css('padding-bottom', '0em');
-		screentabpaddingbottom = 0;
-                $("#dummyfooter").hide();
+//		screentabpaddingbottom = 0;
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
@@ -4104,14 +4101,12 @@ function showTab(tab, dontClearText) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
 //		$('.screentab').css('padding-bottom', '0em');
-		screentabpaddingbottom = 0;
-                $("#dummyfooter").hide();
+//		screentabpaddingbottom = 0;
         } else { // set logout icon for logged in tabs
 		$(".headerright").show();
                 $("#navfooter").show();
 //		$('.screentab').css('padding-bottom', '4em');
-		screentabpaddingbottom = 4;
-                $("#dummyfooter").show();
+//		screentabpaddingbottom = 4;
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
