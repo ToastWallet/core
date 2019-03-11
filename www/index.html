@@ -144,11 +144,11 @@
 		for (var i = 0; i < $('.deviceversion').length; i++) $('.deviceversion')[i].innerHTML = device.model + " - " + device.platform + " - " + device.version;
 
 	        window.screen.orientation.lock('portrait');
-/*
 		if (typeof(window.Keyboard) != "undefined" && typeof(window.Keyboard.shrinkView) != "undefined") {
 			Keyboard.shrinkView(true);
 			Keyboard.disableScrollingInShrinkView(true);
 		}
+
 
 		if (window.cordova.plugins.Keyboard != undefined) {
 			cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
@@ -192,7 +192,7 @@
 						$(currenttab).scrollTop(prekeyboardscrollpos);
 				}
 			);
-		}*/
+		}
 
 		$(".screentab").scroll(renderMoreContentIndicator);
 
@@ -1541,7 +1541,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.15</center>
+        <center style="color:black;" data-version="version">Version: 2.4.16</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1739,7 +1739,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.15</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.16</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -4090,8 +4090,8 @@ function showTab(tab, dontClearText) {
 	if ($(tab).data('recovery')) { // set recovery icon for logged out tabs
 		$(".headerright").show();
                 $("#navfooter").hide();
-//		$('.screentab').css('padding-bottom', '0em');
-//		screentabpaddingbottom = 0;
+		$('.screentab').css('padding-bottom', '0em');
+		screentabpaddingbottom = 0;
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
@@ -4100,13 +4100,13 @@ function showTab(tab, dontClearText) {
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
-//		$('.screentab').css('padding-bottom', '0em');
-//		screentabpaddingbottom = 0;
+		$('.screentab').css('padding-bottom', '0em');
+		screentabpaddingbottom = 0;
         } else { // set logout icon for logged in tabs
 		$(".headerright").show();
                 $("#navfooter").show();
-//		$('.screentab').css('padding-bottom', '4em');
-//		screentabpaddingbottom = 4;
+		$('.screentab').css('padding-bottom', '4em');
+		screentabpaddingbottom = 4;
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
