@@ -574,7 +574,7 @@ label {
 .screentab {
     overflow-y: scroll;
     margin-top: calc(4.0em + env(safe-area-inset-top));
-    height: calc(100vh - 4em);
+    height: calc(100vh - 4em -  env(safe-area-inset-top) - env(safe-area-inset-bottom));
     position: absolute;
     top: 0;
     left: 0;
@@ -1013,7 +1013,7 @@ input { /* ios patch */
     text-align: center;
     z-index: 90;
     border-top: 1px solid hsla(214, 50%, 25%, 0.25);
-    height: 3.5em !important;
+    height: calc(3.5em + env(safe-area-inset-bottom)) !important;
     overflow: hidden;
 }
 
