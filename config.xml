@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.toastwallet.core" version="2.4.8" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.toastwallet.core" version="2.4.9" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
 	Toast Wallet is a Ripple wallet for Android and iOS.
@@ -14,7 +14,6 @@
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="EnableViewportScale" value="true" />
-    <!--preference name="Fullscreen" value="true" /-->
     <preference name="android-minSdkVersion" value="16" />
     <preference name="buildArchitecture" value="armv7" />
     <preference name="xwalkMultipleApk" value="true" />
@@ -80,14 +79,14 @@
         <splash height="1334" src="www/res/screen/ios/LaunchImage-800-667h@2x.png" width="750" />
         <splash height="1242" src="www/res/screen/ios/LaunchImage-800-Landscape-736h@3x.png" width="2208" />
         <splash height="2208" src="www/res/screen/ios/LaunchImage-800-Portrait-736h@3x.png" width="1242" />
-        <splash height="1334" src="www/res/screen/ios/Default@2x~iphone~anyany.png" width="1334" />
-        <splash height="1334" src="www/res/screen/ios/Default@2x~iphone~comany.png" width="750" />
-        <splash height="750" src="www/res/screen/ios/Default@2x~iphone~comcom.png" width="1334" />
-        <splash height="2208" src="www/res/screen/ios/Default@3x~iphone~anyany.png" width="2208" />
-        <splash height="1242" src="www/res/screen/ios/Default@3x~iphone~anycom.png" width="2208" />
-        <splash height="2208" src="www/res/screen/ios/Default@3x~iphone~comany.png" width="1242" />
-        <splash height="2732" src="www/res/screen/ios/Default@2x~ipad~anyany.png" width="2732" />
-        <splash height="2732" src="www/res/screen/ios/Default@2x~ipad~comany.png" width="1278" />
+        <splash src="www/res/screen/ios/Default@2x~iphone~anyany.png" />
+        <splash src="www/res/screen/ios/Default@2x~iphone~comany.png" />
+        <splash src="www/res/screen/ios/Default@2x~iphone~comcom.png" />
+        <splash src="www/res/screen/ios/Default@3x~iphone~anyany.png" />
+        <splash src="www/res/screen/ios/Default@3x~iphone~anycom.png" />
+        <splash src="www/res/screen/ios/Default@3x~iphone~comany.png" />
+        <splash src="www/res/screen/ios/Default@2x~ipad~anyany.png" />
+        <splash src="www/res/screen/ios/Default@2x~ipad~comany.png" />
     </platform>
     <platform name="wp8">
         <icon height="99" platform="wp8" src="www/res/icon/wp8/ApplicationIcon.png" width="99" />
@@ -155,4 +154,5 @@
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
+    <plugin name="cordova-plugin-splashscreen" spec="~5.0.2" />
 </widget>
