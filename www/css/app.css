@@ -573,7 +573,7 @@ label {
 
 .screentab {
     overflow-y: scroll;
-    margin-top: 4.0em;
+    margin-top: calc(4.0em + env(safe-area-inset-top));
     height: calc(100vh - 4em);
     position: absolute;
     top: 0;
@@ -970,84 +970,10 @@ ul.iosheader > li > * {
     padding-bottom: 0.5em !important;
 }
 
-/*
-.headerleft {
-    width: 25%;
-    text-align: left;
+input { /* ios patch */
+    background-clip: padding-box;
 }
 
-.headerright {
-    width: 25%;
-    text-align: right;
-}
-
-.headermiddle {
-    width: 50%;
-    text-align: center;
-}
-
-
-#navfooter {
-    position: absolute;
-    bottom: 0;
-    width: 100vw;
-    left: 0;
-    background: linear-gradient(45deg, #1959ab, #317fe2);
-    list-style: none;
-    margin: 0;
-    text-align: center;
-    z-index: 90;
-    border-top: 1px solid hsla(214, 50%, 25%, 0.25);
-    height: 3.5em !important;
-    overflow: hidden;
-}
-
-
-#navfooter > li {
-    text-align: center;
-    vertical-align: top;
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    min-width: calc(33% - 1em);
-    padding: 1em 0.5em 1em 0.5em;
-}
-#navfooter div {
-    display: none;
-}
-#navfooter > li > div {
-    font-size: 0.8em;
-}
-
-
-
-#navheader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    background: linear-gradient(45deg, #1959ab, #317fe2);
-    margin: 0;
-    list-style: none;
-    z-index: 90;
-    border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
-    height: 4em !important;
-}
-
-
-
-#navheader > li {
-    vertical-align: middle;
-    margin: 0;
-    display: inline-block;
-}
-#navheader > li > * {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    padding-top: 1em;
-    padding-bottom: 1em;
-}
-*/
 
 /* flat look */
 *:not(.btnpinnumber) {
@@ -1125,8 +1051,11 @@ ul.iosheader > li > * {
     list-style: none;
     z-index: 90;
     border-bottom: 1px solid hsla(214, 50%, 25%, 0.2);
-    height: 4em !important;
-    padding: 1em 1em 1em 1em;
+    height: calc(4.0em + env(safe-area-inset-top)) !important;
+    padding-top: calc(1em + env(safe-area-inset-top));
+    padding-left: 1em;
+    padding-bottom: 1em;
+    padding-right: 1em;
 }
 
 #navheader a, #navheader a:visited, #navheader a:active, #navheader a:hover, 
