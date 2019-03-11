@@ -158,7 +158,8 @@
 				function(e) {
 					if (debug) console.log("nativeKeyboardShow()");
 					//blockInput(true);
-					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em)');
+					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em + 100vh)');
+//                    $('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + 8em')
 					if (currenttab != "") {
 						prekeyboardscrollpos=$(currenttab).scrollTop();
 
@@ -4090,8 +4091,8 @@ function showTab(tab, dontClearText) {
 	if ($(tab).data('recovery')) { // set recovery icon for logged out tabs
 		$(".headerright").show();
                 $("#navfooter").hide();
-		$('.screentab').css('padding-bottom', '0em');
-		screentabpaddingbottom = 0;
+//		$('.screentab').css('padding-bottom', '0em');
+//		screentabpaddingbottom = 0;
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
@@ -4100,13 +4101,13 @@ function showTab(tab, dontClearText) {
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
-		$('.screentab').css('padding-bottom', '0em');
-		screentabpaddingbottom = 0;
+//		$('.screentab').css('padding-bottom', '0em');
+//		screentabpaddingbottom = 0;
         } else { // set logout icon for logged in tabs
 		$(".headerright").show();
                 $("#navfooter").show();
-		$('.screentab').css('padding-bottom', '4em');
-		screentabpaddingbottom = 4;
+//		$('.screentab').css('padding-bottom', '4em');
+//		screentabpaddingbottom = 4;
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
