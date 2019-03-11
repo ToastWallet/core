@@ -104,7 +104,7 @@
 	}
 
 
-    function handleOpenURL(link) {                 
+    function handleOpenURL(link, e) {                 
         console.log("incoming pay-link: " + link);
 
         if (
@@ -125,8 +125,15 @@
             return;
         }
 
+
         paylink_pending = link;
         $('#tablogin>center>div').addClass('pinpad_pending')
+
+        //todo: remove
+        return navigator.notification.alert("The url was: " + link, 
+            function() {},
+            "URL HANDLER", "OK"
+        );
 
         if (!$('#tablogin').is(":visible") && e !== "boot") {
             doShowLogin();
@@ -332,10 +339,10 @@
         var paylink_handler = function(e,s) {
             var link = s.replace(/^.*?:\/\//g, "");
 
-            handleOpenURL(link);
+            handleOpenURL(link, e);
         };
 
-        // in builds that support xrp:// and ripple:// protocol handling we will receive those events here
+        // in builds that support xrpl:// protocol handling we will receive those events here
         if (typeof(require) == 'function' && typeof(require('electron')) == 'object' && typeof(require('electron').ipcRenderer) == 'object' && typeof(require('electron').ipcRenderer.on) == 'function') {
             require('electron').ipcRenderer.on('pay-link', paylink_handler);
         }
@@ -448,7 +455,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
 <div id="tabaccounts" class="screentab" data-title="Accounts" data-primarytab="true" style="display:none">
 	<ul class="list-group" id="accountslist">
-	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddaccount');})"><a href="#"><i class="fa fa-plus-circle" style="font-size: 2.7em" aria-hidden="true"></i></a></li>
+	<li class="list-group-item bottom-list-button" id="btnaddaccount" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddaccount');})"><a href="#"><i class="fa fa-plus-circle" style="font-size: 2.7em; color: #2f7bdd;" aria-hidden="true"></i></a></li>
 	</ul>
 </div>
 
@@ -1531,7 +1538,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.12</center>
+        <center style="color:black;" data-version="version">Version: 2.4.13</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1729,7 +1736,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.12</p>
+<p><center style="color:white;" data-version="version">Version: 2.4.13</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 

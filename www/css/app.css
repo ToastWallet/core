@@ -422,9 +422,14 @@ div#accdetailsaddressdetails {
     margin-top: 0 !important;
 }
 
+input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
 
 .moreindicatorabovenav {
-    bottom: calc(10px + 1.6em) !important;
+    bottom: calc(10px + 1.6em + env(safe-area-inset-bottom)) !important;
 }
 
 .moreindicatordark {
@@ -912,7 +917,7 @@ i.fa.fa-exchange {
 }
 
 
-#accountslist > li:not(:first-of-type) {
+#accountslist > li:not(:first-of-type):not(:last-of-type) {
     border-top: 1px solid rgba(0,0,0,0.07);
 }
 
