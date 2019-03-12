@@ -171,10 +171,9 @@ i.fa.fa-chevron-circle-left, i.fa.fa-question-circle {
     top: 0;
     width: 50%;
     height: 100%;
-    /* filter: blur(5px); */
     font-size: 1.3em !important;
     line-height: 1.15em;
-    filter: blur(3px);
+    filter: blur(5px);
 }
 
 #tabbackup2 h3 {
@@ -932,6 +931,10 @@ select {
     transform: translate(0, calc(-100% - 0.3em));
     pointer-events: none;
 
+}
+
+.selectarrowig {
+    margin-right: 4.5em;
 }
 
 #accountslist > li:not(:first-of-type):not(:last-of-type) {
