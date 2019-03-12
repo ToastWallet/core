@@ -26,6 +26,11 @@ body {
     float: right;
 }
 
+.pasteqr > button:hover {
+    background-color: white;
+    border-color: #ccc;
+}
+
 .pasteqr > * {
     margin-bottom: 0 !important;
 }
