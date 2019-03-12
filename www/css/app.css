@@ -560,10 +560,8 @@ img.loader {
 #accountslist > li {
     text-overflow: ellipsis;
     overflow: hidden;
-//    min-height: 4.5em;
     border: 0;
     margin: 0;
-//    border-radius: 3px;
     padding-left: 0.4em;
     padding-right: 0.4em;    
 }
