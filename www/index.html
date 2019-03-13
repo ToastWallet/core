@@ -605,7 +605,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
-<div id="tabaccountflagsconfirm" class="screentab" data-primarytab="false" data-hasback="true" data-title="Confirm Account Flags" style="display: none;">
+<div id="tabaccountflagsconfirm" class="screentab" data-primarytab="false" data-hasback="true" data-title="Confirm Flags" style="display: none;">
 	<div class="paygrouping">
     <label>Account</label>
 	<div id="cafaddress"></div>
@@ -1374,7 +1374,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <br>
     <label>Passphrase</label>    
 	<span class="pasteqr">
-        <button class="btn btn-default" id="confirmpaypassword" ontouchend="te(event, ()=>{toggleShowPassField('#confirmpaypassword', '#confirmpaypasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
+        <button class="btn btn-default" id="confirmpaypasswordeyebtn" ontouchend="te(event, ()=>{toggleShowPassField('#confirmpaypassword', '#confirmpaypasswordeyebtn')})" type="button" onclick="ts(event)"><i class="fa fa-eye"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR((content, after) => {  doConfirmPay(content) })})" type="button"><i class="fa fa-camera"></i></button>
         <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{  doConfirmPay(content) })})"><i class="fa fa-paste"></i></button>
     </span>
@@ -1564,7 +1564,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.1</center>
+        <center style="color:black;" data-version="version">Version: 2.5.2</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1762,7 +1762,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.1</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.2</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
