@@ -201,7 +201,11 @@
 				function(e) {
                     nativekeyboardvisible = false;
 					if (debug) console.log("nativeKeyboardHide()");
-                    $('#navfooter').show();
+                    if ($(currenttab).data('recovery') || $(currenttab).data('noright')) {
+                        $("#navfooter").hide();
+                    } else {
+                        $('#navfooter').show();
+                    }
 					$('.screentab').css('padding-bottom', screentabpaddingbottom + 'em');
 					if (currenttab != "") 
 						$(currenttab).scrollTop(prekeyboardscrollpos);
@@ -1564,7 +1568,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.2</center>
+        <center style="color:black;" data-version="version">Version: 2.5.3</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1762,7 +1766,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.2</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.3</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -4127,8 +4131,6 @@ function showTab(tab, dontClearText) {
 	if ($(tab).data('recovery')) { // set recovery icon for logged out tabs
 		$(".headerright").show();
                 $("#navfooter").hide();
-//		$('.screentab').css('padding-bottom', '0em');
-//		screentabpaddingbottom = 0;
                 $(".headerright>i").removeClass("fa-lock");
                 $(".headerright>i").addClass("fa-medkit");
                 $(".headerright").off();
@@ -4137,20 +4139,16 @@ function showTab(tab, dontClearText) {
 	} else if ($(tab).data('noright')) {
                 $(".headerright").hide();
                 $("#navfooter").hide();
-//		$('.screentab').css('padding-bottom', '0em');
-//		screentabpaddingbottom = 0;
-        } else { // set logout icon for logged in tabs
-		$(".headerright").show();
+    } else { // set logout icon for logged in tabs
+        		$(".headerright").show();
                 $("#navfooter").show();
-//		$('.screentab').css('padding-bottom', '4em');
-//		screentabpaddingbottom = 4;
                 $(".headerright>i").removeClass("fa-medkit");
                 $(".headerright>i").addClass("fa-lock");
                 $(".headerright").off();
                 $(".headerright").on('touchend', function(){ doShowLogin(); });
                 if ((device.platform + "").toLowerCase() == 'browser') $(".headerright").on('click', function(){ doShowLogin(); });
 	        $("#morecontentindicator").addClass("moreindicatorabovenav");
-        }	
+    }	
 
 
 	$("body").removeClass("darkbackground");
