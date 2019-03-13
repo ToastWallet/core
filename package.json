@@ -1,6 +1,6 @@
 {
   "name": "ToastWallet",
-  "version": "2.3.13",
+  "version": "2.5.5",
   "description": "Toast Wallet is a Ripple wallet for Android and iOS.",
   "main": "electron-start.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "Toast",
     "Wallet"
   ],
-  "author": "StarStone Limited",
+  "author": "StarStone Software",
   "license": "GPL 2.0",
   "devDependencies": {
     "electron": "~1.6.2",
