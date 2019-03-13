@@ -72,8 +72,9 @@ function createWindow () {
     slashes: true
   }) + paylink);
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
+  app.setAsDefaultProtocolClient("xrpl");
   app.setAsDefaultProtocolClient("xrp");
   app.setAsDefaultProtocolClient("ripple");
 
