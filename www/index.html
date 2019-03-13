@@ -1568,7 +1568,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.6</center>
+        <center style="color:black;" data-version="version">Version: 2.5.7</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1766,7 +1766,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.6</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.7</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1784,13 +1784,17 @@ NO WARRANTY
 
 
 function clipboardPaste(f) {
-    if (window.require && require('electron') && require('electron').clipboard) 
-        return f(require('electron').clipboard.readText());
+    try {
+        if (window.require && require('electron') && require('electron').clipboard) 
+            return f(require('electron').clipboard.readText());
 
-    if (device.platform == 'browser')
-        return navigator.clipboard.readText().then(f);
+        if (device.platform == 'browser')
+            return navigator.clipboard.readText().then(f);
 
-    cordova.plugins.clipboard.paste(f);
+        cordova.plugins.clipboard.paste(f);
+    } catch (E) {
+        console.log(E);
+    }
 }
 
 
@@ -3667,6 +3671,8 @@ function doPayLink(paylink) {
     populatePaymentTabFromURI(paylink);
 
     paylink_pending = null;
+    $('#tablogin>center>div').removeClass('pinpad_pending')
+
     if (activeaccount == "") 
         refreshAccounts();
 }
