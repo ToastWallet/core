@@ -2,7 +2,7 @@
 <widget id="com.toastwallet.core" version="2.5.7" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
-	Toast Wallet is a Ripple wallet for Android and iOS.
+	Toast Wallet is an XRP wallet for Android and iOS.
     </description>
     <author email="support@toastwallet.com" href="https://toastwallet.com">
         Toast Wallet
@@ -119,16 +119,6 @@
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-        <gap:config-file overwrite="true" parent="NSCameraUsageDescription" platform="ios">
-            <string>The camera is used to scan QR-codes of Ripple addresses.</string>
-        </gap:config-file>
-        <gap:config-file overwrite="true" parent="NSPhotoLibraryUsageDescription" platform="ios">
-            <string>The photo library is used to scan QR-codes of Ripple addresses.</string>
-        </gap:config-file>
-    </platform>
     <plugin name="cordova-plugin-sqlite-2" spec="~1.0.4" />
     <plugin name="cordova-plugin-screen-orientation" spec="~2.0.1" />
     <plugin name="cordova-plugin-crosswalk-webview" spec="~2.3.0">
@@ -147,11 +137,27 @@
     <plugin name="cordova-android-support-gradle-release" spec="~1.4.3">
         <variable name="ANDROID_SUPPORT_VERSION" value="23.+" />
     </plugin>
-    <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6" />
+    <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="The camera is used to scan QR-codes of XRP ledger addresses" />
+    </plugin>
     <plugin name="cordova-plugin-customurlscheme" spec="~4.3.0">
         <variable name="URL_SCHEME" value="xrpl" />
         <variable name="ANDROID_SCHEME" value="xrpl" />
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
+    <plugin name="cordova-plugin-ios-camera-permissions" spec="~1.2.0">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="The camera is used to scan QR-codes of XRP ledger addresses" />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="The photo library is used to scan QR-codes of XRP ledger addresses" />
+    </plugin>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge" overwrite="true">
+            <string>The camera is used to scan QR-codes of XRP ledger addresses</string>
+        </edit-config>        
+        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge" overwrite="true" >
+            <string>The photo library is used to scan QR-codes of XRP ledger addresses</string>
+        </edit-config>
+    </platform>
 </widget>
