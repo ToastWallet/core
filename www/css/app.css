@@ -603,12 +603,8 @@ label {
 
 
 
-
-::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
-    display: none;
-}
+/* this is removed for PC versions */
+::-webkit-scrollbar {width: 0px; background: transparent; display: none;}
 
 div.input-group>span.input-group-btn>button {
     min-width: 5em;
