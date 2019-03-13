@@ -1457,7 +1457,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <input ontouchend="te(event, quickSelectInput)" type="text" id="payassetofl" class="form-control" placeholder="Leave blank for XRP">
         <br />
         <label>Issuer Addresss</label>
-        <span class="pasteqr">
+        <span class="pasteqr" id="issueraddressbtnpaste">
             <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{  $('#payissuerofl').val(content) })})"><i class="fa fa-paste"></i></button>
         </span>        
         <input ontouchend="te(event, quickSelectInput)" type="text" id="payissuerofl" class="form-control" placeholder="Leave blank for XRP">
@@ -1564,7 +1564,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.4.28</center>
+        <center style="color:black;" data-version="version">Version: 2.5.1</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1762,7 +1762,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.4.28</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.1</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -3295,22 +3295,28 @@ function refreshTrustlines(account, after) {
 
 }
 
-function onToggleIssueOwnCurrency() {
+function onToggleIssueOwnCurrency(forceoff) {
     if (debug) console.log("onToggleIssueOwnCurrency()");
     
-    if ($('#tglIssueOwnCurrency').data('checked') == "true") {
+    if (forceoff || $('#tglIssueOwnCurrency').data('checked') != "true") {
+        $('#payissuerofl').val('');
+        $('#payissuerofl').removeAttr('readonly');
+        $('#payassetofl').attr('placeholder', 'Leave blank for XRP');
+        $('#oflcurrencydiv').hide();
+        $('#issueraddressbtnpaste').show();
+        $('#payissuerselectarrow').show();
+        $('#payasset').show();
+
+    } else {
         $('#payasset').hide();
         $('#oflcurrencydiv').show();
         $('#payissuerofl').val('This account');
         $('#payissuerofl').attr('readonly', 'readonly');
         $('#payassetofl').removeAttr('placeholder');
+        $('#issueraddressbtnpaste').hide();
+        $('#payissuerselectarrow').hide();
         $('#payassetofl').focus();
-    } else {
-        $('#payissuerofl').val('');
-        $('#payissuerofl').removeAttr('readonly');
-        $('#payassetofl').attr('placeholder', 'Leave blank for XRP');
-        $('#oflcurrencydiv').hide();
-        $('#payasset').show();
+
     }
 }
 
@@ -3332,6 +3338,7 @@ function showPaymentTab(account, currency, issuer, balance) {
    
 //    $('#payamount').attr('placeholder', ''+balance);
     $('#payamount').val(balance);
+
     showTab('#tabpayments', true);
     $('#toaddress').focus();
 
@@ -4294,6 +4301,7 @@ function clearPaymentScreen() {
         tgl.removeClass('fa-toggle-off');
         tgl.addClass('fa-toggle-off');
         $('#tglIssueOwnCurrency').data('checked', 'false');
+        onToggleIssueOwnCurrency(true);
         $('#payassetofl').val('');
         $('#payissuerofl').val('');
         $('#invoiceiddiv').css( 'display', 'none' );
@@ -4302,9 +4310,11 @@ function clearPaymentScreen() {
         if (offlinemode) {
             $('#oflcurrencydiv').show();
             $('#payasset').hide();
+            $('#payissuerselectarrow').hide();
         } else {
             $('#oflcurrencydiv').hide();
             $('#payasset').show();
+            $('#payissuerselectarrow').show();
         }
 	} catch(e) {handle_error(e);}
 }
