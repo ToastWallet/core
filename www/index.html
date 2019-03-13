@@ -3666,6 +3666,7 @@ function doPayLink(paylink) {
 
     populatePaymentTabFromURI(paylink);
 
+    paylink_pending = null;
     if (activeaccount == "") 
         refreshAccounts();
 }
@@ -3706,7 +3707,6 @@ function doShowLogin() {
             } else {
                 $('#tablogin>center>div').removeClass('pinpad_pending');
                 doPayLink(paylink_pending); 
-                paylink_pending = null;
             }
 		}, function() {
 			$("#btnbootstrapsequence").hide();
