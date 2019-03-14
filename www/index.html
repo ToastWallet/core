@@ -143,18 +143,24 @@
     function find_label(ele) {
         var original_ele = ele;
 
-        var totaliter = 0;
-        if (ele.is('label')) return ele;
-        var first = true;
-        do {
-            if (!first) ele = ele.parent(); else first = false;
+        if (!ele) return ele;
+
+        try {
+            var totaliter = 0;
             if (ele.is('label')) return ele;
-            while (ele.prev().length > 0) {
-                ele = ele.prev();
+            var first = true;
+            do {
+                if (!first) ele = ele.parent(); else first = false;
                 if (ele.is('label')) return ele;
-                if (totaliter++ > 100) return original_ele;
-            }
-        } while(ele.parent().length > 0);
+                while (ele.prev().length > 0) {
+                    ele = ele.prev();
+                    if (ele.is('label')) return ele;
+                    if (totaliter++ > 100) return original_ele;
+                }
+            } while(ele.parent().length > 0);
+        } catch (E) {
+            return original_ele
+        }
     }
 
     var nativekeyboardvisible = false;
@@ -189,9 +195,8 @@
 
                         ele = find_label(ele);
 
-						var offset = ele.offset().top - $(currenttab).offset().top + $(currenttab).scrollTop()
-
-						$(currenttab).scrollTop(offset);
+                        if (ele && ele.offset && ele.offset().top)
+    						$(currenttab).scrollTop(ele.offset().top - $(currenttab).offset().top + $(currenttab).scrollTop());
 					}
 				}
 			);
@@ -299,6 +304,7 @@
 
             var allowunknown = _this.data('allowunknown');
             
+            if (!ele) return;
 
             if (ele.hasClass("unknowntoggle")) {
                 ele.removeClass("unknowntoggle");
@@ -1568,7 +1574,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.7</center>
+        <center style="color:black;" data-version="version">Version: 2.5.8</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1766,7 +1772,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.7</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.8</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -4181,7 +4187,8 @@ function showTab(tab, dontClearText) {
 	var inputs = $(currenttab + " input");
 	for (var i = 0; i < inputs.length; i++) {
 		var ele = $('#' + inputs[i].id);
-		var content = ele.data('content');
+        if (!ele || !ele.data || !ele.val) continue;
+        var content = ele.data('content');
 		if (content != undefined) ele.val(content);
 	}
 	
