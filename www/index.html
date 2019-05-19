@@ -17,7 +17,6 @@
 	<script src="cordova.js"></script>
 	<script src="js/kjua-0.1.1.min.js"></script>
 	<script src="js/sodium.js"></script>
-	<script src="js/clipboard.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/rippleutils-build.js"></script>
     
@@ -246,7 +245,6 @@
 
 		if (debug) console.log("afterCordovaLoad:2");
 
-		new ClipboardJS('.copybtnaction');
 
 		document.addEventListener("pause", function(){
 			if (debug) console.log("onPause");
@@ -401,7 +399,7 @@
         <h3 style="color:black; text-align:center;">The data below is your encrypted wallet backup</h3>
         <p style="color:black;">You should make a new backup whenever you add a new account to your wallet, change your passphrase or change your pin. Toast Wallet will prompt you when a new backup is required.</p>
     	<center>
-		    <button  id="btncopywallet" data-clipboard-target="#walletbackup" "type="button" class="btn btn-primary copybtnaction btnbig">Copy</button>
+		    <button  id="btncopywallet" data-clipboard-target="#walletbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#walletbackup').val())})" type="button" class="btn btn-primary copybtnaction btnbig">Copy</button>
 	    </center>
     	<label>Your backup</label>
 	    <textarea oninput="$(this).val($(this).data('content'));" style="color:black;" id="walletbackup"></textarea>
@@ -505,7 +503,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<label id="lblaccsecret">Account Secret</label>
 		<input ontouchend="te(event, quickSelectInput)" type="text" id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" >
 	</center>
-	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accsecret').val())})"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 	<br>
 	<br>
 	<center><div id="accsecretqr"></div></center>
@@ -687,7 +685,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxhash" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxhash" class="btn copybtn copybtnaction" data-clipboard-target="#vtxhash"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxhash" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxhash').val())})" data-clipboard-target="#vtxhash"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 			</span>
 		</div>        
     <br>
@@ -699,7 +697,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxfrom" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" data-clipboard-target="#vtxfrom"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxfrom').val())})" data-clipboard-target="#vtxfrom"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -707,7 +705,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxto" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" data-clipboard-target="#vtxto"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxto').val())})" data-clipboard-target="#vtxto"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -715,7 +713,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxdtag" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxdtag" class="btn copybtn copybtnaction" data-clipboard-target="#vtxdtag"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxdtag" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxdtag').val())})" data-clipboard-target="#vtxdtag"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -909,7 +907,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accdetailsaddress').val())})" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
 			</span>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
@@ -1574,7 +1572,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.8</center>
+        <center style="color:black;" data-version="version">Version: 2.5.9</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1772,7 +1770,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.8</p>
+<p><center style="color:white;" data-version="version">Version: 2.5.9</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1788,6 +1786,20 @@ NO WARRANTY
 
 <script>
 
+function clipboardCopy(data) {
+    try {
+        if (window.require && require('electron') && require('electron').clipboard) 
+            return require('electron').clipboard.writeText(data);
+
+        if (device.platform == 'browser')
+            return navigator.clipboard.writeText(data);
+
+        cordova.plugins.clipboard.copy(data);
+    } catch (E) {
+        console.log(E);
+    }
+
+}
 
 function clipboardPaste(f) {
     try {
