@@ -1,72 +1,66 @@
 {
-  "name": "ToastWallet",
-  "version": "2.5.9",
-  "description": "Toast Wallet is a Ripple wallet for Android and iOS.",
-  "main": "electron-start.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "repository": "https://github.com/ToastWallet/core",
-  "keywords": [
-    "XRP",
-    "Ripple",
-    "Toast",
-    "Wallet"
-  ],
-  "author": "StarStone Software",
-  "license": "GPL 2.0",
-  "devDependencies": {
-    "electron": "~1.6.2",
-    "electron-builder": "^19.19.1"
-  },
-  "build": {
-    "appId": "com.toastwallet.core",
-    "compression": "maximum",
-    "win": {
-      "target": "appx",
-      "icon": "www/res/electron/toastwallet.ico"
-    },
-    "appx": {
-      "backgroundColor": "#1565b1"
-    },
-    "linux": {
-      "target": "AppImage"
-    },
-    "mac": {
-      "icon": "www/res/icon/icon.icns"
-    }
-  },
-  "forceCodeSigning": "true",
-  "publisherName": "StarStone Limited",
-  "verifyUpdateCodeSignature": "true",
-  "dependencies": {
-    "cordova-android": "~6.1.2",
-    "cordova-android-support-gradle-release": "^1.4.3",
-    "cordova-browser": "^4.1.0",
-    "cordova-ios": "4.5.5",
-    "cordova-plugin-app-event": "1.2.1",
-    "cordova-plugin-badge": "0.7.4",
-    "cordova-plugin-console": "1.1.0",
-    "cordova-plugin-notification": "1.3.7",
-    "de.appplant.cordova.plugin.local-notification": "0.8.5",
-    "electron-debug": "^2.0.0",
-    "menu": "^0.2.5"
-  },
+  "name": "com.toastwallet.core",
+  "version": "2.5.10",
+  "displayName": "Toast Wallet",
   "cordova": {
     "platforms": [
       "browser",
-      "android"
+      "ios"
     ],
     "plugins": {
-      "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "xrpl",
-        "ANDROID_SCHEME": "xrpl",
-        "ANDROID_HOST": " ",
-        "ANDROID_PATHPREFIX": "/"
-      },
-      "cordova-plugin-console": {},
+      "cordova-plugin-camera": {},
       "cordova-plugin-device": {},
-      "cordova-plugin-notification": {}
+      "cordova-plugin-dialogs": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-sqlite-2": {},
+      "cordova-plugin-screen-orientation": {},
+      "cordova-plugin-crosswalk-webview": {
+        "XWALK_VERSION": "23+",
+        "XWALK_LITEVERSION": "xwalk_core_library_canary:23+",
+        "XWALK_COMMANDLINE": "-disable-pull-to-refresh-effect",
+        "XWALK_MODE": "embedded",
+        "XWALK_MULTIPLEAPK": "true"
+      },
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-build-architecture": {},
+      "cordova-plugin-battery-status": {},
+      "cordova-android-support-gradle-release": {
+        "ANDROID_SUPPORT_VERSION": "23.+"
+      },
+      "phonegap-plugin-barcodescanner": {
+        "CAMERA_USAGE_DESCRIPTION": "The camera is used to scan QR-codes of XRP ledger addresses"
+      },
+      "cordova-plugin-ios-camera-permissions": {
+        "CAMERA_USAGE_DESCRIPTION": "The camera is used to scan QR-codes of XRP ledger addresses",
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "The photo library is used to scan QR-codes of XRP ledger addresses"
+      },
+      "it.almaviva.openurlext": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "xrpl"
+      }
     }
+  },
+  "dependencies": {
+    "cordova-android-support-gradle-release": "~1.4.3",
+    "cordova-browser": "~5.0.4",
+    "cordova-ios": "4.5.5",
+    "cordova-plugin-battery-status": "~1.2.4",
+    "cordova-plugin-build-architecture": "~1.0.6",
+    "cordova-plugin-camera": "~2.1.1",
+    "cordova-plugin-crosswalk-webview": "~2.3.0",
+    "cordova-plugin-customurlscheme": "4.4.0",
+    "cordova-plugin-device": "~2.0.2",
+    "cordova-plugin-dialogs": "~1.2.0",
+    "cordova-plugin-ios-camera-permissions": "~1.2.0",
+    "cordova-plugin-network-information": "~1.2.0",
+    "cordova-plugin-openurlext": "1.0.1",
+    "cordova-plugin-screen-orientation": "~2.0.1",
+    "cordova-plugin-sqlite-2": "~1.0.4",
+    "cordova-plugin-statusbar": "~2.1.2",
+    "cordova-plugin-whitelist": "~1.2.1",
+    "ionic-plugin-keyboard": "~2.2.1",
+    "phonegap-plugin-barcodescanner": "~6.0.6"
   }
 }
