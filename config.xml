@@ -17,7 +17,6 @@
     <preference name="buildArchitecture" value="armv7" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="phonegap-version" value="cli-7.0.1" />
-    <plugin name="cordova-plugin-inappbrowser" value="~3.0.0" />
     <plugin name="cordova-plugin-clipboard-v2" value="~0.0.4" />
     <plugin name="cordova-plugin-camera" source="npm" spec="~2.1.1" />
     <plugin name="cordova-plugin-device" spec="~2.0.2" />
@@ -151,6 +150,10 @@
             <string>The photo library is used to scan QR-codes of XRP ledger addresses</string>
         </edit-config>
     </platform>
+    <plugin name="it.almaviva.openurlext" spec="~1.0.0" />
+    <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
+        <variable name="URL_SCHEME" value="xrpl" />
+    </plugin>
     <engine name="browser" spec="~5.0.4" />
     <engine name="ios" spec="4.5.5" />
 </widget>
