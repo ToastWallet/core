@@ -938,7 +938,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 		<button  type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doShowAndGenerateAccount();})">Generate New Address</button><br />
 		<button  type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddexistingaccount');})">Add Existing Address</button><br />
-		<button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open('https://xrpvanity.com', '_system');})">Get a Vanity Address</button>
+		<button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://xrpvanity.com', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">Get a Vanity Address</button>
 	</center>
 </div>
 
@@ -1560,7 +1560,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <center>
         <div class="settingsbuttons">
             <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
-            <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{window.open('https://toastwallet.com/faq', '_system');})">FAQ / Help</button>
+            <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://toastwallet.com/faq', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">FAQ / Help</button>
             <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore or Reset Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrecovery');})">Change PIN</button>
