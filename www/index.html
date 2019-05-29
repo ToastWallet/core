@@ -1560,6 +1560,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <center>
         <div class="settingsbuttons">
             <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
+            <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{buyXrpRedirect();})">Buy XRP (Europe only)</button>
             <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://toastwallet.com/faq', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">FAQ / Help</button>
             <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore or Reset Wallet</button>
@@ -1572,7 +1573,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.10</center>
+        <center style="color:black;" data-version="version">Version: 2.5.11</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
     </div>
@@ -1785,6 +1786,11 @@ NO WARRANTY
 
 
 <script>
+
+function buyXrpRedirect() {
+    var safelloUrl = 'https://app.safello.com/sdk/quickbuy.html?appId=a72dea02-c8d5-48aa-88ca-b0ff8ccd7126&utm_source=Toast&utm_medium=Wallet&crypto=xrp&address=' + activeaccount;
+    OpenUrlExt.open(safelloUrl, ()=>{console.log('link open success')}, ()=>{console.log('link open failed')});
+}
 
 function clipboardCopy(data) {
     try {
