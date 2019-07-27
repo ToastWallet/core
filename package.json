@@ -36,7 +36,7 @@
         "CAMERA_USAGE_DESCRIPTION": "The camera is used to scan QR-codes of XRP ledger addresses",
         "PHOTOLIBRARY_USAGE_DESCRIPTION": "The photo library is used to scan QR-codes of XRP ledger addresses"
       },
-      "it.almaviva.openurlext": {},
+      "cordova-plugin-openurlext": {},
       "cordova-plugin-customurlscheme": {
         "URL_SCHEME": "xrpl"
       }

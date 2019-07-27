@@ -150,7 +150,7 @@
             <string>The photo library is used to scan QR-codes of XRP ledger addresses</string>
         </edit-config>
     </platform>
-    <plugin name="cordova-plugin-openurlext" spec="~1.0.0" />
+    <plugin name="cordova-plugin-openurlext" spec="~1.0.1" />
     <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
         <param name="URL_SCHEME" value="xrpl" />
     </plugin>
