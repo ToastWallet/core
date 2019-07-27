@@ -152,7 +152,7 @@
     </platform>
     <plugin name="cordova-plugin-openurlext" spec="~1.0.0" />
     <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
-        <variable name="URL_SCHEME" value="xrpl" />
+        <param name="URL_SCHEME" value="xrpl" />
     </plugin>
     <engine name="browser" spec="~5.0.4" />
     <engine name="ios" spec="4.5.5" />
