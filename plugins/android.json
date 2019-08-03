@@ -68,9 +68,6 @@
     "dependent_plugins": {
         "es6-promise-plugin": {
             "PACKAGE_NAME": "com.toastwallet.core"
-        },
-        "cordova-plugin-compat": {
-            "PACKAGE_NAME": "com.toastwallet.core"
         }
     }
 }
