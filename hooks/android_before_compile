@@ -1,0 +1,4 @@
+#!/bin/bash
+cp platforms/android/assets/www/cordova_plugins.js platforms/android/assets/www/cordova_plugins_.js
+cat platforms/android/assets/www/cordova_plugins_.js | pcregrep -Mv '{\s+"id": "it.almaviva.openurlext.OpenUrlExt"[^\[\]}]*?},' > platforms/android/assets/www/cordova_plugins.js
+rm platforms/android/assets/www/cordova_plugins_.js

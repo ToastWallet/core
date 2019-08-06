@@ -25,6 +25,7 @@
     <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2" />
     <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
     <platform name="android">
+        <hook src="hooks/android_before_compile" type="before_compile" />
         <icon density="ldpi" src="www/res/icon/android/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="www/res/icon/android/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="www/res/icon/android/drawable-hdpi-icon.png" />
@@ -130,9 +131,6 @@
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-build-architecture" spec="~1.0.6" />
     <plugin name="cordova-plugin-battery-status" spec="~1.2.4" />
-    <plugin name="cordova-android-support-gradle-release" spec="~1.4.3">
-        <variable name="ANDROID_SUPPORT_VERSION" value="23.+" />
-    </plugin>
     <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="The camera is used to scan QR-codes of XRP ledger addresses" />
     </plugin>
@@ -150,10 +148,14 @@
             <string>The photo library is used to scan QR-codes of XRP ledger addresses</string>
         </edit-config>
     </platform>
-    <plugin name="cordova-plugin-openurlext" spec="~1.0.1" />
+    <plugin name="cordova-plugin-openurlext" spec="1.0.1" />
     <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
-        <param name="URL_SCHEME" value="xrpl" />
+        <variable name="URL_SCHEME" value="xrpl" />
+    </plugin>
+    <plugin name="cordova-android-support-gradle-release" spec="~1.4.3">
+        <variable name="ANDROID_SUPPORT_VERSION" value="23.+" />
     </plugin>
     <engine name="browser" spec="~5.0.4" />
     <engine name="ios" spec="4.5.5" />
+    <engine name="android" spec="^6.4.0" />
 </widget>
