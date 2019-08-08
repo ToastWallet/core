@@ -1,0 +1,8 @@
+#!/bin/bash
+which phonegap > /dev/null 2>&1
+if [ "$?" -gt "0" ]; then
+    phonegap plugin add cordova-plugin-customurlscheme --variable URL_SCHEME=xrpl
+else
+    cordova plugin add cordova-plugin-customurlscheme --variable URL_SCHEME=xrpl
+fi
+
