@@ -2,6 +2,7 @@
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVPluginResult.h>
 #import "CDVClipboard.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 
 @implementation CDVClipboard
 
@@ -10,7 +11,8 @@
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		NSString     *text       = [command.arguments objectAtIndex:0];
 
-		[pasteboard setValue:text forPasteboardType:@"public.text"];
+		//[pasteboard setValue:text forPasteboardType:@"public.text"];
+        [pasteboard setValue:text forPasteboardType:(NSString *)kUTTypeUTF8PlainText];
 
 		CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:text];
 		[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
