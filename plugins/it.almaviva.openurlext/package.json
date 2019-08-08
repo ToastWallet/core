@@ -1,0 +1,51 @@
+{
+  "_from": "cordova-plugin-openurlext@^1.0.1",
+  "_id": "cordova-plugin-openurlext@1.0.1",
+  "_inBundle": false,
+  "_integrity": "sha1-eaUTBKsmzBVxa1U6SHN3TIaksOg=",
+  "_location": "/cordova-plugin-openurlext",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "cordova-plugin-openurlext@^1.0.1",
+    "name": "cordova-plugin-openurlext",
+    "escapedName": "cordova-plugin-openurlext",
+    "rawSpec": "^1.0.1",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.1"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-openurlext/-/cordova-plugin-openurlext-1.0.1.tgz",
+  "_shasum": "79a51304ab26cc15716b553a4873774c86a4b0e8",
+  "_spec": "cordova-plugin-openurlext@^1.0.1",
+  "_where": "/Users/richardholland/toastwalletbuild/core",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/PaoloMessina/OpenUrlExt/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Open a specific URL in the external browser of the hosting OS.",
+  "homepage": "https://github.com/PaoloMessina/OpenUrlExt#readme",
+  "keywords": [
+    "cordova",
+    "ios",
+    "external",
+    "link"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "cordova-plugin-openurlext",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaoloMessina/OpenUrlExt.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.1"
+}

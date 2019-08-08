@@ -1,0 +1,46 @@
+{
+  "_from": "cordova-plugin-build-architecture@~1.0.6",
+  "_id": "cordova-plugin-build-architecture@1.0.6",
+  "_inBundle": false,
+  "_integrity": "sha512-JTS/5QtD3MnvlEqN4d+xvCRY+b2Mry7cSymXshQjUy5lcMycjB09wSd3HbIPlx9TpSCLYWB1ylhH2mMhKC6NNg==",
+  "_location": "/cordova-plugin-build-architecture",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "cordova-plugin-build-architecture@~1.0.6",
+    "name": "cordova-plugin-build-architecture",
+    "escapedName": "cordova-plugin-build-architecture",
+    "rawSpec": "~1.0.6",
+    "saveSpec": null,
+    "fetchSpec": "~1.0.6"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-build-architecture/-/cordova-plugin-build-architecture-1.0.6.tgz",
+  "_shasum": "5a739b07a47d3bbcde072999c2c47547a1faaa84",
+  "_spec": "cordova-plugin-build-architecture@~1.0.6",
+  "_where": "/Users/richardholland/toastwalletbuild/core",
+  "author": {
+    "name": "Martin Buchalik"
+  },
+  "bugs": {
+    "url": "https://github.com/MBuchalik/cordova-build-architecture/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Experimental plugin to force one single arm or x86 build",
+  "homepage": "https://github.com/MBuchalik/cordova-build-architecture#readme",
+  "keywords": [
+    "cordova"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-build-architecture",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MBuchalik/cordova-build-architecture.git"
+  },
+  "version": "1.0.6"
+}

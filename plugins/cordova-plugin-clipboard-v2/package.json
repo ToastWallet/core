@@ -1,0 +1,60 @@
+{
+  "_from": "cordova-plugin-clipboard-v2",
+  "_id": "cordova-plugin-clipboard-v2@0.0.4",
+  "_inBundle": false,
+  "_integrity": "sha1-FcIpxXZ21KoZwnqrLwkouFCfcpU=",
+  "_location": "/cordova-plugin-clipboard-v2",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-clipboard-v2",
+    "name": "cordova-plugin-clipboard-v2",
+    "escapedName": "cordova-plugin-clipboard-v2",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-clipboard-v2/-/cordova-plugin-clipboard-v2-0.0.4.tgz",
+  "_shasum": "15c229c57676d4aa19c27aab2f0928b8509f7295",
+  "_spec": "cordova-plugin-clipboard-v2",
+  "_where": "/Users/richardholland/toastwalletbuild/core",
+  "author": "",
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-clipboard-v2",
+    "platforms": [
+      "ios",
+      "android",
+      "wp8"
+    ]
+  },
+  "deprecated": false,
+  "description": "Clipboard management plugin for Cordova/PhoneGap",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "keywords": [
+    "clipboard",
+    "copy",
+    "paste",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-wp8"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-clipboard-v2",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "version": "0.0.4"
+}
