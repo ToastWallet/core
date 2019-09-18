@@ -6,3 +6,4 @@ www/.index.html.swp
 *.swp
 *.swo
 .*.sw?
+.DS_Store
