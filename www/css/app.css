@@ -21,6 +21,12 @@ body {
     overflow: hidden;
 }
 
+.hashicon {
+    float: left;
+    width: 45px;
+    height: 50px !important;
+}
+
 .pasteqr > button {
     border-bottom: 0;
     float: right;
@@ -478,7 +484,9 @@ input {
     background: white;
     content: "\f110";
     color: #307ee0;
-    font: normal normal normal 4em/1 FontAwesome;
+    font-size: 4em;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
     -webkit-animation: fa-spin 2s infinite linear;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
@@ -568,9 +576,42 @@ img.loader {
 #btnaddaccount > * {
     vertical-align: middle;
 }
-i.fa {
+i.fa, i.fas, i.far {
     font-size: 1.5em;
 }
+
+button.btnpinnumber i.fas {
+    font-size: 1em;
+}
+
+.fa-lock {
+    font-size: 1.4em;
+}
+
+.addrtype {
+    font-family: monospace;
+    vertical-align: bottom;
+    line-height: 1.2em;
+}
+
+.xrbtn {
+    max-width: 2.5em;
+    max-height: 2.4em;
+    min-width: 2.5em !important;
+    min-height: 2.4em;
+    padding: 0;
+    margin: 0;
+    color: black;
+    background: rgba(0,0,0,0.1);
+    border: none;
+    float: right;
+}
+
+.xrbtn > i.fa {
+    margin-right: -0.1em;
+    vertical-align: middle;
+}
+
 label {
     color: black;
 }
@@ -867,13 +908,6 @@ i.fa.fa-exchange {
     padding: 0.2em;
     border-radius:2px;
 }
-/*.accloadspinner {
-    opacity: 0.4;
-    font-size: 0.9em !important;
-    position: absolute;
-    right: 0.7em;
-    bottom: 0.15em;
-}*/
 
 .accloadspinner {
     opacity: 0.4;
@@ -883,6 +917,7 @@ i.fa.fa-exchange {
     color: #337ab7;
     bottom: 0.2em;
     right: 0.2em;
+    animation: fa-spin 2s infinite linear;
 }
 .bidask { 
     font-size: 0.9em;
@@ -1126,6 +1161,7 @@ input { /* ios patch */
 }
 .pinnumber {
     color: rgba(255,255,255,0.7);
+    min-height: 1.75em;
 }
 
 .darkbackground:after {

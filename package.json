@@ -5,7 +5,8 @@
   "cordova": {
     "platforms": [
       "browser",
-      "ios"
+      "ios",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-camera": {},
@@ -39,13 +40,16 @@
       "cordova-plugin-openurlext": {},
       "cordova-plugin-customurlscheme": {
         "URL_SCHEME": "xrpl"
-      }
+      },
+      "cordova-plugin-clipboard-v2": {},
+      "it.almaviva.openurlext": {}
     }
   },
   "dependencies": {
+    "cordova-android": "^6.4.0",
     "cordova-android-support-gradle-release": "~1.4.3",
-    "cordova-browser": "~5.0.4",
-    "cordova-ios": "4.5.5",
+    "cordova-browser": "^5.0.4",
+    "cordova-ios": "^4.5.5",
     "cordova-plugin-battery-status": "~1.2.4",
     "cordova-plugin-build-architecture": "~1.0.6",
     "cordova-plugin-camera": "~2.1.1",
@@ -55,7 +59,7 @@
     "cordova-plugin-dialogs": "~1.2.0",
     "cordova-plugin-ios-camera-permissions": "~1.2.0",
     "cordova-plugin-network-information": "~1.2.0",
-    "cordova-plugin-openurlext": "1.0.1",
+    "cordova-plugin-openurlext": "^1.0.1",
     "cordova-plugin-screen-orientation": "~2.0.1",
     "cordova-plugin-sqlite-2": "~1.0.4",
     "cordova-plugin-statusbar": "~2.1.2",

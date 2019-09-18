@@ -7,7 +7,8 @@
 	<meta name="viewport" content="viewport-fit=cover, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/app.css">
-	<link rel="stylesheet" href="css/font-awesome.css">
+    <link href="css/select2.css" rel="stylesheet" />
+	<link href="fontawesome/css/all.css" rel="stylesheet">
 	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 	<script src="js/lodash.js"></script>
 	<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
@@ -19,7 +20,8 @@
 	<script src="js/sodium.js"></script>
 	<script src="js/instascan.min.js"></script>
 	<script src="js/rippleutils-build.js"></script>
-    
+    <script src="js/hashicon.js"></script> 
+    <script src="js/select2.js"></script>
 	<script>if (window.module) module = window.module;
 
         function blockInput(noloading) {
@@ -77,6 +79,21 @@
 	var timepaused = 0;
 
     var paylink_pending = null;
+
+    var display_xaddresses = true;
+
+    // given an address sitting in an inputgroup, if the button is placed in the input group the 
+    // address in the first input box in the group will be swapped with the r or X address
+    // depending on what's currently there
+    function xrbtn_press(e) {
+        var e = e.srcElement
+        var t = e.getElementsByClassName('addrtype')[0]
+        while(e && !e.classList.contains('input-group'))
+            e = e.parentElement
+        if (!e || !(e = e.getElementsByTagName('input')[0]) || !t)
+            return
+        e.value = (e.value.substr(0,1) == 'X' ? (t.innerHTML='x', raddr(e.value).raddr) : (t.innerHTML='r', xaddr(e.value, false))) 
+    }
 
 
 	function refreshWebView() {
@@ -503,7 +520,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<label id="lblaccsecret">Account Secret</label>
 		<input ontouchend="te(event, quickSelectInput)" type="text" id="accsecret" style="color:blue" oninput="$(this).val($(this).data('content'));" >
 	</center>
-	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accsecret').val())})"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+	<button  style="display:none;" type="button" id="btncopysecret" class="btn copybtn copybtnaction" data-clipboard-target="#accsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accsecret').val())})"><i class="far fa-copy" aria-hidden="true"></i></button>
 	<br>
 	<br>
 	<center><div id="accsecretqr"></div></center>
@@ -685,7 +702,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxhash" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxhash" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxhash').val())})" data-clipboard-target="#vtxhash"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxhash" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxhash').val())})" data-clipboard-target="#vtxhash"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div>        
     <br>
@@ -697,7 +714,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxfrom" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxfrom').val())})" data-clipboard-target="#vtxfrom"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxfrom').val())})" data-clipboard-target="#vtxfrom"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -705,7 +722,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxto" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxto').val())})" data-clipboard-target="#vtxto"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxto').val())})" data-clipboard-target="#vtxto"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -713,7 +730,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxdtag" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyvtxdtag" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxdtag').val())})" data-clipboard-target="#vtxdtag"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyvtxdtag" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxdtag').val())})" data-clipboard-target="#vtxdtag"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
@@ -905,9 +922,13 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div id="accdetailsaddressdetails" class="innertab">
 		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">XRP address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
 		<div class="input-group">
+            <span class="input-group-btn">
+				<button type="button" class="btn xrbtn" ontouchstart="ts(event)" ontouchend="te(event, ()=>{xrbtn_press(event)})"><i class="fa fa-redo-alt" aria-hidden="true"></i><span class="addrtype">r</span>
+                </button>
+			</span>
 			<input ontouchend="te(event, quickSelectInput)" type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
 			<span class="input-group-btn">
-				<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accdetailsaddress').val())})" data-clipboard-target="#accdetailsaddress"><i class="fa fa-files-o" aria-hidden="true"></i></button>
+				<button type="button" id="btncopyaddress" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#accdetailsaddress').val())})" data-clipboard-target="#accdetailsaddress"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div>
 		<center><div id="accdetailsqr"></div></center>
@@ -938,7 +959,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 		<button  type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doShowAndGenerateAccount();})">Generate New Address</button><br />
 		<button  type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddexistingaccount');})">Add Existing Address</button><br />
-		<button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://xrpvanity.com', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">Get a Vanity Address</button>
 	</center>
 </div>
 
@@ -1006,9 +1026,9 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('7'); return false;})"><div>7<i class="char">prqs</i></div></button>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('8'); return false;})"><div>8<i class="char">tuv</i></div></button>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>	
-	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('Help'); return false;})"><div><i class="fa fa-question-circle" aria-hidden="true"></i></div></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('Help'); return false;})"><div><i class="fas fa-question" aria-hidden="true"></i></div></button>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
-	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fas fa-backspace" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -1038,7 +1058,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
-	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fas fa-backspace" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -1068,7 +1088,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('9'); return false;})"><div>9<i class="char">wxyz</i></div></button><br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab(-1); return false;})"><div><i class="fa fa-times" aria-hidden="true"></i></div></button>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('0'); return false;})"><div>0</div></button>
-	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i></button>
+	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad(''); return false;})"><i class="fas fa-backspace" aria-hidden="true"></i></button>
 	</div>
 	</center>
     
@@ -1572,9 +1592,41 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </center>
 
     <div>
-        <center style="color:black;" data-version="version">Version: 2.5.10</center>
+        <center style="color:black;" data-version="version">Version: 3.0.0</center>
     	<center style="color:black;" class="deviceversion"></center>
 	    <center style="color:black;" class="currentgateway">Connected to: </center>
+    </div>
+</div>
+
+
+<!--todo: finish tabinterface -->
+<div id="tabinterface" class="screentab" data-primarytab="false" data-hasback="true" data-title="Interface Settings" style="display:none">
+	<label>Valuation Currency</label>
+	<div>
+	<select ontouchend="te(event, quickSelectInput)" id="valuationcurrency" class="form-control" onchange=";"><option data-account="" id="optvc">USD</option><option data-account="" id="optvc2">EUR</option></select>
+    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
+
+	</div>
+
+    <br>
+
+	<label>Custom</label>
+    <span class="pasteqr">
+        <button class="btn btn-default  btnqrcvc" id="btnqrcvc1" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{})"><i class="fa fa-camera"></i></button>
+       </span>
+
+    <input ontouchend="te(event, quickSelectInput)" type="text" id="cursomvaluationcurrency" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{}">
+
+	<br>
+
+    <div style="color:black;">
+    	<span class="toggleswitch" data-after="" id="tglUseXAddress"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Use X-Address Format</div>
+        <p>XRPL addresses that begin with an X do not require a destination tag. Not all services support this format.</p>
+    </div>    
+
+    <br>
+    <div style="text-align: center;">
+        <button class="btn btn-success btnbig" id="btninterface" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button">Update Settings</button>
     </div>
 </div>
 
@@ -1770,7 +1822,7 @@ NO WARRANTY
 	<br>
 	<p style="text-align:center;">If you do not agree then close and uninstall this application.</p>
 </center>
-<p><center style="color:white;" data-version="version">Version: 2.5.10</p>
+<p><center style="color:white;" data-version="version">Version: 3.0.0</p>
 <p><center style="color:white;" class="deviceversion"></center></p>
 </div>
 
@@ -1779,7 +1831,7 @@ NO WARRANTY
 
 <div id="navfooter" style="display:none">
     <span id="navaccounts" ontouchstart="showTab('#tabaccounts');"><i class="fa fa-home" aria-hidden="true"></i></span>
-	<span id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fa fa-usd" aria-hidden="true"></i></span>
+	<span id="navpayments" ontouchstart="showTab('#tabpayments');"><i class="fas fa-paper-plane" aria-hidden="true" style="font-size: 1.4em"></i></span>
 	<span id="navsettings" ontouchstart="showTab('#tabsettings');"><i class="fa fa-cog" aria-hidden="true"></i></span>
 </div>
 
@@ -2654,6 +2706,25 @@ function existingAddrSecretSwap() {
 	if (b[0] != 's') $("#txtsecret").val("");
 }
 
+// this will be loaded from the user's settings, default is true
+var useXaddr = true
+
+function xaddr(raddr, tag) {
+	flag = tag === false ? 0 : tag < 4294967296  ? 1 : 2
+	if (flag == 2) return false
+	var decoded = rippleAddressCodec.decodeAccountID(raddr)
+	if (!decoded) return false
+	return rippleAddressCodec.codecs.ripple.encodeChecked([0x05, 0x44].concat(decoded.concat(
+		[flag, tag & 0xff, (tag  >> 8) & 0xff, (tag >> 16) & 0xff, (tag >> 24) & 0xff, 0,0,0,0])))
+}
+
+function raddr(xaddr) {
+	var decoded = rippleAddressCodec.codecs.ripple.decodeChecked(xaddr)
+	if (!decoded) return false
+	var raddr = rippleAddressCodec.encodeAccountID(decoded.slice(2,22))
+	var tag = decoded[22] == 0 ? false : decoded[23] + decoded[24] * 0x100 + decoded[25] * 0x10000 + decoded[26] * 0x1000000
+	return decoded[22] > 1 ? false : {raddr: raddr, tag: tag}
+}
 
 var scanner;
 var timeatlastQR = 0;
@@ -2720,7 +2791,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#ra" + accselected).addClass("active");
 	activeaccount = accselected;
 	$("#fromaccountslist>*:not(.bottom-list-button)").remove();
-    $("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><div class="accountline"><a href="#" class="address"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></div><div class="trustlines"></div></li>');
+    $("#fromaccountslist").prepend('<li class="list-group-item accountitem active"><span class="hashicon"></span><div class="accountline"><a href="#" class="address"><span class="address">'+accselected+'</span></a><span class="amount">'+( accountbalances[accselected] == undefined ? '' :  accountbalances[accselected] + " XRP")+'</span></div><div class="trustlines"></div></li>');
 
 
 	showTab("#tabaccountdetails");	
@@ -2740,7 +2811,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "XRP address" : nickname);
 
 	
-	$("#accdetailsaddress").val( accselected );
+	$("#accdetailsaddress").val( ( display_xaddresses ? xaddr(accselected, false) : accselected ));
 }
 
 
@@ -3635,7 +3706,10 @@ function refreshAccounts(after) {
             //var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
             var bottomtouchend = toptouchend; // changed the behaviour so it always goes to the account details tab, since the DEX is rarely used
             if ($('#ra' + i).length == 0) {
-                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? i : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fa fa-refresh fa-spin accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
+                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? ( display_xaddresses ? xaddr(i,false) : i ) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
+
+            $('#ra' + i + ' .hashicon')[0].appendChild(hashicon(xaddr(i, false), 35))
+
             } else {
 
                 // passively update without rewriting the dom
@@ -3647,9 +3721,12 @@ function refreshAccounts(after) {
                 }
 
                 // may have changed nickname since last update
-                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? i : nickname);
+                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? ( display_xaddresses ? xaddr(i, false): i) : nickname);
 
                 // update touchend event handlers
+                $('#ra' + i + ' .hashicon').removeAttr('ontouchend');
+                $('#ra' + i + ' .hashicon').attr('ontouchend', toptouchend);
+                
                 $('#ra' + i + ' .accountline').removeAttr('ontouchend');
                 $('#ra' + i + ' .accountline').attr('ontouchend', toptouchend);
 
@@ -8771,8 +8848,10 @@ function doGetTransactions(address, marker) {
 				tx += '<li class="txrow '+(x.payments[i].source == address ? 'txsent' : 'txreceived')+'" data-txhash="'+x.payments[i].tx_hash+'" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doViewTransaction(\''+x.payments[i].tx_hash+'\')})">';
 				var outgoing = (x.payments[i].source == address);
 
-				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane-o' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
-				tx += ( outgoing ? x.payments[i].destination : x.payments[i].source ) + '</span>';
+				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
+				var addr = ( outgoing ? x.payments[i].destination : x.payments[i].source ) 
+
+                tx += (display_xaddresses ? xaddr(addr,false) : addr ) + '</span>';
 				tx += '<span >' + x.payments[i].amount + '</span>';
 
 				tx += '</li>'
