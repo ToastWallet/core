@@ -7,3 +7,5 @@ www/.index.html.swp
 *.swo
 .*.sw?
 .DS_Store
+package-lock.json
+info.txt
