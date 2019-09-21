@@ -80,7 +80,13 @@
 
     var paylink_pending = null;
 
-    var display_xaddresses = true;
+    // contains all interface settings like whether or not to use x-addresses by default
+    // and which currency to display in
+    var interface_settings = {
+        valuation_counterparty: 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B', // bitstamp is default
+        valuation_currency: 'USD',
+        display_xaddresses: false
+    }
 
     // given an address sitting in an inputgroup, if the button is placed in the input group the 
     // address in the first input box in the group will be swapped with the r or X address
@@ -794,7 +800,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <option selected="selected">disabled</option>
         <option>enabled</option>        
 	</select>
-    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
     </div>
     <br>
 
@@ -1009,12 +1014,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 	<div class="pinpad" style="">
 	    <div class="pinnumber">
-	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	    <i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
@@ -1039,12 +1044,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 	<div class="pinpad" style="">
 	    <div class="pinnumber">
-	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	    <i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
@@ -1069,12 +1074,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<center>
 	<div class="pinpad" style="">
 	    <div class="pinnumber">
-	    <i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
-		<i class="fa fa-circle-thin" aria-hidden="true"></i>&nbsp;
+	    <i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
+		<i class="far fa-circle" aria-hidden="true"></i>&nbsp;
 	</div>
 	<br>
 	<button  class="btnpinnumber" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doPinPad('1'); return false;})"><div>1</div></button>
@@ -1197,6 +1202,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
     <input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" placeholder="" id="ntloissuer">
     <br>
+    <br>
     
     <label>Amount</label><div class="input-group">
         <input ontouchend="te(event, quickSelectInput)" ontouchstart="ts(event, renderOrderPreview)" type="text" id="ntloamount" class="form-control" placeholder="" onkeypress="renderOrderPreview()" onchange="renderOrderPreview()">
@@ -1241,7 +1247,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
                     <option id="ntloexpirycustomunit-nocustom" data-unit="">Presets ...</option>                                
                 </select>                
             </div>
-            <span class="selectarrow selectarrowig"><i class="fa fa-angle-down"></i></span>
         </span>        
         <select id="ntloexpiry" ontouchstart="ts(event,()=>{})" ontouchend="te(event, quickSelectInput)" class="form-control" onchange="($('#ntloexpiry').find(':selected')[0].id == 'ntloexpiry-opt-custom' ? $('#customexpirydiv').show() + $('#ntloexpiry').hide() + $('#ntloexpirycustomunit > option').removeAttr('selected') + $('#ntloexpirycustomunit-hour').attr('selected', 'selected') : $('#customexpirydiv').hide() + $('#ntloexpiry').show() )">
             <option id="ntloexpiry-opt-custom" data-hours="0" data-minutes="0">Custom ...</option>
@@ -1265,7 +1270,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <button class="btn btn-default" id="btnntlomore" ontouchstart="ts(event)" ontouchend="te(event, ()=>{ if ($('#divntlomore').is(':visible')) { $('#divntlomore').hide(); $('#btnntlomore')[0].innerText = 'More'; } else { $('#divntlomore').show(); $('#btnntlomore')[0].innerText = 'Less'; }})" type="button">More</button>
 	    </span>
     </div>
-    <span class="selectarrow selectarrowig"><i class="fa fa-angle-down"></i></span> 
     <br>
     <div id="divntlomore" style="display:none;">
         <div style="color:black;">
@@ -1424,7 +1428,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div>
 	<select ontouchend="te(event, quickSelectInput)" id="payfromaccount" class="form-control" onchange="onPaymentSelectFromAccount();">
 	</select>
-    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
 
 	</div>
 
@@ -1492,7 +1495,6 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	</div>
 
 	<select ontouchend="te(event, quickSelectInput)" id="payasset" class="form-control" onchange=""><option id="optpa-xrp" data-asset="XRP" data-issuer="">XRP</option></select>
-    <span class="selectarrow" id="payissuerselectarrow"><i class="fa fa-angle-down"></i></span>
 
     <br/>
 
@@ -1581,6 +1583,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <div class="settingsbuttons">
             <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://toastwallet.com/faq', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">FAQ / Help</button>
+            <button type="button" class="btn btn-primary btnbig" id="btnint" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showInterfaceTab()})">Interface Settings</button>
             <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore or Reset Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrecovery');})">Change PIN</button>
@@ -1599,25 +1602,24 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
-<!--todo: finish tabinterface -->
 <div id="tabinterface" class="screentab" data-primarytab="false" data-hasback="true" data-title="Interface Settings" style="display:none">
 	<label>Valuation Currency</label>
 	<div>
-	<select ontouchend="te(event, quickSelectInput)" id="valuationcurrency" class="form-control" onchange=";"><option data-account="" id="optvc">USD</option><option data-account="" id="optvc2">EUR</option></select>
-    <span class="selectarrow"><i class="fa fa-angle-down"></i></span>
-
+	<select ontouchend="te(event, quickSelectInput)" id="valuationcurrency" class="form-control">
+        <!-- credit to theworldexchange.net for many of these pairs -->
+        <option data-currency="USD" data-counterparty="rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B">USD - Bitstamp</option>
+        <option data-currency="AUD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">AUD - Coinex</option>
+        <option data-currency="CNY" data-counterparty="rKiCet8SdvWxPXnAgYarFUXMh1zCPz432Y">CNY - Ripplefox</option>
+        <option data-currency="EUR" data-counterparty="rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B">EUR - Bitstamp</option>
+        <option data-currency="GBP" data-counterparty="rBycsjqxD8RVZP5zrrndiVtJwht7Z457A8">GBP - Ripula</option>
+        <option data-currency="JPY" data-counterparty="r9ZFPSb1TFdnJwbTMYHvVwFK1bQPUCVNfJ">JPY - Ripple Exch Tokyo</option>
+        <option data-currency="KRW" data-counterparty="rPxU6acYni7FcXzPCMeaPSwKcuS2GTtNVN">KRW - EXRP</option>
+        <option data-currency="MXN" data-counterparty="rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn">MXN - Bitso</option>
+        <option data-currency="NZD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">NZD - Coinex</option>
+    </select>
 	</div>
 
     <br>
-
-	<label>Custom</label>
-    <span class="pasteqr">
-        <button class="btn btn-default  btnqrcvc" id="btnqrcvc1" ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{})"><i class="fa fa-camera"></i></button>
-       </span>
-
-    <input ontouchend="te(event, quickSelectInput)" type="text" id="cursomvaluationcurrency" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{}">
-
-	<br>
 
     <div style="color:black;">
     	<span class="toggleswitch" data-after="" id="tglUseXAddress"><i class="fa fa-toggle-off" aria-hidden="true"></i></span><div style="line-height: 2.5em; font-weight: bold;">Use X-Address Format</div>
@@ -1626,7 +1628,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 
     <br>
     <div style="text-align: center;">
-        <button class="btn btn-success btnbig" id="btninterface" ontouchstart="ts(event)" ontouchend="te(event, ()=>{})" type="button">Update Settings</button>
+        <button class="btn btn-success btnbig" id="btninterface" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doUpdateInterfaceSettings()})" type="button">Update Interface</button>
     </div>
 </div>
 
@@ -1868,6 +1870,29 @@ function clipboardPaste(f) {
 }
 
 
+// formats the internals of select2 comboboxes
+function formatSelect2(state) {
+
+    console.log('formataccselect2 called')    
+    
+    if (!state.element || !state.element.parentNode || 
+        !state.element.parentNode.id || 
+        !state.element.dataset || !state.element.dataset.account ||
+        state.element.parentNode.id != 'payfromaccount'  ) 
+        return $('<span>' + state.text + '</span>')
+ 
+    var acc = state.element.dataset.account //state._resultId.replace(/^.+-/, '')
+    var xacc = xaddr(acc, false)
+    var ret = $('<span class="accselect2"></span>')
+    ret.append(hashicon(xacc, 20))
+    ret.append(' ')
+    ret.append(
+        (state.text == acc ? (interface_settings.display_xaddresses ? xaddr(acc, false) : acc) : state.text)
+    )
+
+    return ret
+}
+
 // this function fires when an account is selected on the payments tab
 // but is only used to supply red qr code in the event the user is in offline mode
 function onPaymentSelectFromAccount() {
@@ -1886,11 +1911,9 @@ function onPaymentSelectFromAccount() {
         $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $("#payasset").hide();
         $('#oflcurrencydiv').show();
-        $('#payissuerselectarrow').hide();
         
     } else {
         $('#payasset').show();
-        $('#payissuerselectarrow').show();
         $('#payofflinecodediv').css('display', 'none');
         $("#paytabredqr").empty();
         var xrpoption = '<option data-issuer="" data-asset="XRP" id="optpa-xrp">XRP</option>';
@@ -2811,7 +2834,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "XRP address" : nickname);
 
 	
-	$("#accdetailsaddress").val( ( display_xaddresses ? xaddr(accselected, false) : accselected ));
+	$("#accdetailsaddress").val( ( interface_settings.display_xaddresses ? xaddr(accselected, false) : accselected ));
 }
 
 
@@ -2973,6 +2996,52 @@ function getSavedGateways(callback) {
 	} catch(e) { handle_error(e); } }
 	db.get("savedgateways").then(f).catch(f);
 
+}
+
+//todo: consider generalising this function and using it for the above and below
+function loadSavedInterfaceSettings() {
+	var f	= function(saved) { try {
+		if (saved.data != undefined) {
+			saved = JSON.parse(saved.data);
+            interface_settings = saved
+		}
+	} catch(e) { handle_error(e); } }
+	db.get("interfacesettings").then(f).catch(f);
+}
+
+// called from tab
+function doUpdateInterfaceSettings() {
+
+    var currency = $('#valuationcurrency option:selected').data('currency')
+    var counterparty = $('#valuationcurrency option:selected').data('counterparty')
+    var xaddr = $('#tglUseXAddress').data('checked')
+
+    if (currency && counterparty) { 
+        interface_settings.valuation_currency = currency
+        interface_settings.valuation_counterparty = counterparty
+    }
+
+    // switches return strings of true false or undefined
+    interface_settings.display_xaddresses = xaddr === 'true'
+
+
+    saveInterfaceSettings()
+
+    showTab(-1)
+
+}
+
+function saveInterfaceSettings() {
+    db.upsert("interfacesettings",
+        function(doc) {
+            return { data: JSON.stringify(interface_settings) };
+        })
+}
+
+function showInterfaceTab() {
+    $('#valuationcurrency > option[data-currency="'+interface_settings.valuation_currency+'"][data-counterparty="'+interface_settings.valuation_counterparty+'"]')[0].selected = true
+    setToggleSwitch('#tglUseXAddress', interface_settings.display_xaddresses)
+    showTab('#tabinterface', true)
 }
 
 function getLastBackupReminder(callback) {
@@ -3258,8 +3327,8 @@ function getOrders(account, then, then2) {
 
 
 function getExchangeRate(currency, counterparty, then, then2) {
-    if (currency == "") currency = 'USD';
-    if (counterparty == "") counterparty = 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B';
+    if (currency == "") currency = 'USD'
+    if (counterparty == "") counterparty = 'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B'
 
 	remote.getOrderbook(
 		counterparty, 
@@ -3267,9 +3336,12 @@ function getExchangeRate(currency, counterparty, then, then2) {
 		"counter": {"currency":"XRP"}},  { limit: 10 }
 	).then(orders => {
 		var exchangerate = 0;
-		for (var i in orders.bids) 
+		for (var i in orders.bids) {
+            console.log(orders.bids[i]) 
 			exchangerate += parseFloat("" + orders.bids[i].properties.makerExchangeRate);
+        }
         exchangerate /= 10.0;
+
         return then(exchangerate, then2);   
     }).catch( (e)=>{
         return then(0, then2);
@@ -3302,7 +3374,7 @@ function refreshTrustlines(account, after) {
                 if (tl['specification'] == undefined || tl['state'] == undefined || (issuer = tl['specification']['counterparty']) == undefined || 
                 (currency = tl['specification']['currency']) == undefined || (balance = tl['state']['balance']) == undefined ||  tl['specification']['limit'] === "0") continue;
 
-                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency">USD xxxx</div></div></div><div class="adtlorders"><ul class="adtlorderslist" id="olt-'+currency+'-'+issuer+'"></ul></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><small>BUY</small></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><small>SELL</small></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
+                trustlines += '<li class="adtrustline"><div class="adtlheader"><div class="tlcurrency"><div class="currency">' + currency + '</div> ' + display_currency_amount(parseFloat(""+balance)) + '</div><div class="tlissuer">' + issuer + '</div><div class="tlvaluation" style="display:none"><div class="currency"></div></div></div><div class="adtlorders"><ul class="adtlorderslist" id="olt-'+currency+'-'+issuer+'"></ul></div><div class="adtlgraph" id="grp-'+currency+'-'+issuer+'"></div><div class="bidask"><span class="bid"></span><span class="ask"></span></div><center><div class="adtlsubheader"><button class="btn btn-warning adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showModifyTrustline(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+tl['specification']['limit']+')})"><i class="fa fa-cog" aria-hidden="true"></i></button><button class="btn btn-primary adtlbutton"  ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'buy\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><small>BUY</small></button><button class="btn btn-danger adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showNewOrder(\''+account+'\', \'sell\', \''+currency+'\', \''+issuer+'\', '+balance+', $(\'#grp-'+currency+'-'+issuer+'\').data(\'bid\'), $(\'#grp-'+currency+'-'+issuer+'\').data(\'ask\'))})"><small>SELL</small></button><button class="btn btn-success adtlbutton" ontouchstart="ts(event)" ontouchend="te(event,()=>{showPaymentTab(\''+account+'\', \''+currency+'\', \''+issuer+'\', '+balance+')})"><i class="fa fa-paper-plane"></i></button></div></center></li>';
             }
 
         } else {
@@ -3405,7 +3477,6 @@ function onToggleIssueOwnCurrency(forceoff) {
         $('#payassetofl').attr('placeholder', 'Leave blank for XRP');
         $('#oflcurrencydiv').hide();
         $('#issueraddressbtnpaste').show();
-        $('#payissuerselectarrow').show();
         $('#payasset').show();
 
     } else {
@@ -3415,7 +3486,6 @@ function onToggleIssueOwnCurrency(forceoff) {
         $('#payissuerofl').attr('readonly', 'readonly');
         $('#payassetofl').removeAttr('placeholder');
         $('#issueraddressbtnpaste').hide();
-        $('#payissuerselectarrow').hide();
         $('#payassetofl').focus();
 
     }
@@ -3538,8 +3608,6 @@ function showModifyTrustline(account, currency, issuer, limit) {
 var trustlinesdropdown = {};
 
 function refreshAccounts(after) {
-
-
     // mark and sweep to remove any dead accounts
     
     var nonce = sodium.randombytes_random();
@@ -3634,16 +3702,16 @@ function refreshAccounts(after) {
 
                                 trustlines = '<div class="trustline"><div class="amount"><span class="mono" style=""><div class="currency">XRP</div> ' + display_currency_amount(xrpBalance) + '</span></div></div>' + trustlines;
 
-                                var usdbalance = "";
+                                var fiatbalance = "";
                                 if (exchangerate > 0) {
                                     var amount =  exchangerate * ( parseFloat("" + xrpBalance) + xrpvalueoftrustlinebalances );
                                     var stramount =  display_currency_amount(amount);
 
-                                    usdbalance = '<span class="mono" style="opacity:0.7"><div class="currency"><span>USD ' + stramount + '</span></div></span>';
+                                    fiatbalance = '<span class="mono" style="opacity:0.7"><div class="currency"><span>' + interface_settings.valuation_currency + ' ' + stramount + '</span></div></span>';
                                 }
 
 
-                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + usdbalance + '</span>';
+                                $("#ra" + account + ">.accountline>.amount")[0].innerHTML = '<span class="mono">' + fiatbalance + '</span>';
                                 if (trustlines != "")  {
                                     $("#ra" + account + ">.trustlines")[0].innerHTML = trustlines;
                                     $("#ra" + account + ">.trustlines").data('tlcount', tlcount);
@@ -3694,7 +3762,7 @@ function refreshAccounts(after) {
             });
         };
 
-        getExchangeRate("", "", updateaccs, after);
+        getExchangeRate(interface_settings.valuation_currency, interface_settings.valuation_counterparty, updateaccs, after);
     };
 
 	getAccounts(function(acc) {
@@ -3706,7 +3774,7 @@ function refreshAccounts(after) {
             //var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
             var bottomtouchend = toptouchend; // changed the behaviour so it always goes to the account details tab, since the DEX is rarely used
             if ($('#ra' + i).length == 0) {
-                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? ( display_xaddresses ? xaddr(i,false) : i ) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
+                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? ( interface_settings.display_xaddresses ? xaddr(i,false) : i ) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
 
             $('#ra' + i + ' .hashicon')[0].appendChild(hashicon(xaddr(i, false), 35))
 
@@ -3721,7 +3789,7 @@ function refreshAccounts(after) {
                 }
 
                 // may have changed nickname since last update
-                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? ( display_xaddresses ? xaddr(i, false): i) : nickname);
+                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? ( interface_settings.display_xaddresses ? xaddr(i, false): i) : nickname);
 
                 // update touchend event handlers
                 $('#ra' + i + ' .hashicon').removeAttr('ontouchend');
@@ -3878,11 +3946,11 @@ function doPinPad(x) {
 function renderEnteredPin() {
 	for (var i = 1; i <= PIN_MAX; i++) {
 		if (i <= enteredpin.length) {
-			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle-thin");
-			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle");
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("far");
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa");
 		} else {
-			$(".pinnumber>i:nth-of-type("+i+")").addClass("fa-circle-thin");
-			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa-circle");
+			$(".pinnumber>i:nth-of-type("+i+")").addClass("far");
+			$(".pinnumber>i:nth-of-type("+i+")").removeClass("fa");
 
 		}
 	}
@@ -4206,11 +4274,11 @@ function showTab(tab, dontClearText) {
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
 
-	$(tab).show();
+    $(tab + ' select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
+	
+    $(tab).show();
 
     if (tab != '#tabaccounts') $(tab).scrollTop(0);
-
-
 
     if ($(tab).data('hasback') && previoustabs.length > 0 && 
             !( currenttab == '#tabpayments' && previoustabs.length == 1 && (previoustabs[0] == '#tabaccounts' || previoustabs[0] == '#tabsettings' ) )
@@ -4414,11 +4482,9 @@ function clearPaymentScreen() {
         if (offlinemode) {
             $('#oflcurrencydiv').show();
             $('#payasset').hide();
-            $('#payissuerselectarrow').hide();
         } else {
             $('#oflcurrencydiv').hide();
             $('#payasset').show();
-            $('#payissuerselectarrow').show();
         }
 	} catch(e) {handle_error(e);}
 }
@@ -6865,6 +6931,8 @@ onDeviceReady: function() {
 			setTimeout(afterCordovaLoad, 0);
 			if (debug) console.log("onDeviceReady:3");
 
+            // change all select boxes to the modern graphical format
+            $('select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
 
 
 			if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
@@ -6878,6 +6946,8 @@ onDeviceReady: function() {
 				);
 			} else {
 
+                // grab interface settings
+                loadSavedInterfaceSettings()
 
 				// if we have previously saved new / additional gateways we'll try load them now and add them to the gateway list
 
@@ -8851,7 +8921,7 @@ function doGetTransactions(address, marker) {
 				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
 				var addr = ( outgoing ? x.payments[i].destination : x.payments[i].source ) 
 
-                tx += (display_xaddresses ? xaddr(addr,false) : addr ) + '</span>';
+                tx += (interface_settings.display_xaddresses ? xaddr(addr,false) : addr ) + '</span>';
 				tx += '<span >' + x.payments[i].amount + '</span>';
 
 				tx += '</li>'

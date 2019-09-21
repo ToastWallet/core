@@ -1578,8 +1578,9 @@ S2.define('select2/selection/single',[
 
     $selection.html(
       '<span class="select2-selection__rendered"></span>' +
-      '<span class="select2-selection__arrow" role="presentation">' +
-        '<b role="presentation"></b>' +
+      '<span class="select2-selection__arrow selectarrow" role="presentation">' +
+        '<i class="fas fa-chevron-down"></i>' +
+        /*'<b role="presentation"></b>' +*/
       '</span>'
     );
 

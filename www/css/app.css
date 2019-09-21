@@ -463,7 +463,8 @@ input {
     z-index: 101;
     content: "\f021";
     color: #307ee0;
-    font: normal normal normal 4em/1 FontAwesome;
+    font-size: 4em;
+    font-family: 'Font Awesome 5 Free';
     -webkit-animation: fa-spin 2s infinite linear;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
@@ -512,6 +513,15 @@ input {
     left: 0px;
     z-index: 103;
 }
+
+.select2-dropdown {
+    color: black;
+}
+
+.select2-selection {
+    min-height: 2.2em;
+}
+
 button:not(.varsize) {
     min-width: 6em;
 }
@@ -950,25 +960,49 @@ i.fa.fa-exchange {
     text-align: center;
 }
 
-select {
-    -webkit-appearance: none;
+.accselect2 {
+    color: black;
+    margin-bottom: 1em;
 }
 
+.accselect2 > canvas {transform: translate(0px, 25%);}
+
+.select2 {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #ccc !important;
+}
 
 .selectarrow {
-
-    color: black;
-    position: absolute;
-    right: 0.7em;
+    color: #888888;
+    position: absolute !important;
+    right: 0.3em !important;
     background: white;
-    padding-left: 0.3em;
-    transform: translate(0, calc(-100% - 0.3em));
+    padding-left: 1em;
     pointer-events: none;
+    font-size: 0.6em;
+    line-height: 4em;
+    width: 3em !important;
+}
 
+.select2-container {
+    margin-bottom: 1em;
 }
 
 .selectarrowig {
     margin-right: 4.5em;
+}
+
+label {
+    margin-top: 0.5em;
+    margin-bottom: 0.3em;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: inherit !important;
+    color: inherit !important;
 }
 
 #accountslist > li:not(:first-of-type):not(:last-of-type) {
