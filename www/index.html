@@ -91,14 +91,34 @@
     // given an address sitting in an inputgroup, if the button is placed in the input group the 
     // address in the first input box in the group will be swapped with the r or X address
     // depending on what's currently there
-    function xrbtn_press(e) {
+    // arguments:
+    //  e - touch event
+    //  qrtoupdate - optional; a QR code id to update
+    //  after - optional; function to execute after, passed the src element and target input box
+    //  dt - optional; destination tag
+    function xrbtn_press(e, qrtoupdate, after, dt) {
+
+        if (dt == undefined || typeof(dt) == 'string' && parseInt(dt)+'' != dt.replace(/\s/, '').replace(/\s/g,''))
+            dt = false
+   
         var e = e.srcElement
+        var src = e.srcElement
         var t = e.getElementsByClassName('addrtype')[0]
         while(e && !e.classList.contains('input-group'))
             e = e.parentElement
+
         if (!e || !(e = e.getElementsByTagName('input')[0]) || !t)
             return
-        e.value = (e.value.substr(0,1) == 'X' ? (t.innerHTML='x', raddr(e.value).raddr) : (t.innerHTML='r', xaddr(e.value, false))) 
+        e.value = (e.value.substr(0,1) == 'X' ? 
+            (t.innerHTML='x', raddr(e.value).raddr) : 
+            (t.innerHTML='r', xaddr(e.value, dt))) 
+    
+        if (qrtoupdate) {
+            $(qrtoupdate).empty();
+            $(qrtoupdate).append(kjua({text: e.value}));
+        }
+
+        if (after) after(src, e)
     }
 
 
@@ -718,6 +738,10 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <div id="vtxdetails">
     <label>From Address</label>
 		<div class="input-group">
+            <span class="input-group-btn">
+                <button type="button" class="btn xrbtn" ontouchstart="ts(event)" ontouchend="te(event, ()=>{xrbtn_press(event)})"><i class="fa fa-redo-alt" aria-hidden="true"></i><span class="addrtype">r</span>
+                </button>
+            </span>
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxfrom" style="color:black">
 			<span class="input-group-btn">
 				<button type="button" id="btncopyvtxfrom" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxfrom').val())})" data-clipboard-target="#vtxfrom"><i class="far fa-copy" aria-hidden="true"></i></button>
@@ -726,12 +750,17 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <br>
     <label>To Address</label>
 		<div class="input-group">
+            <span class="input-group-btn">
+                <button type="button" class="btn xrbtn" ontouchstart="ts(event)" ontouchend="te(event, ()=>{xrbtn_press(event, false, (src,target)=>{$('#vtxdtgroup').hide(); if(target.value.substr(0,1) == 'r') $('#vtxdtgroup').show()}, $('#vtxdtag').val())})"><i class="fa fa-redo-alt" aria-hidden="true"></i><span class="addrtype">r</span>
+                </button>
+            </span>
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxto" style="color:black">
 			<span class="input-group-btn">
 				<button type="button" id="btncopyvtxto" class="btn copybtn copybtnaction" ontouchstart="ts(event)" ontouchend="te(event, ()=>{clipboardCopy($('#vtxto').val())})" data-clipboard-target="#vtxto"><i class="far fa-copy" aria-hidden="true"></i></button>
 			</span>
 		</div> 
     <br>
+    <div id="vtxdtgroup">
     <label>Destination Tag</label>
 		<div class="input-group">
 			<input ontouchend="te(event, quickSelectInput)" class="form-control" readonly="readonly" type="text" oninput="$(this).val($(this).data('content'));" id="vtxdtag" style="color:black">
@@ -740,6 +769,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 			</span>
 		</div> 
     <br>
+    </div>
     <label id="vtxlbldeliveredamount">Delivered Amount</label>
 	    <input ontouchend="te(event, quickSelectInput)"  class="form-control" readonly="readonly" type="text" placeholder=""  id="vtxdeliveredamount">
     <br>
@@ -928,7 +958,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<div style="color:black; margin-bottom:0.4em;"><span id="accdetailsnickname">XRP address</span><span id="accdetailsamount" class="amount" style="color:black;"></span></div>
 		<div class="input-group">
             <span class="input-group-btn">
-				<button type="button" class="btn xrbtn" ontouchstart="ts(event)" ontouchend="te(event, ()=>{xrbtn_press(event)})"><i class="fa fa-redo-alt" aria-hidden="true"></i><span class="addrtype">r</span>
+				<button type="button" class="btn xrbtn" ontouchstart="ts(event)" ontouchend="te(event, ()=>{xrbtn_press(event, '#accdetailsqr')})"><i class="fa fa-redo-alt" aria-hidden="true"></i><span class="addrtype">r</span>
                 </button>
 			</span>
 			<input ontouchend="te(event, quickSelectInput)" type="text" oninput="$(this).val($(this).data('content'));" id="accdetailsaddress" style="color:black">
@@ -1607,15 +1637,16 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 	<div>
 	<select ontouchend="te(event, quickSelectInput)" id="valuationcurrency" class="form-control">
         <!-- credit to theworldexchange.net for many of these pairs -->
+        <!-- pairs with insufficient orderbooks at time of publishing are commented out -->
         <option data-currency="USD" data-counterparty="rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B">USD - Bitstamp</option>
-        <option data-currency="AUD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">AUD - Coinex</option>
+        <!--option data-currency="AUD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">AUD - Coinex</option-->
         <option data-currency="CNY" data-counterparty="rKiCet8SdvWxPXnAgYarFUXMh1zCPz432Y">CNY - Ripplefox</option>
-        <option data-currency="EUR" data-counterparty="rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B">EUR - Bitstamp</option>
-        <option data-currency="GBP" data-counterparty="rBycsjqxD8RVZP5zrrndiVtJwht7Z457A8">GBP - Ripula</option>
-        <option data-currency="JPY" data-counterparty="r9ZFPSb1TFdnJwbTMYHvVwFK1bQPUCVNfJ">JPY - Ripple Exch Tokyo</option>
-        <option data-currency="KRW" data-counterparty="rPxU6acYni7FcXzPCMeaPSwKcuS2GTtNVN">KRW - EXRP</option>
-        <option data-currency="MXN" data-counterparty="rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn">MXN - Bitso</option>
-        <option data-currency="NZD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">NZD - Coinex</option>
+        <option data-currency="EUR" data-counterparty="rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq">EUR - Gatehub</option>
+        <!--option data-currency="GBP" data-counterparty="rBycsjqxD8RVZP5zrrndiVtJwht7Z457A8">GBP - Ripula</option-->
+        <!--option data-currency="JPY" data-counterparty="r9ZFPSb1TFdnJwbTMYHvVwFK1bQPUCVNfJ">JPY - Ripple Exch Tokyo</option-->
+        <!--option data-currency="KRW" data-counterparty="rPxU6acYni7FcXzPCMeaPSwKcuS2GTtNVN">KRW - EXRP</option-->
+        <!--option data-currency="MXN" data-counterparty="rG6FZ31hDHN1K5Dkbma3PSB5uVCuVVRzfn">MXN - Bitso</option-->
+        <!--option data-currency="NZD" data-counterparty="rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc">NZD - Coinex</option-->
     </select>
 	</div>
 
@@ -2829,7 +2860,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
-	$("#accdetailsqr").append(kjua({text: accselected}));
+	$("#accdetailsqr").append(kjua({text: ( interface_settings.display_xaddresses ? xaddr(accselected, false) : accselected )}));
 	
 	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "XRP address" : nickname);
 
@@ -3027,7 +3058,7 @@ function doUpdateInterfaceSettings() {
 
     saveInterfaceSettings()
 
-    showTab(-1)
+    showTab('#tabaccounts')
 
 }
 
@@ -3039,7 +3070,9 @@ function saveInterfaceSettings() {
 }
 
 function showInterfaceTab() {
+    try {
     $('#valuationcurrency > option[data-currency="'+interface_settings.valuation_currency+'"][data-counterparty="'+interface_settings.valuation_counterparty+'"]')[0].selected = true
+    } catch(e) {}
     setToggleSwitch('#tglUseXAddress', interface_settings.display_xaddresses)
     showTab('#tabinterface', true)
 }
@@ -3333,17 +3366,25 @@ function getExchangeRate(currency, counterparty, then, then2) {
 	remote.getOrderbook(
 		counterparty, 
 		{"base": {"currency":currency, "counterparty": counterparty}, 
-		"counter": {"currency":"XRP"}},  { limit: 10 }
+		"counter": {"currency":"XRP"}},  { limit: 20 }
 	).then(orders => {
-		var exchangerate = 0;
-		for (var i in orders.bids) {
-            console.log(orders.bids[i]) 
-			exchangerate += parseFloat("" + orders.bids[i].properties.makerExchangeRate);
+        var exchangerate = 0
+        var divider = 0
+        if (orders.bids.length > 0) {
+            exchangerate += parseFloat("" + orders.bids[0].properties.makerExchangeRate)
+            divider++
         }
-        exchangerate /= 10.0;
+        
+        if (orders.asks.length > 0) {
+            exchangerate += 1.0/parseFloat("" + orders.asks[0].properties.makerExchangeRate)
+            divider++
+        }
 
-        return then(exchangerate, then2);   
+
+        if (divider == 0) return then(0, then2)
+        return then(exchangerate/divider, then2)
     }).catch( (e)=>{
+        console.log(e)
         return then(0, then2);
     });
 }
@@ -4130,6 +4171,11 @@ function showTab(tab, dontClearText) {
         $('#mtltabredqr').empty();
         $('#paytabgreenqr').empty();
         $('.fa-toggle-on').addClass('fa-toggle-off').removeClass('fa-toggle-on');
+    } else {
+        // update all xr btns to reflect current interface setting
+        var xrbtns = $('.addrtype')
+        for (var i = 0; i < xrbtns.length; ++i)
+            xrbtns[i].innerText = ( interface_settings.display_xaddresses ? 'r' : 'x' )
     }
 
 	$("#navheader").show();
@@ -4337,7 +4383,11 @@ function showTab(tab, dontClearText) {
 		$("#morecontentindicator").addClass("moreindicatordark");
 	}
 
+
+
 	renderMoreContentIndicator();
+
+
 
 
 	// make sure the values of various input boxes are set correctly before displaying
@@ -8880,10 +8930,15 @@ function doViewTransaction(hash) {
         $('#vtxdetails').show();
         $('#vtxstatus').val(x.transaction.tx.TransactionType + ( typeof(x.transaction.meta.TransactionResult) != undefined ? ' - ' + x.transaction.meta.TransactionResult : ' - Unknown Status')); 
 
-        $('#vtxfrom').val(x.transaction.tx.Account);
-        $('#vtxto').val(x.transaction.tx.Destination);
-
-        $('#vtxdtag').val( typeof(x.transaction.tx.DestinationTag) == 'undefined' ? 'not specified' :   x.transaction.tx.DestinationTag);
+        $('#vtxfrom').val( (interface_settings.display_xaddresses ? xaddr( x.transaction.tx.Account, false) : x.transaction.tx.Account))
+        $('#vtxdtag').val( typeof(x.transaction.tx.DestinationTag) == 'undefined' ? 'not specified' :   x.transaction.tx.DestinationTag)
+        if (interface_settings.display_xaddresses) {
+            $('#vtxto').val(xaddr(x.transaction.tx.Destination,  x.transaction.tx.DestinationTag == undefined ? false : x.transaction.tx.DestinationTag))
+            $('#vtxdtgroup').hide()
+        } else {
+            $('#vtxdtgroup').show()
+            $('#vtxto').val(x.transaction.tx.Destination)
+        }
 
         $('#vtxdeliveredamount').val( typeof(x.transaction.meta.delivered_amount) != undefined ?  x.transaction.meta.delivered_amount/1000000.0 : 'not specified') ;
 
