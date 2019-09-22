@@ -101,7 +101,7 @@ textarea {
     overflow-wrap: break-word;
     min-height: 4em;
 }
-#generatedaddress, #accdetailssecretaddress, #accsecret, #accdetailsaddress {
+#generatedaddress, #accsecret, #accdetailsaddress {
     font-size: 1.2em !important;
     color: black;
     border: 1px dashed black;
@@ -459,25 +459,22 @@ input {
 
 .liteloading:after {
     display: block;
-    animation: fa-spin 2s infinite linear;
-    z-index: 101;
-    content: "\f021";
+    content: "\f1ce";
     color: #307ee0;
     font-size: 4em;
     font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
     -webkit-animation: fa-spin 2s infinite linear;
     text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     position: fixed;
     left: calc(50% - 0.5em);
     top: calc(50% - 0.5em);
+    z-index: 101;
 }
+
 .loading:before {
     display: block;
     animation: fa-spin 2s infinite linear;
