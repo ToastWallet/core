@@ -1554,7 +1554,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button class="btn btn-default  btnqrpay" id="btnqrpay1" ontouchstart="ts(event)" type="button"><i class="fa fa-camera"></i></button>
     </span>
 
-    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{populatePaymentTabFromURI(e.originalEvent.clipboardData.getData('Text'));}" onchange="$('#currencyerror').hide(); $('#desttag').attr('readonly', (this.value.substr(0,1) == 'X')); $('#desttag').val(this.value.substr(0,1) == 'X' ? '' : $('#desttag').val());  checkPayToAddressForCommonErrors(); return true">
+    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{populatePaymentTabFromURI(e.originalEvent.clipboardData.getData('Text'));}" onchange="checkPayToAddressForCommonErrors(); return true">
 
 	<br />
 
@@ -2749,7 +2749,17 @@ function checkPayToAddressForCommonErrors() {
             $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
         })
     }
-     
+    
+    // would be better to put this elsewhere but convenient to put it here
+    $('#currencyerror').hide(); 
+   
+    // disable or enable desttag depending on if its an xaddress
+    if (payto.substr(0,1) == 'X') { 
+        $('#desttag').attr('readonly', true) 
+        $('#desttag').val('')
+    } else {
+        $('#desttag').attr('readonly', false) 
+    }
 }
 
 function populatePaymentTabFromURI(uri, targetfield) {
@@ -2774,6 +2784,7 @@ function populatePaymentTabFromURI(uri, targetfield) {
     if (!xto && parsed.dt) $('#desttag').val(parsed.dt)
     if (parsed.amount) $('#payamount').val(parsed.amount)
 
+    checkPayToAddressForCommonErrors()
     try {
         $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
     } catch (e) {}
@@ -2800,7 +2811,6 @@ function populatePaymentTabFromURI(uri, targetfield) {
         $('#invoiceid').val(parsed.invoiceid);
     }
 
-    checkPayToAddressForCommonErrors()
 }
 
 function decodeSecretAddressURI(uri, after, secretfield, addrfield, defaultfield) {
@@ -2864,6 +2874,47 @@ function raddr(xaddr) {
 	var raddr = rippleAddressCodec.encodeAccountID(decoded.slice(2,22))
 	var tag = decoded[22] == 0 ? false : decoded[23] + decoded[24] * 0x100 + decoded[25] * 0x10000 + decoded[26] * 0x1000000
 	return decoded[22] > 1 ? false : {raddr: raddr, tag: tag}
+}
+
+function isXAddress(x) {
+    try {
+        var r = raddr(x)
+        return true
+    } catch (e) {}
+    return false
+}
+
+//if the address is an x-address, converts to an r-address and uses the dtag in the x-address
+//if the address is an r-address and dt is a valid integer returns the same structure populated with these
+// return value = { raddr: "rdfasdfa...", tag: false|integer }
+function forceraddr(x, dt) {
+    if (!x || typeof(x) != 'string') return false
+    
+    tag = false
+    if (typeof(dt) == 'string') {
+        try { 
+            var pdt = parseInt(dt + '') 
+            tag = ( pdt + '' == (dt + '').trim() ? pdt : false )
+        } catch (e) {}
+    } else if (typeof(dt) == 'number') {
+        tag = dt
+    }
+
+    if (tag) tag = Math.round(tag)
+    
+    if (tag > 0xffffffff || tag < 0) tag = false
+
+    if (rippleAddressCodec.isValidAccountID(x)) return { raddr: x, tag: tag }
+
+    if (x.substr(0,1) == 'X') {
+        try {
+            var r = raddr(x)
+            return (rippleAddressCodec.isValidAccountID(r.raddr) ? r : false)
+        } catch (e) {}
+    }
+
+    // execution should never reach here
+    return false
 }
 
 // display an address according to the current interface settings
@@ -4600,6 +4651,8 @@ function doImportGeneratedAccount(passphrase, nickname) {
 function clearPaymentScreen() {
 	try {
 
+        $('#desttag').attr('readonly', false)
+
         $('#currencyerror').hide();
         $('#currencyerror')[0].innerHTML = '';
 
@@ -5031,9 +5084,10 @@ function doModifyTrustline(nonce) {
     // re-use existing add trustline sequence from here
 
     var nextscreen = function() {
+        
         confirmtl = { 
-            atladdress: mtladdress,
-            atlissueraddr: mtlissueraddr,
+            atladdress: forceraddr(mtladdress).raddr,
+            atlissueraddr: forceraddr(mtlissueraddr).raddr,
             atlcurrency: mtlcurrency,
             atllimit: mtllimit,
             atlrippling: undefined,
@@ -5155,8 +5209,8 @@ function doAddTrustline(nonce) {
 
     var nextscreen = function() {
         confirmtl = { 
-            atladdress: atladdress,
-            atlissueraddr: atlissueraddr,
+            atladdress: forceraddr(atladdress).raddr,
+            atlissueraddr: forceraddr(atlissueraddr).raddr,
             atlcurrency: atlcurrency,
             atllimit: atllimit,
             atlrippling: atlrippling,
@@ -5178,7 +5232,6 @@ function doAddTrustline(nonce) {
         
         unblockInput();
     };
-
 
     checkAccountIsFunded(atladdress, 5, 'XRP', '', function(){
             navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a XRP Ledger requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a XRP Ledger fee." , 
@@ -5260,7 +5313,7 @@ function doSetAccountFlags(nonce) {
         var changedflagcount = 0;
 
         confirmfl = {
-            afaddress: afaddress,
+            afaddress: forceraddr(afaddress).raddr,
             defaultRipple: ( defaultRipple == '' + old_flags['defaultRipple'] ? 'unchanged' : defaultRipple ),
             depositAuth: ( depositAuth == '' + old_flags['depositAuth'] ? 'unchanged' : depositAuth ),
             disableMasterKey: ( disableMasterKey == '' + old_flags['disableMasterKey'] ? 'unchanged' : disableMasterKey ),
@@ -5302,7 +5355,6 @@ function doSetAccountFlags(nonce) {
         
         unblockInput();
     };
-
 
     checkAccountIsFunded(afaddress, 0.1, 'XRP', '', function(){
 			navigator.notification.confirm("You must have " + xrpreserve + " XRP + 5 XRP for each trustline in the account you are sending from. This reserve is a XRP Ledger requirement. In some circumstances this message may appear in error if you believe that to be the case you can opt to attempt the transaction however this will attract a XRP Ledger fee." , 
@@ -5519,7 +5571,7 @@ function doPlaceCancelOrder(nonce, dataset) {
 
 
         confirmcancelorder = { 
-            account: account,
+            account: forceraddr(account).raddr,
             seq: seq,
             nonce: nonce,
             accseqid: accID, // used for offline tx
@@ -5727,7 +5779,7 @@ function doPlaceOrder(nonce) {
 
 	var nextscreen = function() {
 		confirmorder = { 
-			account: account,
+			account: forceraddr(account).raddr,
 			asset: asset,
 			issuer: issuer,
 			amount: amount,
@@ -6155,10 +6207,11 @@ function doPay(nonce) {
 	}
 
 	var nextscreen = function() {
+        var paytoreal = forceraddr(payto, dest)
 		confirmpay = { 
-			payfrom: payfrom,
-			payto: payto,
-			dest: dest,
+			payfrom: forceraddr(payfrom).raddr,
+			payto: paytoreal.raddr,
+			dest: paytoreal.tag,
 			invid: invid,
 			amount: amount,
 			nonce: nonce,
@@ -6171,9 +6224,14 @@ function doPay(nonce) {
 
 		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
 
-		$('#confirmpayfromaccount')[0].innerText = payfrom;
+		$('#confirmpayfromaccount')[0].innerText = (interface_settings.display_xaddresses ? xaddr(payfrom, false) : payfrom);
 		$('#confirmpaytoaddress')[0].innerText = payto;
-		$('#confirmdesttag')[0].innerText = dest || '(not provided)';
+	    if (isXAddress(payto)) {
+            $('#confirmdesttag')[0].parentNode.style.display = 'none'
+        } else {
+            $('#confirmdesttag')[0].parentNode.style.display = 'inherit'
+    	}
+        $('#confirmdesttag')[0].innerText =  paytoreal.tag || '(not provided)';
 		$('#confirminvoiceid')[0].innerText = ( invid == "" ? "(not provided)" : invid );
 		$('#confirmpayamount')[0].innerText = amount;
 
@@ -6221,6 +6279,9 @@ function doPay(nonce) {
 function checkAccountIsFunded(payfrom, amount, asset, issuer, failurefunc, silentfailurefunc, successfunc) {
 
     if (offlinemode) return successfunc(); // skip this warning if we already know we can't check the balance
+
+    var r = forceraddr(payfrom)
+    if (r && r.raddr) payfrom = r.raddr
 
     if ( payfrom == issuer ) return successfunc();
     //todo: check if receiver has trustline setup to receive your currency
@@ -8984,7 +9045,7 @@ function sendPayment(passphrase, fromacc, xrpAmount, destination, sourceTag, des
 
 
 function validateAddress(x) {
-	return rippleAddressCodec.isValidAccountID(x);
+    return forceraddr(x) !== false
 }
 
 function validateSecret(x) {
