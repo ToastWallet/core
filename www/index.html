@@ -1554,12 +1554,12 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         <button class="btn btn-default  btnqrpay" id="btnqrpay1" ontouchstart="ts(event)" type="button"><i class="fa fa-camera"></i></button>
     </span>
 
-    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{populatePaymentTabFromURI(e.originalEvent.clipboardData.getData('Text'));} ">
+    <input ontouchend="te(event, quickSelectInput)" type="text" id="toaddress" class="form-control" placeholder="" style="border-radius: 0.25em 0 0.25em 0.25em;" onpaste="(e)=>{populatePaymentTabFromURI(e.originalEvent.clipboardData.getData('Text'));}" onchange="$('#currencyerror').hide(); $('#desttag').attr('readonly', (this.value.substr(0,1) == 'X')); $('#desttag').val(this.value.substr(0,1) == 'X' ? '' : $('#desttag').val());  checkPayToAddressForCommonErrors(); return true">
 
 	<br />
 
 
-	<label >Destination Tag</label>
+	<label id='lblpaytodesttag'>Destination Tag</label>
     <span class="pasteqr">
         <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{  $('#desttag').val(content) })})"><i class="fa fa-paste"></i></button>
 		<button  class="btn btn-default" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doToggleInvoiceId();})" id="btnpayshowmore" type="button"><i class="fa fa-ellipsis-v"></i></button>
@@ -2689,83 +2689,97 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 //https://github.com/xrp-community/standards-drafts
 function xls2d(uri) {
 
-    if (!uri) uri = "";
+    const cleaned_uri = uri.replace(/^(.*:.*)?\?/mg, "").replace(/\?/img, "&").replace(/^.*?:\/\//, '').replace(/^ripple:/img, "")
+    
+    function clean() {
+        return cleaned_uri
+    }   
+    
+    function to() {
+        //NB: this regex is case sensitive to assist in correctly matching XRP ledger addresses
+        var match =  /(?:(?:^|&)(?:to|TO|tO|To)=|^)([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55})/mg.exec(cleaned_uri)
+        return (match == null ? false : match[1])
+    }   
+    
+    function dt() {
+        var match = /(?:^|&)dt=([0-9]+)|:([0-9]+)$/img.exec(cleaned_uri)
+        if (match != null) return (match[1] ? match[1] : match[2])
+        return false 
+    }   
+    
+    function amount() {
+        var match = /(?:^|&)am(?:oun)?t=([0-9\.]+)/img.exec(cleaned_uri)
+        return (match == null ? false : match[1])
+    }   
+    
+    function currency() {
+        var match = /(?:^|&)cur(?:rency)?=(?:([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55}):)?([A-Z]{3}|[A-Fa-f]{40})/img.exec(cleaned_uri)
+        return (match == null ? false : { issuer: ( match[1] ? match[1] : false ), currency: match[2] } )
+    }   
+    
+    function invoiceid() {
+        var match = /(?:^|&)inv(?:oice)?(?:id)?=([a-f]{64})/img.exec(cleaned_uri)
+        return (match == null ? false : match[1])
+    }   
+    
+    return {
+        uri: uri,
+        clean: clean(),
+        to: to(),
+        dt: dt(),
+        amount: amount(),
+        currency: currency(),
+        invoiceid: invoiceid()
+    }   
+}   
 
-	const cleaned_uri = uri.replace(/^(?:(.*:.*)?\?|xrpl:\/\/\??)/img, "").replace(/\?/img, "&")
+function checkPayToAddressForCommonErrors() {
+    var payto = ($('#toaddress').val() + '').trim()
 
-	function clean() {
-		return cleaned_uri
-	}
-
-	function to() {
-		//NB: this regex is case sensitive to assist in correctly matching XRP ledger addresses
-		var match =  /(?:(?:^|&)(?:to|TO|tO|To)=|^)([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55})/mg.exec(cleaned_uri)
-		return (match == null ? false : match[1])
-	}
-
-	function dt() {
-		var match = /(?:^|&)dt=([0-9]+)|:([0-9]+)$/img.exec(cleaned_uri)
-		if (match != null) return (match[1] ? match[1] : match[2])
-		return false
-	}
-
-	function amount() {
-		var match = /(?:^|&)am(?:oun)?t=([0-9\.]+)/img.exec(cleaned_uri)
-		return (match == null ? false : match[1])
-	}
-
-	function currency() {
-		var match = /(?:^|&)cur(?:rency)?=(?:([rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz]{25,55}):)?([A-Z]{3}|[A-Fa-f]{40})/img.exec(cleaned_uri)
-		return (match == null ? false : { issuer: ( match[1] ? match[1] : false ), currency: match[2] } )
-	}
-
-
-	function invoiceid() {
-		var match = /(?:^|&)inv(?:oice)?(?:id)?=([a-f]{64})/img.exec(cleaned_uri)
-		return (match == null ? false : match[1])
-	}
-
-
-	return {
-		uri: uri,
-		clean: clean(),
-		to: to(),
-		dt: dt(),
-		amount: amount(),
-		currency: currency(),
-		invoiceid: invoiceid()
-	}
+    if (payto == 'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv') {
+        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Bitstamp!</i>)';
+    } else if (payto == 'rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh') {
+        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Kraken!</i>)';
+    } else if (offlinemode) {
+        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
+    } else {
+        remote.getSettings(payto).then(e=>{
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for this address!</i>)'
+        }).catch(e=>{
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
+        })
+    }
+     
 }
 
-
-
-
-function populatePaymentTabFromURI(uri) {
+function populatePaymentTabFromURI(uri, targetfield) {
 
 	// apply the draft standard
 	var parsed = xls2d(uri)
 
-    if (!parsed || !parsed.to) {
+    var xto = false
+    try { xto = raddr(parsed.to) } catch (e) {}
 
-		return navigator.notification.alert("Invalid XRP ledger address or Pay URI. Check you are providing the correct text, link or QR code.", 
-            ()=>{}, 
-				"Invalid Address", 
-				"OK"
-			);
+    if (!parsed || !parsed.to || (
+        !rippleAddressCodec.isValidAccountID(parsed.to) &&
+        !xto)) {
+
+        // could not parse, that's fine we'll just populate it anyway
+        if (targetfield) $(targetfield).val(uri)
+        checkPayToAddressForCommonErrors()
+        return
     }
 
-    clearPaymentScreen();
-
-	if (parsed.to) $('#toaddress').val(parsed.to)
-	if (parsed.amount) $('#payamount').val(parsed.amount)
-	if (parsed.dt) $('#desttag').val(parsed.dt)
-
+    if (parsed.to) $('#toaddress').val(parsed.to)
+    if (!xto && parsed.dt) $('#desttag').val(parsed.dt)
+    if (parsed.amount) $('#payamount').val(parsed.amount)
 
     try {
         $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
     } catch (e) {}
     onPaymentSelectFromAccount();
 
+    $('#currencyerror').hide()
 
     if (parsed.currency.currency && parsed.currency.issuer) {
         if (offlinemode) {
@@ -2775,7 +2789,7 @@ function populatePaymentTabFromURI(uri) {
             if ($('#optpa-'+parsed.currency.currency+'-'+ parsed.currency.issuer).length > 0) {
                 $('#optpa-'+parsed.currency.currency+'-'+ parsed.currency.issuer).attr('selected', 'selected');
             } else {
-                $('#currencyerror')[0].innerHTML = 'Pay URI specified ' + parsed.currency.currency + ' issued by ' + parsed.currency.issuer + " but you don't have a trustline for that on this account"; //todo: add a button here to make adding a trustline easy
+                $('#currencyerror')[0].innerHTML = 'Pay URI specified ' + (''+parsed.currency.currency).replace(/[^a-z]/gi, '')  + ' issued by ' + (''+parsed.currency.issuer).replace(/[^a-z0-9]/gi, '') + " but you don't have a trustline for that on this account"; //todo: add a button here to make adding a trustline easy
                 $('#currencyerror').show();
             }
         }
@@ -2786,9 +2800,7 @@ function populatePaymentTabFromURI(uri) {
         $('#invoiceid').val(parsed.invoiceid);
     }
 
-
-
-
+    checkPayToAddressForCommonErrors()
 }
 
 function decodeSecretAddressURI(uri, after, secretfield, addrfield, defaultfield) {
@@ -4345,8 +4357,8 @@ function showTab(tab, dontClearText) {
 			$('#toaddress').css('color', '');
 			$('#toaddress').attr('readonly', null);
 			$('.btnqrpay').removeAttr('disabled');
-            $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR(populatePaymentTabFromURI)})");
-            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{clipboardPaste((content)=>{populatePaymentTabFromURI(content)})})");
+            $('#btnqrpay1').attr('ontouchend', "te(event, ()=>{scanQR((x)=>{populatePaymentTabFromURI(x, '#toaddress')} )})");
+            $('#btnqrpay2').attr('ontouchend', "te(event, ()=>{clipboardPaste((content)=>{populatePaymentTabFromURI(content, '#toaddress')})})");
 		}
 	}
 
