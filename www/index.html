@@ -603,7 +603,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
         </span>
         <input ontouchend="te(event, quickSelectInput)"  id="delaccpassword" type="password" class="form-control" placeholder="">
         <br>
-	<center><div><button  type="button" class="btn btn-danger btnbig" id="btnimport" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress')[0].innerText, $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); })">DELETE ACCOUNT</button></div></center>
+	<center><div><button  type="button" class="btn btn-danger btnbig" id="btnimport" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doDeleteAccount($('#delaccpassword').val(), $('#accdeleteaddress').data('content'), $('#tabaccountdelete .toggleswitch').data('checked') == 'true'); })">DELETE ACCOUNT</button></div></center>
 </div>
 
 <div id="tabnickchange" class="screentab" data-hasback="true" data-title="Change Nickname" style="display:none">
@@ -623,7 +623,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <br>
 	<center><div>
 			<button  type="button" class="btn btn-primary btnbig" id="btnimport" 
-				ontouchstart="ts(event)" ontouchend="te(event, ()=>{doChangeNickname($('#nickchangeaddress').val(), $('#nickchangenick').val());})">Change Nickname</button></div></center>
+				ontouchstart="ts(event)" ontouchend="te(event, ()=>{doChangeNickname($('#nickchangeaddress').data('content'), $('#nickchangenick').val());})">Change Nickname</button></div></center>
 </div>
 
 
@@ -1036,6 +1036,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<center><div id="accdetailsqr"></div></center>
         <center>
         <div class="accdetailbuttons">
+            
             <button type="button" class="btn btn-info" style="">Buy XRP <i class="fas fa-external-link-alt" style="font-size:0.9em"></i></button>
             <br>
             <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Set Nickname</button>
@@ -1047,7 +1048,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <!--button  type="button" id="btnrekeyacc" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#rekeyaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabrekeyaccount', true);})">Rekey Address</button-->
 			<button  id="btnbackupkey" type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdetailssecretaddress').data('content', $('#accdetailsaddress').data('content') ); $('#accdetailssecretaddress').val( dispaddr($('#accdetailsaddress').data('content')) ); showTab('#tabaccountsecret', true); })">Show Secret</button>
             <br>
- 			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerHTML = $('#accdetailsaddress').data('content') + '<br>' + xaddr($('#accdetailsaddress').data('content'), false); showTab('#tabaccountdelete');})">Delete Account</button>
+ 			<button  type="button" class="accopt btn btn-danger" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#accdeleteaddress')[0].innerHTML = $('#accdetailsaddress').data('content') + '<br>' + xaddr($('#accdetailsaddress').data('content'), false); $('#accdeleteaddress').data('content', $('#accdetailsaddress').data('content')); showTab('#tabaccountdelete');})">Delete Account</button>
 		</div>
         </center>
 	</div>
@@ -1697,7 +1698,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingschangepassphrase" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabchangepassphrase');})">Change Passphrase</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsgateways" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doResetGatewayPrompt();})">Reset Gateways</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsgateways2" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaddgateway');})">Add Gateway</button>
-            <button type="button" class="btn btn-primary btnbig" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button>
+            <button type="button" class="btn btn-info btnbig" id="btnsettingsofflinetx" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doSubmitOfflineTransaction(0);})">Submit Offline Transaction</button>
         </div>
     </center>
 
@@ -1995,7 +1996,7 @@ function formatSelect2(state) {
     ret.append(hashicon(xacc, 20))
     ret.append(' ')
     ret.append(
-        (state.text == acc ? (interface_settings.display_xaddresses ? xaddr(acc, false) : acc) : state.text)
+        (state.text == acc ? dispaddr(acc) : state.text)
     )
 
     return ret
@@ -3008,7 +3009,7 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 	$("#accdetailsaddress").data('content', accselected );
 
 	$("#accdetailsqr").empty();
-	$("#accdetailsqr").append(kjua({text: ( interface_settings.display_xaddresses ? xaddr(accselected, false) : accselected )}));
+	$("#accdetailsqr").append(kjua({text: dispaddr(accselected)}));
 	
 	$("#accdetailsnickname")[0].innerText = (nickname == undefined || nickname == "" ? "XRP address" : nickname);
 
@@ -3061,6 +3062,8 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 
 function doDeleteAccount(passphrase, address, toggle) {
 	if (debug) console.log("doDeleteAccount");
+
+    address = forceraddr(address).raddr
 	blockInput();
         if (!toggle) {
                 navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
@@ -3964,7 +3967,7 @@ function refreshAccounts(after) {
             //var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
             var bottomtouchend = toptouchend; // changed the behaviour so it always goes to the account details tab, since the DEX is rarely used
             if ($('#ra' + i).length == 0) {
-                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? ( interface_settings.display_xaddresses ? xaddr(i,false) : i ) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
+                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? dispaddr(i) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
 
             $('#ra' + i + ' .hashicon')[0].appendChild(hashicon(xaddr(i, false), 35))
 
@@ -3979,7 +3982,7 @@ function refreshAccounts(after) {
                 }
 
                 // may have changed nickname since last update
-                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? ( interface_settings.display_xaddresses ? xaddr(i, false): i) : nickname);
+                $('#ra' + i + ' span.address')[0].innerText = (nickname == "" ? dispaddr(i) : nickname);
 
                 // update touchend event handlers
                 $('#ra' + i + ' .hashicon').removeAttr('ontouchend');
@@ -4304,7 +4307,12 @@ function showTab(tab, dontClearText) {
 	$("#accsecret").hide();
 
 
-	if ( (tab == -1 && currenttab == "#tabqrscan") || currenttab == '#taborderconfirm' || currenttab == '#tabneworder' || currenttab == '#tabpaymentconfirm' ) {
+	if ( tab == -1 && (
+        currenttab == '#tabqrscan' || currenttab == '#taborderconfirm' || 
+        currenttab == '#tabneworder' || currenttab == '#tabpaymentconfirm' ||
+        currenttab == '#tabtrustlineconfirm'
+
+    )) {
 		// if the user has gone for a QR scan we dont want to wipe their form.
         // we also make a special exception allowing a market order to go backward from confirmation
         dontClearText = true;
@@ -4561,7 +4569,7 @@ function doShowAndGenerateAccount() {
 	blockInput();
 	generatedAccount = generateAddress();
 
-	$("#generatedaddress")[0].innerHTML = generatedAccount.address.slice(0,20) + "XXXXXXXXXXXX";
+	$("#generatedaddress")[0].innerHTML = dispaddr(generatedAccount.address).slice(0,20) + "XXXXXXXXXXXX";
 	showTab("#tabgenaccount");	
 	unblockInput();
 }
@@ -4994,7 +5002,14 @@ function doModifyTrustline(nonce) {
     var fee = '';
 
 
-    if (mtllimit == $("#mtllimit").data("content")) {
+    var pl = false
+    try { 
+        pl = parseInt(mtllimit)
+        if (pl < 0) pl = 0 
+   } catch (e) {}
+
+
+    if (mtllimit == $("#mtllimit").data("content") || (''+mtllimit).trim() != '' + pl ) {
         // disallow continuing if unmodified
 		return navigator.notification.alert("You must enter a new trustline limit or 0 if you wish to delete the trustline.", 
 			function(){
@@ -5006,8 +5021,9 @@ function doModifyTrustline(nonce) {
 		);           
     }
 
+    mtllimit = pl + ''
 
-    if (mtllimit == undefined) mtllimit = "0";
+    //if (mtllimit == undefined) mtllimit = "0";
 
     // the below validations arent strictly necessary because these fields should be read only
     // however there could be circumstances under which they were incorrectly populated so check anyway
@@ -5132,10 +5148,25 @@ function doAddTrustline(nonce) {
     var ledID = '';
     var fee = '';
 
+    var pl = false
+    try {
+        pl = parseInt(atllimit)
+        if (pl < 0) pl = 0
+    } catch (e) {}
 
-	if (atllimit != undefined && (atllimit+"").charAt(0) == '.') atllimit = "0" + atllimit;
 
-    if (atllimit == undefined || atllimit == "") atllimit = "0";
+    if (pl + '' != atllimit)
+        return navigator.notification.alert("Invalid limit. Must be greater than or equal to 0.", 
+            function(){
+                $("#atllimit").focus();
+                unblockInput();
+            }, 
+            "Invalid limit", 
+            "OK"
+        );
+
+    atllimit = pl + ''
+
 
     if (!validateAddress(atladdress)) {
 		return navigator.notification.alert("The address you are attempting to add a trustline to is not a valid XRP address.", 
@@ -5171,24 +5202,6 @@ function doAddTrustline(nonce) {
 		);    
     }
 
-
-    var invalidLimit = ()=>{
-		return navigator.notification.alert("Invalid limit. Must be greater than or equal to 0.", 
-			function(){
-				$("#atllimit").focus();
-				unblockInput();
-			}, 
-			"Invalid limit", 
-			"OK"
-		);
-    };
-
-    try {
-        var x = new BN(atllimit);
-        if (x.isNeg()) return invalidLimit();
-    } catch (E) {
-        return invalidLimit();
-    }
 
 
     if (offlinemode) {
@@ -5582,12 +5595,11 @@ function doPlaceCancelOrder(nonce, dataset) {
 
 		confirmcancelorderhash = sodium.crypto_generichash(16, JSON.stringify(confirmcancelorder), ''+nonce, 'hex');
 
-		$('#confirmcancelorderaccount')[0].innerText = account;
+		$('#confirmcancelorderaccount')[0].innerText = dispaddr(account);
 
         $('#confirmcancelorderpreview')[0].innerText = (sell ? 'SELL ' : 'BUY ') +  currency1 + ' ' + display_currency_amount(parseFloat(''+amount1)) + ' @ ' + currency2 + ' ' + display_currency_amount(parseFloat(''+amount2)/parseFloat(''+amount1));
 
         $('#confirmcancelordersequence')[0].innerText = '#' + seq;
-
 
 		showTab("#tabcancelorderconfirm");
 		
@@ -5606,7 +5618,7 @@ function doPlaceOrder(nonce) {
 	if (debug) console.log("doPlaceOrder");
 	blockInput();
 
-	var account = $('#ntloaddress').data('account');
+	var account = $('#ntloaddress').data('content');
 	var asset = $('#ntloissuer').data('currency');
 	var issuer = $('#ntloissuer').data('issuer');
 	var amount = $('#ntloamount').val().trim();
@@ -5799,9 +5811,9 @@ function doPlaceOrder(nonce) {
 
 		confirmorderhash = sodium.crypto_generichash(16, JSON.stringify(confirmorder), ''+nonce, 'hex');
 
-		$('#confirmorderaccount')[0].innerText = account;
-		$('#confirmorderasset')[0].innerText = asset;
-		$('#confirmorderissuer')[0].innerText = issuer;
+		$('#confirmorderaccount')[0].innerText = dispaddr(account)
+		$('#confirmorderasset')[0].innerText = asset
+		$('#confirmorderissuer')[0].innerText = dispaddr(issuer) 
         $('#confirmorderamount')[0].innerText = amount;
         $('#confirmorderprice')[0].innerText = price;
 		$('#confirmorderdirection')[0].innerText = ( sell ? 'SELL' : 'BUY' );
@@ -6224,7 +6236,7 @@ function doPay(nonce) {
 
 		confirmpayhash = sodium.crypto_generichash(16, JSON.stringify(confirmpay), ''+nonce, 'hex');
 
-		$('#confirmpayfromaccount')[0].innerText = (interface_settings.display_xaddresses ? xaddr(payfrom, false) : payfrom);
+		$('#confirmpayfromaccount')[0].innerText = dispaddr(payfrom)
 		$('#confirmpaytoaddress')[0].innerText = payto;
 	    if (isXAddress(payto)) {
             $('#confirmdesttag')[0].parentNode.style.display = 'none'
@@ -6282,6 +6294,9 @@ function checkAccountIsFunded(payfrom, amount, asset, issuer, failurefunc, silen
 
     var r = forceraddr(payfrom)
     if (r && r.raddr) payfrom = r.raddr
+
+    r = forceraddr(issuer)
+    if (r && r.raddr) issuer = r.raddr
 
     if ( payfrom == issuer ) return successfunc();
     //todo: check if receiver has trustline setup to receive your currency
@@ -7240,7 +7255,9 @@ function getRpPpData(successfunc) {
 
 function changeNickname(address, nickname, successfunc, failurefunc) {
 
-	if (address == undefined || address == "") {
+    address = forceraddr(address)
+
+	if (!address) {
 		navigator.notification.alert("No address was specified when trying to set a new nickname. This could indicate a corrupt wallet. We recommend making a backup from the settings menu.", 
 			failurefunc,
 			"Error", 
@@ -7248,6 +7265,8 @@ function changeNickname(address, nickname, successfunc, failurefunc) {
 		);
 		return;
 	}
+
+    address = address.raddr
 
 	// if they specify no nickname then the address will show normally
 	if (nickname == undefined) nickname = "";
@@ -7930,7 +7949,7 @@ function generateAddress(secret) {
 
 function checkConnection(connectedfunc) {
 	if (debug) console.log("checkConnection()");
-	if (navigator.connection.type == 'Connection.NONE') {
+	if (navigator.connection.type == Connection.NONE) {
 		navigator.notification.alert('Internet Connection Lost.', 
 			function() {
 				hideSpinner();
@@ -9087,7 +9106,7 @@ function doViewTransaction(hash) {
         $('#vtxdetails').show();
         $('#vtxstatus').val(x.transaction.tx.TransactionType + ( typeof(x.transaction.meta.TransactionResult) != undefined ? ' - ' + x.transaction.meta.TransactionResult : ' - Unknown Status')); 
 
-        $('#vtxfrom').val( (interface_settings.display_xaddresses ? xaddr( x.transaction.tx.Account, false) : x.transaction.tx.Account))
+        $('#vtxfrom').val( dispaddr(x.transaction.tx.Account) )
         $('#vtxdtag').val( typeof(x.transaction.tx.DestinationTag) == 'undefined' ? 'not specified' :   x.transaction.tx.DestinationTag)
         if (interface_settings.display_xaddresses) {
             $('#vtxto').val(xaddr(x.transaction.tx.Destination,  x.transaction.tx.DestinationTag == undefined ? false : x.transaction.tx.DestinationTag))
@@ -9133,7 +9152,7 @@ function doGetTransactions(address, marker) {
 				tx += '<span><i class="fa ' + ( outgoing ? 'fa-paper-plane' : 'fa-inbox' ) + '" aria-hidden="true"></i>';
 				var addr = ( outgoing ? x.payments[i].destination : x.payments[i].source ) 
 
-                tx += (interface_settings.display_xaddresses ? xaddr(addr,false) : addr ) + '</span>';
+                tx += dispaddr( addr ) + '</span>';
 				tx += '<span >' + x.payments[i].amount + '</span>';
 
 				tx += '</li>'
