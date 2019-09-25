@@ -209,6 +209,20 @@
         }
     }
 
+    function openExternalUrl(url) {
+        try {
+            if (window.require && require('electron') || device.platform == 'browser')
+                return window.open(url, '_blank')
+            
+            OpenUrlExt.open(url, 
+                ()=>{console.log('link open success')},
+                ()=>{console.log('link open failed')})
+
+        } catch (E) {
+            console.log(E);
+        }
+    }
+
 
     // finds the first label above a control, returns the input element if label can't be found
     function find_label(ele) {
@@ -575,7 +589,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     </div>
     <br>
 	<center>
-		<div><button  type="button" class="btn btn-primary btnbig" id="btnrevealsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').val());})">Reveal Secret</button></div>
+		<div><button  type="button" class="btn btn-primary btnbig" id="btnrevealsecret" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doRevealRippleSecret($('#rsecaccpassword').val(), $('#accdetailssecretaddress').data('content'));})">Reveal Secret</button></div>
 	</center>
 	<center>
 		<label id="lblaccsecret">Account Secret</label>
@@ -1036,8 +1050,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 		<center><div id="accdetailsqr"></div></center>
         <center>
         <div class="accdetailbuttons">
-            
-            <button type="button" class="btn btn-info" style="">Buy XRP <i class="fas fa-external-link-alt" style="font-size:0.9em"></i></button>
+            <button type="button" class="btn btn-info" style=""  ontouchstart="ts(event)" ontouchend="te(event, ()=>{openExternalUrl('https://buy.toastwallet.com/' + forceraddr($('#accdetailsaddress').data('content')))})">Buy XRP <i class="fas fa-external-link-alt" style="font-size:0.9em"></i></button>
             <br>
             <button id="btnchangenick" type="button" class="accopt btn btn-success" ontouchstart="ts(event)" ontouchend="te(event, ()=>{$('#nickchangeaddress').data('content', $('#accdetailsaddress').data('content') );  showTab('#tabnickchange', true); })">Set Nickname</button>
             <br>
@@ -1690,7 +1703,7 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
     <center>
         <div class="settingsbuttons">
             <button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showDonationTab();})">Support Toast Wallet</button>
-            <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{OpenUrlExt.open('https://toastwallet.com/faq', ()=>{console.log('link open success')}, ()=>{console.log('link open failed')})})">FAQ / Help</button>
+            <button type="button" class="btn btn-primary btnbig" id="btnfaq" ontouchstart="ts(event)" ontouchend="te(event, ()=>{openExternalUrl('https://toastwallet.com/faq')})">FAQ / Help</button>
             <button type="button" class="btn btn-primary btnbig" id="btnint" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showInterfaceTab()})">Interface Settings</button>
             <button type="button" class="btn btn-primary btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{doGenerateBackup();})">Backup Wallet</button>
             <button type="button" class="btn btn-primary btnbig" id="btnsettingsresortbackup" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabrestore');})">Restore or Reset Wallet</button>
@@ -2888,7 +2901,7 @@ function isXAddress(x) {
 //if the address is an x-address, converts to an r-address and uses the dtag in the x-address
 //if the address is an r-address and dt is a valid integer returns the same structure populated with these
 // return value = { raddr: "rdfasdfa...", tag: false|integer }
-function forceraddr(x, dt) {
+function forceraddrtag(x, dt) {
     if (!x || typeof(x) != 'string') return false
     
     tag = false
@@ -2915,6 +2928,12 @@ function forceraddr(x, dt) {
     }
 
     // execution should never reach here
+    return false
+}
+
+function forceraddr(x) {
+    x = forceraddrtag(x)
+    if (x && x.raddr) return x.raddr
     return false
 }
 
@@ -3019,6 +3038,9 @@ function doSelectAccount(accselected, nickname, trustlinesSubTab) {
 
 
 function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
+
+    address = forceraddr(address)
+
 	getRpPpData(function(ppdata, rpdata) { try {
 		getAccounts(function(accounts) { try {
 			if (accounts[address] == undefined || accounts[address].ppsecret == undefined || accounts[address].ppsalt == undefined) {
@@ -3063,7 +3085,8 @@ function getSecretForAccount(passphrase, address, successfunc, failurefunc) {
 function doDeleteAccount(passphrase, address, toggle) {
 	if (debug) console.log("doDeleteAccount");
 
-    address = forceraddr(address).raddr
+    address = forceraddr(address)
+
 	blockInput();
         if (!toggle) {
                 navigator.notification.alert("You must confirm you wish to DELETE " + address, function(){}, "STOP", "OK");
@@ -3120,6 +3143,9 @@ function doDeleteAccount(passphrase, address, toggle) {
 function doRevealRippleSecret(passphrase, address) {
 	if (debug) console.log("doRevealRippleSecret");
 	blockInput();
+
+    address = forceraddr(address)
+
         validatePassphrase(passphrase, false,
                 function() {
 			getSecretForAccount(passphrase, address, function(secret) {
@@ -3268,6 +3294,8 @@ function getAccounts(callback) {
 }
 
 function getAccountInfo(address, successfunc, failurefunc) {
+
+  address = forceraddr(address)
 
   if (!validateAddress(address)) return failurefunc();
   remote.connection._timeout = 500;
@@ -4578,6 +4606,7 @@ function doShowAndGenerateAccount() {
 function doChangeNickname(address, nickname) {
 	if (debug) console.log("doChangeNickname " + nickname + " for " + address);
 	blockInput();
+    address = forceraddr(address)
 	if (nickname == undefined) nickname = "";
 	nickname = nickname.replace(/[^a-zA-Z0-9 ]/g, "").trim();
     changeNickname(address, nickname,  
@@ -5102,8 +5131,8 @@ function doModifyTrustline(nonce) {
     var nextscreen = function() {
         
         confirmtl = { 
-            atladdress: forceraddr(mtladdress).raddr,
-            atlissueraddr: forceraddr(mtlissueraddr).raddr,
+            atladdress: forceraddr(mtladdress),
+            atlissueraddr: forceraddr(mtlissueraddr),
             atlcurrency: mtlcurrency,
             atllimit: mtllimit,
             atlrippling: undefined,
@@ -5222,8 +5251,8 @@ function doAddTrustline(nonce) {
 
     var nextscreen = function() {
         confirmtl = { 
-            atladdress: forceraddr(atladdress).raddr,
-            atlissueraddr: forceraddr(atlissueraddr).raddr,
+            atladdress: forceraddr(atladdress),
+            atlissueraddr: forceraddr(atlissueraddr),
             atlcurrency: atlcurrency,
             atllimit: atllimit,
             atlrippling: atlrippling,
@@ -5326,7 +5355,7 @@ function doSetAccountFlags(nonce) {
         var changedflagcount = 0;
 
         confirmfl = {
-            afaddress: forceraddr(afaddress).raddr,
+            afaddress: forceraddr(afaddress),
             defaultRipple: ( defaultRipple == '' + old_flags['defaultRipple'] ? 'unchanged' : defaultRipple ),
             depositAuth: ( depositAuth == '' + old_flags['depositAuth'] ? 'unchanged' : depositAuth ),
             disableMasterKey: ( disableMasterKey == '' + old_flags['disableMasterKey'] ? 'unchanged' : disableMasterKey ),
@@ -5584,7 +5613,7 @@ function doPlaceCancelOrder(nonce, dataset) {
 
 
         confirmcancelorder = { 
-            account: forceraddr(account).raddr,
+            account: forceraddr(account),
             seq: seq,
             nonce: nonce,
             accseqid: accID, // used for offline tx
@@ -5791,7 +5820,7 @@ function doPlaceOrder(nonce) {
 
 	var nextscreen = function() {
 		confirmorder = { 
-			account: forceraddr(account).raddr,
+			account: forceraddr(account),
 			asset: asset,
 			issuer: issuer,
 			amount: amount,
@@ -6219,9 +6248,9 @@ function doPay(nonce) {
 	}
 
 	var nextscreen = function() {
-        var paytoreal = forceraddr(payto, dest)
+        var paytoreal = forceraddrtag(payto, dest)
 		confirmpay = { 
-			payfrom: forceraddr(payfrom).raddr,
+			payfrom: forceraddr(payfrom),
 			payto: paytoreal.raddr,
 			dest: paytoreal.tag,
 			invid: invid,
@@ -6292,11 +6321,8 @@ function checkAccountIsFunded(payfrom, amount, asset, issuer, failurefunc, silen
 
     if (offlinemode) return successfunc(); // skip this warning if we already know we can't check the balance
 
-    var r = forceraddr(payfrom)
-    if (r && r.raddr) payfrom = r.raddr
-
-    r = forceraddr(issuer)
-    if (r && r.raddr) issuer = r.raddr
+    payfrom = forceraddr(payfrom)
+    issuer = forceraddr(issuer)
 
     if ( payfrom == issuer ) return successfunc();
     //todo: check if receiver has trustline setup to receive your currency
@@ -7266,8 +7292,6 @@ function changeNickname(address, nickname, successfunc, failurefunc) {
 		return;
 	}
 
-    address = address.raddr
-
 	// if they specify no nickname then the address will show normally
 	if (nickname == undefined) nickname = "";
 
@@ -7306,6 +7330,8 @@ function changeNickname(address, nickname, successfunc, failurefunc) {
 
 /* Assumes passphrase has already been validated!!!!*/
 function importAddress(secret, address, nickname, passphrase, successfunc, failurefunc) {
+
+    address = forceraddr(address)
 
 	// set backup reminder to nothing so they get a prompt immediately after importing
 	db.upsert("lastbackupreminder",
@@ -7904,7 +7930,8 @@ function setPassphrase(newphrase, oldphrase, issettingrecoveryphrase, successfun
 }
 
 function removeSecret(address, successfunc, failurefunc) {
-	var f = function(accounts) { try {
+	address = forceraddr(address)
+    var f = function(accounts) { try {
 		if (accounts.data == undefined || accounts.data == "") 
 			return failurefunc();
 
@@ -8220,6 +8247,8 @@ function doRekeyAccount(passphrase) {
 function rekeyAccount(passphrase, address, disableMasterKey, successfunc, failurefunc) {
 	
 	return; // TODO finish and test code
+
+    address = forceraddr(address)
 
 	if (debug) console.log("rekeyAccount - " + address);
 
@@ -9133,6 +9162,9 @@ function doViewTransaction(hash) {
 function doGetTransactions(address, marker) {
 	if (debug) console.log("doGetTransactions");
 	//blockInput();
+
+    address = forceraddr(address)
+
 	$.ajax({
 		complete: function() { unblockInput(); },
 		url: 'https://data.ripple.com/v2/accounts/' + 

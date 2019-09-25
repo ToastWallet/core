@@ -224,8 +224,10 @@ i.fa.fa-chevron-circle-left, i.fa.fa-question-circle {
 }
 
 .paygrouping > label {
-    float: left;
-    min-width: 50%;
+    position: absolute;
+    left: 0.5em;
+    top: 0.2em;
+    margin: 0;
 }
 
 .paygrouping {
@@ -233,7 +235,9 @@ i.fa.fa-chevron-circle-left, i.fa.fa-question-circle {
     font-size: 1em;
     overflow-wrap: break-word;
     display: block;
-    vertical-align: middle;
+    padding-left: 6.5em;
+    position: relative;
+    padding-right: 0.5em;
 }
 
 #tabpaymentconfirm div[id^="confirm"] {
