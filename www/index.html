@@ -2946,6 +2946,7 @@ function dispaddr(x, dt) {
 
 function truncaddr(x) {
     if (x.length > 33) return x.substr(0, 30) + '...'
+    return x
 }
 
 var scanner;
@@ -3911,7 +3912,7 @@ function refreshAccounts(after) {
                                         // populate the dropdown for this account
                                         if (trustlinesdropdown[account] == undefined) trustlinesdropdown[account] = {};
 
-                                        trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + currency.replace(/[^A-Za-z0-9?!@#$%\^&*<>(){}[\]|]/mg, "") + ' - ' + truncaddr(dispaddr((""+issuer).replace(/[^A-Za-z0-9]/mg, ""))) + '</option>';
+                                        trustlinesdropdown[account]["" + currency + issuer] = '<option id="optpa-' + currency  + '-' + issuer + '" data-asset="' + currency + '" data-issuer="' + issuer + '">' + currency.replace(/[^A-Za-z0-9?!@#$%\^&*<>(){}[\]|]/mg, "") + ' - ' + dispaddr((""+issuer).replace(/[^A-Za-z0-9]/mg, "")) + '</option>';
                                     }
 
                                     for (var currency in tlbalances) {

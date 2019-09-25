@@ -965,7 +965,11 @@ i.fa.fa-exchange {
     color: black;
     margin-bottom: 1em;
 }
-
+.select2-results__option {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .accselect2 > canvas {transform: translate(0px, 25%);}
 
 .select2 {
