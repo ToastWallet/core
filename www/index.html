@@ -180,6 +180,10 @@
     function handleOpenURL(link, e) {                 
         console.log("incoming pay-link: " + link);
 
+
+
+        paylink_pending = link;
+        $('#tablogin>center>div').addClass('pinpad_pending')
         if (
             currenttab == "#tabpinset1" || 
             currenttab == "#tabpinset2"  || 
@@ -194,13 +198,9 @@
             currenttab == "#tabsubmitofflinetx" ||
             currenttab == "#tabrestore2" ||
             currenttab == "#tabgreenqr" ) {
-            console.log("will not interrupt pin or passphrase or backup prompt, discarding pay link"); 
+            console.log("will not interrupt pin or passphrase or backup prompt, storing pay link"); 
             return;
         }
-
-
-        paylink_pending = link;
-        $('#tablogin>center>div').addClass('pinpad_pending')
         
         if (e == 'boot' || $('#tablogin').is(":visible")) {
             // do nothing 
@@ -4309,6 +4309,10 @@ var userkey = ""; // user's sha1 of passphrase used to decrypt wallet secrets
 
 var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
+
+    // while a link is pending we will handle it as soon as we can
+    if (paylink_pending) 
+        handleOpenURL(paylink_pending)
 
 	if (tab == currenttab) return;
 
