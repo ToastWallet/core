@@ -211,7 +211,11 @@
 
     function openExternalUrl(url) {
         try {
-            if (window.require && require('electron') || device.platform == 'browser')
+            var electron = ( window.require ? require('electron') : false )
+            if (electron && electron.shell && electron.shell.openExternal)
+                return electron.shell.openExternal(url)
+
+            if (device.platform == 'browser')
                 return window.open(url, '_blank')
             
             OpenUrlExt.open(url, 
