@@ -690,7 +690,7 @@ button, button:focus, button:active, button:hover {
     font-style: italic;
 }
 .pinpad_pending {
-    margin-top: calc(50vh - 21em) !important;
+    margin-top: calc(50vh - 20em) !important;
 }
 
 
