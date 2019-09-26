@@ -1086,16 +1086,16 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 <div id="tabaddexistingaccount" class="screentab" data-hasback="true" data-title="Add Existing Account" style="display:none">
 	<label >Account Secret</label>
     <span class="pasteqr">
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#txtsecret')})})"><i class="fa fa-paste"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#txtsecret')})" type="button"><i class="fa fa-camera"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, ()=>{}, '#txtsecret', '#vanityaddr', '#txtsecret')})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, ()=>{}, '#txtsecret', '#vanityaddr', '#txtsecret')})" type="button"><i class="fa fa-camera"></i></button>
     </span>
 
     <input ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="E.g shqTNuNzLjjNYH2oKNNrRLSaNK2Wr"  id="txtsecret">
 	<br>
 	<label >Account Address</label>
     <span class="pasteqr">
-        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#vanityaddr')})})"><i class="fa fa-paste"></i></button>
-        <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, existingAddrSecretSwap, '#txtsecret', '#vanityaddr', '#vanityaddr')})" type="button"><i class="fa fa-camera"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" type="button" ontouchend="te(event, ()=>{clipboardPaste((content)=>{decodeSecretAddressURI(content, ()=>{}, '#txtsecret', '#vanityaddr', '#vanityaddr')})})"><i class="fa fa-paste"></i></button>
+        <button class="btn btn-default " ontouchstart="ts(event)" ontouchend="te(event, ()=>{scanQR(decodeSecretAddressURI, ()=>{}, '#txtsecret', '#vanityaddr', '#vanityaddr')})" type="button"><i class="fa fa-camera"></i></button>
     </span>
 
     <input data-dispaddr="true" ontouchend="te(event, quickSelectInput)"  class="form-control" type="text" placeholder="Optional unless a vanity address or rekeyed"  id="vanityaddr">
@@ -2835,10 +2835,22 @@ function decodeSecretAddressURI(uri, after, secretfield, addrfield, defaultfield
 
 	uri = uri.replace(/^([a-z\/:.]+\/)?(.+)$/mg, "$2");
 
+    var emplace = (val) => {
+        var first = val.charAt(0) ;
+        if (first == 's' && secretfield != undefined) {
+            $(secretfield).val(val);
+        } else if ((first == 'X' || first == 'r' || first == 'n') && addrfield != undefined) {
+            $(addrfield).val(val);
+        } else {
+            $(defaultfield).val(val)
+        }
+    } 
+
 	if (/^[^?&=]+$/m.test(uri) && defaultfield != undefined) {
 		// if this is a simple regex with no uri stuff then we'll just import it directly into the
 		// field next to the QR button
-		$(defaultfield).val(uri);
+		//$(defaultfield).val(uri);
+        emplace(uri)
 	} else {
 
 		var addressRegex = /(?:[?&]?([a-z]+)=|^)([^&?\r\n]*)/mg;
@@ -2848,33 +2860,13 @@ function decodeSecretAddressURI(uri, after, secretfield, addrfield, defaultfield
 			matchcount++;
 			var key = ( match[1] == undefined ? "" : (match[1]+"").toLowerCase() );
 			var val = ( match[2] == undefined ? "" : match[2] );
-			var first = val.charAt(0) ;
-			if (first == 's' && secretfield != undefined) {
-				$(secretfield).val(val);
-			} else if ((first == 'r' || first == 'n') && addrfield != undefined) {
-				$(addrfield).val(val);
-			}
-			match = addressRegex.exec(uri);
+			emplace(val)
+            match = addressRegex.exec(uri);
 		}
 
 	}
 
-
 	return ( after ? after() : true )
-}
-
-function existingAddrSecretSwap() {
-	var a = $("#vanityaddr").val();
-	var b = $("#txtsecret").val();
-	
-	if (a[0] == 's') $("#txtsecret").val(a);
-	if (b[0] == 'r') $("#vanityaddr").val(b);
-
-	a = $("#vanityaddr").val();
-	b = $("#txtsecret").val();
-	
-	if (a[0] != 'r') $("#vanityaddr").val("");
-	if (b[0] != 's') $("#txtsecret").val("");
 }
 
 function xaddr(raddr, tag) {
