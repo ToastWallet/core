@@ -8,14 +8,13 @@
         Toast Wallet
     </author>
     <content src="index.html" />
-    <preference name="xwalk64bit" value="true" />
     <preference name="DisallowOverscroll" value="false" />
     <preference name="KeyboardShrinksView" value="true" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="EnableViewportScale" value="true" />
-    <preference name="buildArchitecture" value="arm64" />
+    <preference name="buildArchitecture" value="arm" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="phonegap-version" value="cli-7.0.1" />
     <plugin name="cordova-plugin-clipboard-v2" value="~0.0.4" />
@@ -161,7 +160,7 @@
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
-    <engine name="browser" spec="^5.0.4" />
+    <engine name="browser" spec="5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^6.4.0" />
 </widget>
