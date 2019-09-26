@@ -206,7 +206,7 @@
             // do nothing 
         } else {
             // wallet is open so go to payment page immediately
-            doPayLink(paylink_pending);
+            doPayLink();
         }
     }
 
@@ -4049,16 +4049,20 @@ function refreshAccounts(after) {
 
 
 // decode a payment URI passed to the application from the OS and display payment tab
-function doPayLink(paylink) {
-    showTab("#tabpayments");
+function doPayLink() {
+    var paylink = paylink_pending
+    paylink_pending = null
 
-    populatePaymentTabFromURI(paylink);
+    if (!paylink) return
+    
+    showTab("#tabpayments")
 
-    paylink_pending = null;
+    populatePaymentTabFromURI(paylink)
+
     $('#tablogin>center>div').removeClass('pinpad_pending')
 
     if (activeaccount == "") 
-        refreshAccounts();
+        refreshAccounts()
 }
 
 
@@ -4096,7 +4100,7 @@ function doShowLogin() {
                 showTab("#tabaccounts");
             } else {
                 $('#tablogin>center>div').removeClass('pinpad_pending');
-                doPayLink(paylink_pending); 
+                doPayLink(); 
             }
 		}, function() {
 			$("#btnbootstrapsequence").hide();
