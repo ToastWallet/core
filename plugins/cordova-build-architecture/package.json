@@ -1,0 +1,43 @@
+{
+  "_from": "git+https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
+  "_id": "cordova-build-architecture@1.0.4",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/cordova-build-architecture",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
+    "rawSpec": "https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
+    "saveSpec": "git+https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
+    "fetchSpec": "https://github.com/MBuchalik/cordova-build-architecture.git",
+    "gitCommittish": "v1.0.4"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/MBuchalik/cordova-build-architecture.git#bc126ae7761f33abd25fd0c566b3b7d5107c314b",
+  "_spec": "https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
+  "_where": "/Users/richardholland/toastwalletbuild/core",
+  "author": {
+    "name": "Martin Buchalik"
+  },
+  "bugs": {
+    "url": "https://github.com/MBuchalik/cordova-build-architecture/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Experimental plugin to force one single arm or x86 build",
+  "homepage": "https://github.com/MBuchalik/cordova-build-architecture#readme",
+  "keywords": [
+    "cordova"
+  ],
+  "license": "MIT",
+  "name": "cordova-build-architecture",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MBuchalik/cordova-build-architecture.git"
+  },
+  "version": "1.0.4"
+}
