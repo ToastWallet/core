@@ -523,6 +523,10 @@ input {
     min-height: 2.2em;
 }
 
+.select2-search {
+    display: none !important;
+}
+
 button:not(.varsize) {
     min-width: 6em;
 }
