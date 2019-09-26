@@ -2753,23 +2753,23 @@ function xls2d(uri) {
 
 function checkPayToAddressForCommonErrors() {
     var payto = ($('#toaddress').val() + '').trim()
-
-    if (payto == 'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv') {
-        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Bitstamp!</i>)';
-    } else if (payto == 'rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh') {
-        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Kraken!</i>)';
-    } else if (offlinemode) {
-        $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
-    } else {
-        remote.getSettings(payto).then(e=>{
-            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for this address!</i>)'
-        }).catch(e=>{
+    if (payto.substr(0,1) == 'r' && forceraddr(payto)) {
+        if (payto == 'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv') {
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Bitstamp!</i>)';
+        } else if (payto == 'rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh') {
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Kraken!</i>)';
+        } else if (offlinemode) {
             $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
-        })
+        } else {
+            remote.getSettings(payto).then(e=>{
+                $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for this address!</i>)'
+            }).catch(e=>{
+                $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
+            })
+        }
     }
-    
-    // would be better to put this elsewhere but convenient to put it here
-    $('#currencyerror').hide(); 
+   
+     $('#currencyerror').hide(); 
    
     // disable or enable desttag depending on if its an xaddress
     if (payto.substr(0,1) == 'X') { 
@@ -2803,11 +2803,11 @@ function populatePaymentTabFromURI(uri, targetfield) {
     if (parsed.amount) $('#payamount').val(parsed.amount)
 
     checkPayToAddressForCommonErrors()
-    try {
+    /*try {
         $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
     } catch (e) {}
     onPaymentSelectFromAccount();
-
+    */
     $('#currencyerror').hide()
 
     if (parsed.currency.currency && parsed.currency.issuer) {
@@ -6274,7 +6274,7 @@ function doPay(nonce) {
 		$('#confirmpayamount')[0].innerText = amount;
 
         $('#confirmasset')[0].innerText = asset;
-        $('#confirmissuer')[0].innerText = issuer;
+        $('#confirmissuer')[0].innerText = dispaddr(issuer);
 
         if (asset == 'XRP') {
             $('#confirmissuerpaygroup').hide();
@@ -6284,7 +6284,7 @@ function doPay(nonce) {
             if (owncurrencytgl) {
                 $('#confirmissuer')[0].innerText = 'This Account';
             } else {
-                $('#confirmissuer')[0].innerText = issuer;
+                $('#confirmissuer')[0].innerText = dispaddr(issuer);
             }
         }
 
