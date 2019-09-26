@@ -201,10 +201,11 @@
 
         paylink_pending = link;
         $('#tablogin>center>div').addClass('pinpad_pending')
-
-        if ($('#tablogin').is(":visible") && e !== "boot") {
-            doShowLogin();
+        
+        if (e == 'boot' || $('#tablogin').is(":visible")) {
+            // do nothing 
         } else {
+            // wallet is open so go to payment page immediately
             doPayLink(paylink_pending);
         }
     }
@@ -462,7 +463,7 @@
         if (typeof(document.location) == 'object' && typeof(document.location.search) == 'string') {
             console.log("paylink passed on boot: " + document.location.search);
             var pieces = document.location.search.split("?paylink=");
-            if (pieces.length > 1 && /^[a-fA-f0-9]+$/.test(pieces[1])) paylink_handler("boot", Buffer.from(pieces[1], 'hex').toString());
+            if (pieces.length > 1) paylink_handler("boot", Buffer.from(pieces[1], 'hex').toString());
         }
 
 
@@ -2755,14 +2756,14 @@ function checkPayToAddressForCommonErrors() {
     var payto = ($('#toaddress').val() + '').trim()
     if (payto.substr(0,1) == 'r' && forceraddr(payto)) {
         if (payto == 'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv') {
-            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Bitstamp!</i>)';
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required!</i>)';
         } else if (payto == 'rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh') {
-            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for Kraken!</i>)';
+            $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required!</i>)';
         } else if (offlinemode) {
             $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
         } else {
             remote.getSettings(payto).then(e=>{
-                $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required for this address!</i>)'
+                $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag (<i color="red">Required!</i>)'
             }).catch(e=>{
                 $('#lblpaytodesttag')[0].innerHTML = 'Destination Tag'
             })

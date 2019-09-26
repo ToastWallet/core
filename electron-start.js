@@ -8,6 +8,18 @@ const path = require('path')
 const url = require('url')
 const dialog = require('electron').dialog
 
+app.setAsDefaultProtocolClient("xrpl");
+app.setAsDefaultProtocolClient("xrp");
+app.setAsDefaultProtocolClient("ripple");
+var pending_paylink = false
+app.on('open-url', function(event, url) {
+    if (console && console.log) console.log('pending url: ' + url)
+    pending_paylink = url
+    if (mainWindow) 
+        mainWindow.webContents.send('pay-link', url)
+})
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -62,7 +74,12 @@ function createWindow () {
     ev.preventDefault()
   })
 
-  var paylink = ( process.argv.length > 1 ? "?paylink=" + Buffer.from(process.argv[1]).toString('hex') : "" );
+  var paylink = ""
+  if (pending_paylink != "") { 
+    paylink = "?paylink=" + Buffer.from(pending_paylink).toString('hex')
+  } else if ( process.argv.length > 1) {
+    paylink = "?paylink=" + Buffer.from(process.argv[1]).toString('hex')
+  }
 
 
   // and load the index.html of the app.
@@ -73,10 +90,6 @@ function createWindow () {
   }) + paylink);
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
-
-  app.setAsDefaultProtocolClient("xrpl");
-  app.setAsDefaultProtocolClient("xrp");
-  app.setAsDefaultProtocolClient("ripple");
 
 
 
@@ -118,8 +131,10 @@ var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) 
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
-    if (commandLine.length > 1)
-        mainWindow.webContents.send('pay-link', commandLine[1]);
+    if (pending_paylink)
+        mainWindow.webContents.send('pay-link', pending_paylink)
+    else if (commandLine.length > 1) 
+        mainWindow.webContents.send('pay-link', commandLine[1])
   }
 });
 
@@ -134,16 +149,11 @@ if (shouldQuit) {
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
     createWindow();
-    
 })
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
     app.quit()
-  }
 })
 
 app.on('activate', function () {
