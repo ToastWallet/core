@@ -14,7 +14,7 @@
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="EnableViewportScale" value="true" />
-    <preference name="buildArchitecture" value="armv7" />
+    <preference name="buildArchitecture" value="arm64" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="phonegap-version" value="cli-7.0.1" />
     <plugin name="cordova-plugin-clipboard-v2" value="~0.0.4" />
@@ -131,7 +131,6 @@
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
-    <plugin name="cordova-plugin-build-architecture" spec="~1.0.6" />
     <plugin name="cordova-plugin-battery-status" spec="~1.2.4" />
     <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="The camera is used to scan QR-codes of XRP ledger addresses" />
@@ -156,8 +155,12 @@
     </plugin>
     <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
         <variable name="URL_SCHEME" value="xrpl" />
+        <variable name="ANDROID_SCHEME" value=" " />
+        <variable name="ANDROID_HOST" value=" " />
+        <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
-    <engine name="browser" spec="^5.0.4" />
+    <engine name="browser" spec="5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^6.4.0" />
+    <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4" />
 </widget>
