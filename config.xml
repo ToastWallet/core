@@ -8,6 +8,7 @@
         Toast Wallet
     </author>
     <content src="index.html" />
+    <preference name="xwalk64bit" value="true" />
     <preference name="DisallowOverscroll" value="false" />
     <preference name="KeyboardShrinksView" value="true" />
     <preference name="BackupWebStorage" value="cloud" />
@@ -153,14 +154,14 @@
     <plugin name="cordova-android-support-gradle-release" spec="~1.4.3">
         <variable name="ANDROID_SUPPORT_VERSION" value="23.+" />
     </plugin>
+    <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4" />
     <plugin name="cordova-plugin-customurlscheme" spec="4.4.0">
         <variable name="URL_SCHEME" value="xrpl" />
         <variable name="ANDROID_SCHEME" value=" " />
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
-    <engine name="browser" spec="5.0.4" />
+    <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^6.4.0" />
-    <plugin name="cordova-build-architecture" spec="https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4" />
 </widget>

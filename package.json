@@ -25,7 +25,6 @@
         "XWALK_MULTIPLEAPK": "true"
       },
       "ionic-plugin-keyboard": {},
-      "cordova-plugin-build-architecture": {},
       "cordova-plugin-battery-status": {},
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "23.+"
@@ -39,20 +38,26 @@
       },
       "cordova-plugin-openurlext": {},
       "cordova-plugin-customurlscheme": {
-        "URL_SCHEME": "xrpl"
+        "URL_SCHEME": "xrpl",
+        "ANDROID_SCHEME": " ",
+        "ANDROID_HOST": " ",
+        "ANDROID_PATHPREFIX": "/"
       },
       "cordova-plugin-clipboard-v2": {},
-      "it.almaviva.openurlext": {}
+      "it.almaviva.openurlext": {},
+      "cordova-build-architecture": {}
     }
   },
   "dependencies": {
     "cordova-android": "^6.4.0",
     "cordova-android-support-gradle-release": "~1.4.3",
     "cordova-browser": "^5.0.4",
+    "cordova-build-architecture": "git+https://github.com/MBuchalik/cordova-build-architecture.git#v1.0.4",
     "cordova-ios": "^4.5.5",
     "cordova-plugin-battery-status": "~1.2.4",
     "cordova-plugin-build-architecture": "~1.0.6",
     "cordova-plugin-camera": "~2.1.1",
+    "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-crosswalk-webview": "~2.3.0",
     "cordova-plugin-customurlscheme": "4.4.0",
     "cordova-plugin-device": "~2.0.2",
@@ -65,6 +70,7 @@
     "cordova-plugin-statusbar": "~2.1.2",
     "cordova-plugin-whitelist": "~1.2.1",
     "ionic-plugin-keyboard": "~2.2.1",
-    "phonegap-plugin-barcodescanner": "~6.0.6"
+    "phonegap-plugin-barcodescanner": "~6.0.6",
+    "xml2js": "^0.4.22"
   }
 }
