@@ -2017,29 +2017,29 @@ function select2EventProxy() {
         try {
             event.stopPropagation();
             event.preventDefault();
+
+            // this one is tricky!
+            if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY)) {
+                var e = event.target
+                while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
+                    e = e.parentNode
+
+                if (!e || !e.parentNode || !e.previousElementSibling)
+                    return
+
+                try {$(e.previousElementSibling).select2('open')} catch(e) {}
+                $('.select2-results__option').off('touchend')
+                $('.select2-results__option').on('touchend', (event)=>{
+                    try {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    } catch (E) {}
+                    
+                    if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY))
+                        $(event.target).trigger('mouseup')
+                })
+            }
         } catch (E) {}
-
-        // this one is tricky!
-        if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY)) {
-            var e = event.target
-            while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
-                e = e.parentNode
-
-            if (!e || !e.parentNode || !e.previousElementSibling)
-                return
-
-            try {$(e.previousElementSibling).select2('open')} catch(e) {}
-            $('.select2-results__option').off('touchend')
-            $('.select2-results__option').on('touchend', (event)=>{
-                try {
-                    event.stopPropagation();
-                    event.preventDefault();
-                } catch (E) {}
-                
-                if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY))
-                    $(event.target).trigger('mouseup')
-            })
-        }
     })
 
 }
