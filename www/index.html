@@ -78,7 +78,10 @@
 
 	var timepaused = 0;
 
-    var paylink_pending = null;
+    var paylink_pending;
+
+    // this variable is set to true at the end of all boot and wallet setup, ie at the first login screen
+    var can_accept_paylink = false
 
     // contains all interface settings like whether or not to use x-addresses by default
     // and which currency to display in
@@ -177,10 +180,9 @@
 	}
 
 
+    // this is a function the deep link handlers on android and ios search for
     function handleOpenURL(link, e) {                 
         console.log("incoming pay-link: " + link);
-
-
 
         paylink_pending = link;
         $('#tablogin>center>div').addClass('pinpad_pending')
@@ -202,7 +204,7 @@
             return;
         }
         
-        if (e == 'boot' || $('#tablogin').is(":visible")) {
+        if (e == 'boot' || !can_accept_paylink || $('#tablogin').is(":visible")) {
             // do nothing 
         } else {
             // wallet is open so go to payment page immediately
@@ -465,7 +467,6 @@
             var pieces = document.location.search.split("?paylink=");
             if (pieces.length > 1) paylink_handler("boot", Buffer.from(pieces[1], 'hex').toString());
         }
-
 
 	}
 </script>
@@ -4050,6 +4051,8 @@ function refreshAccounts(after) {
 
 // decode a payment URI passed to the application from the OS and display payment tab
 function doPayLink() {
+    console.log("doPayLink " + paylink_pending)
+    
     var paylink = paylink_pending
     paylink_pending = null
 
@@ -4315,8 +4318,17 @@ var screentabpaddingbottom = 0; // we use this when calcualting keyboard offset
 function showTab(tab, dontClearText) {
 
     // while a link is pending we will handle it as soon as we can
-    if (paylink_pending) 
+    if (tab == '#tablogin') {
+        // once booting and/or wallet setup has finished we want to start processing paylinks
+        can_accept_paylink = true    
+
+        // show the prompt
+        if (paylink_pending)
+            $('#tablogin>center>div').addClass('pinpad_pending')
+    } else if (paylink_pending) { 
         handleOpenURL(paylink_pending)
+    }
+    
 
 	if (tab == currenttab) return;
 
