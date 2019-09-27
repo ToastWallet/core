@@ -170,7 +170,8 @@
 
 	function quickSelectInput(e) {
         if (e == undefined) return;
-    	$(e).focus();
+    	$('select').select2('close')
+        $(e).focus();
 	}
 
 	function stopClick(e) {
@@ -277,7 +278,8 @@
 				function(e) {
                     nativekeyboardvisible = true;
 					if (debug) console.log("nativeKeyboardShow()");
-					$('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em + 100vh)');
+					$('select').select2('close')
+                    $('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em + 100vh)');
                     $('#navfooter').hide();
                     $('#morecontentindicator').hide();
 					if (currenttab != "") {
@@ -2003,27 +2005,33 @@ function select2EventProxy() {
 
     $('.select2').off('touchend')
     $('.select2').on('touchend', (event)=>{
+        
+        try {
+            event.stopPropagation();
+            event.preventDefault();
+        } catch (E) {}
+
         // this one is tricky!
-        if (!event || !event.target || !event.preventDefault) return
-        event.preventDefault()
-        var e = event.target
-        $(e).off('mouseup')
-        $(e).off('click')
-        while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
-            e = e.parentNode
+        if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY)) {
+            var e = event.target
+            while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
+                e = e.parentNode
 
-        if (!e || !e.parentNode || !e.previousElementSibling)
-            return
+            if (!e || !e.parentNode || !e.previousElementSibling)
+                return
 
-        $(e.previousElementSibling).select2('open')
-        $('.select2-results__option').off('touchend')
-        $('.select2-results__option').on('touchend', (event)=>{
-            if (!event || !event.target || !event.preventDefault) return
-            event.preventDefault()
-            $(event.target).trigger('mouseup')
-            $(event.target).off('mouseup')
-            $(event.target).off('click')
-        })
+            $(e.previousElementSibling).select2('open')
+            $('.select2-results__option').off('touchend')
+            $('.select2-results__option').on('touchend', (event)=>{
+                try {
+                    event.stopPropagation();
+                    event.preventDefault();
+                } catch (E) {}
+                
+                if (event.target == document.elementFromPoint(event.changedTouches[0].pageX, event.changedTouches[0].pageY))
+                    $(event.target).trigger('mouseup')
+            })
+        }
     })
 
 }
@@ -4363,6 +4371,8 @@ function showTab(tab, dontClearText) {
     
 
 	if (tab == currenttab) return;
+
+    $('select').select2('close')
 
     if (dontClearText == undefined) dontClearText = false;
 
