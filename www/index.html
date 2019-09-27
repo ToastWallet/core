@@ -1998,6 +1998,29 @@ function clipboardPaste(f) {
 }
 
 
+// adds ontouchend events to select2 boxes for more snappy use on mobile
+function select2EventProxy() {
+
+    $('.select2').off('touchend')
+    $('.select2').on('touchend', (event)=>{
+        // this one is tricky!
+        var e = event.target
+        while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
+            e = e.parentNode
+
+        if (!e || !e.parentNode || !e.previousElementSibling)
+            return
+
+        $(e.previousElementSibling).select2('open')
+        $('.select2-results__option').off('touchend')
+        $('.select2-results__option').on('touchend', (event)=>{
+            $(event.target).trigger('mouseup')
+        })
+    })
+
+}
+
+
 // formats the internals of select2 comboboxes
 function formatSelect2(state) {
 
@@ -2056,6 +2079,7 @@ function onPaymentSelectFromAccount() {
         }
 
         $('#payasset').select2()
+        select2EventProxy()
     }
 }
 
@@ -4236,8 +4260,8 @@ function te(e, x) {
 /* Run this to add a click proxy to all elements so that a browser can use the wallet */
 function clickProxy() {
 	if ((device.platform + "").toLowerCase() == 'browser') {
-        $('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
-		$('*:not(input):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
+        $('*:not(input):not(.select2):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
+		$('*:not(input):not(.select2):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
             inClickProxy = true;
 
             var ele = this;
@@ -4523,7 +4547,9 @@ function showTab(tab, dontClearText) {
 
 
     $(tab + ' select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
-	
+
+    select2EventProxy()
+
     $(tab).show();
 
     if (tab != '#tabaccounts') $(tab).scrollTop(0);
@@ -7201,7 +7227,7 @@ onDeviceReady: function() {
 
             // change all select boxes to the modern graphical format
             $('select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
-
+            select2EventProxy()
 
 			if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
 				navigator.notification.alert("Toast Wallet does not work with iOS versions below 11.0. Toast Wallet will now start in offline mode.", 
