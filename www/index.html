@@ -2083,6 +2083,7 @@ function onPaymentSelectFromAccount() {
         $("#paytabredqr").empty();
         $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $("#payasset").hide();
+        $("#payasset").select2('destroy')
         $('#oflcurrencydiv').show();
         
     } else {
