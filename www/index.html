@@ -40,7 +40,7 @@
 		window.onerror = function(message, url, lineNumber) {  
             if ((message + "").startsWith("Uncaught, unspecified")) return; // not entirely sure what this error is but it seems to happen very occasionally when switching back after inactivity and doesn't seem to affect behaviour 
             x = "We're sorry: An unexpected error has occured with Toast Wallet. Please report the below to support@toastwallet.com along with what you were trying to do at the time the error occured. If you haven't already it would be prudent to make a backup of your wallet. You may need to restart Toast Wallet by closing it manually. " + message + " " + url + " " + lineNumber;
-			console.log("Error: " + message + ", url: " + url + " line: " + lineNumber);
+			console.log("Error: `" + message + "`, url: " + url + " line: " + lineNumber);
             try {
 			navigator.notification.alert(x, 
 				function(){
@@ -102,12 +102,18 @@
     //  ignoreprefix - optional, a string to match at the start and dis/recard
     function xrbtn_press(e, qrtoupdate, after, dt, ignoreprefix) {
 
+        console.log('xrbtn_press')
+        console.log(e)
+
         if (dt == undefined || typeof(dt) == 'string' && parseInt(dt)+'' != dt.replace(/\s/, '').replace(/\s/g,''))
             dt = false
    
         var e = e.srcElement
-        var src = e.srcElement
+        var src = e
         var t = e.getElementsByClassName('addrtype')[0]
+
+        if (!t) t = e.parentElement.getElementsByClassName('addrtype')[0]
+
         while(e && !e.classList.contains('input-group'))
             e = e.parentElement
 
@@ -2129,7 +2135,8 @@ function doSubmitOfflineTransaction(stage, content) {
         // query the ledger sequence ID and account sequence ID
         if (account == undefined) account = $('#txtredqr').val();
         console.log("RED QR: " + account);
-        if (account == "" || !validateAddress(account)) {
+        account = forceraddr(account)
+        if (!account || !validateAddress(account)) {
 
 			return navigator.notification.alert("The QR code you scanned was not a valid XRP address", 
 				function() {
@@ -3770,11 +3777,9 @@ function showPaymentTab(account, currency, issuer, balance) {
     $('#payfromaccount').find('[data-account="'+account+'"]').attr('selected', 'selected');
     onPaymentSelectFromAccount();
     $('#optpa-'+currency+'-'+issuer).attr('selected', 'selected');
-   
-//    $('#payamount').attr('placeholder', ''+balance);
     $('#payamount').val(balance);
-
     showTab('#tabpayments', true);
+
     $('#toaddress').focus();
 
 }
