@@ -2004,7 +2004,11 @@ function select2EventProxy() {
     $('.select2').off('touchend')
     $('.select2').on('touchend', (event)=>{
         // this one is tricky!
+        if (!event || !event.target || !event.preventDefault) return
+        event.preventDefault()
         var e = event.target
+        $(e).off('mouseup')
+        $(e).off('click')
         while (e && e.parentNode && !(e.previousElementSibling && e.previousElementSibling.tagName == 'SELECT'))
             e = e.parentNode
 
@@ -2014,7 +2018,11 @@ function select2EventProxy() {
         $(e.previousElementSibling).select2('open')
         $('.select2-results__option').off('touchend')
         $('.select2-results__option').on('touchend', (event)=>{
+            if (!event || !event.target || !event.preventDefault) return
+            event.preventDefault()
             $(event.target).trigger('mouseup')
+            $(event.target).off('mouseup')
+            $(event.target).off('click')
         })
     })
 
@@ -4260,8 +4268,8 @@ function te(e, x) {
 /* Run this to add a click proxy to all elements so that a browser can use the wallet */
 function clickProxy() {
 	if ((device.platform + "").toLowerCase() == 'browser') {
-        $('*:not(input):not(.select2):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
-		$('*:not(input):not(.select2):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
+        $('*:not(input):not(.select2):not([class^="select2-"]):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').unbind('click');
+		$('*:not(input):not(.select2):not([class^="select2-"]):not(.headerleft):not(.headerright):not(.toggleswitch):not(.morecontentindicator)').on('click', function(e) {
             inClickProxy = true;
 
             var ele = this;
