@@ -2751,6 +2751,8 @@ function doResetPassphrase(pp1, pp2, oldpp, successfunc, firstrun) {
 //https://github.com/xrp-community/standards-drafts
 function xls2d(uri) {
 
+    if (!uri || typeof(uri) != 'string') return false
+
     const cleaned_uri = uri.replace(/^(.*:.*)?\?/mg, "").replace(/\?/img, "&").replace(/^.*?:\/\//, '').replace(/^ripple:/img, "")
     
     function clean() {
