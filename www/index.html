@@ -176,7 +176,9 @@
 
 	function quickSelectInput(e) {
         if (e == undefined) return;
-    	$('select').select2('close')
+    	try {
+            $('select').select2('close')
+        } catch(e) {}
         $(e).focus();
 	}
 
@@ -284,7 +286,7 @@
 				function(e) {
                     nativekeyboardvisible = true;
 					if (debug) console.log("nativeKeyboardShow()");
-					$('select').select2('close')
+					try {$('select').select2('close')} catch(e) {}
                     $('.screentab').css('padding-bottom', 'calc(' + e.keyboardHeight + 'px + ' + screentabpaddingbottom + 'em + 100vh)');
                     $('#navfooter').hide();
                     $('#morecontentindicator').hide();
@@ -2026,7 +2028,7 @@ function select2EventProxy() {
             if (!e || !e.parentNode || !e.previousElementSibling)
                 return
 
-            $(e.previousElementSibling).select2('open')
+            try {$(e.previousElementSibling).select2('open')} catch(e) {}
             $('.select2-results__option').off('touchend')
             $('.select2-results__option').on('touchend', (event)=>{
                 try {
@@ -2069,6 +2071,11 @@ function formatSelect2(state) {
 // this function fires when an account is selected on the payments tab
 // but is only used to supply red qr code in the event the user is in offline mode
 function onPaymentSelectFromAccount() {
+    //clean up stray dropdown
+    if (offlinemode) 
+        try {
+            $("#payasset").select2('destroy')
+        } catch (e) {}
 
     if ($("#payfromaccount").find(":selected") == undefined) {
         if (activeaccount == undefined) return;
@@ -2083,7 +2090,9 @@ function onPaymentSelectFromAccount() {
         $("#paytabredqr").empty();
         $("#paytabredqr").append(kjua({text: account, fill:"#ff0000"}));    
         $("#payasset").hide();
-        $("#payasset").select2('destroy')
+        try {
+            $("#payasset").select2('destroy')
+        } catch (e) {}
         $('#oflcurrencydiv').show();
         
     } else {
@@ -2101,7 +2110,9 @@ function onPaymentSelectFromAccount() {
             $('#payasset')[0].innerHTML = xrpoption;
         }
 
-        $('#payasset').select2()
+        try {
+            $('#payasset').select2()
+        } catch(e) {}
         select2EventProxy()
     }
 }
@@ -4044,7 +4055,7 @@ function refreshAccounts(after) {
             //var bottomtouchend = 'te(event, (x)=>{ var f=(x, m)=>{ return ((m <=0 || x == undefined) ? false : ( $(x).data(\'tlcount\') > 0 ? true : f($(x).parent(), m-1)) ) }; doSelectAccount(\''+i+'\', \''+nickname+'\', f(x, 5));})';
             var bottomtouchend = toptouchend; // changed the behaviour so it always goes to the account details tab, since the DEX is rarely used
             if ($('#ra' + i).length == 0) {
-                $("#accountslist").prepend('<li data-account="'+i+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? dispaddr(i) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
+                $("#accountslist").prepend('<li data-account="'+i+'" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'" class="list-group-item accountitem '+(activeaccount == i?'active':'')+'" id="ra'+i+'"><span class="hashicon"></span><div class="accountline" ontouchstart="ts(event)" ontouchend="'+toptouchend+'"><a class="address"><span class="address">'+(nickname == "" ? dispaddr(i) : nickname)+'</span></a><div class="amount"><small style="opacity: 0.7">' + (offlinemode ? 'offline' : '') + '</small></div></div><div class="trustlines" ontouchstart="ts(event)" ontouchend="'+bottomtouchend+'"></div><i class="fas fa-circle-notch accloadspinner" style="'+(offlinemode? 'display:none' : '')+'"></i></li>');
 
             $('#ra' + i + ' .hashicon')[0].appendChild(hashicon(xaddr(i, false), 35))
 
@@ -4380,7 +4391,9 @@ function showTab(tab, dontClearText) {
 
 	if (tab == currenttab) return;
 
-    $('select').select2('close')
+    try {
+        $('select').select2('close')
+    } catch(e) {}
 
     if (dontClearText == undefined) dontClearText = false;
 
@@ -4572,10 +4585,17 @@ function showTab(tab, dontClearText) {
 	for (var i = 0; i < tabs.length; i++) $("#" + tabs[i].id).hide();
 
 
-    $(tab + ' select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
+    try {
+        $(tab + ' select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
+    } catch(e) {}
 
     select2EventProxy()
 
+    //clean up stray dropdown
+    if (offlinemode) 
+        try {
+            $("#payasset").select2('destroy')
+        } catch (e) {}
     $(tab).show();
 
     if (tab != '#tabaccounts') $(tab).scrollTop(0);
@@ -7252,7 +7272,9 @@ onDeviceReady: function() {
 			if (debug) console.log("onDeviceReady:3");
 
             // change all select boxes to the modern graphical format
-            $('select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
+            try {
+                $('select').select2({templateResult:formatSelect2, templateSelection:formatSelect2})
+            } catch(e) {}
             select2EventProxy()
 
 			if (device.platform == 'iOS' && parseFloat("0" + device.version ) < 11) {
