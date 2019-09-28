@@ -14,7 +14,7 @@
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="EnableViewportScale" value="true" />
-    <preference name="buildArchitecture" value="arm" />
+    <preference name="xwalk64bit" value="true" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="phonegap-version" value="cli-7.0.1" />
     <plugin name="cordova-plugin-clipboard-v2" value="~0.0.4" />
