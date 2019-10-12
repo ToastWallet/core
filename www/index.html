@@ -1827,6 +1827,32 @@ I understand that the recovery phrase IS NOT A WALLET BACKUP.</p><br>
 </div>
 
 
+<div id="tabgoogle" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="Support Toast Wallet">
+
+   <center>
+    <h1>Toast Wallet</h1>
+
+	<center>
+<p style="text-align:center;">We rely on your contributions to keep Toast Wallet free and running smoothly.</p>
+<p style="
+    text-align: center;
+    font-weight: bold;
+    color: orange;
+    background: black;
+    padding: 0.5em;
+">
+Unfortunately you are using an Android device. Google no longer supports your right to donate to Toast Wallet in XRP.
+</p>
+<p style="text-align: center; color:white;">
+Instead of donating to us, consider donating to <b>Project Veritas</b>, who are busy exposing Google's interference in democratic elections.
+</p>
+<br/>
+<button type="button" class="btn btn-success btnbig" ontouchstart="ts(event)" ontouchend="te(event, ()=>{openExternalUrl('https://www.projectveritas.com/tag/google/')})">Project Veritas</button>
+<br />
+<button class="btn btn-danger btnbig" type="button" ontouchstart="ts(event)" ontouchend="te(event, ()=>{showTab('#tabaccounts');})">Done</button><br>
+</p>
+   </center>
+</div>
 
 <div id="tabdonate" class="screentab" data-primarytab="false" data-hasback="true" data-dark="true" data-noright="true" data-title="Support Toast Wallet">
    <center>
@@ -2388,7 +2414,12 @@ function selectAccountDetailsSubTab(tabele, subtabname) {
 
 function showDonationTab(){
 	if (offlinemode || emergencybackup) return;
-	showTab('#tabdonate');
+
+	if (('' + device.platform).toLowerCase() == 'android') {
+        return showTab('#tabgoogle')
+    }
+
+    showTab('#tabdonate');
 	
 	remote.getOrderbook(
 		"rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B", 
@@ -4539,6 +4570,8 @@ function showTab(tab, dontClearText) {
 		var donorreminder = function() {
 			getLastDonation(function(donation) {
                 if(setupcompletedthissession) return; // no point asking people who just set up the wallet to donate
+
+                if (('' + device.platform).toLowerCase() == 'android') return; // no point pestering people who can't donate because Google is evil
 
 				if ('lastdonation' in donation && Math.floor(new Date().getTime()/1000) - parseInt(donation['lastdonation']) < 15552000 /* 180 days */) {
 					// do nothing
