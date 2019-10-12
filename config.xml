@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.toastwallet.core" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.toastwallet.core" version="3.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Toast Wallet</name>
     <description>
 	Toast Wallet is an XRP wallet for Android and iOS.
@@ -157,7 +157,7 @@
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
-    <engine name="browser" spec="^5.0.4" />
+    <engine name="browser" spec="5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^6.4.0" />
 </widget>

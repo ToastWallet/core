@@ -1,6 +1,6 @@
 {
   "name": "com.toastwallet.core",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "displayName": "Toast Wallet",
   "cordova": {
     "platforms": [
@@ -50,7 +50,7 @@
   "dependencies": {
     "cordova-android": "^6.4.0",
     "cordova-android-support-gradle-release": "~1.4.3",
-    "cordova-browser": "^5.0.4",
+    "cordova-browser": "5.0.4",
     "cordova-ios": "^4.5.5",
     "cordova-plugin-battery-status": "~1.2.4",
     "cordova-plugin-camera": "~2.1.1",
