@@ -1,3 +1,5 @@
+# No Longer Maintained
+Please note Toast Wallet is no longer actively maintained. It is recommended that you use the releases or browser version only for migration purposes.
 # Toast Wallet core
 This contains the core javascript and css of the wallet. Each specific platform has a repo that wraps the html5 app.
 # Git usage
