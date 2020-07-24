@@ -6665,7 +6665,7 @@ function doCheckBackup(raw) {
 
     raw = raw.replace(/ |\r|\n/mg, "");
     raw = raw.replace(/;/mg, ":");
-    raw = raw.replace(/“|”|’|‘|`|´|'/mg, '"');
+    raw = raw.replace(/ï¿½|ï¿½|ï¿½|ï¿½|`|ï¿½|'/mg, '"');
     
     $('#backupcode').val(raw);
 
@@ -9295,7 +9295,7 @@ function doGetTransactions(address, marker) {
 	$.ajax({
 		complete: function() { unblockInput(); },
 		url: 'https://data.ripple.com/v2/accounts/' + 
-		address + '/payments?currency=XRP&limit=10&marker=' +
+		address + '/payments?descending=true&limit=10&marker=' +
 		marker
 	}).done(function(x){
 		console.log(x);
